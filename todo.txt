@@ -1,0 +1,15 @@
+
+## Short Term
+- [ ] Merge ref_gl into quake2
+- [ ] Totally kill off ref_soft
+- [ ] Add PNG/JPG loader (stb_image)
+- [ ] Add miniz for loading Anox's data
+- [ ] Kill WAL support
+
+## Long Term
+- [ ] Switch to CMakeLists
+- [ ] SDL2 impl
+- [ ] Decouple sim fps and ren fps
+- [ ] Pull console implementation from Decay
+- [ ] Rewrite sub-systems in C++
+- [ ] Use OpenGL4 for rendering
