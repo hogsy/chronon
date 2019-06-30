@@ -20,11 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "../client/qmenu.h"
 
-#define REF_SOFT	0
 #define REF_OPENGL	1
-#define REF_3DFX	2
-#define REF_POWERVR	3
-#define REF_VERITE	4
 
 extern cvar_t *vid_ref;
 extern cvar_t *vid_fullscreen;
@@ -140,28 +136,8 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValue( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
 	Cvar_SetValue( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
 
-	switch ( s_ref_list[s_current_menu_index].curvalue )
-	{
-	case REF_SOFT:
-		Cvar_Set( "vid_ref", "soft" );
-		break;
-	case REF_OPENGL:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "opengl32" );
-		break;
-	case REF_3DFX:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "3dfxgl" );
-		break;
-	case REF_POWERVR:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "pvrgl" );
-		break;
-	case REF_VERITE:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "veritegl" );
-		break;
-	}
+    Cvar_Set("vid_ref", "gl");
+    Cvar_Set("gl_driver", "opengl32");
 
 	/*
 	** update appropriate stuff if we're running OpenGL and gamma
@@ -264,25 +240,7 @@ void VID_MenuInit( void )
 
 	s_screensize_slider[SOFTWARE_MENU].curvalue = scr_viewsize->value/10;
 	s_screensize_slider[OPENGL_MENU].curvalue = scr_viewsize->value/10;
-
-	if ( strcmp( vid_ref->string, "soft" ) == 0 )
-	{
-		s_current_menu_index = SOFTWARE_MENU;
-		s_ref_list[0].curvalue = s_ref_list[1].curvalue = REF_SOFT;
-	}
-	else if ( strcmp( vid_ref->string, "gl" ) == 0 )
-	{
-		s_current_menu_index = OPENGL_MENU;
-		if ( strcmp( gl_driver->string, "3dfxgl" ) == 0 )
-			s_ref_list[s_current_menu_index].curvalue = REF_3DFX;
-		else if ( strcmp( gl_driver->string, "pvrgl" ) == 0 )
-			s_ref_list[s_current_menu_index].curvalue = REF_POWERVR;
-		else if ( strcmp( gl_driver->string, "opengl32" ) == 0 )
-			s_ref_list[s_current_menu_index].curvalue = REF_OPENGL;
-		else
-//			s_ref_list[s_current_menu_index].curvalue = REF_VERITE;
-			s_ref_list[s_current_menu_index].curvalue = REF_OPENGL;
-	}
+	s_ref_list[s_current_menu_index].curvalue = REF_OPENGL;
 
 	s_software_menu.x = viddef.width * 0.50;
 	s_software_menu.nitems = 0;

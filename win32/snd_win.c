@@ -487,7 +487,7 @@ qboolean SNDDMA_InitWav (void)
 
 		if (MessageBox (NULL,
 						"The sound hardware is in use by another app.\n\n"
-					    "Select Retry to try to start sound again or Cancel to run Quake 2 with no sound.",
+					    "Select Retry to try to start sound again or Cancel to run " ENGINE_NAME " with no sound.",
 						"Sound not available",
 						MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY)
 		{
