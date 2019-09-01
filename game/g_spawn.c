@@ -169,8 +169,6 @@ spawn_t	spawns[] = {
 	{"path_corner", SP_path_corner},
 	{"point_combat", SP_point_combat},
 
-	{"monster_berserk", SP_monster_berserk},
-
     // tmp
 { "npc_alien_rowdy", SP_monster_berserk },
 
@@ -752,7 +750,6 @@ void SP_worldspawn (edict_t *ent)
 
 	//---------------
 
-
 	// help icon for statusbar
 	gi.imageindex ("i_help");
 	level.pic_health = gi.imageindex ("i_health");
@@ -798,21 +795,6 @@ void SP_worldspawn (edict_t *ent)
 	gi.soundindex ("*pain100_1.wav");
 	gi.soundindex ("*pain100_2.wav");
 
-	// sexed models
-	// THIS ORDER MUST MATCH THE DEFINES IN g_local.h
-	// you can add more, max 15
-	gi.modelindex ("#w_blaster.md2");
-	gi.modelindex ("#w_shotgun.md2");
-	gi.modelindex ("#w_sshotgun.md2");
-	gi.modelindex ("#w_machinegun.md2");
-	gi.modelindex ("#w_chaingun.md2");
-	gi.modelindex ("#a_grenades.md2");
-	gi.modelindex ("#w_glauncher.md2");
-	gi.modelindex ("#w_rlauncher.md2");
-	gi.modelindex ("#w_hyperblaster.md2");
-	gi.modelindex ("#w_railgun.md2");
-	gi.modelindex ("#w_bfg.md2");
-
 	//-------------------
 
 	gi.soundindex ("player/gasp1.wav");		// gasping for air
@@ -836,14 +818,6 @@ void SP_worldspawn (edict_t *ent)
 	gi.soundindex ("weapons/noammo.wav");
 
 	gi.soundindex ("infantry/inflies1.wav");
-
-	sm_meat_index = gi.modelindex ("models/objects/gibs/sm_meat/tris.md2");
-	gi.modelindex ("models/objects/gibs/arm/tris.md2");
-	gi.modelindex ("models/objects/gibs/bone/tris.md2");
-	gi.modelindex ("models/objects/gibs/bone2/tris.md2");
-	gi.modelindex ("models/objects/gibs/chest/tris.md2");
-	gi.modelindex ("models/objects/gibs/skull/tris.md2");
-	gi.modelindex ("models/objects/gibs/head2/tris.md2");
 
 //
 // Setup light animation tables. 'a' is total darkness, 'z' is doublebright.

@@ -171,6 +171,7 @@ CL_RegisterTEntModels
 */
 void CL_RegisterTEntModels (void)
 {
+#if 0
 	cl_mod_explode = re.RegisterModel ("models/objects/explode/tris.md2");
 	cl_mod_smoke = re.RegisterModel ("models/objects/smoke/tris.md2");
 	cl_mod_flash = re.RegisterModel ("models/objects/flash/tris.md2");
@@ -203,6 +204,7 @@ re.RegisterPic ("a_grenades");
 	cl_mod_heatbeam = re.RegisterModel ("models/proj/beam/tris.md2");
 	cl_mod_monster_heatbeam = re.RegisterModel ("models/proj/widowbeam/tris.md2");
 //ROGUE
+#endif
 }	
 
 /*

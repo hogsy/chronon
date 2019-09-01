@@ -864,7 +864,7 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer) {
     ri.Sys_Error(ERR_DROP, "%s has wrong version number (%i should be %i)",
                  mod->name, version, ALIAS_VERSION);
 #else
-    Com_Printf("%s has wrong version number (%i should be %i)", mod->name,
+    Com_Printf("%s has wrong version number (%i should be %i)\n", mod->name,
                version, ALIAS_VERSION);
 #endif
   }
@@ -957,8 +957,14 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer) {
          (char *)pinmodel + pheader->ofs_skins,
          pheader->num_skins * MAX_SKINNAME);
   for (i = 0; i < pheader->num_skins; i++) {
-    mod->skins[i] = GL_FindImage(
-        (char *)pheader + pheader->ofs_skins + i * MAX_SKINNAME, it_skin);
+    char skin_path[MAX_QPATH];
+    snprintf(skin_path, sizeof(skin_path), "%s", mod->name);
+    strcpy(strrchr(skin_path, '/') + 1, (char*)pheader + pheader->ofs_skins + i * MAX_SKINNAME);
+    mod->skins[i] = GL_FindImage(skin_path, it_skin);
+
+    // PGM
+    mod->numframes = pheader->num_frames;
+    // PGM
   }
 
   mod->mins[0] = -32;
@@ -1063,14 +1069,6 @@ struct model_s *R_RegisterModel(char *name) {
       sprout = (dsprite_t *)mod->extradata;
       for (i = 0; i < sprout->numframes; i++)
         mod->skins[i] = GL_FindImage(sprout->frames[i].name, it_sprite);
-    } else if (mod->type == mod_alias) {
-      pheader = (dmdl_t *)mod->extradata;
-      for (i = 0; i < pheader->num_skins; i++)
-        mod->skins[i] = GL_FindImage(
-            (char *)pheader + pheader->ofs_skins + i * MAX_SKINNAME, it_skin);
-      // PGM
-      mod->numframes = pheader->num_frames;
-      // PGM
     } else if (mod->type == mod_brush) {
       for (i = 0; i < mod->numtexinfo; i++)
         mod->texinfo[i].image->registration_sequence = registration_sequence;

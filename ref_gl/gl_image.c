@@ -1357,7 +1357,7 @@ GL_FindImage
 Finds or loads the given image
 ===============
 */
-image_t	*GL_FindImage (char *name, imagetype_t type)
+image_t	*GL_FindImage (const char *name, imagetype_t type)
 {
 	image_t	*image;
 	int		i, len;
@@ -1380,37 +1380,63 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 		}
 	}
 
+  image = NULL;
+
 	//
 	// load the pic from disk
 	//
-	pic = NULL;
-	palette = NULL;
-	if (!strcmp(name+len-4, ".pcx"))
-	{
-		LoadPCX (name, &pic, &palette, &width, &height);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 8);
-	}
-	else if (!strcmp(name+len-4, ".wal"))
-	{
-		image = GL_LoadWal (name);
-	}
-	else if (!strcmp(name+len-4, ".tga"))
-	{
-		LoadTGA (name, &pic, &width, &height);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 32);
-	}
-	else
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
 
+  // Right, this is kinda gross but Anachronox seems to strip the extension
+  // from the filename and then load whatever standard formats it supports
 
-	if (pic)
-		free(pic);
-	if (palette)
-		free(palette);
+  typedef struct ImageLoader {
+    const char *extension;
+    unsigned int depth;
+    void(*Load8bpp)(char* filename, byte** pic, byte** palette, int* width, int* height);
+    void(*Load32bpp)(char* filename, byte** pic, int* width, int* height);
+  } ImageLoader;
+
+  ImageLoader loaders[] = {
+    { "pcx", 8, LoadPCX, NULL },
+    { "tga", 32, NULL, LoadTGA },
+    { NULL }
+  };
+
+  char uname[MAX_QPATH];
+  strcpy(uname, name);
+
+  for (unsigned int i = 0; i < ARRAY_LENGTH(loaders); ++i) {
+    if (loaders[i].extension == '\0') {
+      break;
+    }
+
+    uname[len - 3] = '\0';
+    strcat(uname, loaders[i].extension);
+
+    pic = NULL;
+    palette = NULL;
+    if (loaders[i].depth == 8) {
+      loaders[i].Load8bpp(uname, &pic, &palette, &width, &height);
+    } else {
+      loaders[i].Load32bpp(uname, &pic, &width, &height);
+    }
+
+    if (pic == NULL) {
+      continue;
+    }
+
+    image = GL_LoadPic(uname, pic, width, height, type, loaders[i].depth);
+    // HACK: store the original name for comparing later!
+    strcpy(image->name, name);
+  }
+
+  if (image == NULL) {
+    Com_Printf("WARNING: Failed to find \"%s\"!\n", uname);
+    return NULL;
+  }
+
+	free(pic);
+	free(palette);
 
 	return image;
 }

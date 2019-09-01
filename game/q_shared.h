@@ -74,6 +74,8 @@ typedef enum { false, true } qboolean;
 
 #define MAX_STRLENGTH 256
 
+#define ARRAY_LENGTH(a) (sizeof(a) / sizeof(*a))
+
 //
 // per-level limits
 //
