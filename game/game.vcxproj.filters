@@ -63,9 +63,6 @@
     <ClCompile Include="g_trigger.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_turret.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="g_utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,24 +73,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="m_berserk.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_boss2.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_boss3.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_boss31.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_boss32.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_brain.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_chick.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="m_flash.c">
@@ -108,18 +87,6 @@
     <ClCompile Include="m_flyer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_gladiator.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_gunner.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_hover.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_infantry.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="m_insane.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -127,21 +94,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="m_move.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_mutant.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_parasite.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_soldier.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_supertank.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="m_tank.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="p_client.c">
