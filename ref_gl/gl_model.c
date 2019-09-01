@@ -478,8 +478,8 @@ void CalcSurfaceExtents(msurface_t *s) {
     s->texturemins[i] = bmins[i] * 16;
     s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 
-    //		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 512 /* 256 */
-    //) 			ri.Sys_Error (ERR_DROP, "Bad surface extents");
+    //		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 512 /* 256
+    //*/ ) 			ri.Sys_Error (ERR_DROP, "Bad surface extents");
   }
 }
 
@@ -859,12 +859,17 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer) {
   pinmodel = (dmdl_t *)buffer;
 
   version = LittleLong(pinmodel->version);
-  if (version != ALIAS_VERSION)
+  if (version != ALIAS_VERSION) {
+#ifndef _DEBUG
     ri.Sys_Error(ERR_DROP, "%s has wrong version number (%i should be %i)",
                  mod->name, version, ALIAS_VERSION);
+#else
+    Com_Printf("%s has wrong version number (%i should be %i)", mod->name,
+               version, ALIAS_VERSION);
+#endif
+  }
 
   pheader = Hunk_Alloc(LittleLong(pinmodel->ofs_end));
-
   // byte swap the header fields and sanity check
   for (i = 0; i < sizeof(dmdl_t) / 4; i++)
     ((int *)pheader)[i] = LittleLong(((int *)buffer)[i]);
@@ -876,9 +881,6 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer) {
   if (pheader->num_xyz <= 0)
     ri.Sys_Error(ERR_DROP, "model %s has no vertices", mod->name);
 
-  if (pheader->num_xyz > MAX_VERTS)
-    ri.Sys_Error(ERR_DROP, "model %s has too many vertices", mod->name);
-
   if (pheader->num_st <= 0)
     ri.Sys_Error(ERR_DROP, "model %s has no st vertices", mod->name);
 
@@ -887,6 +889,10 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer) {
 
   if (pheader->num_frames <= 0)
     ri.Sys_Error(ERR_DROP, "model %s has no frames", mod->name);
+
+  if (pheader->resolution < 0 || pheader->resolution > 2) {
+    ri.Sys_Error(ERR_DROP, "model %s has invalid resolution", mod->name);
+  }
 
   //
   // load base s and t vertices (not used in gl version)
@@ -926,9 +932,15 @@ void Mod_LoadAliasModel(model_t *mod, void *buffer) {
       poutframe->scale[j] = LittleFloat(pinframe->scale[j]);
       poutframe->translate[j] = LittleFloat(pinframe->translate[j]);
     }
-    // verts are all 8 bit, so no swapping needed
-    memcpy(poutframe->verts, pinframe->verts,
-           pheader->num_xyz * sizeof(dtrivertx_t));
+
+    for (j = 0; j < pheader->num_xyz; ++j) {
+      for (unsigned int k = 0; k < 3; ++k) {
+        poutframe->verts[j].v[k] = pinframe->verts[j].v[k];
+      }
+
+      poutframe->verts[j].lightnormalindex =
+          LittleShort(pinframe->verts->lightnormalindex);
+    }
   }
 
   mod->type = mod_alias;

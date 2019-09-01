@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2019 Mark Sowden <markelswo@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -426,7 +427,6 @@ enum SurfaceFlag {
 #define AREA_TRIGGERS 2
 
 // plane_t structure
-// !!! if this is changed, it must be changed in asm code too !!!
 typedef struct cplane_s {
   vec3_t normal;
   float dist;

@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2019 Mark Sowden <markelswo@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../game/q_shared.h"
 
-#define ENGINE_NAME     "OpenAnox"
+#define ENGINE_NAME     "hosae"
 #define ENGINE_VERSION  4.00
 
 #define BASEDIRNAME "anoxdata"

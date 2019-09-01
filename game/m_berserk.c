@@ -426,7 +426,7 @@ void SP_monster_berserk (edict_t *self)
 	sound_search = gi.soundindex ("berserk/bersrch1.wav");
 	sound_sight = gi.soundindex ("berserk/sight.wav");
 
-	self->s.modelindex = gi.modelindex("models/boots/sewageboat.md2");
+	self->s.modelindex = gi.modelindex("models/monsters/ghostprat.md2");
 	VectorSet (self->mins, -16, -16, -24);
 	VectorSet (self->maxs, 16, 16, 32);
 	self->movetype = MOVETYPE_STEP;
