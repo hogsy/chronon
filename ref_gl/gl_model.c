@@ -1053,22 +1053,17 @@ R_RegisterModel
 @@@@@@@@@@@@@@@@@@@@@
 */
 struct model_s *R_RegisterModel( char *name ) {
-	model_t *mod;
-	int i;
-	dsprite_t *sprout;
-	dmdl_t *pheader;
-
-	mod = Mod_ForName( name, false );
+	model_t *mod = Mod_ForName( name, false );
 	if( mod ) {
 		mod->registration_sequence = registration_sequence;
 
 		// register any images used by the models
 		if( mod->type == mod_sprite ) {
-			sprout = (dsprite_t *)mod->extradata;
-			for( i = 0; i < sprout->numframes; i++ )
+			dsprite_t *sprout = (dsprite_t *)mod->extradata;
+			for( int i = 0; i < sprout->numframes; i++ )
 				mod->skins[ i ] = GL_FindImage( sprout->frames[ i ].name, it_sprite );
 		} else if( mod->type == mod_brush ) {
-			for( i = 0; i < mod->numtexinfo; i++ )
+			for( int i = 0; i < mod->numtexinfo; i++ )
 				mod->texinfo[ i ].image->registration_sequence = registration_sequence;
 		}
 	}

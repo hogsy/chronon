@@ -599,8 +599,6 @@ match.
 ============
 */
 void VID_CheckChanges(void) {
-  char name[100];
-
   if (win_noalttab->modified) {
     if (win_noalttab->value) {
       WIN_DisableAltTab();

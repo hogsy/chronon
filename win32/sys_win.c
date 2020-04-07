@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean s_win95;
 
 int starttime;
-int ActiveApp;
+qboolean ActiveApp;
 qboolean Minimized;
 
 static HANDLE hinput, houtput;

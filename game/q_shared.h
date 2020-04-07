@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <time.h>
 
@@ -53,7 +54,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 typedef unsigned char byte;
-typedef enum { false, true } qboolean;
+
+#ifndef __cplusplus
+#   include <stdbool.h>
+#endif
+typedef bool qboolean;
 
 #ifndef NULL
 #define NULL ((void *)0)
