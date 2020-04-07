@@ -808,7 +808,7 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 	} else
 		GL_ResampleTexture( data, width, height, scaled, scaled_width, scaled_height );
 
-	GL_LightScaleTexture( scaled, scaled_width, scaled_height, !mipmap );
+	//GL_LightScaleTexture( scaled, scaled_width, scaled_height, !mipmap );
 
 	if( qglColorTableEXT && gl_ext_palettedtexture->value && ( samples == gl_solid_format ) ) {
 		uploaded_paletted = true;
@@ -920,33 +920,35 @@ qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolea
 
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
-	} else {
-		for( i = 0; i < s; i++ ) {
-			p = data[ i ];
-			trans[ i ] = d_8to24table[ p ];
 
-			if( p == 255 ) {	// transparent, so scan around for another color
-				// to avoid alpha fringes
-				// FIXME: do a full flood fill so mips work...
-				if( i > width && data[ i - width ] != 255 )
-					p = data[ i - width ];
-				else if( i < s - width && data[ i + width ] != 255 )
-					p = data[ i + width ];
-				else if( i > 0 && data[ i - 1 ] != 255 )
-					p = data[ i - 1 ];
-				else if( i < s - 1 && data[ i + 1 ] != 255 )
-					p = data[ i + 1 ];
-				else
-					p = 0;
-				// copy rgb components
-				( (byte *)&trans[ i ] )[ 0 ] = ( (byte *)&d_8to24table[ p ] )[ 0 ];
-				( (byte *)&trans[ i ] )[ 1 ] = ( (byte *)&d_8to24table[ p ] )[ 1 ];
-				( (byte *)&trans[ i ] )[ 2 ] = ( (byte *)&d_8to24table[ p ] )[ 2 ];
-			}
+		return true;
+	} 
+
+	for( i = 0; i < s; i++ ) {
+		p = data[ i ];
+		trans[ i ] = d_8to24table[ p ];
+
+		if( p == 255 ) {	// transparent, so scan around for another color
+			// to avoid alpha fringes
+			// FIXME: do a full flood fill so mips work...
+			if( i > width && data[ i - width ] != 255 )
+				p = data[ i - width ];
+			else if( i < s - width && data[ i + width ] != 255 )
+				p = data[ i + width ];
+			else if( i > 0 && data[ i - 1 ] != 255 )
+				p = data[ i - 1 ];
+			else if( i < s - 1 && data[ i + 1 ] != 255 )
+				p = data[ i + 1 ];
+			else
+				p = 0;
+			// copy rgb components
+			( (byte *)&trans[ i ] )[ 0 ] = ( (byte *)&d_8to24table[ p ] )[ 0 ];
+			( (byte *)&trans[ i ] )[ 1 ] = ( (byte *)&d_8to24table[ p ] )[ 1 ];
+			( (byte *)&trans[ i ] )[ 2 ] = ( (byte *)&d_8to24table[ p ] )[ 2 ];
 		}
-
-		return GL_Upload32( trans, width, height, mipmap );
 	}
+
+	return GL_Upload32( trans, width, height, mipmap );
 }
 
 
