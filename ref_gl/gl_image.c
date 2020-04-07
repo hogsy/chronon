@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2020 Mark Sowden <markelswo@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -1073,9 +1074,10 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	} ImageLoader;
 
 	ImageLoader loaders[] = {
-		{ "pcx", 8, LoadPCX, NULL },
 		{ "tga", 32, NULL, LoadImage32 },
 		{ "png", 32, NULL, LoadImage32 },
+		{ "bmp", 32, NULL, LoadImage32 },
+		{ "pcx", 8, LoadPCX, NULL },
 		{ NULL }
 	};
 
