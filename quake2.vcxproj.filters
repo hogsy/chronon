@@ -224,7 +224,10 @@
     <ClInclude Include="win32\winquake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="anoxaux\interface.h">
+    <ClInclude Include="anoxaux\AuxInterface.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="anoxgfx\GfxInterface.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -240,6 +243,9 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\anoxaux.lib">
+      <Filter>Libraries</Filter>
+    </Library>
+    <Library Include="lib\anoxgfx.lib">
       <Filter>Libraries</Filter>
     </Library>
   </ItemGroup>

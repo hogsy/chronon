@@ -26,7 +26,7 @@
     <SccProjectName />
     <SccLocalPath />
     <ProjectGuid>{657269B0-1BF7-4263-AA18-710BFEA359EF}</ProjectGuid>
-    <ProjectName>OpenAnox</ProjectName>
+    <ProjectName>engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" Label="Configuration">
@@ -453,7 +453,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="anoxaux\interface.h" />
+    <ClInclude Include="anoxaux\AuxInterface.h" />
+    <ClInclude Include="anoxgfx\GfxInterface.h" />
     <ClInclude Include="client\anorms.h" />
     <ClInclude Include="client\cdaudio.h" />
     <ClInclude Include="client\client.h" />
@@ -498,6 +499,7 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\anoxaux.lib" />
+    <Library Include="lib\anoxgfx.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
