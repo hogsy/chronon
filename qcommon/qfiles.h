@@ -82,18 +82,18 @@ typedef struct {
 #define IDALIASHEADER (('2' << 24) + ('P' << 16) + ('D' << 8) + 'I')
 #define ALIAS_VERSION 15
 
-#define MAX_VERTS 2048
-#define MAX_MD2SKINS 32
-#define MAX_SKINNAME 64
+#define MAX_VERTS		2048
+#define MAX_MD2SKINS	32
+#define MAX_SKINNAME	64
 
 typedef struct Md2TaggedSurface {
-	char name[ 8 ];
-	unsigned int tri_idx;
+	char		name[ 8 ];
+	uint32_t	triangleIndex;
 } Md2TaggedSurface;
 
 typedef struct Md2MultipleSurfaceHeader {
-	int num_prims;
-	int ofs_prims;
+	int32_t numPrimitives;
+	int32_t primitivesOffset;
 } Md2MultipleSurfaceHeader;
 
 typedef struct Md2LodData {
@@ -101,30 +101,54 @@ typedef struct Md2LodData {
 } Md2LodData;
 
 typedef struct {
-	short s;
-	short t;
+	int16_t s;
+	int16_t t;
 } dstvert_t;
 
 typedef struct {
-	short index_xyz[ 3 ];
-	short index_st[ 3 ];
+	int16_t index_xyz[ 3 ];
+	int16_t index_st[ 3 ];
 } dtriangle_t;
 
 #pragma pack(push,1)
 
-typedef struct {
-	unsigned char v[ 3 ];  // scaled byte to fit in frame mins/maxs
-	unsigned short lightnormalindex;
-} dtrivertx_t;
+typedef struct Md2VertexGroup {
+	uint8_t		vertexIndices[ 3 ];
+	uint16_t	normalIndex;
+} Md2VertexGroup;
+
+typedef struct Md2FrameHeader {
+	float			scale[ 3 ];		// multiply byte verts by this
+	float			translate[ 3 ];	// then add this
+	char			name[ 16 ];		// frame name from grabbing
+	Md2VertexGroup	verts[ 1 ];		// variable sized
+} Md2FrameHeader;
+
+typedef struct Md2VertexGroup4 {
+	uint32_t	vertexIndices;
+	uint16_t	normalIndex;
+} Md2VertexGroup4;
+
+typedef struct Md2FrameHeader4 {
+	float			scale[ 3 ];		// multiply byte verts by this
+	float			translate[ 3 ];	// then add this
+	char			name[ 16 ];		// frame name from grabbing
+	Md2VertexGroup4	verts[ 1 ];		// variable sized
+} Md2FrameHeader4;
+
+typedef struct Md2VertexGroup6 {
+	uint16_t	vertexIndices[ 3 ];
+	uint16_t	normalIndex;
+} Md2VertexGroup6;
+
+typedef struct Md2FrameHeader6 {
+	float			scale[ 3 ];		// multiply byte verts by this
+	float			translate[ 3 ];	// then add this
+	char			name[ 16 ];		// frame name from grabbing
+	Md2VertexGroup6	verts[ 1 ];		// variable sized
+} Md2FrameHeader6;
 
 #pragma pack(pop)
-
-typedef struct {
-	float scale[ 3 ];        // multiply byte verts by this
-	float translate[ 3 ];    // then add this
-	char name[ 16 ];         // frame name from grabbing
-	dtrivertx_t verts[ 1 ];  // variable sized
-} daliasframe_t;
 
 // the glcmd format:
 // a positive integer starts a tristrip command, followed by that many
@@ -135,27 +159,27 @@ typedef struct {
 // and an integer vertex index.
 
 typedef struct {
-	int ident;
-	short version;
-	short resolution;
+	int32_t ident;
+	int16_t version;
+	int16_t resolution;
 
-	int skinwidth;
-	int skinheight;
-	int framesize;  // byte size of each frame
+	int32_t skinwidth;
+	int32_t skinheight;
+	int32_t framesize;  // byte size of each frame
 
-	int num_skins;
-	int num_xyz;
-	int num_st;  // greater than num_xyz for seams
-	int num_tris;
-	int num_glcmds;  // dwords in strip/fan command list
-	int num_frames;
+	int32_t num_skins;
+	int32_t num_xyz;
+	int32_t num_st;  // greater than num_xyz for seams
+	int32_t num_tris;
+	int32_t num_glcmds;  // dwords in strip/fan command list
+	int32_t num_frames;
 
-	int ofs_skins;   // each skin is a MAX_SKINNAME string
-	int ofs_st;      // byte offset from start for stverts
-	int ofs_tris;    // offset for dtriangles
-	int ofs_frames;  // offset for first frame
-	int ofs_glcmds;
-	int ofs_end;  // end of file
+	int32_t ofs_skins;   // each skin is a MAX_SKINNAME string
+	int32_t ofs_st;      // byte offset from start for stverts
+	int32_t ofs_tris;    // offset for dtriangles
+	int32_t ofs_frames;  // offset for first frame
+	int32_t ofs_glcmds;
+	int32_t ofs_end;  // end of file
 } dmdl_t;
 
 /*

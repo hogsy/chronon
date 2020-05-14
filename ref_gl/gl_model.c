@@ -212,7 +212,7 @@ model_t *Mod_ForName( char *name, qboolean crash ) {
 
 	switch( LittleLong( *(unsigned *)buf ) ) {
 	case IDALIASHEADER:
-		loadmodel->extradata = Hunk_Begin( 0x200000 );
+		loadmodel->extradata = Hunk_Begin( 0x500000 );
 		Mod_LoadAliasModel( mod, buf );
 		break;
 
@@ -846,15 +846,12 @@ Mod_LoadAliasModel
 =================
 */
 void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
-	int i, j;
-	dmdl_t *pinmodel, *pheader;
 	dstvert_t *pinst, *poutst;
-	dtriangle_t *pintri, *pouttri;
-	daliasframe_t *pinframe, *poutframe;
+	
 	int *pincmd, *poutcmd;
 	int version;
 
-	pinmodel = (dmdl_t *)buffer;
+	dmdl_t *pinmodel = (dmdl_t *)buffer;
 
 	version = LittleLong( pinmodel->version );
 	if( version != ALIAS_VERSION ) {
@@ -867,9 +864,9 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 #endif
 	}
 
-	pheader = Hunk_Alloc( LittleLong( pinmodel->ofs_end ) );
+	dmdl_t *pheader = Hunk_Alloc( LittleLong( pinmodel->ofs_end ) );
 	// byte swap the header fields and sanity check
-	for( i = 0; i < sizeof( dmdl_t ) / 4; i++ )
+	for( unsigned int i = 0; i < sizeof( dmdl_t ) / 4; i++ )
 		( (int *)pheader )[ i ] = LittleLong( ( (int *)buffer )[ i ] );
 
 	if( pheader->skinheight > MAX_LBM_HEIGHT )
@@ -897,8 +894,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	pinst = (dstvert_t *)( (byte *)pinmodel + pheader->ofs_st );
 	poutst = (dstvert_t *)( (byte *)pheader + pheader->ofs_st );
-
-	for( i = 0; i < pheader->num_st; i++ ) {
+	for( unsigned int i = 0; i < pheader->num_st; i++ ) {
 		poutst[ i ].s = LittleShort( pinst[ i ].s );
 		poutst[ i ].t = LittleShort( pinst[ i ].t );
 	}
@@ -906,11 +902,10 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	// load triangle lists
 	//
-	pintri = (dtriangle_t *)( (byte *)pinmodel + pheader->ofs_tris );
-	pouttri = (dtriangle_t *)( (byte *)pheader + pheader->ofs_tris );
-
-	for( i = 0; i < pheader->num_tris; i++ ) {
-		for( j = 0; j < 3; j++ ) {
+	dtriangle_t *pintri = (dtriangle_t *)( (byte *)pinmodel + pheader->ofs_tris );
+	dtriangle_t *pouttri = (dtriangle_t *)( (byte *)pheader + pheader->ofs_tris );
+	for( unsigned int i = 0; i < pheader->num_tris; i++ ) {
+		for( unsigned int j = 0; j < 3; j++ ) {
 			pouttri[ i ].index_xyz[ j ] = LittleShort( pintri[ i ].index_xyz[ j ] );
 			pouttri[ i ].index_st[ j ] = LittleShort( pintri[ i ].index_st[ j ] );
 		}
@@ -919,25 +914,65 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	// load the frames
 	//
-	for( i = 0; i < pheader->num_frames; i++ ) {
-		pinframe = (daliasframe_t *)( (byte *)pinmodel + pheader->ofs_frames +
-			i * pheader->framesize );
-		poutframe = (daliasframe_t *)( (byte *)pheader + pheader->ofs_frames +
-			i * pheader->framesize );
+	for( unsigned int i = 0; i < pheader->num_frames; i++ ) {
+		switch( pheader->resolution ) {
+		case 0:
+		{
+			Md2FrameHeader *pinframe = (Md2FrameHeader *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
+			Md2FrameHeader *poutframe = (Md2FrameHeader *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
+			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
 
-		memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
-		for( j = 0; j < 3; j++ ) {
-			poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
-			poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
-		}
-
-		for( j = 0; j < pheader->num_xyz; ++j ) {
-			for( unsigned int k = 0; k < 3; ++k ) {
-				poutframe->verts[ j ].v[ k ] = pinframe->verts[ j ].v[ k ];
+			for( unsigned int j = 0; j < 3; j++ ) {
+				poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
+				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
 			}
 
-			poutframe->verts[ j ].lightnormalindex =
-				LittleShort( pinframe->verts->lightnormalindex );
+			for( unsigned int j = 0; j < pheader->num_xyz; ++j ) {
+				for( unsigned int k = 0; k < 3; ++k ) {
+					poutframe->verts[ j ].vertexIndices[ k ] = pinframe->verts[ j ].vertexIndices[ k ];
+				}
+				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
+			}
+			break;
+		}
+		case 1:
+		{
+			Md2FrameHeader4 *pinframe = (Md2FrameHeader4 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
+			Md2FrameHeader4 *poutframe = (Md2FrameHeader4 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
+			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
+
+			for( unsigned int j = 0; j < 3; j++ ) {
+				poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
+				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
+			}
+
+			for( unsigned int j = 0; j < pheader->num_xyz; ++j ) {
+				poutframe->verts[ j ].vertexIndices = pinframe->verts[ j ].vertexIndices;
+				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
+			}
+			break;
+		}
+		case 2:
+		{
+			Md2FrameHeader6 *pinframe = (Md2FrameHeader6 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
+			Md2FrameHeader6 *poutframe = (Md2FrameHeader6 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
+			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
+
+			for( unsigned int j = 0; j < 3; j++ ) {
+				poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
+				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
+			}
+
+			for( unsigned int j = 0; j < pheader->num_xyz; ++j ) {
+				for( unsigned int k = 0; k < 3; ++k ) {
+					poutframe->verts[ j ].vertexIndices[ k ] = pinframe->verts[ j ].vertexIndices[ k ];
+				}
+				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
+			}
+			break;
+		}
+		default:
+			ri.Sys_Error( ERR_DROP, "Unhandled frame resolution %d in %s!\n", pheader->resolution, mod->name );
 		}
 	}
 
@@ -948,13 +983,13 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	pincmd = (int *)( (byte *)pinmodel + pheader->ofs_glcmds );
 	poutcmd = (int *)( (byte *)pheader + pheader->ofs_glcmds );
-	for( i = 0; i < pheader->num_glcmds; i++ ) poutcmd[ i ] = LittleLong( pincmd[ i ] );
+	for( unsigned int i = 0; i < pheader->num_glcmds; i++ ) poutcmd[ i ] = LittleLong( pincmd[ i ] );
 
 	// register all skins
 	memcpy( (char *)pheader + pheader->ofs_skins,
 		(char *)pinmodel + pheader->ofs_skins,
 		pheader->num_skins * MAX_SKINNAME );
-	for( i = 0; i < pheader->num_skins; i++ ) {
+	for( unsigned int i = 0; i < pheader->num_skins; i++ ) {
 		char skin_path[ MAX_QPATH ];
 		snprintf( skin_path, sizeof( skin_path ), "%s", mod->name );
 		strcpy( strrchr( skin_path, '/' ) + 1, (char *)pheader + pheader->ofs_skins + i * MAX_SKINNAME );
@@ -971,6 +1006,10 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	mod->maxs[ 0 ] = 32;
 	mod->maxs[ 1 ] = 32;
 	mod->maxs[ 2 ] = 32;
+
+	/* Okay, now that that's all out of the way, we need to do the fun new bits... */
+
+//Md2MultipleSurfaceHeader *pInSurfaces = ( int * )
 }
 
 /*

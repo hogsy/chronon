@@ -418,7 +418,7 @@ void SP_monster_berserk (edict_t *self)
 		return;
 	}
 
-	self->s.modelindex = gi.modelindex("models/monsters/armorguy.md2");
+	self->s.modelindex = gi.modelindex("models/newface/boots/model/boots.md2");
 	VectorSet (self->mins, -16, -16, -24);
 	VectorSet (self->maxs, 16, 16, 32);
 	self->movetype = MOVETYPE_STEP;

@@ -36,7 +36,7 @@ byte	*membase;
 int		hunkmaxsize;
 int		cursize;
 
-#define	VIRTUAL_ALLOC
+//#define	VIRTUAL_ALLOC
 
 void *Hunk_Begin (int maxsize)
 {
