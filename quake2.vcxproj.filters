@@ -16,6 +16,9 @@
     <Filter Include="Libraries">
       <UniqueIdentifier>{64d79d1d-0aae-453a-83b2-ab5f694b434d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\miniz">
+      <UniqueIdentifier>{c8fef068-da68-4b7d-b5d6-a09edd7b1498}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32\cd_win.c">
@@ -162,6 +165,9 @@
     <ClCompile Include="client\x86.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3rdparty\miniz\miniz.c">
+      <Filter>Source Files\miniz</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\anorms.h">
@@ -229,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="anoxgfx\GfxInterface.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\miniz\miniz.h">
+      <Filter>Source Files\miniz</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

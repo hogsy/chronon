@@ -20,17 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
-// define this to dissalow any data but the demo pak file
-//#define	NO_ADDONS
-
-// if a packfile directory differs from this, it is assumed to be hacked
-// Full version
-#define	PAK0_CHECKSUM	0x40e614e0
-// Demo
-//#define	PAK0_CHECKSUM	0xb2c6d7ea
-// OEM
-//#define	PAK0_CHECKSUM	0x78e135c
-
 /*
 =============================================================================
 
@@ -158,36 +147,7 @@ void FS_FCloseFile (FILE *f)
 */
 int	Developer_searchpath (int who)
 {
-	
-	int		ch;
-	// PMM - warning removal
-//	char	*start;
-	searchpath_t	*search;
-	
-	if (who == 1) // xatrix
-		ch = 'x';
-	else if (who == 2)
-		ch = 'r';
-
-	for (search = fs_searchpaths ; search ; search = search->next)
-	{
-		if (strstr (search->filename, "xatrix"))
-			return 1;
-
-		if (strstr (search->filename, "rogue"))
-			return 2;
-/*
-		start = strchr (search->filename, ch);
-
-		if (start == NULL)
-			continue;
-
-		if (strcmp (start ,"xatrix") == 0)
-			return (1);
-*/
-	}
-	return (0);
-
+	return 0;
 }
 
 
@@ -479,10 +439,6 @@ pack_t *FS_LoadPackFile (char *packfile)
 // crc the directory to check for modifications
 	checksum = Com_BlockChecksum ((void *)info, header.dirlen);
 
-#ifdef NO_ADDONS
-	if (checksum != PAK0_CHECKSUM)
-		return NULL;
-#endif
 // parse the directory
 	for (i=0 ; i<numpackfiles ; i++)
 	{

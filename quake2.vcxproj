@@ -259,6 +259,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="3rdparty\miniz\miniz.c" />
     <ClCompile Include="client\cl_cin.c">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug Alpha|Win32'"> /QA21164 /MTd /QAieee1   /QA21164 /MTd /QAieee1 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release Alpha|Win32'"> /QA21164 /QAieee1   /QA21164 /QAieee1 </AdditionalOptions>
@@ -453,6 +454,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\miniz\miniz.h" />
     <ClInclude Include="anoxaux\AuxInterface.h" />
     <ClInclude Include="anoxgfx\GfxInterface.h" />
     <ClInclude Include="client\anorms.h" />

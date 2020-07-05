@@ -21,21 +21,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 typedef unsigned long AFSFileHandle;
-typedef void* UnknownType;
+typedef void *UnknownType;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  void afsDumpLoadedFiles(void);
-  char* afsGetLastError(void);
-  char* afsGetFileAttr(char* path);
-  AFSFileHandle afsOpenFile(char* s1, char* s2);
-  int afsFreeFile(AFSFileHandle* fh);
-  int afsWriteFile(AFSFileHandle fh, UnknownType param_2, UnknownType param_3);
+	void afsDumpLoadedFiles( void );
+	char *afsGetLastError( void );
+	char *afsGetFileAttr( char *path );
+	AFSFileHandle afsOpenFile( char *s1, char *s2 );
+	int afsFreeFile( AFSFileHandle *fh );
+	int afsWriteFile( AFSFileHandle fh, UnknownType param_2, UnknownType param_3 );
 
-  int auxPerlHash(char* hash);
-  int auxSprintf(char* str, size_t size, char* format, ...);
+	int auxPerlHash( char *hash );
+	int auxSprintf( char *str, size_t size, char *format, ... );
 
 #ifdef __cplusplus
 };
