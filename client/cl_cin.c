@@ -575,6 +575,7 @@ SCR_PlayCinematic
 */
 void SCR_PlayCinematic (char *arg)
 {
+#if 0 /* revisit later? */
 	int		width, height;
 	byte	*palette;
 	char	name[MAX_OSPATH], *dot;
@@ -647,4 +648,8 @@ void SCR_PlayCinematic (char *arg)
 	cl.cinematicframe = 0;
 	cin.pic = SCR_ReadNextFrame ();
 	cl.cinematictime = Sys_Milliseconds ();
+#else
+	cl.cinematicframe = 0;
+	cl.cinematictime = 0;
+#endif
 }

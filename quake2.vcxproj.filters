@@ -19,6 +19,9 @@
     <Filter Include="Source Files\miniz">
       <UniqueIdentifier>{c8fef068-da68-4b7d-b5d6-a09edd7b1498}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{ecbe23de-6007-4359-adc3-3e38d67d3d24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32\cd_win.c">
@@ -167,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="3rdparty\miniz\miniz.c">
       <Filter>Source Files\miniz</Filter>
+    </ClCompile>
+    <ClCompile Include="qcommon\llist.c">
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

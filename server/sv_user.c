@@ -307,7 +307,6 @@ void SV_BeginDownload_f(void)
 	extern	cvar_t *allow_download_models;
 	extern	cvar_t *allow_download_sounds;
 	extern	cvar_t *allow_download_maps;
-	extern	int		file_from_pak; // ZOID did file come from pak?
 	int offset = 0;
 
 	name = Cmd_Argv(1);
@@ -349,10 +348,7 @@ void SV_BeginDownload_f(void)
 	if (offset > sv_client->downloadsize)
 		sv_client->downloadcount = sv_client->downloadsize;
 
-	if (!sv_client->download
-		// special check for maps, if it came from a pak file, don't allow
-		// download  ZOID
-		|| (strncmp(name, "maps/", 5) == 0 && file_from_pak))
+	if ( !sv_client->download )
 	{
 		Com_DPrintf ("Couldn't download %s to %s\n", name, sv_client->name);
 		if (sv_client->download) {

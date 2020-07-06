@@ -589,7 +589,6 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 	int				n;
 	char			*p;
 	struct sfx_s	*sfx;
-	FILE			*f;
 	char			model[MAX_QPATH];
 	char			sexedFilename[MAX_QPATH];
 	char			maleFilename[MAX_QPATH];
@@ -620,6 +619,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 	if (!sfx)
 	{
 		// no, so see if it exists
+		FILE *f;
 		FS_FOpenFile (&sexedFilename[1], &f);
 		if (f)
 		{

@@ -152,6 +152,7 @@
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>3rdparty\</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -372,6 +373,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug Alpha|Win32'"> /QA21164 /MTd /QAieee1   /QA21164 /MTd /QAieee1 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release Alpha|Win32'"> /QA21164 /QAieee1   /QA21164 /QAieee1 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="qcommon\llist.c" />
     <ClCompile Include="qcommon\md4.c">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug Alpha|Win32'"> /QA21164 /MTd /QAieee1   /QA21164 /MTd /QAieee1 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release Alpha|Win32'"> /QA21164 /QAieee1   /QA21164 /QAieee1 </AdditionalOptions>
