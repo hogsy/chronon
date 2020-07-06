@@ -90,8 +90,14 @@ static bool FS_MountPackage( FILE *filePtr, const char *identity, unsigned int t
 	}
 
 	PackageHandle *handle = &fs_packages[ type ];
+	strcpy( handle->packIdentity, identity );
+
 	handle->header = header;
 	handle->numFiles = numFiles;
+	
+	/* read in the table of contents */
+	handle->indices = Z_Malloc( sizeof( PackageIndex ) * handle->numFiles );
+	fread( handle->indices, sizeof( PackageIndex ), handle->numFiles, filePtr );
 
 	return true;
 }
@@ -757,15 +763,22 @@ static void FS_MountPackages( void ) {
 			char packPath[ MAX_OSPATH ];
 			Com_sprintf( packPath, sizeof( packPath ), "%s/%s", search->filename, rootDirectory );
 
-			if( !FS_LocalFileExists( packPath ) ) {
+			FILE *filePtr = fopen( packPath, "rb" );
+			if( filePtr == NULL ) {
 				continue;
 			}
 
-			FS_MountPackage( packPath, defaultPacks[ i ], i );
+			packLoaded = FS_MountPackage( filePtr, defaultPacks[ i ], i );
+
+			fclose( filePtr );
+
+			if( packLoaded ) {
+				break;
+			}
 		}
 
 		if( !packLoaded ) {
-			Com_Error( ERR_FATAL, "Failed to find package, \"%s\"!\n", rootDirectory );
+			Com_Error( ERR_FATAL, "Failed to load package, \"%s\"!\n", rootDirectory );
 		}
 	}
 }
