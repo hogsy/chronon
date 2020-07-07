@@ -618,6 +618,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 
 	if (!sfx)
 	{
+#if 0 /* todo: do we need this? */
 		// no, so see if it exists
 		FILE *f;
 		FS_FOpenFile (&sexedFilename[1], &f);
@@ -628,6 +629,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 			sfx = S_RegisterSound (sexedFilename);
 		}
 		else
+#endif
 		{
 			// no, revert to the male sound in the pak0.pak
 			Com_sprintf (maleFilename, sizeof(maleFilename), "player/%s/%s", "male", base+1);

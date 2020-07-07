@@ -25,7 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org>
 */
 
-#include <stdlib.h>
+#include "qcommon.h"
 
 typedef struct LinkedListNode {
 	struct LinkedListNode *next;
@@ -39,11 +39,11 @@ typedef struct LinkedList {
 } LinkedList;
 
 LinkedList *LL_CreateLinkedList( void ) {
-	return calloc( 1, sizeof( LinkedList ) );
+	return Z_Malloc( sizeof( LinkedList ) );
 }
 
 LinkedListNode *LL_InsertLinkedListNode( LinkedList *list, void *userPtr ) {
-	LinkedListNode *node = malloc( sizeof( LinkedListNode ) );
+	LinkedListNode *node = Z_Malloc( sizeof( LinkedListNode ) );
 	if( list->root == NULL ) {
 		list->root = node;
 	}
@@ -97,7 +97,7 @@ void LL_DestroyLinkedListNode( LinkedList *list, LinkedListNode *node ) {
 		list->ceiling = node->prev;
 	}
 
-	free( node );
+	Z_Free( node );
 }
 
 void LL_DestroyLinkedListNodes( LinkedList *list ) {
@@ -107,5 +107,5 @@ void LL_DestroyLinkedListNodes( LinkedList *list ) {
 void LL_DestroyLinkedList( LinkedList *list ) {
 	LL_DestroyLinkedListNodes( list );
 
-	free( list );
+	Z_Free( list );
 }

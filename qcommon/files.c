@@ -36,7 +36,7 @@ typedef struct PackageHeader {
 	char		identifier[ 4 ];	/* ADAT */
 	uint32_t	tocOffset;			/* table of contents */
 	uint32_t	tocLength;			/* table of contents length */
-	uint32_t	version;
+	uint32_t	version;			/* always appears to be 9 */
 } PackageHeader;
 
 typedef struct PackageIndex {
@@ -47,32 +47,55 @@ typedef struct PackageIndex {
 	uint32_t	u0;
 } PackageIndex;
 
-typedef struct PackageHandle {
-	char			packIdentity[ 32 ];	/* e.g., 'models' */
-	PackageHeader	header;				/* header data */
-	PackageIndex	*indices;			/* index data */
-	unsigned int	numFiles;			/* number of files within */
-} PackageHandle;
+typedef struct Package {
+	char			mappedDir[ 32 ];			/* e.g., 'models' */
+	char			path[ MAX_QPATH ];
+	PackageHeader	header;						/* header data */
+	PackageIndex *indices;					/* index data */
+	unsigned int	numFiles;					/* number of files within */
+	LinkedListNode *nodeIndex;
+} Package;
 
-enum {
-	PACK_BATTLE,
-	PACK_GAMEFLOW,
-	PACK_GRAPHICS,
-	PACK_MAPS,
-	PACK_MODELS,
-	PACK_OBJECTS,
-	PACK_PARTICLES,
-	PACK_SCRIPTS,
-	PACK_SOUND,
-	PACK_SPRITES,
-	PACK_TEXTURES,
+static int FS_GetPackageFileIndex( const Package *package, const char *fileName ) {
+	for( int i = 0; i < package->numFiles; ++i ) {
+		const PackageIndex *index = &package->indices[ i ];
+		if( Q_strncasecmp( index->name, fileName, sizeof( index->name ) ) == 0 ) {
+			return i;
+		}
+	}
 
-	MAX_PACKAGES
-};
+	return -1;
+}
 
-static PackageHandle fs_packages[ MAX_PACKAGES ]; /* list of Anachronox packages */
+static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName ) {
+	/* first, ensure that it's actually in the package file table */
+	int fileIndex = FS_GetPackageFileIndex( package, fileName );
+	if( fileIndex < 0 ) {
+		Com_Printf( "WARNING: Failed to find \"%s\" in package!\n", fileName );
+		return NULL;
+	}
 
-static bool FS_MountPackage( FILE *filePtr, const char *identity, unsigned int type ) {
+	/* now proceed to load that file */
+
+	FILE *filePtr = fopen( package->path, "rb" );
+	if( filePtr == NULL ) {
+		return NULL;
+	}
+
+
+}
+
+static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
+	if( filePtr == NULL ) {
+		Com_Printf( "WARNING: Invalid file handle!\n" );
+		return NULL;
+	}
+
+	if( identity == NULL || identity[ 0 ] == '\0' ) {
+		Com_Printf( "WARNING: Invalid package identity!\n" );
+		return NULL;
+	}
+
 	/* read in the header */
 	PackageHeader header;
 	fread( &header, sizeof( PackageHeader ), 1, filePtr );
@@ -80,43 +103,44 @@ static bool FS_MountPackage( FILE *filePtr, const char *identity, unsigned int t
 	/* and now ensure it's as desired! */
 	if( strncmp( header.identifier, "ADAT", sizeof( header.identifier ) ) != 0 ) {
 		Com_Printf( "WARNING: Invalid identifier, package returned \"%s\" rather than \"ADAT\"!\n", header.identifier );
-		return false;
+		return NULL;
+	}
+
+	if( header.version != 9 ) {
+		Com_Printf( "WARNING: Unexpected package version, \"%d\" (expected \"9\")!\n", header.version );
+		return NULL;
 	}
 
 	unsigned int numFiles = header.tocLength / sizeof( PackageIndex );
 	if( numFiles == 0 ) {
 		Com_Printf( "WARNING: Empty package!\n" );
-		return false;
+		return NULL;
 	}
 
-	PackageHandle *handle = &fs_packages[ type ];
-	strcpy( handle->packIdentity, identity );
+	Package *package = Z_Malloc( sizeof( Package ) );
+	strcpy( package->mappedDir, identity );
 
-	handle->header = header;
-	handle->numFiles = numFiles;
-	
-	/* read in the table of contents */
-	handle->indices = Z_Malloc( sizeof( PackageIndex ) * handle->numFiles );
-	fread( handle->indices, sizeof( PackageIndex ), handle->numFiles, filePtr );
+	package->header = header;
+	package->numFiles = numFiles;
 
-	return true;
+	/* seek to the table of contents */
+	fseek( filePtr, package->header.tocOffset, SEEK_SET );
+
+	/* and now read in the table of contents */
+	package->indices = Z_Malloc( sizeof( PackageIndex ) * package->numFiles );
+	if( fread( package->indices, sizeof( PackageIndex ), package->numFiles, filePtr ) != package->numFiles ) {
+		Com_Printf( "WARNING: Failed to read entire table of contents!\n" );
+		Z_Free( package->indices );
+		Z_Free( package );
+		return NULL;
+	}
+
+	return package;
 }
 
 //
 // in memory
 //
-
-typedef struct {
-	char	name[ MAX_QPATH ];
-	int		filepos, filelen;
-} packfile_t;
-
-typedef struct pack_s {
-	char	filename[ MAX_OSPATH ];
-	FILE *handle;
-	int		numfiles;
-	packfile_t *files;
-} pack_t;
 
 static char fs_gamedir[ MAX_OSPATH ];
 static cvar_t *fs_basedir;
@@ -124,18 +148,9 @@ static cvar_t *fs_cddir;
 
 cvar_t *fs_gamedirvar;
 
-typedef struct filelink_s {
-	struct filelink_s *next;
-	char *from;
-	int		fromlength;
-	char *to;
-} filelink_t;
-
-static filelink_t *fs_links;
-
 typedef struct searchpath_s {
-	char	filename[ MAX_OSPATH ];
-	pack_t *pack;		// only one of filename / pack will be used
+	char				filename[ MAX_OSPATH ];
+	LinkedList *packDirectories;
 	struct searchpath_s *next;
 } searchpath_t;
 
@@ -225,26 +240,21 @@ a seperate file.
 ===========
 */
 int FS_FOpenFile( const char *filename, FILE **file ) {
-#if 0 /* todo: decide if this is worth keeping */
-	// check for links first
-	for( filelink_t *link = fs_links; link; link = link->next ) {
-		if( !strncmp( filename, link->from, link->fromlength ) ) {
-			Com_sprintf( netpath, sizeof( netpath ), "%s%s", link->to, filename + link->fromlength );
-			*file = fopen( netpath, "rb" );
-			if( *file ) {
-				Com_DPrintf( "link file: %s\n", netpath );
-				return FS_filelength( *file );
-			}
-			return -1;
-		}
-	}
-#endif
-
 	/* search through the path, one element at a time */
 	for( searchpath_t *search = fs_searchpaths; search; search = search->next ) {
 		// check a file in the directory tree
 		char netpath[ MAX_OSPATH ];
 		Com_sprintf( netpath, sizeof( netpath ), "%s/%s", search->filename, filename );
+
+		Com_DPrintf( "FindFile: %s\n", netpath );
+
+		/* first, attempt to open it locally */
+		*file = fopen( netpath, "rb" );
+		if( *file ) {
+			return FS_GetFileLength( *file );
+		}
+
+		/* otherwise, load it from one of the anox packages */
 
 		/* Anachronox does some horrible path munging in order to determine which package
 		 * it should be loading from, so we need to grab the first dir here to do the same. */
@@ -259,22 +269,23 @@ int FS_FOpenFile( const char *filename, FILE **file ) {
 			rootFolder[ i ] = *p++;
 		}
 
-		strcat( rootFolder, ".dat" );
+		/* see if we have a match! */
+		LinkedListNode *node = LL_GetRootNode( search->packDirectories );
+		while( node != NULL ) {
+			Package *package = (Package *)LL_GetLinkedListNodeUserData( node );
+			if( package == NULL ) {
+				break;
+			}
 
-		/* and now see if that package actually exists or not */
-		if( FS_LocalFileExists( rootFolder ) ) {
-			/* now check whether or not we've already mounted it */
+			if( strcmp( rootFolder, package->mappedDir ) == 0 ) {
+				/* we've got a match! */
+				if( !FS_LoadPackageFile( package, p ) ) {
+					break;
+				}
+			}
 
+			node = LL_GetNextLinkedListNode( node );
 		}
-
-		/* otherwise just attempt to open it locally */
-		*file = fopen( netpath, "rb" );
-		if( !*file )
-			continue;
-
-		Com_DPrintf( "FindFile: %s\n", netpath );
-
-		return FS_GetFileLength( *file );
 	}
 
 	Com_DPrintf( "FindFile: can't find %s\n", filename );
@@ -335,15 +346,10 @@ Filename are reletive to the quake search path
 a null buffer will just return the file length without loading
 ============
 */
-int FS_LoadFile( char *path, void **buffer ) {
-	byte *buf;
-	int		len;
-
-	buf = NULL;	// quiet compiler warning
-
-// look for it in the filesystem or pack files
+int FS_LoadFile( const char *path, void **buffer ) {
+	// look for it in the filesystem or pack files
 	FILE *h;
-	len = FS_FOpenFile( path, &h );
+	int len = FS_FOpenFile( path, &h );
 	if( !h ) {
 		if( buffer )
 			*buffer = NULL;
@@ -355,7 +361,7 @@ int FS_LoadFile( char *path, void **buffer ) {
 		return len;
 	}
 
-	buf = Z_Malloc( len );
+	byte *buf = Z_Malloc( len );
 	*buffer = buf;
 
 	FS_Read( buf, len, h );
@@ -364,7 +370,6 @@ int FS_LoadFile( char *path, void **buffer ) {
 
 	return len;
 }
-
 
 /*
 =============
@@ -376,67 +381,6 @@ void FS_FreeFile( void *buffer ) {
 }
 
 /*
-=================
-FS_LoadPackFile
-
-Takes an explicit (not game tree related) path to a pak file.
-
-Loads the header and directory, adding the files at the beginning
-of the list so they override previous pack files.
-=================
-*/
-pack_t *FS_LoadPackFile( char *packfile ) {
-	dpackheader_t	header;
-	int				i;
-	packfile_t *newfiles;
-	int				numpackfiles;
-	pack_t *pack;
-	FILE *packhandle;
-	dpackfile_t		info[ MAX_FILES_IN_PACK ];
-	unsigned		checksum;
-
-	packhandle = fopen( packfile, "rb" );
-	if( !packhandle )
-		return NULL;
-
-	fread( &header, 1, sizeof( header ), packhandle );
-	if( LittleLong( header.ident ) != IDPAKHEADER )
-		Com_Error( ERR_FATAL, "%s is not a packfile", packfile );
-	header.dirofs = LittleLong( header.dirofs );
-	header.dirlen = LittleLong( header.dirlen );
-
-	numpackfiles = header.dirlen / sizeof( dpackfile_t );
-
-	if( numpackfiles > MAX_FILES_IN_PACK )
-		Com_Error( ERR_FATAL, "%s has %i files", packfile, numpackfiles );
-
-	newfiles = Z_Malloc( numpackfiles * sizeof( packfile_t ) );
-
-	fseek( packhandle, header.dirofs, SEEK_SET );
-	fread( info, 1, header.dirlen, packhandle );
-
-	// crc the directory to check for modifications
-	checksum = Com_BlockChecksum( (void *)info, header.dirlen );
-
-	// parse the directory
-	for( i = 0; i < numpackfiles; i++ ) {
-		strcpy( newfiles[ i ].name, info[ i ].name );
-		newfiles[ i ].filepos = LittleLong( info[ i ].filepos );
-		newfiles[ i ].filelen = LittleLong( info[ i ].filelen );
-	}
-
-	pack = Z_Malloc( sizeof( pack_t ) );
-	strcpy( pack->filename, packfile );
-	pack->handle = packhandle;
-	pack->numfiles = numpackfiles;
-	pack->files = newfiles;
-
-	Com_Printf( "Added packfile %s (%i files)\n", packfile, numpackfiles );
-	return pack;
-}
-
-
-/*
 ================
 FS_AddGameDirectory
 
@@ -444,34 +388,55 @@ Sets fs_gamedir, adds the directory to the head of the path,
 then loads and adds pak1.pak pak2.pak ...
 ================
 */
-void FS_AddGameDirectory( char *dir ) {
-	int				i;
-	searchpath_t *search;
-	pack_t *pak;
-	char			pakfile[ MAX_OSPATH ];
-
+static void FS_AddGameDirectory( const char *dir ) {
 	strcpy( fs_gamedir, dir );
 
 	//
 	// add the directory to the search path
 	//
-	search = Z_Malloc( sizeof( searchpath_t ) );
+	searchpath_t *search = Z_Malloc( sizeof( searchpath_t ) );
 	strcpy( search->filename, dir );
 	search->next = fs_searchpaths;
 	fs_searchpaths = search;
 
-	//
-	// add any pak files in the format pak0.pak pak1.pak, ...
-	//
-	for( i = 0; i < 10; i++ ) {
-		Com_sprintf( pakfile, sizeof( pakfile ), "%s/pak%i.pak", dir, i );
-		pak = FS_LoadPackFile( pakfile );
-		if( !pak )
+	/* now go ahead and mount all the default packages under that dir */
+
+	static const char *defaultPacks[] = {
+		"battle",
+		"gameflow",
+		"graphics",
+		"maps",
+		"models",
+		"objects",
+		"particles",
+		"scripts",
+		"sound",
+		"sprites",
+		"textures",
+	};
+
+	search->packDirectories = LL_CreateLinkedList();
+	for( uint8_t i = 0; i < ARRAY_LENGTH( defaultPacks ); ++i ) {
+		/* check a file in the directory tree, e.g. 'anoxdata/battle.dat' */
+		char packPath[ MAX_OSPATH ];
+		snprintf( packPath, sizeof( packPath ), "%s/%s.dat", search->filename, defaultPacks[ i ] );
+
+		FILE *filePtr = fopen( packPath, "rb" );
+		if( filePtr == NULL ) {
 			continue;
-		search = Z_Malloc( sizeof( searchpath_t ) );
-		search->pack = pak;
-		search->next = fs_searchpaths;
-		fs_searchpaths = search;
+		}
+
+		Package *package = FS_MountPackage( filePtr, defaultPacks[ i ], i );
+
+		fclose( filePtr );
+
+		if( package == NULL ) {
+			continue;
+		}
+
+		/* if it loaded successfully, add it onto the list */
+		package->nodeIndex = LL_InsertLinkedListNode( search->packDirectories, package );
+		strcpy( package->path, packPath );
 	}
 }
 
@@ -508,7 +473,6 @@ void FS_ExecAutoexec( void ) {
 	Sys_FindClose();
 }
 
-
 /*
 ================
 FS_SetGamedir
@@ -516,11 +480,10 @@ FS_SetGamedir
 Sets the gamedir and path to a different directory.
 ================
 */
-void FS_SetGamedir( char *dir ) {
+void FS_SetGamedir( const char *dir ) {
 	searchpath_t *next;
 
-	if( strstr( dir, ".." ) || strstr( dir, "/" )
-		|| strstr( dir, "\\" ) || strstr( dir, ":" ) ) {
+	if( strstr( dir, ".." ) || strstr( dir, "/" ) || strstr( dir, "\\" ) || strstr( dir, ":" ) ) {
 		Com_Printf( "Gamedir should be a single filename, not a path\n" );
 		return;
 	}
@@ -529,11 +492,21 @@ void FS_SetGamedir( char *dir ) {
 	// free up any current game dir info
 	//
 	while( fs_searchpaths != fs_base_searchpaths ) {
-		if( fs_searchpaths->pack ) {
-			fclose( fs_searchpaths->pack->handle );
-			Z_Free( fs_searchpaths->pack->files );
-			Z_Free( fs_searchpaths->pack );
+		if( fs_searchpaths->packDirectories != NULL ) {
+			/* go through the list and free up the user data */
+			LinkedListNode *node = LL_GetRootNode( fs_searchpaths->packDirectories );
+			while( node != NULL ) {
+				Package *package = (Package *)LL_GetLinkedListNodeUserData( node );
+
+				Z_Free( package->indices );
+				Z_Free( package );
+
+				node = LL_GetNextLinkedListNode( node );
+			}
+
+			LL_DestroyLinkedList( fs_searchpaths->packDirectories );
 		}
+
 		next = fs_searchpaths->next;
 		Z_Free( fs_searchpaths );
 		fs_searchpaths = next;
@@ -552,52 +525,12 @@ void FS_SetGamedir( char *dir ) {
 		Cvar_FullSet( "game", "", CVAR_LATCH | CVAR_SERVERINFO );
 	} else {
 		Cvar_FullSet( "gamedir", dir, CVAR_SERVERINFO | CVAR_NOSET );
-		if( fs_cddir->string[ 0 ] )
+		if( fs_cddir->string[ 0 ] ) {
 			FS_AddGameDirectory( va( "%s/%s", fs_cddir->string, dir ) );
+		}
+
 		FS_AddGameDirectory( va( "%s/%s", fs_basedir->string, dir ) );
 	}
-}
-
-
-/*
-================
-FS_Link_f
-
-Creates a filelink_t
-================
-*/
-void FS_Link_f( void ) {
-	filelink_t *l, **prev;
-
-	if( Cmd_Argc() != 3 ) {
-		Com_Printf( "USAGE: link <from> <to>\n" );
-		return;
-	}
-
-	// see if the link already exists
-	prev = &fs_links;
-	for( l = fs_links; l; l = l->next ) {
-		if( !strcmp( l->from, Cmd_Argv( 1 ) ) ) {
-			Z_Free( l->to );
-			if( !strlen( Cmd_Argv( 2 ) ) ) {	// delete it
-				*prev = l->next;
-				Z_Free( l->from );
-				Z_Free( l );
-				return;
-			}
-			l->to = CopyString( Cmd_Argv( 2 ) );
-			return;
-		}
-		prev = &l->next;
-	}
-
-	// create a new link
-	l = Z_Malloc( sizeof( *l ) );
-	l->next = fs_links;
-	fs_links = l;
-	l->from = CopyString( Cmd_Argv( 1 ) );
-	l->fromlength = strlen( l->from );
-	l->to = CopyString( Cmd_Argv( 2 ) );
 }
 
 /*
@@ -693,22 +626,26 @@ FS_Path_f
 ============
 */
 void FS_Path_f( void ) {
-	searchpath_t *s;
-	filelink_t *l;
-
 	Com_Printf( "Current search path:\n" );
-	for( s = fs_searchpaths; s; s = s->next ) {
+	for( searchpath_t *s = fs_searchpaths; s; s = s->next ) {
 		if( s == fs_base_searchpaths )
 			Com_Printf( "----------\n" );
-		if( s->pack )
-			Com_Printf( "%s (%i files)\n", s->pack->filename, s->pack->numfiles );
-		else
-			Com_Printf( "%s\n", s->filename );
-	}
 
-	Com_Printf( "\nLinks:\n" );
-	for( l = fs_links; l; l = l->next )
-		Com_Printf( "%s : %s\n", l->from, l->to );
+		Com_Printf( "%s\n", s->filename );
+
+		/* list out all the mounted packages */
+
+		Com_Printf( "Packages:\n" );
+
+		LinkedListNode *node = LL_GetRootNode( s->packDirectories );
+		while( node != NULL ) {
+			Package *package = (Package *)LL_GetLinkedListNodeUserData( node );
+
+			Com_Printf( " %s\n", package->mappedDir );
+
+			node = LL_GetNextLinkedListNode( node );
+		}
+	}
 }
 
 /*
@@ -719,70 +656,21 @@ Allows enumerating all of the directories in the search path
 ================
 */
 char *FS_NextPath( char *prevpath ) {
-	searchpath_t *s;
-	char *prev;
-
-	if( !prevpath )
+	if( !prevpath ) {
 		return fs_gamedir;
+	}
 
-	prev = fs_gamedir;
-	for( s = fs_searchpaths; s; s = s->next ) {
-		if( s->pack )
-			continue;
-		if( prevpath == prev )
+	char *prev = fs_gamedir;
+	for( searchpath_t *s = fs_searchpaths; s; s = s->next ) {
+		if( prevpath == prev ) {
 			return s->filename;
+		}
+
 		prev = s->filename;
 	}
 
 	return NULL;
 }
-
-static void FS_MountPackages( void ) {
-	static const char *defaultPacks[ MAX_PACKAGES ] = {
-		[ PACK_BATTLE ]		= "battle",
-		[ PACK_GAMEFLOW ]	= "gameflow",
-		[ PACK_GRAPHICS ]	= "graphics",
-		[ PACK_MAPS ]		= "maps",
-		[ PACK_MODELS ]		= "models",
-		[ PACK_OBJECTS ]	= "objects",
-		[ PACK_PARTICLES ]	= "particles",
-		[ PACK_SCRIPTS ]	= "scripts",
-		[ PACK_SOUND ]		= "sound",
-		[ PACK_SPRITES ]	= "sprites",
-		[ PACK_TEXTURES ]	= "textures",
-	};
-
-	for( uint8_t i = 0; i < ARRAY_LENGTH( defaultPacks ); ++i ) {
-		char rootDirectory[ 32 ];
-		snprintf( rootDirectory, sizeof( rootDirectory ), "%s.dat", defaultPacks[ i ] );
-
-		/* search through the path, one element at a time */
-		bool packLoaded = false;
-		for( searchpath_t *search = fs_searchpaths; search; search = search->next ) {
-			// check a file in the directory tree
-			char packPath[ MAX_OSPATH ];
-			Com_sprintf( packPath, sizeof( packPath ), "%s/%s", search->filename, rootDirectory );
-
-			FILE *filePtr = fopen( packPath, "rb" );
-			if( filePtr == NULL ) {
-				continue;
-			}
-
-			packLoaded = FS_MountPackage( filePtr, defaultPacks[ i ], i );
-
-			fclose( filePtr );
-
-			if( packLoaded ) {
-				break;
-			}
-		}
-
-		if( !packLoaded ) {
-			Com_Error( ERR_FATAL, "Failed to load package, \"%s\"!\n", rootDirectory );
-		}
-	}
-}
-
 
 /*
 ================
@@ -791,7 +679,6 @@ FS_InitFilesystem
 */
 void FS_InitFilesystem( void ) {
 	Cmd_AddCommand( "path", FS_Path_f );
-	Cmd_AddCommand( "link", FS_Link_f );
 	Cmd_AddCommand( "dir", FS_Dir_f );
 
 	//
@@ -821,9 +708,6 @@ void FS_InitFilesystem( void ) {
 	fs_gamedirvar = Cvar_Get( "game", "", CVAR_LATCH | CVAR_SERVERINFO );
 	if( fs_gamedirvar->string[ 0 ] )
 		FS_SetGamedir( fs_gamedirvar->string );
-
-	/* now go ahead and mount all the default packages */
-	FS_MountPackages();
 }
 
 
