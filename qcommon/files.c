@@ -56,21 +56,21 @@ typedef struct Package {
 	LinkedListNode *nodeIndex;
 } Package;
 
-static int FS_GetPackageFileIndex( const Package *package, const char *fileName ) {
+static const PackageIndex *FS_GetPackageFileIndex( const Package *package, const char *fileName ) {
 	for( int i = 0; i < package->numFiles; ++i ) {
 		const PackageIndex *index = &package->indices[ i ];
 		if( Q_strncasecmp( index->name, fileName, sizeof( index->name ) ) == 0 ) {
-			return i;
+			return index;
 		}
 	}
 
-	return -1;
+	return NULL;
 }
 
-static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName ) {
+static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName, uint32_t *fileLength ) {
 	/* first, ensure that it's actually in the package file table */
-	int fileIndex = FS_GetPackageFileIndex( package, fileName );
-	if( fileIndex < 0 ) {
+	const PackageIndex *fileIndex = FS_GetPackageFileIndex( package, fileName );
+	if( fileIndex == NULL ) {
 		Com_Printf( "WARNING: Failed to find \"%s\" in package!\n", fileName );
 		return NULL;
 	}
@@ -82,7 +82,38 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 		return NULL;
 	}
 
+	fseek( filePtr, fileIndex->offset, SEEK_SET );
 
+	/* now load the compressed block in */
+	uint8_t *cBuffer = Z_Malloc( fileIndex->compressedLength );
+	fread( cBuffer, sizeof( uint8_t ), fileIndex->compressedLength, filePtr );
+
+	/* decompress it */
+	uint8_t *dBuffer = Z_Malloc( fileIndex->length );
+	mz_ulong dLength;
+	if( mz_uncompress( dBuffer, &dLength, cBuffer, fileIndex->compressedLength ) != MZ_OK ) {
+		Z_Free( dBuffer );
+		Z_Free( cBuffer );
+
+		Com_Printf( "WARNING: Decompression of \"%s\" failed!\n", fileName );
+		return NULL;
+	}
+
+	/* free the compressed data */
+	Z_Free( cBuffer );
+
+	/* check for a size mismatch */
+	if( dLength != fileIndex->length ) {
+		Z_Free( dBuffer );
+
+		Com_Printf( "WARNING: Size mismatch (%d/%d) following decompression!\n", dLength, fileIndex->length );
+		return NULL;
+	}
+
+	*fileLength = fileIndex->length;
+
+	/* and finally, return the decompressed data */
+	return dBuffer;
 }
 
 static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
@@ -129,9 +160,10 @@ static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
 	/* and now read in the table of contents */
 	package->indices = Z_Malloc( sizeof( PackageIndex ) * package->numFiles );
 	if( fread( package->indices, sizeof( PackageIndex ), package->numFiles, filePtr ) != package->numFiles ) {
-		Com_Printf( "WARNING: Failed to read entire table of contents!\n" );
 		Z_Free( package->indices );
 		Z_Free( package );
+
+		Com_Printf( "WARNING: Failed to read entire table of contents!\n" );
 		return NULL;
 	}
 
@@ -169,6 +201,14 @@ The "game directory" is the first tree on the search path and directory that all
 
 */
 
+uint32_t FS_GetLocalFileLength( const char *path ) {
+	struct stat buf;
+	if( stat( path, &buf ) != 0 ) {
+		return 0;
+	}
+
+	return (uint32_t)buf.st_size;
+}
 
 /*
 ================
@@ -239,7 +279,7 @@ Used for streaming data out of either a pak file or
 a seperate file.
 ===========
 */
-int FS_FOpenFile( const char *filename, FILE **file ) {
+uint8_t *FS_FOpenFile( const char *filename, uint32_t *length ) {
 	/* search through the path, one element at a time */
 	for( searchpath_t *search = fs_searchpaths; search; search = search->next ) {
 		// check a file in the directory tree
@@ -249,9 +289,19 @@ int FS_FOpenFile( const char *filename, FILE **file ) {
 		Com_DPrintf( "FindFile: %s\n", netpath );
 
 		/* first, attempt to open it locally */
-		*file = fopen( netpath, "rb" );
-		if( *file ) {
-			return FS_GetFileLength( *file );
+		uint32_t fileLength = FS_GetLocalFileLength( filename );
+		if( fileLength > 0 ) {
+			FILE *filePtr = fopen( netpath, "rb" );
+			if( filePtr != NULL ) {
+				/* allocate a buffer and read the whole thing into memory */
+				uint8_t *buffer = Z_Malloc( fileLength );
+				fread( buffer, sizeof( uint8_t ), fileLength, filePtr );
+
+				fclose( filePtr );
+				*length = fileLength;
+
+				return buffer;
+			}
 		}
 
 		/* otherwise, load it from one of the anox packages */
@@ -279,9 +329,12 @@ int FS_FOpenFile( const char *filename, FILE **file ) {
 
 			if( strcmp( rootFolder, package->mappedDir ) == 0 ) {
 				/* we've got a match! */
-				if( !FS_LoadPackageFile( package, p ) ) {
-					break;
+				uint8_t *buffer = FS_LoadPackageFile( package, p, &fileLength );
+				if( buffer != NULL ) {
+					return buffer;
 				}
+
+				break;
 			}
 
 			node = LL_GetNextLinkedListNode( node );
@@ -290,8 +343,7 @@ int FS_FOpenFile( const char *filename, FILE **file ) {
 
 	Com_DPrintf( "FindFile: can't find %s\n", filename );
 
-	*file = NULL;
-	return -1;
+	return NULL;
 }
 
 /*
@@ -347,28 +399,34 @@ a null buffer will just return the file length without loading
 ============
 */
 int FS_LoadFile( const char *path, void **buffer ) {
+	/* retain compat for fetching the length, for now */
+	if( buffer == NULL ) {
+		FILE *filePtr = fopen( path, "rb" );
+		if( filePtr == NULL ) {
+			return -1;
+		}
+
+		int length = FS_GetFileLength( filePtr );
+
+		fclose( filePtr );
+
+		return length;
+	}
+
 	// look for it in the filesystem or pack files
 	FILE *h;
-	int len = FS_FOpenFile( path, &h );
-	if( !h ) {
-		if( buffer )
+	uint32_t length;
+	uint8_t *buf = FS_FOpenFile( path, &length, &h );
+	if( buf == NULL ) {
+		if( buffer != NULL ) {
 			*buffer = NULL;
+		}
 		return -1;
 	}
 
-	if( !buffer ) {
-		fclose( h );
-		return len;
-	}
-
-	byte *buf = Z_Malloc( len );
 	*buffer = buf;
 
-	FS_Read( buf, len, h );
-
-	fclose( h );
-
-	return len;
+	return length;
 }
 
 /*
@@ -426,7 +484,7 @@ static void FS_AddGameDirectory( const char *dir ) {
 			continue;
 		}
 
-		Package *package = FS_MountPackage( filePtr, defaultPacks[ i ], i );
+		Package *package = FS_MountPackage( filePtr, defaultPacks[ i ] );
 
 		fclose( filePtr );
 
