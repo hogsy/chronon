@@ -28,7 +28,7 @@ cvar_t	*cvar_vars;
 Cvar_InfoValidate
 ============
 */
-static qboolean Cvar_InfoValidate (char *s)
+static qboolean Cvar_InfoValidate ( const char *s)
 {
 	if (strstr (s, "\\"))
 		return false;
@@ -44,7 +44,7 @@ static qboolean Cvar_InfoValidate (char *s)
 Cvar_FindVar
 ============
 */
-static cvar_t *Cvar_FindVar (char *var_name)
+static cvar_t *Cvar_FindVar (const char *var_name)
 {
 	cvar_t	*var;
 	
@@ -124,7 +124,7 @@ If the variable already exists, the value will not be set
 The flags will be or'ed in if the variable exists.
 ============
 */
-cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
+cvar_t *Cvar_Get ( const char *var_name, const char *var_value, int flags)
 {
 	cvar_t	*var;
 	
@@ -285,7 +285,7 @@ cvar_t *Cvar_Set (char *var_name, char *value)
 Cvar_FullSet
 ============
 */
-cvar_t *Cvar_FullSet (char *var_name, char *value, int flags)
+cvar_t *Cvar_FullSet ( const char *var_name, const char *value, int flags)
 {
 	cvar_t	*var;
 	

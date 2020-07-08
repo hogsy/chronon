@@ -222,7 +222,7 @@ void Com_PageInMemory(byte *buffer, int size);
 // portable case insensitive compare
 int Q_stricmp(char *s1, char *s2);
 int Q_strcasecmp(char *s1, char *s2);
-int Q_strncasecmp(char *s1, char *s2, int n);
+int Q_strncasecmp( const char *s1, const char *s2, int n);
 
 //=============================================
 
