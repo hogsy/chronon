@@ -234,6 +234,9 @@ The "game directory" is the first tree on the search path and directory that all
 
 */
 
+/**
+ * Stat a file to fetch it's size. Only works for local files.
+ */
 int FS_GetLocalFileLength( const char *path ) {
 	struct stat buf;
 	if( stat( path, &buf ) != 0 ) {
@@ -244,31 +247,14 @@ int FS_GetLocalFileLength( const char *path ) {
 }
 
 /*
-================
-FS_filelength
-================
-*/
-int FS_GetFileLength( FILE *f ) {
-	int pos = ftell( f );
-	fseek( f, 0, SEEK_END );
-	int end = ftell( f );
-	fseek( f, pos, SEEK_SET );
-
-	return end;
-}
-
-
-/*
 ============
 FS_CreatePath
 
 Creates any directories needed to store the given filename
 ============
 */
-void	FS_CreatePath( char *path ) {
-	char *ofs;
-
-	for( ofs = path + 1; *ofs; ofs++ ) {
+void FS_CreatePath( char *path ) {
+	for( char *ofs = path + 1; *ofs; ofs++ ) {
 		if( *ofs == '/' ) {	// create the directory
 			*ofs = 0;
 			Sys_Mkdir( path );
@@ -278,7 +264,7 @@ void	FS_CreatePath( char *path ) {
 }
 
 /**
- * Check if the given file exists locally.
+ * Check if the given file exists locally. Only works for local files.
  */
 bool FS_LocalFileExists( const char *path ) {
 	struct stat stats;

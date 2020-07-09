@@ -1170,7 +1170,6 @@ Draw_GetPalette
 ===============
 */
 int Draw_GetPalette( void ) {
-	#if 0
 	int		i;
 	int		r, g, b;
 	unsigned	v;
@@ -1179,9 +1178,9 @@ int Draw_GetPalette( void ) {
 
 	// get the palette
 
-	LoadPCX( "pics/colormap.pcx", &pic, &pal, &width, &height );
+	LoadPCX( "graphics/colormap.pcx", &pic, &pal, &width, &height );
 	if( !pal )
-		ri.Sys_Error( ERR_FATAL, "Couldn't load pics/colormap.pcx" );
+		ri.Sys_Error( ERR_FATAL, "Couldn't load graphics/colormap.pcx" );
 
 	for( i = 0; i < 256; i++ ) {
 		r = pal[ i * 3 + 0 ];
@@ -1196,7 +1195,6 @@ int Draw_GetPalette( void ) {
 
 	free( pic );
 	free( pal );
-	#endif
 
 	return 0;
 }
