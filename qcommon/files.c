@@ -56,9 +56,12 @@ typedef struct Package {
 	LinkedListNode *nodeIndex;
 } Package;
 
+/**
+ * Convert back-slashes to forward slashes, to play nice with our packages.
+ */
 static void FS_CanonicalisePath( char *path ) {
-	while ( *path != '\0' ) {
-		if ( *path == '\\' ) {
+	while( *path != '\0' ) {
+		if( *path == '\\' ) {
 			*path = '/';
 		}
 
@@ -66,6 +69,9 @@ static void FS_CanonicalisePath( char *path ) {
 	}
 }
 
+/**
+ * Search for the given file within a package and return it's index.
+ */
 static const PackageIndex *FS_GetPackageFileIndex( const Package *package, const char *fileName ) {
 	for( int i = 0; i < package->numFiles; ++i ) {
 		const PackageIndex *index = &package->indices[ i ];
@@ -77,6 +83,27 @@ static const PackageIndex *FS_GetPackageFileIndex( const Package *package, const
 	return NULL;
 }
 
+/**
+ * Decompress the given file and carry out validation.
+ */
+static bool FS_DecompressFile( const uint8_t *srcBuffer, size_t srcLength, uint8_t *dstBuffer, size_t *dstLength, size_t expectedLength ) {
+	int returnCode = mz_uncompress( dstBuffer, (mz_ulong *)dstLength, srcBuffer, srcLength );
+	if( returnCode != MZ_OK ) {
+		Com_Printf( "Failed to decompress data, return code \"%d\"!\n", returnCode );
+		return false;
+	}
+
+	if( *dstLength != expectedLength ) {
+		Com_Printf( "Unexpected size following decompression, %d vs %d!\n", *dstLength, expectedLength );
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Load a file from the given package, and decompress the data.
+ */
 static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName, uint32_t *fileLength ) {
 	/* first, ensure that it's actually in the package file table */
 	const PackageIndex *fileIndex = FS_GetPackageFileIndex( package, fileName );
@@ -95,36 +122,26 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 	fseek( filePtr, fileIndex->offset, SEEK_SET );
 
 	/* now load the compressed block in */
-	uint8_t *cBuffer = Z_Malloc( fileIndex->compressedLength );
-	fread( cBuffer, sizeof( uint8_t ), fileIndex->compressedLength, filePtr );
+	uint8_t *srcBuffer = Z_Malloc( fileIndex->compressedLength );
+	fread( srcBuffer, sizeof( uint8_t ), fileIndex->compressedLength, filePtr );
 
 	/* decompress it */
-	uint8_t *dBuffer = Z_Malloc( fileIndex->length );
-	mz_ulong dLength;
-	int returnCode = mz_uncompress( dBuffer, &dLength, cBuffer, fileIndex->compressedLength );
-	if( returnCode != MZ_OK ) {
-		Z_Free( dBuffer );
-		Z_Free( cBuffer );
 
-		Com_Printf( "WARNING: Decompression of \"%s\" failed!\n", fileName );
-		return NULL;
+	uint8_t *dstBuffer = Z_Malloc( fileIndex->length );
+	size_t dstLength = fileIndex->length;
+
+	bool status = FS_DecompressFile( srcBuffer, fileIndex->compressedLength, dstBuffer, &dstLength, fileIndex->length );
+
+	Z_Free( srcBuffer );
+
+	if( status ) {
+		*fileLength = dstLength;
+		return dstBuffer;
 	}
 
-	/* free the compressed data */
-	Z_Free( cBuffer );
+	Z_Free( dstBuffer );
 
-	/* check for a size mismatch */
-	if( dLength != fileIndex->length ) {
-		Z_Free( dBuffer );
-
-		Com_Printf( "WARNING: Size mismatch (%d/%d) following decompression!\n", dLength, fileIndex->length );
-		return NULL;
-	}
-
-	*fileLength = fileIndex->length;
-
-	/* and finally, return the decompressed data */
-	return dBuffer;
+	return NULL;
 }
 
 static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
@@ -179,7 +196,7 @@ static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
 	}
 
 	/* flip back slash to forward */
-	for ( unsigned int i = 0; i < package->numFiles; ++i ) {
+	for( unsigned int i = 0; i < package->numFiles; ++i ) {
 		FS_CanonicalisePath( package->indices[ i ].name );
 	}
 
@@ -417,7 +434,7 @@ int FS_LoadFile( const char *path, void **buffer ) {
 	}
 
 	/* retain compat for fetching the length, for now */
-	if ( buffer == NULL ) {
+	if( buffer == NULL ) {
 		Z_Free( buf );
 
 		return length;
