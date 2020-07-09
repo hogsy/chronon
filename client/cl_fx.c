@@ -1993,8 +1993,6 @@ void CL_TrapParticles (entity_t *ent)
 	vec3_t		vec;
 	vec3_t		start, end;
 	float		len;
-	int			j;
-	cparticle_t	*p;
 	int			dec;
 
 	ent->origin[2]-=14;
@@ -2016,7 +2014,7 @@ void CL_TrapParticles (entity_t *ent)
 
 		if (!free_particles)
 			return;
-		p = free_particles;
+		cparticle_t *p = free_particles;
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
@@ -2027,7 +2025,7 @@ void CL_TrapParticles (entity_t *ent)
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.3+frand()*0.2);
 		p->color = 0xe0;
-		for (j=0 ; j<3 ; j++)
+		for (int j=0 ; j<3 ; j++)
 		{
 			p->org[j] = move[j] + crand();
 			p->vel[j] = crand()*15;
@@ -2039,10 +2037,6 @@ void CL_TrapParticles (entity_t *ent)
 	}
 
 	{
-
-	
-	int			i, j, k;
-	cparticle_t	*p;
 	float		vel;
 	vec3_t		dir;
 	vec3_t		org;
@@ -2052,13 +2046,13 @@ void CL_TrapParticles (entity_t *ent)
 	VectorCopy (ent->origin, org);
 
 
-	for (i=-2 ; i<=2 ; i+=4)
-		for (j=-2 ; j<=2 ; j+=4)
-			for (k=-2 ; k<=4 ; k+=4)
+	for (int i=-2 ; i<=2 ; i+=4)
+		for (int j=-2 ; j<=2 ; j+=4)
+			for (int k=-2 ; k<=4 ; k+=4)
 			{
 				if (!free_particles)
 					return;
-				p = free_particles;
+				cparticle_t *p = free_particles;
 				free_particles = p->next;
 				p->next = active_particles;
 				active_particles = p;
@@ -2183,7 +2177,7 @@ void CL_AddParticles (void)
 {
 	cparticle_t		*p, *next;
 	float			alpha;
-	float			time, time2;
+	float			time = 0.0f, time2;
 	vec3_t			org;
 	int				color;
 	cparticle_t		*active, *tail;
@@ -2225,7 +2219,7 @@ void CL_AddParticles (void)
 			alpha = 1;
 		color = p->color;
 
-		time2 = time*time;
+		time2 = time * time;
 
 		org[0] = p->org[0] + p->vel[0]*time + p->accel[0]*time2;
 		org[1] = p->org[1] + p->vel[1]*time + p->accel[1]*time2;
