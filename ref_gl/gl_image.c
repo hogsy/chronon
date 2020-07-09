@@ -1170,6 +1170,7 @@ Draw_GetPalette
 ===============
 */
 int Draw_GetPalette( void ) {
+	#if 0
 	int		i;
 	int		r, g, b;
 	unsigned	v;
@@ -1195,6 +1196,7 @@ int Draw_GetPalette( void ) {
 
 	free( pic );
 	free( pal );
+	#endif
 
 	return 0;
 }

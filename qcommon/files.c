@@ -56,6 +56,16 @@ typedef struct Package {
 	LinkedListNode *nodeIndex;
 } Package;
 
+static void FS_CanonicalisePath( char *path ) {
+	while ( *path != '\0' ) {
+		if ( *path == '\\' ) {
+			*path = '/';
+		}
+
+		path++;
+	}
+}
+
 static const PackageIndex *FS_GetPackageFileIndex( const Package *package, const char *fileName ) {
 	for( int i = 0; i < package->numFiles; ++i ) {
 		const PackageIndex *index = &package->indices[ i ];
@@ -91,7 +101,8 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 	/* decompress it */
 	uint8_t *dBuffer = Z_Malloc( fileIndex->length );
 	mz_ulong dLength;
-	if( mz_uncompress( dBuffer, &dLength, cBuffer, fileIndex->compressedLength ) != MZ_OK ) {
+	int returnCode = mz_uncompress( dBuffer, &dLength, cBuffer, fileIndex->compressedLength );
+	if( returnCode != MZ_OK ) {
 		Z_Free( dBuffer );
 		Z_Free( cBuffer );
 
@@ -167,6 +178,11 @@ static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
 		return NULL;
 	}
 
+	/* flip back slash to forward */
+	for ( unsigned int i = 0; i < package->numFiles; ++i ) {
+		FS_CanonicalisePath( package->indices[ i ].name );
+	}
+
 	return package;
 }
 
@@ -201,13 +217,13 @@ The "game directory" is the first tree on the search path and directory that all
 
 */
 
-uint32_t FS_GetLocalFileLength( const char *path ) {
+int FS_GetLocalFileLength( const char *path ) {
 	struct stat buf;
 	if( stat( path, &buf ) != 0 ) {
-		return 0;
+		return -1;
 	}
 
-	return (uint32_t)buf.st_size;
+	return (int)buf.st_size;
 }
 
 /*
@@ -244,19 +260,6 @@ void	FS_CreatePath( char *path ) {
 	}
 }
 
-
-/*
-==============
-FS_FCloseFile
-
-For some reason, other dll's can't just cal fclose()
-on files returned by FS_FOpenFile...
-==============
-*/
-void FS_FCloseFile( FILE *f ) {
-	fclose( f );
-}
-
 /**
  * Check if the given file exists locally.
  */
@@ -286,11 +289,13 @@ uint8_t *FS_FOpenFile( const char *filename, uint32_t *length ) {
 		char netpath[ MAX_OSPATH ];
 		Com_sprintf( netpath, sizeof( netpath ), "%s/%s", search->filename, filename );
 
+		FS_CanonicalisePath( netpath );
+
 		Com_DPrintf( "FindFile: %s\n", netpath );
 
 		/* first, attempt to open it locally */
-		uint32_t fileLength = FS_GetLocalFileLength( filename );
-		if( fileLength > 0 ) {
+		uint32_t fileLength = FS_GetLocalFileLength( netpath );
+		if( fileLength >= 0 ) {
 			FILE *filePtr = fopen( netpath, "rb" );
 			if( filePtr != NULL ) {
 				/* allocate a buffer and read the whole thing into memory */
@@ -310,14 +315,15 @@ uint8_t *FS_FOpenFile( const char *filename, uint32_t *length ) {
 		 * it should be loading from, so we need to grab the first dir here to do the same. */
 		char rootFolder[ 32 ];
 		memset( rootFolder, 0, sizeof( rootFolder ) );
-		char *p = netpath;
+		const char *p = filename;
 		for( unsigned int i = 0; i < sizeof( rootFolder ) - 4; ++i ) {
-			if( *p == '\0' || *p == '\\' || *p == '/' ) {
+			if( *p == '\0' || *p == '/' ) {
 				break;
 			}
 
 			rootFolder[ i ] = *p++;
 		}
+		p++;
 
 		/* see if we have a match! */
 		LinkedListNode *node = LL_GetRootNode( search->packDirectories );
@@ -399,29 +405,22 @@ a null buffer will just return the file length without loading
 ============
 */
 int FS_LoadFile( const char *path, void **buffer ) {
-	/* retain compat for fetching the length, for now */
-	if( buffer == NULL ) {
-		FILE *filePtr = fopen( path, "rb" );
-		if( filePtr == NULL ) {
-			return -1;
-		}
-
-		int length = FS_GetFileLength( filePtr );
-
-		fclose( filePtr );
-
-		return length;
-	}
-
 	// look for it in the filesystem or pack files
-	FILE *h;
 	uint32_t length;
-	uint8_t *buf = FS_FOpenFile( path, &length, &h );
+	uint8_t *buf = FS_FOpenFile( path, &length );
 	if( buf == NULL ) {
 		if( buffer != NULL ) {
 			*buffer = NULL;
 		}
+
 		return -1;
+	}
+
+	/* retain compat for fetching the length, for now */
+	if ( buffer == NULL ) {
+		Z_Free( buf );
+
+		return length;
 	}
 
 	*buffer = buf;
