@@ -108,7 +108,6 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 	/* first, ensure that it's actually in the package file table */
 	const PackageIndex *fileIndex = FS_GetPackageFileIndex( package, fileName );
 	if( fileIndex == NULL ) {
-		Com_Printf( "WARNING: Failed to find \"%s\" in package!\n", fileName );
 		return NULL;
 	}
 
@@ -116,6 +115,7 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 
 	FILE *filePtr = fopen( package->path, "rb" );
 	if( filePtr == NULL ) {
+		Com_Printf( "WARNING: Failed to open package \"%s\"!\n", package->path );
 		return NULL;
 	}
 
