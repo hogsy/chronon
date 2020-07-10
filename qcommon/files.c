@@ -134,7 +134,19 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 
 	Z_Free( srcBuffer );
 
+	fclose( filePtr );
+
 	if( status ) {
+#if 0 /* write it out so we can make sure it's all good! */
+		//char outFileName[ MAX_QPATH ];
+		//snprintf( outFileName, sizeof( outFileName ), "debug/%s.file", rand() % 256 );
+		FILE *outFile = fopen( fileName, "wb" );
+		if ( outFile != NULL ) {
+			fwrite( dstBuffer, sizeof( uint8_t ), dstLength, outFile );
+			fclose( outFile );
+		}
+#endif
+
 		*fileLength = dstLength;
 		return dstBuffer;
 	}
@@ -338,7 +350,7 @@ uint8_t *FS_FOpenFile( const char *filename, uint32_t *length ) {
 
 			if( strcmp( rootFolder, package->mappedDir ) == 0 ) {
 				/* we've got a match! */
-				uint8_t *buffer = FS_LoadPackageFile( package, p, &fileLength );
+				uint8_t *buffer = FS_LoadPackageFile( package, p, length );
 				if( buffer != NULL ) {
 					return buffer;
 				}
