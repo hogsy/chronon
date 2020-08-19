@@ -23,16 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <stdio.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include <math.h>
-
-#ifndef __linux__
-#ifndef GL_COLOR_INDEX8_EXT
-#define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX
-#endif
-#endif
 
 #include "../client/ref.h"
 
@@ -313,7 +304,7 @@ void GL_ResampleTexture(unsigned* in, int inwidth, int inheight, unsigned* out,
 
 struct image_s* R_RegisterSkin(char* name);
 
-void LoadPCX(char* filename, byte** pic, byte** palette, int* width,
+void LoadPCX( const char* filename, byte** pic, byte** palette, int* width,
              int* height);
 image_t* GL_LoadPic(char* name, byte* pic, int width, int height,
                     imagetype_t type, int bits);
@@ -341,42 +332,9 @@ void GL_DrawParticles(int n, const particle_t particles[],
 ** GL config stuff
 */
 #define GL_RENDERER_VOODOO 0x00000001
-#define GL_RENDERER_VOODOO2 0x00000002
-#define GL_RENDERER_VOODOO_RUSH 0x00000004
-#define GL_RENDERER_BANSHEE 0x00000008
-#define GL_RENDERER_3DFX 0x0000000F
-
-#define GL_RENDERER_PCX1 0x00000010
-#define GL_RENDERER_PCX2 0x00000020
-#define GL_RENDERER_PMX 0x00000040
-#define GL_RENDERER_POWERVR 0x00000070
-
-#define GL_RENDERER_PERMEDIA2 0x00000100
-#define GL_RENDERER_GLINT_MX 0x00000200
-#define GL_RENDERER_GLINT_TX 0x00000400
-#define GL_RENDERER_3DLABS_MISC 0x00000800
-#define GL_RENDERER_3DLABS 0x00000F00
-
-#define GL_RENDERER_REALIZM 0x00001000
-#define GL_RENDERER_REALIZM2 0x00002000
 #define GL_RENDERER_INTERGRAPH 0x00003000
-
-#define GL_RENDERER_3DPRO 0x00004000
-#define GL_RENDERER_REAL3D 0x00008000
-#define GL_RENDERER_RIVA128 0x00010000
-#define GL_RENDERER_DYPIC 0x00020000
-
-#define GL_RENDERER_V1000 0x00040000
-#define GL_RENDERER_V2100 0x00080000
-#define GL_RENDERER_V2200 0x00100000
 #define GL_RENDERER_RENDITION 0x001C0000
-
-#define GL_RENDERER_O2 0x00100000
-#define GL_RENDERER_IMPACT 0x00200000
 #define GL_RENDERER_RE 0x00400000
-#define GL_RENDERER_IR 0x00800000
-#define GL_RENDERER_SGI 0x00F00000
-
 #define GL_RENDERER_MCD 0x01000000
 #define GL_RENDERER_OTHER 0x80000000
 
@@ -395,8 +353,6 @@ typedef struct {
   qboolean fullscreen;
 
   int prev_mode;
-
-  unsigned char* d_16to8table;
 
   int lightmap_textures;
 

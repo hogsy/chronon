@@ -60,6 +60,13 @@ typedef unsigned char byte;
 #endif
 typedef bool qboolean;
 
+#define Q_unused( ... ) ( void )( __VA_ARGS__ )
+
+#define Q_ByteToFloat( a ) ( float )( a / 255.0f )
+#define Q_FloatToByte( a ) ( uint8_t )( a * 255 )
+
+#define ARRAY_LENGTH(a) (sizeof(a) / sizeof(*a))
+
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
@@ -78,8 +85,6 @@ typedef bool qboolean;
 #define MAX_OSPATH 128  // max length of a filesystem pathname
 
 #define MAX_STRLENGTH 256
-
-#define ARRAY_LENGTH(a) (sizeof(a) / sizeof(*a))
 
 //
 // per-level limits
@@ -223,6 +228,8 @@ void Com_PageInMemory(byte *buffer, int size);
 int Q_stricmp(char *s1, char *s2);
 int Q_strcasecmp(char *s1, char *s2);
 int Q_strncasecmp( const char *s1, const char *s2, int n);
+
+int Q_vscprintf( const char *format, va_list pArgs );
 
 //=============================================
 
