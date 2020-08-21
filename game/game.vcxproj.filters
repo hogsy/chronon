@@ -18,100 +18,100 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="g_ai.c">
+    <ClCompile Include="g_ai.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_chase.c">
+    <ClCompile Include="g_chase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_cmds.c">
+    <ClCompile Include="g_cmds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_combat.c">
+    <ClCompile Include="g_combat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_func.c">
+    <ClCompile Include="g_func.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_items.c">
+    <ClCompile Include="g_items.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_main.c">
+    <ClCompile Include="g_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_misc.c">
+    <ClCompile Include="g_misc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_monster.c">
+    <ClCompile Include="g_monster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_phys.c">
+    <ClCompile Include="g_phys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_save.c">
+    <ClCompile Include="g_save.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_spawn.c">
+    <ClCompile Include="g_spawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_svcmds.c">
+    <ClCompile Include="g_svcmds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_target.c">
+    <ClCompile Include="g_target.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_trigger.c">
+    <ClCompile Include="g_trigger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_utils.c">
+    <ClCompile Include="g_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="g_weapon.c">
+    <ClCompile Include="g_weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_actor.c">
+    <ClCompile Include="m_actor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_berserk.c">
+    <ClCompile Include="m_berserk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_flash.c">
+    <ClCompile Include="m_flash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_flipper.c">
+    <ClCompile Include="m_flipper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_float.c">
+    <ClCompile Include="m_float.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_flyer.c">
+    <ClCompile Include="m_flyer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_insane.c">
+    <ClCompile Include="m_insane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_medic.c">
+    <ClCompile Include="m_medic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="m_move.c">
+    <ClCompile Include="m_move.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p_client.c">
+    <ClCompile Include="p_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p_hud.c">
+    <ClCompile Include="p_hud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p_trail.c">
+    <ClCompile Include="p_trail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p_view.c">
+    <ClCompile Include="p_view.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="p_weapon.c">
+    <ClCompile Include="p_weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="q_shared.c">
+    <ClCompile Include="q_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
