@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __VIDDEF_T
 #define __VIDDEF_T
 typedef struct {
-  unsigned width, height;  // coordinates from main game
+  int width, height;  // coordinates from main game
 } viddef_t;
 #endif
 
@@ -104,7 +104,7 @@ void GL_EndRendering(void);
 void GL_SetDefaultState(void);
 void GL_UpdateSwapInterval(void);
 
-extern float gldepthmin, gldepthmax;
+extern double gldepthmin, gldepthmax;
 
 typedef struct {
   float x, y, z;
@@ -392,7 +392,7 @@ void GLimp_BeginFrame(float camera_separation);
 void GLimp_EndFrame(void);
 qboolean GLimp_Init( void *hinstance, void *hWnd );
 void GLimp_Shutdown(void);
-int GLimp_SetMode(int* pwidth, int* pheight, int mode, qboolean fullscreen);
+rserr_t GLimp_SetMode(int* pwidth, int* pheight, int mode, qboolean fullscreen);
 void GLimp_AppActivate(qboolean active);
 void GLimp_EnableLogging(qboolean enable);
 void GLimp_LogNewFrame(void);

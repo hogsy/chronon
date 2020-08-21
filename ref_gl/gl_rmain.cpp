@@ -28,7 +28,7 @@ refimport_t ri;
 
 model_t *r_worldmodel;
 
-float gldepthmin, gldepthmax;
+double gldepthmin, gldepthmax;
 
 glconfig_t gl_config;
 glstate_t gl_state;

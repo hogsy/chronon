@@ -214,13 +214,13 @@ void Draw_TileClear( int x, int y, int w, int h, char *pic ) {
 
 	GL_Bind( image->texnum );
 	glBegin( GL_QUADS );
-	glTexCoord2f( x / 64.0, y / 64.0 );
+	glTexCoord2f( x / 64.0f, y / 64.0f );
 	glVertex2f( x, y );
-	glTexCoord2f( ( x + w ) / 64.0, y / 64.0 );
+	glTexCoord2f( ( x + w ) / 64.0f, y / 64.0f );
 	glVertex2f( x + w, y );
-	glTexCoord2f( ( x + w ) / 64.0, ( y + h ) / 64.0 );
+	glTexCoord2f( ( x + w ) / 64.0f, ( y + h ) / 64.0f );
 	glVertex2f( x + w, y + h );
-	glTexCoord2f( x / 64.0, ( y + h ) / 64.0 );
+	glTexCoord2f( x / 64.0f, ( y + h ) / 64.0f );
 	glVertex2f( x, y + h );
 	glEnd();
 
@@ -242,8 +242,10 @@ void Draw_Fill( int x, int y, int w, int h, int c ) {
 		byte		v[ 4 ];
 	} color;
 
-	if( (unsigned)c > 255 )
+	if( (unsigned)c > 255 ) {
 		ri.Sys_Error( ERR_FATAL, "Draw_Fill: bad color" );
+		return;
+	}
 
 	glDisable( GL_TEXTURE_2D );
 
@@ -301,7 +303,6 @@ Draw_StretchRaw
 extern unsigned	r_rawpalette[ 256 ];
 
 void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data ) {
-	unsigned	image32[ 256 * 256 ];
 	int			i, j, trows;
 	byte *source;
 	int			frac, fracstep;
@@ -321,6 +322,8 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 	t = rows * hscale / 256;
 
 	unsigned *dest;
+
+	unsigned int *image32 = static_cast< unsigned int *>( malloc( 256 * 256 ) );
 
 	for( i = 0; i < trows; i++ ) {
 		row = (int)( i * hscale );
@@ -356,5 +359,7 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 
 	if( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )
 		glEnable( GL_ALPHA_TEST );
+
+	free( image32 );
 }
 

@@ -18,43 +18,43 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gl_draw.c">
+    <ClCompile Include="gl_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_image.c">
+    <ClCompile Include="gl_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_light.c">
+    <ClCompile Include="gl_light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_mesh.c">
+    <ClCompile Include="gl_mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_model.c">
+    <ClCompile Include="gl_model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_rmain.c">
+    <ClCompile Include="gl_rmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_rmisc.c">
+    <ClCompile Include="gl_rmisc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_rsurf.c">
+    <ClCompile Include="gl_rsurf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_warp.c">
+    <ClCompile Include="gl_warp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\glw_imp.c">
+    <ClCompile Include="..\win32\glw_imp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game\q_shared.c">
+    <ClCompile Include="..\win32\q_shwin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\q_shwin.c">
+    <ClCompile Include="..\win32\qgl_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\qgl_win.c">
+    <ClCompile Include="..\game\q_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

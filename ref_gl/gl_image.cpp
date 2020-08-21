@@ -54,7 +54,7 @@ void GL_SetTexturePalette( unsigned palette[ 256 ] ) {
 }
 
 void GL_EnableMultitexture( qboolean enable ) {
-	if( !glSelectTextureSGIS && !glActiveTextureARB )
+	if( !glActiveTextureARB )
 		return;
 
 	if( enable ) {
@@ -420,14 +420,14 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 		return;
 	}
 
-	out = malloc( ( pcx->ymax + 1 ) * ( pcx->xmax + 1 ) );
+	out = static_cast< byte* >( malloc( ( pcx->ymax + 1 ) * ( pcx->xmax + 1 ) ) );
 
 	*pic = out;
 
 	pix = out;
 
 	if( palette ) {
-		*palette = malloc( 768 );
+		*palette = static_cast< byte * >( malloc( 768 ) );
 		memcpy( *palette, (byte *)pcx + len - 768, 768 );
 	}
 
@@ -1056,7 +1056,7 @@ void GL_FreeUnusedImages( void ) {
 		if( image->type == it_pic )
 			continue;		// don't free pics
 		// free it
-		glDeleteTextures( 1, &image->texnum );
+		glDeleteTextures( 1, ( GLuint * ) &image->texnum );
 		memset( image, 0, sizeof( *image ) );
 	}
 }
@@ -1159,7 +1159,7 @@ void	GL_ShutdownImages( void ) {
 		if( !image->registration_sequence )
 			continue;		// free image_t slot
 		// free it
-		glDeleteTextures( 1, &image->texnum );
+		glDeleteTextures( 1, ( GLuint* ) &image->texnum );
 		memset( image, 0, sizeof( *image ) );
 	}
 }

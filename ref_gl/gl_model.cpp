@@ -194,7 +194,7 @@ model_t *Mod_ForName( char *name, qboolean crash ) {
 	//
 	// load the file
 	//
-	modfilelen = ri.FS_LoadFile( mod->name, &buf );
+	modfilelen = ri.FS_LoadFile( mod->name, (void **)&buf );
 	if( !buf ) {
 		if( crash )
 			ri.Sys_Error( ERR_DROP, "Mod_NumForName: %s not found", mod->name );
@@ -259,7 +259,7 @@ void Mod_LoadLighting( lump_t *l ) {
 		loadmodel->lightdata = NULL;
 		return;
 	}
-	loadmodel->lightdata = Hunk_Alloc( l->filelen );
+	loadmodel->lightdata = static_cast<byte *>( Hunk_Alloc( l->filelen ) );
 	memcpy( loadmodel->lightdata, mod_base + l->fileofs, l->filelen );
 }
 
@@ -275,7 +275,7 @@ void Mod_LoadVisibility( lump_t *l ) {
 		loadmodel->vis = NULL;
 		return;
 	}
-	loadmodel->vis = Hunk_Alloc( l->filelen );
+	loadmodel->vis = static_cast<dvis_t *>( Hunk_Alloc( l->filelen ) );
 	memcpy( loadmodel->vis, mod_base + l->fileofs, l->filelen );
 
 	loadmodel->vis->numclusters = LittleLong( loadmodel->vis->numclusters );
@@ -295,12 +295,12 @@ void Mod_LoadVertexes( lump_t *l ) {
 	mvertex_t *out;
 	int i, count;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dvertex_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<mvertex_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->vertexes = out;
 	loadmodel->numvertexes = count;
@@ -338,12 +338,12 @@ void Mod_LoadSubmodels( lump_t *l ) {
 	mmodel_t *out;
 	int i, j, count;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dmodel_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<mmodel_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->submodels = out;
 	loadmodel->numsubmodels = count;
@@ -371,12 +371,12 @@ void Mod_LoadEdges( lump_t *l ) {
 	medge_t *out;
 	int i, count;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dedge_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( ( count + 1 ) * sizeof( *out ) );
+	out = static_cast<medge_t *>( Hunk_Alloc( ( count + 1 ) * sizeof( *out ) ) );
 
 	loadmodel->edges = out;
 	loadmodel->numedges = count;
@@ -399,12 +399,12 @@ void Mod_LoadTexinfo( lump_t *l ) {
 	char name[ MAX_QPATH ];
 	int next;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (texinfo_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<mtexinfo_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->texinfo = out;
 	loadmodel->numtexinfo = count;
@@ -500,12 +500,12 @@ void Mod_LoadFaces( lump_t *l ) {
 	int planenum, side;
 	int ti;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dface_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<msurface_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->surfaces = out;
 	loadmodel->numsurfaces = count;
@@ -586,12 +586,12 @@ void Mod_LoadNodes( lump_t *l ) {
 	dnode_t *in;
 	mnode_t *out;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dnode_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<mnode_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->nodes = out;
 	loadmodel->numnodes = count;
@@ -632,12 +632,12 @@ void Mod_LoadLeafs( lump_t *l ) {
 	int i, j, count, p;
 	//	glpoly_t	*poly;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dleaf_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<mleaf_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->leafs = out;
 	loadmodel->numleafs = count;
@@ -681,12 +681,12 @@ void Mod_LoadMarksurfaces( lump_t *l ) {
 	short *in;
 	msurface_t **out;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (short *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<msurface_t **>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->marksurfaces = out;
 	loadmodel->nummarksurfaces = count;
@@ -708,7 +708,7 @@ void Mod_LoadSurfedges( lump_t *l ) {
 	int i, count;
 	int *in, *out;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (int *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
@@ -717,7 +717,7 @@ void Mod_LoadSurfedges( lump_t *l ) {
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: bad surfedges count in %s: %i",
 			loadmodel->name, count );
 
-	out = Hunk_Alloc( count * sizeof( *out ) );
+	out = static_cast<int *>( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->surfedges = out;
 	loadmodel->numsurfedges = count;
@@ -737,12 +737,12 @@ void Mod_LoadPlanes( lump_t *l ) {
 	int count;
 	int bits;
 
-	in = (void *)( mod_base + l->fileofs );
+	in = (dplane_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
 		ri.Sys_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out = Hunk_Alloc( count * 2 * sizeof( *out ) );
+	out = static_cast<cplane_t *>( Hunk_Alloc( count * 2 * sizeof( *out ) ) );
 
 	loadmodel->planes = out;
 	loadmodel->numplanes = count;
@@ -847,7 +847,7 @@ Mod_LoadAliasModel
 */
 void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	dstvert_t *pinst, *poutst;
-	
+
 	int *pincmd, *poutcmd;
 	int version;
 
@@ -864,7 +864,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 #endif
 	}
 
-	dmdl_t *pheader = Hunk_Alloc( LittleLong( pinmodel->ofs_end ) );
+	dmdl_t *pheader = static_cast<dmdl_t *>( Hunk_Alloc( LittleLong( pinmodel->ofs_end ) ) );
 	// byte swap the header fields and sanity check
 	for( unsigned int i = 0; i < sizeof( dmdl_t ) / 4; i++ )
 		( (int *)pheader )[ i ] = LittleLong( ( (int *)buffer )[ i ] );
@@ -1030,7 +1030,7 @@ void Mod_LoadSpriteModel( model_t *mod, void *buffer ) {
 	int i;
 
 	sprin = (dsprite_t *)buffer;
-	sprout = Hunk_Alloc( modfilelen );
+	sprout = static_cast<dsprite_t *>( Hunk_Alloc( modfilelen ) );
 
 	sprout->ident = LittleLong( sprin->ident );
 	sprout->version = LittleLong( sprin->version );

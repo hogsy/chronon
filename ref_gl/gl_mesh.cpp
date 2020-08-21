@@ -45,9 +45,9 @@ float shadelight[ 3 ];
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT 16
-float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] =
+float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "anormtab.h"
-;
+};
 
 float *shadedots = r_avertexnormal_dots[ 0 ];
 
@@ -152,7 +152,7 @@ void GL_DrawAliasFrameLerp( dmdl_t *paliashdr, float backlerp ) {
 			RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) ) {
 			glColor4f( shadelight[ 0 ], shadelight[ 1 ], shadelight[ 2 ], alpha );
 		} else {
-			float *colorArray = Hunk_Alloc( paliashdr->num_xyz * 4 );
+			float *colorArray = static_cast< float* >( Hunk_Alloc( paliashdr->num_xyz * 4 ) );
 
 			glEnableClientState( GL_COLOR_ARRAY );
 			glColorPointer( 3, GL_FLOAT, 0, colorArray );
@@ -600,7 +600,7 @@ void R_DrawAliasModel( entity_t *e ) {
 		float scale;
 		float min;
 
-		scale = 0.1 * sin( r_newrefdef.time * 7 );
+		scale = 0.1f * sinf( r_newrefdef.time * 7 );
 		for( i = 0; i < 3; i++ ) {
 			min = shadelight[ i ] * 0.8;
 			shadelight[ i ] += scale;
