@@ -54,9 +54,6 @@ void GL_SetTexturePalette( unsigned palette[ 256 ] ) {
 }
 
 void GL_EnableMultitexture( qboolean enable ) {
-	if( !glActiveTextureARB )
-		return;
-
 	if( enable ) {
 		GL_SelectTexture( GL_TEXTURE1 );
 		glEnable( GL_TEXTURE_2D );
@@ -72,10 +69,6 @@ void GL_EnableMultitexture( qboolean enable ) {
 
 void GL_SelectTexture( GLenum texture ) {
 	int tmu;
-
-	if( !glSelectTextureSGIS && !glActiveTextureARB )
-		return;
-
 	if( texture == GL_TEXTURE0 ) {
 		tmu = 0;
 	} else {
@@ -88,12 +81,8 @@ void GL_SelectTexture( GLenum texture ) {
 
 	gl_state.currenttmu = tmu;
 
-	if( glSelectTextureSGIS ) {
-		glSelectTextureSGIS( texture );
-	} else if( glActiveTextureARB ) {
-		glActiveTextureARB( texture );
-		glClientActiveTextureARB( texture );
-	}
+	glActiveTexture( texture );
+	glClientActiveTexture( texture );
 }
 
 void GL_TexEnv( GLenum mode ) {
