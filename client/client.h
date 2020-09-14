@@ -143,7 +143,7 @@ typedef struct
 	FILE		*cinematic_file;
 	int			cinematictime;		// cls.realtime for first cinematic frame
 	int			cinematicframe;
-	char		cinematicpalette[768];
+	unsigned char		cinematicpalette[768];
 	qboolean	cinematicpalette_active;
 
 	//

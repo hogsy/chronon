@@ -245,6 +245,8 @@ void CL_ForceWall(vec3_t start, vec3_t end, int color) {
 }
 
 void CL_FlameEffects(centity_t *ent, vec3_t origin) {
+    Q_unused( ent );
+
   int n, count;
   int j;
   cparticle_t *p;

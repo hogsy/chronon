@@ -39,11 +39,11 @@ typedef struct LinkedList {
 } LinkedList;
 
 LinkedList *LL_CreateLinkedList( void ) {
-	return Z_Malloc( sizeof( LinkedList ) );
+	return static_cast<LinkedList *>( Z_Malloc( sizeof( LinkedList ) ) );
 }
 
 LinkedListNode *LL_InsertLinkedListNode( LinkedList *list, void *userPtr ) {
-	LinkedListNode *node = Z_Malloc( sizeof( LinkedListNode ) );
+	LinkedListNode *node = static_cast<LinkedListNode *>( Z_Malloc( sizeof( LinkedListNode ) ) );
 	if( list->root == NULL ) {
 		list->root = node;
 	}

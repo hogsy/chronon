@@ -122,12 +122,12 @@ static uint8_t *FS_LoadPackageFile( const Package *package, const char *fileName
 	fseek( filePtr, fileIndex->offset, SEEK_SET );
 
 	/* now load the compressed block in */
-	uint8_t *srcBuffer = Z_Malloc( fileIndex->compressedLength );
+	uint8_t *srcBuffer = static_cast<uint8_t *>( Z_Malloc( fileIndex->compressedLength ) );
 	fread( srcBuffer, sizeof( uint8_t ), fileIndex->compressedLength, filePtr );
 
 	/* decompress it */
 
-	uint8_t *dstBuffer = Z_Malloc( fileIndex->length );
+	uint8_t *dstBuffer = static_cast<uint8_t *>( Z_Malloc( fileIndex->length ) );
 	size_t dstLength = fileIndex->length;
 
 	bool status = FS_DecompressFile( srcBuffer, fileIndex->compressedLength, dstBuffer, &dstLength, fileIndex->length );
@@ -188,7 +188,7 @@ static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
 		return NULL;
 	}
 
-	Package *package = Z_Malloc( sizeof( Package ) );
+	Package *package = static_cast<Package *>( Z_Malloc( sizeof( Package ) ) );
 	strcpy( package->mappedDir, identity );
 
 	package->header = header;
@@ -198,7 +198,7 @@ static Package *FS_MountPackage( FILE *filePtr, const char *identity ) {
 	fseek( filePtr, package->header.tocOffset, SEEK_SET );
 
 	/* and now read in the table of contents */
-	package->indices = Z_Malloc( sizeof( PackageIndex ) * package->numFiles );
+	package->indices = static_cast<PackageIndex *>( Z_Malloc( sizeof( PackageIndex ) * package->numFiles ) );
 	if( fread( package->indices, sizeof( PackageIndex ), package->numFiles, filePtr ) != package->numFiles ) {
 		Z_Free( package->indices );
 		Z_Free( package );
@@ -314,7 +314,7 @@ uint8_t *FS_FOpenFile( const char *filename, uint32_t *length ) {
 			FILE *filePtr = fopen( netpath, "rb" );
 			if( filePtr != NULL ) {
 				/* allocate a buffer and read the whole thing into memory */
-				uint8_t *buffer = Z_Malloc( fileLength );
+				uint8_t *buffer = static_cast<uint8_t *>( Z_Malloc( fileLength ) );
 				fread( buffer, sizeof( uint8_t ), fileLength, filePtr );
 
 				fclose( filePtr );
@@ -466,7 +466,7 @@ static void FS_AddGameDirectory( const char *dir ) {
 	//
 	// add the directory to the search path
 	//
-	searchpath_t *search = Z_Malloc( sizeof( searchpath_t ) );
+	searchpath_t *search = static_cast<searchpath_t *>( Z_Malloc( sizeof( searchpath_t ) ) );
 	strcpy( search->filename, dir );
 	search->next = fs_searchpaths;
 	fs_searchpaths = search;
@@ -627,7 +627,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	nfiles++; // add space for a guard
 	*numfiles = nfiles;
 
-	list = malloc( sizeof( char * ) * nfiles );
+	list = static_cast<char **>( malloc( sizeof( char * ) * nfiles ) );
 	memset( list, 0, sizeof( char * ) * nfiles );
 
 	s = Sys_FindFirst( findname, musthave, canthave );
@@ -766,12 +766,12 @@ void FS_InitFilesystem( void ) {
 	//
 	fs_cddir = Cvar_Get( "cddir", "", CVAR_NOSET );
 	if( fs_cddir->string[ 0 ] )
-		FS_AddGameDirectory( va( "%s/"BASEDIRNAME, fs_cddir->string ) );
+		FS_AddGameDirectory( va( "%s/" BASEDIRNAME, fs_cddir->string ) );
 
 	//
 	// start up with baseq2 by default
 	//
-	FS_AddGameDirectory( va( "%s/"BASEDIRNAME, fs_basedir->string ) );
+	FS_AddGameDirectory( va( "%s/" BASEDIRNAME, fs_basedir->string ) );
 
 	// any set gamedirs will be freed up to here
 	fs_base_searchpaths = fs_searchpaths;

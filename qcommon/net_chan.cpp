@@ -76,7 +76,7 @@ unacknowledged reliable
 
 cvar_t		*showpackets;
 cvar_t		*showdrop;
-cvar_t		*qport;
+cvar_t		*cv_qport;
 
 netadr_t	net_from;
 sizebuf_t	net_message;
@@ -97,7 +97,7 @@ void Netchan_Init (void)
 
 	showpackets = Cvar_Get ("showpackets", "0", 0);
 	showdrop = Cvar_Get ("showdrop", "0", 0);
-	qport = Cvar_Get ("qport", va("%i", port), CVAR_NOSET);
+	cv_qport = Cvar_Get ("qport", va("%i", port), CVAR_NOSET);
 }
 
 /*
@@ -119,7 +119,7 @@ void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data)
 	SZ_Write (&send, data, length);
 
 // send the datagram
-	NET_SendPacket (net_socket, send.cursize, send.data, adr);
+	NET_SendPacket ((netsrc_t)net_socket, send.cursize, send.data, adr);
 }
 
 /*
@@ -251,7 +251,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 	// send the qport if we are a client
 	if (chan->sock == NS_CLIENT)
-		MSG_WriteShort (&send, qport->value);
+		MSG_WriteShort (&send, cv_qport->value);
 
 // copy the reliable message to the packet first
 	if (send_reliable)

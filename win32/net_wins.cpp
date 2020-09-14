@@ -355,7 +355,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 			continue;
 
 		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, net_message->data, net_message->maxsize
+		ret = recvfrom (net_socket, (char*)net_message->data, net_message->maxsize
 			, 0, (struct sockaddr *)&from, &fromlen);
 
 		SockadrToNetadr (&from, net_from);
@@ -437,7 +437,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 	NetadrToSockadr (&to, &addr);
 
-	ret = sendto (net_socket, data, length, 0, &addr, sizeof(addr) );
+	ret = sendto (net_socket, (char*)data, length, 0, &addr, sizeof(addr) );
 	if (ret == -1)
 	{
 		int err = WSAGetLastError();
@@ -484,7 +484,7 @@ int NET_IPSocket (char *net_interface, int port)
 {
 	int					newsocket;
 	struct sockaddr_in	address;
-	qboolean			_true = true;
+	u_long			_true = true;
 	int					i = 1;
 	int					err;
 
@@ -522,7 +522,7 @@ int NET_IPSocket (char *net_interface, int port)
 
 	address.sin_family = AF_INET;
 
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
+	if( bind (newsocket, (struct sockaddr *)&address, sizeof(address)) == -1)
 	{
 		Com_Printf ("WARNING: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
 		closesocket (newsocket);
@@ -594,7 +594,7 @@ int NET_IPXSocket (int port)
 {
 	int					newsocket;
 	struct sockaddr_ipx	address;
-	int					_true = 1;
+	u_long					_true = 1;
 	int					err;
 
 	if ((newsocket = socket (PF_IPX, SOCK_DGRAM, NSPROTO_IPX)) == -1)
@@ -627,7 +627,7 @@ int NET_IPXSocket (int port)
 	else
 		address.sa_socket = htons((short)port);
 
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
+	if( bind (newsocket, (struct sockaddr *)&address, sizeof(address)) == -1)
 	{
 		Com_Printf ("WARNING: IPX_Socket: bind: %s\n", NET_ErrorString());
 		closesocket (newsocket);

@@ -108,7 +108,7 @@ void VID_Printf( int print_level, char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = Z_Malloc( len );
+	char *msg = static_cast<char*>( Z_Malloc( len ) );
 	vsprintf( msg, fmt, argptr );
 	va_end( argptr );
 
@@ -128,7 +128,7 @@ void VID_Error( int err_level, char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = Z_Malloc( len );
+	char *msg = static_cast<char*>( Z_Malloc( len ) );
 	vsprintf( msg, fmt, argptr );
 	va_end( argptr );
 
@@ -509,7 +509,7 @@ void VID_UpdateWindowPosAndSize( int x, int y ) {
 	w = r.right - r.left;
 	h = r.bottom - r.top;
 
-	MoveWindow( cl_hwnd, vid_xpos->value, vid_ypos->value, w, h, TRUE );
+	MoveWindow( cl_hwnd, x, y, w, h, TRUE );
 }
 
 /*
@@ -569,8 +569,10 @@ qboolean VID_LoadRefresh( char *name ) {
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
 
-	if( ( GetRefAPI = (void *)GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 )
+	if( ( GetRefAPI = (GetRefAPI_t)GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 ) {
 		Com_Error( ERR_FATAL, "GetProcAddress failed on %s", name );
+		return false;
+	}
 
 	re = GetRefAPI( ri );
 

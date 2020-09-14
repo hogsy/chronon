@@ -160,7 +160,7 @@ Begins recording a demo from the current position
 void CL_Record_f (void)
 {
 	char	name[MAX_OSPATH];
-	char	buf_data[MAX_MSGLEN];
+	byte	buf_data[MAX_MSGLEN];
 	sizebuf_t	buf;
 	int		i;
 	int		len;
@@ -543,10 +543,10 @@ void CL_Rcon_f (void)
 		return;
 	}
 
-	message[0] = (char)255;
-	message[1] = (char)255;
-	message[2] = (char)255;
-	message[3] = (char)255;
+	message[0] = 255;
+	message[1] = 255;
+	message[2] = 255;
+	message[3] = 255;
 	message[4] = 0;
 
 	NET_Config (true);		// allow remote
@@ -644,9 +644,9 @@ void CL_Disconnect (void)
 	// send a disconnect message to the server
 	final[0] = clc_stringcmd;
 	strcpy ((char *)final+1, "disconnect");
-	Netchan_Transmit (&cls.netchan, strlen(final), final);
-	Netchan_Transmit (&cls.netchan, strlen(final), final);
-	Netchan_Transmit (&cls.netchan, strlen(final), final);
+	Netchan_Transmit (&cls.netchan, strlen((char*)final), final);
+	Netchan_Transmit (&cls.netchan, strlen((char*)final), final);
+	Netchan_Transmit (&cls.netchan, strlen((char*)final), final);
 
 	CL_ClearState ();
 
@@ -1311,8 +1311,8 @@ void CL_RequestNextDownload (void)
 		precache_check = ENV_CNT + 1;
 
 		CM_LoadMap (cl.configstrings[CS_MODELS+1], true, &map_checksum);
-
-		if (map_checksum != atoi(cl.configstrings[CS_MAPCHECKSUM])) {
+		
+		if (map_checksum != strtoul( cl.configstrings[ CS_MAPCHECKSUM ], nullptr, 10 ) ) {
 			Com_Error (ERR_DROP, "Local map version differs from server: %i != '%s'\n",
 				map_checksum, cl.configstrings[CS_MAPCHECKSUM]);
 			return;

@@ -259,7 +259,7 @@ sfx_t *S_AliasName (char *aliasname, char *truename)
 	char	*s;
 	int		i;
 
-	s = Z_Malloc (MAX_QPATH);
+	s = static_cast<char*>( Z_Malloc (MAX_QPATH) );
 	strcpy (s, truename);
 
 	// find a free sfx

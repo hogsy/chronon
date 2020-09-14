@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#include <ctype.h>
+
 #include "client.h"
 
 /*
@@ -503,7 +506,7 @@ Key_SetBinding
 */
 void Key_SetBinding (int keynum, char *binding)
 {
-	char	*new;
+	char	*newn;
 	int		l;
 			
 	if (keynum == -1)
@@ -518,10 +521,10 @@ void Key_SetBinding (int keynum, char *binding)
 			
 // allocate memory for new binding
 	l = strlen (binding);	
-	new = Z_Malloc (l+1);
-	strcpy (new, binding);
-	new[l] = 0;
-	keybindings[keynum] = new;	
+	newn = static_cast<char *>( Z_Malloc (l+1) );
+	strcpy ( newn, binding);
+	newn[l] = 0;
+	keybindings[keynum] = newn;
 }
 
 /*

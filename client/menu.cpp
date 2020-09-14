@@ -146,7 +146,7 @@ const char *Default_MenuKey( menuframework_s *m, int key )
 
 	if ( m )
 	{
-		if ( ( item = Menu_ItemAtCursor( m ) ) != 0 )
+		if ( ( item = static_cast<menucommon_s *>( Menu_ItemAtCursor( m ) ) ) != 0 )
 		{
 			if ( item->type == MTYPE_FIELD )
 			{
@@ -512,16 +512,22 @@ static void Multiplayer_MenuDraw (void)
 
 static void PlayerSetupFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_PlayerConfig_f();
 }
 
 static void JoinNetworkServerFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_JoinServer_f();
 }
 
 static void StartNetworkServerFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_StartServer_f ();
 }
 
@@ -1035,37 +1041,44 @@ static menulist_s		s_options_console_action;
 
 static void CrosshairFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "crosshair", s_options_crosshair_box.curvalue );
 }
 
 static void JoystickFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "in_joystick", s_options_joystick_box.curvalue );
 }
 
 static void CustomizeControlsFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_Keys_f();
 }
 
 static void AlwaysRunFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "cl_run", s_options_alwaysrun_box.curvalue );
 }
 
 static void FreeLookFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "freelook", s_options_freelook_box.curvalue );
 }
 
 static void MouseSpeedFunc( void *unused )
 {
-	Cvar_SetValue( "sensitivity", s_options_sensitivity_slider.curvalue / 2.0F );
-}
+	Q_unused( unused );
 
-static void NoAltTabFunc( void *unused )
-{
-	Cvar_SetValue( "win_noalttab", s_options_noalttab_box.curvalue );
+	Cvar_SetValue( "sensitivity", s_options_sensitivity_slider.curvalue / 2.0F );
 }
 
 static float ClampCvar( float min, float max, float value )
@@ -1107,6 +1120,8 @@ static void ControlsSetMenuItemValues( void )
 
 static void ControlsResetDefaultsFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cbuf_AddText ("exec default.cfg\n");
 	Cbuf_Execute();
 
@@ -1115,35 +1130,48 @@ static void ControlsResetDefaultsFunc( void *unused )
 
 static void InvertMouseFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "m_pitch", -m_pitch->value );
 }
 
 static void LookspringFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "lookspring", !lookspring->value );
 }
 
 static void LookstrafeFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "lookstrafe", !lookstrafe->value );
 }
 
 static void UpdateVolumeFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "s_volume", s_options_sfxvolume_slider.curvalue / 10 );
 }
 
 static void UpdateCDVolumeFunc( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "cd_nocd", !s_options_cdvolume_box.curvalue );
 }
 
+extern void Key_ClearTyping( void );
+
 static void ConsoleFunc( void *unused )
 {
+	Q_unused( unused );
+
 	/*
 	** the proper way to do this is probably to have ToggleConsole_f accept a parameter
 	*/
-	extern void Key_ClearTyping( void );
 
 	if ( cl.attractloop )
 	{
@@ -1160,6 +1188,8 @@ static void ConsoleFunc( void *unused )
 
 static void UpdateSoundQualityFunc( void *unused )
 {
+	Q_unused( unused );
+
 	if ( s_options_quality_list.curvalue )
 	{
 		Cvar_SetValue( "s_khz", 22 );
@@ -1811,13 +1841,13 @@ const char *M_Credits_Key( int key )
 
 void M_Menu_Credits_f( void )
 {
+#if 0
 	int		n;
 	int		count;
 	char	*p;
-	int		isdeveloper = 0;
 
 	creditsBuffer = NULL;
-	count = FS_LoadFile ("credits", &creditsBuffer);
+	count = FS_LoadFile ("credits", (void**)&creditsBuffer);
 	if (count != -1)
 	{
 		p = creditsBuffer;
@@ -1850,6 +1880,7 @@ void M_Menu_Credits_f( void )
 
 	credits_start_time = cls.realtime;
 	M_PushMenu( M_Credits_MenuDraw, M_Credits_Key);
+#endif
 }
 
 /*
@@ -1887,34 +1918,46 @@ static void StartGame( void )
 
 static void EasyGameFunc( void *data )
 {
+	Q_unused( data );
+
 	Cvar_ForceSet( "skill", "0" );
 	StartGame();
 }
 
 static void MediumGameFunc( void *data )
 {
+	Q_unused( data );
+
 	Cvar_ForceSet( "skill", "1" );
 	StartGame();
 }
 
 static void HardGameFunc( void *data )
 {
+	Q_unused( data );
+
 	Cvar_ForceSet( "skill", "2" );
 	StartGame();
 }
 
 static void LoadGameFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_LoadGame_f ();
 }
 
 static void SaveGameFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_SaveGame_f();
 }
 
 static void CreditsFunc( void *unused )
 {
+	Q_unused( unused );
+
 	M_Menu_Credits_f();
 }
 
@@ -2117,7 +2160,7 @@ SAVEGAME MENU
 
 =============================================================================
 */
-static menuframework_s	s_savegame_menu;
+
 static menuaction_s		s_savegame_actions[MAX_SAVEGAMES];
 
 void SaveGameCallback( void *self )
@@ -2248,11 +2291,14 @@ void JoinServerFunc( void *self )
 
 void AddressBookFunc( void *self )
 {
+	Q_unused( self );
+
 	M_Menu_AddressBook_f();
 }
 
 void NullCursorDraw( void *self )
 {
+	Q_unused( self );
 }
 
 void SearchLocalGames( void )
@@ -2277,6 +2323,8 @@ void SearchLocalGames( void )
 
 void SearchLocalGamesFunc( void *self )
 {
+	Q_unused( self );
+
 	SearchLocalGames();
 }
 
@@ -2372,6 +2420,8 @@ static menulist_s	s_rules_box;
 
 void DMOptionsFunc( void *self )
 {
+	Q_unused( self );
+
 	if (s_rules_box.curvalue == 1)
 		return;
 	M_Menu_DMOptions_f();
@@ -2379,6 +2429,8 @@ void DMOptionsFunc( void *self )
 
 void RulesChangeFunc ( void *self )
 {
+	Q_unused( self );
+
 	// DM
 	if (s_rules_box.curvalue == 0)
 	{
@@ -2396,6 +2448,8 @@ void RulesChangeFunc ( void *self )
 
 void StartServerActionFunc( void *self )
 {
+	Q_unused( self );
+
 	char	startmap[1024];
 	int		timelimit;
 	int		fraglimit;
@@ -2495,7 +2549,7 @@ void StartServer_MenuInit( void )
 		length = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 #endif
-		buffer = malloc( length );
+		buffer = static_cast<char*>( malloc( length ) );
 		fread( buffer, length, 1, fp );
 	}
 
@@ -2512,7 +2566,7 @@ void StartServer_MenuInit( void )
 	if ( nummaps == 0 )
 		Com_Error( ERR_DROP, "no maps in maps.lst\n" );
 
-	mapnames = malloc( sizeof( char * ) * ( nummaps + 1 ) );
+	mapnames = static_cast<char**>( malloc( sizeof( char * ) * ( nummaps + 1 ) ) );
 	memset( mapnames, 0, sizeof( char * ) * ( nummaps + 1 ) );
 
 	s = buffer;
@@ -2531,7 +2585,7 @@ void StartServer_MenuInit( void )
 		strcpy( longname, COM_Parse( &s ) );
 		Com_sprintf( scratch, sizeof( scratch ), "%s\n%s", longname, shortname );
 
-		mapnames[i] = malloc( strlen( scratch ) + 1 );
+		mapnames[i] = static_cast<char*>( malloc( strlen( scratch ) + 1 ) );
 		strcpy( mapnames[i], scratch );
 	}
 	mapnames[nummaps] = 0;
@@ -2556,7 +2610,7 @@ void StartServer_MenuInit( void )
 	s_startmap_list.generic.x	= 0;
 	s_startmap_list.generic.y	= 0;
 	s_startmap_list.generic.name	= "initial map";
-	s_startmap_list.itemnames = mapnames;
+	s_startmap_list.itemnames = (const char**)mapnames;
 
 	s_rules_box.generic.type = MTYPE_SPINCONTROL;
 	s_rules_box.generic.x	= 0;
@@ -3251,23 +3305,31 @@ static const char *rate_names[] = { "28.8 Modem", "33.6 Modem", "Single ISDN",
 
 void DownloadOptionsFunc( void *self )
 {
+	Q_unused( self );
+
 	M_Menu_DownloadOptions_f();
 }
 
 static void HandednessCallback( void *unused )
 {
+	Q_unused( unused );
+
 	Cvar_SetValue( "hand", s_player_handedness_box.curvalue );
 }
 
 static void RateCallback( void *unused )
 {
+	Q_unused( unused );
+
 	if (s_player_rate_box.curvalue != sizeof(rate_tbl) / sizeof(*rate_tbl) - 1)
 		Cvar_SetValue( "rate", rate_tbl[s_player_rate_box.curvalue] );
 }
 
 static void ModelCallback( void *unused )
 {
-	s_player_skin_box.itemnames = s_pmi[s_player_model_box.curvalue].skindisplaynames;
+	Q_unused( unused );
+
+	s_player_skin_box.itemnames = (const char**)s_pmi[s_player_model_box.curvalue].skindisplaynames;
 	s_player_skin_box.curvalue = 0;
 }
 
@@ -3304,6 +3366,8 @@ static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 	return false;
 }
 
+extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
+
 static qboolean PlayerConfig_ScanDirectories( void )
 {
 	char findname[1024];
@@ -3312,8 +3376,6 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	char **dirnames;
 	char *path = NULL;
 	int i;
-
-	extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
 
 	s_numplayermodels = 0;
 
@@ -3389,14 +3451,12 @@ static qboolean PlayerConfig_ScanDirectories( void )
 		if ( !nskins )
 			continue;
 
-		skinnames = malloc( sizeof( char * ) * ( nskins + 1 ) );
+		skinnames = static_cast<char**>( malloc( sizeof( char * ) * ( nskins + 1 ) ) );
 		memset( skinnames, 0, sizeof( char * ) * ( nskins + 1 ) );
 
 		// copy the valid skins
 		for ( s = 0, k = 0; k < npcxfiles-1; k++ )
 		{
-			char *a, *b, *c;
-
 			if ( !strstr( pcxnames[k], "_i.pcx" ) )
 			{
 				if ( IconOfSkinExists( pcxnames[k], pcxnames, npcxfiles - 1 ) )
@@ -3558,7 +3618,7 @@ qboolean PlayerConfig_MenuInit( void )
 	s_player_model_box.generic.callback = ModelCallback;
 	s_player_model_box.generic.cursor_offset = -48;
 	s_player_model_box.curvalue = currentdirectoryindex;
-	s_player_model_box.itemnames = s_pmnames;
+	s_player_model_box.itemnames = (const char**)s_pmnames;
 
 	s_player_skin_title.generic.type = MTYPE_SEPARATOR;
 	s_player_skin_title.generic.name = "skin";
@@ -3572,7 +3632,7 @@ qboolean PlayerConfig_MenuInit( void )
 	s_player_skin_box.generic.callback = 0;
 	s_player_skin_box.generic.cursor_offset = -48;
 	s_player_skin_box.curvalue = currentskinindex;
-	s_player_skin_box.itemnames = s_pmi[currentdirectoryindex].skindisplaynames;
+	s_player_skin_box.itemnames = (const char**)s_pmi[currentdirectoryindex].skindisplaynames;
 
 	s_player_hand_title.generic.type = MTYPE_SEPARATOR;
 	s_player_hand_title.generic.name = "handedness";
@@ -3631,9 +3691,10 @@ qboolean PlayerConfig_MenuInit( void )
 	return true;
 }
 
+extern float CalcFov( float fov_x, float w, float h );
+
 void PlayerConfig_MenuDraw( void )
 {
-	extern float CalcFov( float fov_x, float w, float h );
 	refdef_t refdef;
 	char scratch[MAX_QPATH];
 
@@ -3650,7 +3711,6 @@ void PlayerConfig_MenuDraw( void )
 	if ( s_pmi[s_player_model_box.curvalue].skindisplaynames )
 	{
 		static int yaw;
-		int maxframe = 29;
 		entity_t entity;
 
 		memset( &entity, 0, sizeof( entity ) );

@@ -71,7 +71,7 @@ void Com_BeginRedirect( int target, char *buffer, int buffersize, void( *flush )
 	rd_target = target;
 	rd_buffer = buffer;
 	rd_buffersize = buffersize;
-	rd_flush = flush;
+	rd_flush = ( void( * )( int, char * ) )flush;
 
 	*rd_buffer = 0;
 }
@@ -97,7 +97,7 @@ void Com_Printf( char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = Z_Malloc( len );
+	char *msg = static_cast<char *>( Z_Malloc( len ) );
 	vsprintf( msg, fmt, argptr );
 	va_end( argptr );
 
@@ -149,7 +149,7 @@ void Com_DPrintf( char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = Z_Malloc( len );
+	char *msg = static_cast<char *>( Z_Malloc( len ) );
 	vsprintf( msg, fmt, argptr );
 	va_end( argptr );
 
@@ -174,7 +174,7 @@ void Com_Error( int code, char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = Z_Malloc( len );
+	char *msg = static_cast<char *>( Z_Malloc( len ) );
 	vsprintf( msg, fmt, argptr );
 	va_end( argptr );
 
@@ -261,7 +261,7 @@ void MSG_WriteChar( sizebuf_t *sb, int c ) {
 	if( c < -128 || c > 127 ) Com_Error( ERR_FATAL, "MSG_WriteChar: range error" );
 #endif
 
-	buf = SZ_GetSpace( sb, 1 );
+	buf = static_cast<byte *>( SZ_GetSpace( sb, 1 ) );
 	buf[ 0 ] = c;
 }
 
@@ -272,7 +272,7 @@ void MSG_WriteByte( sizebuf_t *sb, int c ) {
 	if( c < 0 || c > 255 ) Com_Error( ERR_FATAL, "MSG_WriteByte: range error" );
 #endif
 
-	buf = SZ_GetSpace( sb, 1 );
+	buf = static_cast<byte *>( SZ_GetSpace( sb, 1 ) );
 	buf[ 0 ] = c;
 }
 
@@ -284,7 +284,7 @@ void MSG_WriteShort( sizebuf_t *sb, int c ) {
 		Com_Error( ERR_FATAL, "MSG_WriteShort: range error" );
 #endif
 
-	buf = SZ_GetSpace( sb, 2 );
+	buf = static_cast<byte *>( SZ_GetSpace( sb, 2 ) );
 	buf[ 0 ] = c & 0xff;
 	buf[ 1 ] = c >> 8;
 }
@@ -292,7 +292,7 @@ void MSG_WriteShort( sizebuf_t *sb, int c ) {
 void MSG_WriteLong( sizebuf_t *sb, int c ) {
 	byte *buf;
 
-	buf = SZ_GetSpace( sb, 4 );
+	buf = static_cast<byte *>( SZ_GetSpace( sb, 4 ) );
 	buf[ 0 ] = c & 0xff;
 	buf[ 1 ] = ( c >> 8 ) & 0xff;
 	buf[ 2 ] = ( c >> 16 ) & 0xff;
@@ -856,7 +856,7 @@ int memsearch( byte *start, int count, int search ) {
 }
 
 char *CopyString( const char *in ) {
-	char *out = Z_Malloc( strlen( in ) + 1 );
+	char *out = static_cast<char *>( Z_Malloc( strlen( in ) + 1 ) );
 	strcpy( out, in );
 	return out;
 }
@@ -969,7 +969,7 @@ void *Z_TagMalloc( int size, int tag ) {
 	zhead_t *z;
 
 	size = size + sizeof( zhead_t );
-	z = malloc( size );
+	z = static_cast<zhead_t *>( malloc( size ) );
 	if( !z )
 		Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes", size );
 	memset( z, 0, size );
@@ -994,62 +994,25 @@ Z_Malloc
 */
 void *Z_Malloc( int size ) { return Z_TagMalloc( size, 0 ); }
 
-//============================================================================
+/**
+ * Allocates; aborts on fail.
+ */
+void *M_Alloc( size_t size ) {
+	void *data = malloc( size );
+	if( data == NULL ) {
+		Com_Error( ERR_FATAL, "Failed to allocate %u bytes!\n", size );
+	}
 
-/*
-====================
-COM_BlockSequenceCheckByte
+	memset( data, 0, size );
 
-For proxy protecting
-
-// THIS IS MASSIVELY BROKEN!  CHALLENGE MAY BE NEGATIVE
-// DON'T USE THIS FUNCTION!!!!!
-
-====================
-*/
-byte COM_BlockSequenceCheckByte( byte *base, int length, int sequence,
-	int challenge ) {
-	Sys_Error( "COM_BlockSequenceCheckByte called\n" );
-
-#if 0
-	int		checksum;
-	byte	buf[ 68 ];
-	byte *p;
-	float temp;
-	byte c;
-
-	temp = bytedirs[ ( sequence / 3 ) % NUMVERTEXNORMALS ][ sequence % 3 ];
-	temp = LittleFloat( temp );
-	p = ( (byte *)&temp );
-
-	if( length > 60 )
-		length = 60;
-	memcpy( buf, base, length );
-
-	buf[ length ] = ( sequence & 0xff ) ^ p[ 0 ];
-	buf[ length + 1 ] = p[ 1 ];
-	buf[ length + 2 ] = ( ( sequence >> 8 ) & 0xff ) ^ p[ 2 ];
-	buf[ length + 3 ] = p[ 3 ];
-
-	temp = bytedirs[ ( ( sequence + challenge ) / 3 ) % NUMVERTEXNORMALS ][ ( sequence + challenge ) % 3 ];
-	temp = LittleFloat( temp );
-	p = ( (byte *)&temp );
-
-	buf[ length + 4 ] = ( sequence & 0xff ) ^ p[ 3 ];
-	buf[ length + 5 ] = ( challenge & 0xff ) ^ p[ 2 ];
-	buf[ length + 6 ] = ( ( sequence >> 8 ) & 0xff ) ^ p[ 1 ];
-	buf[ length + 7 ] = ( ( challenge >> 7 ) & 0xff ) ^ p[ 0 ];
-
-	length += 8;
-
-	checksum = LittleLong( Com_BlockChecksum( buf, length ) );
-
-	checksum &= 0xff;
-
-	return checksum;
-#endif
-	return 0;
+	return data;
 }
+
+void M_Free( void *ptr ) {
+	free( ptr );
+}
+
+//============================================================================
 
 static byte chktbl[ 1024 ] = {
 	0x84, 0x47, 0x51, 0xc1, 0x93, 0x22, 0x21, 0x24, 0x2f, 0x66, 0x60, 0x4d,

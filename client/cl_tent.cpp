@@ -78,8 +78,6 @@ extern void CL_TeleportParticles (vec3_t org);
 void CL_BlasterParticles (vec3_t org, vec3_t dir);
 void CL_ExplosionParticles (vec3_t org);
 void CL_BFGExplosionParticles (vec3_t org);
-// RAFAEL
-void CL_BlueBlasterParticles (vec3_t org, vec3_t dir);
 
 struct sfx_s	*cl_sfx_ric1;
 struct sfx_s	*cl_sfx_ric2;
@@ -1254,7 +1252,7 @@ void CL_AddBeams (void)
 			if (yaw < 0)
 				yaw += 360;
 	
-			forward = sqrt (dist[0]*dist[0] + dist[1]*dist[1]);
+			forward = sqrtf (dist[0]*dist[0] + dist[1]*dist[1]);
 			pitch = (atan2(dist[2], forward) * -180.0 / M_PI);
 			if (pitch < 0)
 				pitch += 360.0;
@@ -1355,7 +1353,7 @@ void CL_AddPlayerBeams (void)
 	float		yaw, pitch;
 	float		forward;
 	float		len, steps;
-	int			framenum;
+	int			framenum = 0;
 	float		model_length;
 	
 	float		hand_multiplier;
@@ -1436,8 +1434,6 @@ void CL_AddPlayerBeams (void)
 //PMM
 		if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam) && (b->entity == cl.playernum+1))
 		{
-			vec_t len;
-
 			len = VectorLength (dist);
 			VectorScale (f, len, dist);
 			VectorMA (dist, (hand_multiplier * b->offset[0]), r, dist);
@@ -1469,7 +1465,7 @@ void CL_AddPlayerBeams (void)
 			if (yaw < 0)
 				yaw += 360;
 	
-			forward = sqrt (dist[0]*dist[0] + dist[1]*dist[1]);
+			forward = sqrtf (dist[0]*dist[0] + dist[1]*dist[1]);
 			pitch = (atan2(dist[2], forward) * -180.0 / M_PI);
 			if (pitch < 0)
 				pitch += 360.0;
@@ -1609,7 +1605,7 @@ void CL_AddExplosions (void)
 	{
 		if (ex->type == ex_free)
 			continue;
-		frac = (cl.time - ex->start)/100.0;
+		frac = (cl.time - ex->start)/100.0f;
 		f = floor(frac);
 
 		ent = &ex->ent;

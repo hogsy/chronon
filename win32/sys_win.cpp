@@ -68,7 +68,7 @@ void Sys_Error( const char *error, ... ) {
 	va_list argptr;
 	va_start( argptr, error );
 	int len = Q_vscprintf( error, argptr ) + 1;
-	char *text = Z_Malloc( len );
+	char *text = static_cast<char*>( Z_Malloc( len ) );
 	vsprintf( text, error, argptr );
 	va_end( argptr );
 
@@ -99,12 +99,12 @@ void Sys_Quit( void ) {
 }
 
 void WinError( void ) {
-	LPVOID lpMsgBuf;
+	LPTSTR lpMsgBuf;
 
 	FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL, GetLastError(),
 		MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),  // Default language
-		(LPTSTR)&lpMsgBuf, 0, NULL );
+		lpMsgBuf, 0, NULL );
 
 	// Display the string.
 	MessageBox( NULL, lpMsgBuf, "GetLastError", MB_OK | MB_ICONINFORMATION );
@@ -239,8 +239,9 @@ Sys_ConsoleInput
 */
 char *Sys_ConsoleInput( void ) {
 	INPUT_RECORD recs[ 1024 ];
-	int dummy;
-	int ch, numread, numevents;
+	DWORD dummy;
+	int ch;
+	DWORD numread, numevents;
 
 	if( !dedicated || !dedicated->value ) return NULL;
 
@@ -303,7 +304,7 @@ Print text to the dedicated console
 ================
 */
 void Sys_ConsoleOutput( char *string ) {
-	int dummy;
+	DWORD dummy;
 	char text[ 256 ];
 
 	if( !dedicated || !dedicated->value ) return;
@@ -357,8 +358,8 @@ char *Sys_GetClipboardData( void ) {
 		HANDLE hClipboardData;
 
 		if( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
-			if( ( cliptext = GlobalLock( hClipboardData ) ) != 0 ) {
-				data = malloc( GlobalSize( hClipboardData ) + 1 );
+			if( ( cliptext = static_cast<char*>( GlobalLock( hClipboardData ) ) ) != 0 ) {
+				data = static_cast<char*>( malloc( GlobalSize( hClipboardData ) + 1 ) );
 				strcpy( data, cliptext );
 				GlobalUnlock( hClipboardData );
 			}
@@ -475,7 +476,7 @@ void *Sys_GetGameAPI( void *parms ) {
 		}
 	}
 
-	GetGameAPI = (void *)GetProcAddress( game_library, "GetGameAPI" );
+	GetGameAPI = (void*(*)(void*))GetProcAddress( game_library, "GetGameAPI" );
 	if( !GetGameAPI ) {
 		Sys_UnloadGame();
 		return NULL;
@@ -525,6 +526,8 @@ HINSTANCE global_hInstance;
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow ) {
+	Q_unused( nCmdShow );
+
 	MSG msg;
 	int time, oldtime, newtime;
 	char *cddir;

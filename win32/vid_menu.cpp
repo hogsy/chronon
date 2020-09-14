@@ -66,6 +66,8 @@ static menuaction_s s_cancel_action[2];
 static menuaction_s s_defaults_action[2];
 
 static void DriverCallback(void *unused) {
+    Q_unused( unused );
+
   s_ref_list[!s_current_menu_index].curvalue =
       s_ref_list[s_current_menu_index].curvalue;
 
@@ -99,9 +101,14 @@ static void BrightnessCallback(void *s) {
   }
 }
 
-static void ResetDefaults(void *unused) { VID_MenuInit(); }
+static void ResetDefaults(void *unused) { 
+    Q_unused( unused );
+    VID_MenuInit(); 
+}
 
 static void ApplyChanges(void *unused) {
+    Q_unused( unused );
+
   float gamma;
 
   /*
@@ -146,6 +153,8 @@ static void ApplyChanges(void *unused) {
 }
 
 static void CancelChanges(void *unused) {
+    Q_unused( unused );
+
   extern void M_PopMenu(void);
 
   M_PopMenu();
