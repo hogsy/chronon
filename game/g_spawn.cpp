@@ -275,13 +275,13 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 				( (float *)( b + f->ofs ) )[ 2 ] = vec[ 2 ];
 				break;
 			case F_INT:
-				*(int *)( b + f->ofs ) = atoi( value );
+				*(int *)( b + f->ofs ) = static_cast< int >( strtol( value, nullptr, 10 ) );
 				break;
 			case F_FLOAT:
-				*(float *)( b + f->ofs ) = atof( value );
+				*(float *)( b + f->ofs ) = strtof( value, nullptr );
 				break;
 			case F_ANGLEHACK:
-				v = atof( value );
+				v = strtof( value, nullptr );
 				( (float *)( b + f->ofs ) )[ 0 ] = 0;
 				( (float *)( b + f->ofs ) )[ 1 ] = v;
 				( (float *)( b + f->ofs ) )[ 2 ] = 0;

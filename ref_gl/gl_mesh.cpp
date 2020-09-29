@@ -51,7 +51,7 @@ float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 
 float *shadedots = r_avertexnormal_dots[ 0 ];
 
-void GL_LerpVerts( int nverts, Md2VertexGroup *v, Md2VertexGroup *ov, Md2VertexGroup *verts, float *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
+void GL_LerpVerts( unsigned int nverts, Md2VertexGroup *v, Md2VertexGroup *ov, Md2VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv ) {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 		RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) ) {

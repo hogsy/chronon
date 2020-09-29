@@ -238,7 +238,7 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill( int x, int y, int w, int h, int c ) {
 	union {
-		unsigned	c;
+		unsigned	c{ 0 };
 		byte		v[ 4 ];
 	} color;
 

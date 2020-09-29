@@ -306,7 +306,7 @@ struct image_s* R_RegisterSkin(char* name);
 
 void LoadPCX( const char* filename, byte** pic, byte** palette, int* width,
              int* height);
-image_t* GL_LoadPic(char* name, byte* pic, int width, int height,
+image_t* GL_LoadPic( const char *name, byte* pic, int width, int height,
                     imagetype_t type, int bits);
 image_t* GL_FindImage(const char* name, imagetype_t type);
 void GL_TextureMode(char* string);

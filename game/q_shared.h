@@ -229,6 +229,9 @@ int Q_stricmp(const char *s1, const char *s2);
 int Q_strcasecmp(char *s1, char *s2);
 int Q_strncasecmp( const char *s1, const char *s2, int n);
 
+char *Q_strtolower( char *s );
+char *Q_strntolower( char *s, size_t n );
+
 int Q_vscprintf( const char *format, va_list pArgs );
 
 //=============================================
@@ -267,14 +270,14 @@ SYSTEM SPECIFIC
 
 extern int curtime;  // time returned by last Sys_Milliseconds
 
-int Sys_Milliseconds(void);
+int Sys_Milliseconds();
 void Sys_Mkdir(char *path);
 
 // large block stack allocation routines
-void *Hunk_Begin(int maxsize);
-void *Hunk_Alloc(int size);
+void *Hunk_Begin( size_t maxsize);
+void *Hunk_Alloc( size_t size);
 void Hunk_Free(void *buf);
-int Hunk_End(void);
+int Hunk_End();
 
 // directory searching
 #define SFF_ARCH 0x01
@@ -288,7 +291,7 @@ int Hunk_End(void);
 */
 char *Sys_FindFirst(char *path, unsigned musthave, unsigned canthave);
 char *Sys_FindNext(unsigned musthave, unsigned canthave);
-void Sys_FindClose(void);
+void Sys_FindClose();
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link
 void Sys_Error(const char *error, ...);

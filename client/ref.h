@@ -73,7 +73,7 @@ typedef struct entity_s
 	float	alpha;					// ignore if RF_TRANSLUCENT isn't set
 
 	struct image_s	*skin;			// NULL for inline skin
-	int		flags;
+	unsigned int		flags;
 
 } entity_t;
 
@@ -190,13 +190,13 @@ typedef struct
 //
 typedef struct
 {
-	void	(*Sys_Error) (int err_level, char *str, ...);
+	void	(*Sys_Error) (int err_level, const char *str, ...);
 
-	void	(*Cmd_AddCommand) (char *name, void(*cmd)(void));
-	void	(*Cmd_RemoveCommand) (char *name);
+	void	(*Cmd_AddCommand) (const char *name, void(*cmd)(void));
+	void	(*Cmd_RemoveCommand) (const char *name);
 	int		(*Cmd_Argc) (void);
 	char	*(*Cmd_Argv) (int i);
-	void	(*Cmd_ExecuteText) (int exec_when, char *text);
+	void	(*Cmd_ExecuteText) (int exec_when, const char *text);
 
 	void	(*Con_Printf) (int print_level, const char *str, ...);
 
@@ -213,8 +213,8 @@ typedef struct
 	char	*(*FS_Gamedir) (void);
 
 	cvar_t	*(*Cvar_Get) (const char *name, const char *value, int flags);
-	cvar_t	*(*Cvar_Set)( char *name, char *value );
-	void	 (*Cvar_SetValue)( char *name, float value );
+	cvar_t	*(*Cvar_Set)( const char *name, const char *value );
+	void	 (*Cvar_SetValue)( const char *name, float value );
 
 	qboolean	(*Vid_GetModeInfo)( int *width, int *height, int mode );
 	void		(*Vid_MenuInit)( void );

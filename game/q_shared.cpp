@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+#include <ctype.h>
+
 #include "q_shared.h"
 
 #define DEG2RAD( a ) ( a * M_PI ) / 180.0F
@@ -900,6 +902,23 @@ int Q_strncasecmp( const char *s1, const char *s2, int n ) {
 
 int Q_strcasecmp( char *s1, char *s2 ) {
 	return Q_strncasecmp( s1, s2, 99999 );
+}
+
+char *Q_strtolower(char *s) {
+    for(size_t i = 0; s[i] != '\0'; ++i) {
+        s[i] = (char)tolower(s[i]);
+    }
+    return s;
+}
+
+char *Q_strntolower(char *s, size_t n) {
+    for(size_t i = 0; i < n; ++i) {
+        if(s[i] == '\0') {
+            break;
+        }
+        s[i] = (char)tolower(s[i]);
+    }
+    return s;
 }
 
 /* https://stackoverflow.com/a/19692380 */

@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // r_main.c
+#include <ctype.h>
+
 #include "gl_local.h"
 
 void R_Clear( void );
@@ -805,6 +807,7 @@ void R_SetGL2D( void ) {
 	glColor4f( 1, 1, 1, 1 );
 }
 
+#if 0 // Unused
 static void GL_DrawColoredStereoLinePair( float r, float g, float b, float y ) {
 	glColor3f( r, g, b );
 	glVertex2f( 0, y );
@@ -840,6 +843,7 @@ static void GL_DrawStereoPattern( void ) {
 		GLimp_EndFrame();
 	}
 }
+#endif
 
 /*
 ====================
@@ -1076,10 +1080,10 @@ int R_Init( void *hinstance, void *hWnd ) {
 	ri.Con_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 
 	strcpy( renderer_buffer, gl_config.renderer_string );
-	strlwr( renderer_buffer );
+	Q_strtolower( renderer_buffer );
 
 	strcpy( vendor_buffer, gl_config.vendor_string );
-	strlwr( vendor_buffer );
+    Q_strtolower( vendor_buffer );
 
 	if( strstr( renderer_buffer, "voodoo" ) ) {
 		if( !strstr( renderer_buffer, "rush" ) )
