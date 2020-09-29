@@ -93,7 +93,7 @@ Both client and server can use this, and it will output
 to the apropriate place.
 =============
 */
-void Com_Printf( char *fmt, ... ) {
+void Com_Printf( const char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;

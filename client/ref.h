@@ -198,7 +198,7 @@ typedef struct
 	char	*(*Cmd_Argv) (int i);
 	void	(*Cmd_ExecuteText) (int exec_when, char *text);
 
-	void	(*Con_Printf) (int print_level, char *str, ...);
+	void	(*Con_Printf) (int print_level, const char *str, ...);
 
 	// files will be memory mapped read only
 	// the returned buffer may be part of a larger pak file,

@@ -505,10 +505,12 @@ extern	int	meansOfDeath;
 
 extern	edict_t			*g_edicts;
 
-#define	FOFS(x) (int)&(((edict_t *)0)->x)
-#define	STOFS(x) (int)&(((spawn_temp_t *)0)->x)
-#define	LLOFS(x) (int)&(((level_locals_t *)0)->x)
-#define	CLOFS(x) (int)&(((gclient_t *)0)->x)
+#define STRUCT_OFS( a, b ) (long)&(((a*)0)->b)
+
+#define	FOFS(x)     STRUCT_OFS( edict_t, x )
+#define	STOFS(x)    STRUCT_OFS( spawn_temp_t, x )
+#define	LLOFS(x)    STRUCT_OFS( level_locals_t, x )
+#define	CLOFS(x)    STRUCT_OFS( gclient_t, x )
 
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
@@ -609,8 +611,8 @@ void Cmd_Score_f (edict_t *ent);
 void PrecacheItem (gitem_t *it);
 void InitItems (void);
 void SetItemNames (void);
-gitem_t	*FindItem (char *pickup_name);
-gitem_t	*FindItemByClassname (char *classname);
+gitem_t	*FindItem ( const char *pickup_name);
+gitem_t	*FindItemByClassname ( const char *classname);
 #define	ITEM_INDEX(x) ((x)-itemlist)
 edict_t *Drop_Item (edict_t *ent, gitem_t *item);
 void SetRespawn (edict_t *ent, float delay);
@@ -766,7 +768,7 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 // g_svcmds.c
 //
 void	ServerCommand (void);
-qboolean SV_FilterPacket (char *from);
+qboolean SV_FilterPacket ( const char *from);
 
 //
 // p_view.c

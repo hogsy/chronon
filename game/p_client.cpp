@@ -169,7 +169,7 @@ void player_pain( edict_t *self, edict_t *other, float kick, int damage ) {
 
 
 qboolean IsFemale( edict_t *ent ) {
-	char *info;
+	const char *info;
 
 	if( !ent->client )
 		return false;
@@ -181,7 +181,7 @@ qboolean IsFemale( edict_t *ent ) {
 }
 
 qboolean IsNeutral( edict_t *ent ) {
-	char *info;
+	const char *info;
 
 	if( !ent->client )
 		return false;
@@ -934,7 +934,7 @@ void spectator_respawn( edict_t *ent ) {
 	// exceed max_spectators
 
 	if( ent->client->pers.spectator ) {
-		char *value = Info_ValueForKey( ent->client->pers.userinfo, "spectator" );
+		const char *value = Info_ValueForKey( ent->client->pers.userinfo, "spectator" );
 		if( *spectator_password->string &&
 			strcmp( spectator_password->string, "none" ) &&
 			strcmp( spectator_password->string, value ) ) {
@@ -963,7 +963,7 @@ void spectator_respawn( edict_t *ent ) {
 	} else {
 		// he was a spectator and wants to join the game
 		// he must have the right password
-		char *value = Info_ValueForKey( ent->client->pers.userinfo, "password" );
+		const char *value = Info_ValueForKey( ent->client->pers.userinfo, "password" );
 		if( *password->string && strcmp( password->string, "none" ) &&
 			strcmp( password->string, value ) ) {
 			gi.cprintf( ent, PRINT_HIGH, "Password incorrect.\n" );
@@ -1264,7 +1264,7 @@ The game can override any of the settings in place
 ============
 */
 void ClientUserinfoChanged( edict_t *ent, char *userinfo ) {
-	char *s;
+	const char *s;
 	int		playernum;
 
 	// check for malformed or illegal info strings
@@ -1327,7 +1327,7 @@ loadgames will.
 ============
 */
 qboolean ClientConnect( edict_t *ent, char *userinfo ) {
-	char *value;
+	const char *value;
 
 	// check to see if they are on the banned IP list
 	value = Info_ValueForKey( userinfo, "ip" );
