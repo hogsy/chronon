@@ -286,6 +286,7 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 				( (float *)( b + f->ofs ) )[ 1 ] = v;
 				( (float *)( b + f->ofs ) )[ 2 ] = 0;
 				break;
+			default:
 			case F_IGNORE:
 				break;
 			}
@@ -357,7 +358,7 @@ All but the first will have the FL_TEAMSLAVE flag set.
 All but the last will have the teamchain field set to the next one
 ================
 */
-void G_FindTeams( void ) {
+void G_FindTeams( ) {
 	edict_t *e, *e2, *chain;
 	int		i, j;
 	int		c, c2;
@@ -432,7 +433,7 @@ void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
 	for( i = 0; i < game.maxclients; i++ )
 		g_edicts[ i + 1 ].client = game.clients + i;
 
-	ent = NULL;
+	ent = nullptr;
 	inhibit = 0;
 
 	// parse ents

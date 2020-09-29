@@ -197,67 +197,67 @@ mmove_t insane_move_jumpdown = {FRAME_stand96, FRAME_stand100, insane_frames_jum
 
 mframe_t insane_frames_down [] =
 {
-	ai_move,	0,		NULL,		// 100
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,		// 110
-	ai_move,	-1.7,		NULL,
-	ai_move,	-1.6,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		insane_fist,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,		// 120
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,		// 130
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		insane_moan,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,		// 140
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	0,		NULL,		// 150
-	ai_move,	0.5,		NULL,
-	ai_move,	0,		NULL,
-	ai_move,	-0.2,		insane_scream,
-	ai_move,	0,		NULL,
-	ai_move,	0.2,		NULL,
-	ai_move,	0.4,		NULL,
-	ai_move,	0.6,		NULL,
-	ai_move,	0.8,		NULL,
-	ai_move,	0.7,		NULL,
-	ai_move,	0,		insane_checkup		// 160
+	{ai_move,	0,		NULL},		// 100
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},		// 110
+	{ai_move,	-1.7,		NULL},
+	{ai_move,	-1.6,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		insane_fist},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},		// 120
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},		// 130
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		insane_moan},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},		// 140
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	0,		NULL},		// 150
+	{ai_move,	0.5,		NULL},
+	{ai_move,	0,		NULL},
+	{ai_move,	-0.2,		insane_scream},
+	{ai_move,	0,		NULL},
+	{ai_move,	0.2,		NULL},
+	{ai_move,	0.4,		NULL},
+	{ai_move,	0.6,		NULL},
+	{ai_move,	0.8,		NULL},
+	{ai_move,	0.7,		NULL},
+	{ai_move,	0,		insane_checkup}		// 160
 };
 mmove_t insane_move_down = {FRAME_stand100, FRAME_stand160, insane_frames_down, insane_onground};
 
@@ -524,7 +524,7 @@ void insane_onground (edict_t *self)
 void insane_checkdown (edict_t *self)
 {
 //	if ( (self->s.frame == FRAME_stand94) || (self->s.frame == FRAME_stand65) )
-	if (self->spawnflags & 32)				// Always stand
+	if (self->spawnflags & 32U)				// Always stand
 		return;
 	if (random() < 0.3) {
 		if ( random() < 0.5 )
@@ -537,7 +537,7 @@ void insane_checkdown (edict_t *self)
 void insane_checkup (edict_t *self)
 {
 	// If Hold_Ground and Crawl are set
-	if ( (self->spawnflags & 4) && (self->spawnflags & 16) )
+	if ( (self->spawnflags & 4U) && (self->spawnflags & 16U) )
 		return;
 	if (random() < 0.5)
 		self->monsterinfo.currentmove = &insane_move_downtoup;				
@@ -546,13 +546,13 @@ void insane_checkup (edict_t *self)
 
 void insane_stand (edict_t *self)
 {
-	if (self->spawnflags & 8)			// If crucified
+	if (self->spawnflags & 8U)			// If crucified
 	{
 		self->monsterinfo.currentmove = &insane_move_cross;
 		self->monsterinfo.aiflags |= AI_STAND_GROUND;
 	}
 	// If Hold_Ground and Crawl are set
-	else if ( (self->spawnflags & 4) && (self->spawnflags & 16) )
+	else if ( (self->spawnflags & 4U) && (self->spawnflags & 16U) )
 		self->monsterinfo.currentmove = &insane_move_down;
 	else
 		if (random() < 0.5)
@@ -563,7 +563,7 @@ void insane_stand (edict_t *self)
 
 void insane_dead (edict_t *self)
 {
-	if (self->spawnflags & 8)
+	if (self->spawnflags & 8U)
 	{
 		self->flags |= FL_FLY;
 	}
@@ -603,7 +603,7 @@ void insane_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	self->deadflag = DEAD_DEAD;
 	self->takedamage = DAMAGE_YES;
 
-	if (self->spawnflags & 8)
+	if (self->spawnflags & 8U)
 	{
 		insane_dead (self);
 	}

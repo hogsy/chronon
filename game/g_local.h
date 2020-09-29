@@ -54,20 +54,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	SPAWNFLAG_NOT_COOP			0x00001000
 
 // edict->flags
-#define	FL_FLY					0x00000001
-#define	FL_SWIM					0x00000002	// implied immunity to drowining
-#define FL_IMMUNE_LASER			0x00000004
-#define	FL_INWATER				0x00000008
-#define	FL_GODMODE				0x00000010
-#define	FL_NOTARGET				0x00000020
-#define FL_IMMUNE_SLIME			0x00000040
-#define FL_IMMUNE_LAVA			0x00000080
-#define	FL_PARTIALGROUND		0x00000100	// not all corners are valid
-#define	FL_WATERJUMP			0x00000200	// player jumping out of water
-#define	FL_TEAMSLAVE			0x00000400	// not the first on the team
-#define FL_NO_KNOCKBACK			0x00000800
-#define FL_POWER_ARMOR			0x00001000	// power armor (if any) is active
-#define FL_RESPAWN				0x80000000	// used for item respawning
+#define	FL_FLY					0x00000001U
+#define	FL_SWIM					0x00000002U	// implied immunity to drowining
+#define FL_IMMUNE_LASER			0x00000004U
+#define	FL_INWATER				0x00000008U
+#define	FL_GODMODE				0x00000010U
+#define	FL_NOTARGET				0x00000020U
+#define FL_IMMUNE_SLIME			0x00000040U
+#define FL_IMMUNE_LAVA			0x00000080U
+#define	FL_PARTIALGROUND		0x00000100U	// not all corners are valid
+#define	FL_WATERJUMP			0x00000200U	// player jumping out of water
+#define	FL_TEAMSLAVE			0x00000400U	// not the first on the team
+#define FL_NO_KNOCKBACK			0x00000800U
+#define FL_POWER_ARMOR			0x00001000U	// power armor (if any) is active
+#define FL_RESPAWN				0x80000000U	// used for item respawning
 
 
 #define	FRAMETIME		0.1
@@ -124,21 +124,21 @@ typedef enum
 #define GIB_METALLIC			1
 
 //monster ai flags
-#define AI_STAND_GROUND			0x00000001
-#define AI_TEMP_STAND_GROUND	0x00000002
-#define AI_SOUND_TARGET			0x00000004
-#define AI_LOST_SIGHT			0x00000008
-#define AI_PURSUIT_LAST_SEEN	0x00000010
-#define AI_PURSUE_NEXT			0x00000020
-#define AI_PURSUE_TEMP			0x00000040
-#define AI_HOLD_FRAME			0x00000080
-#define AI_GOOD_GUY				0x00000100
-#define AI_BRUTAL				0x00000200
-#define AI_NOSTEP				0x00000400
-#define AI_DUCKED				0x00000800
-#define AI_COMBAT_POINT			0x00001000
-#define AI_MEDIC				0x00002000
-#define AI_RESURRECTING			0x00004000
+#define AI_STAND_GROUND			0x00000001U
+#define AI_TEMP_STAND_GROUND	0x00000002U
+#define AI_SOUND_TARGET			0x00000004U
+#define AI_LOST_SIGHT			0x00000008U
+#define AI_PURSUIT_LAST_SEEN	0x00000010U
+#define AI_PURSUE_NEXT			0x00000020U
+#define AI_PURSUE_TEMP			0x00000040U
+#define AI_HOLD_FRAME			0x00000080U
+#define AI_GOOD_GUY				0x00000100U
+#define AI_BRUTAL				0x00000200U
+#define AI_NOSTEP				0x00000400U
+#define AI_DUCKED				0x00000800U
+#define AI_COMBAT_POINT			0x00001000U
+#define AI_MEDIC				0x00002000U
+#define AI_RESURRECTING			0x00004000U
 
 //monster attack state
 #define AS_STRAIGHT				1
@@ -416,7 +416,7 @@ typedef struct
 typedef struct
 {
 	mmove_t		*currentmove;
-	int			aiflags;
+	unsigned int			aiflags;
 	int			nextframe;
 	float		scale;
 
@@ -568,8 +568,8 @@ extern	cvar_t	*sv_maplist;
 // fields are needed for spawning from the entity string
 // and saving / loading games
 //
-#define FFL_SPAWNTEMP		1
-#define FFL_NOSPAWN			2
+#define FFL_SPAWNTEMP		1U
+#define FFL_NOSPAWN			2U
 
 typedef enum {
 	F_INT, 
@@ -591,7 +591,7 @@ typedef struct
 	const char	*name;
 	long		ofs;
 	fieldtype_t	type;
-	int		flags;
+	unsigned int flags;
 } field_t;
 
 
@@ -986,7 +986,7 @@ struct edict_s
 
 	//================================
 
-	int			svflags;
+	unsigned int svflags;
 	vec3_t		mins, maxs;
 	vec3_t		absmin, absmax, size;
 	solid_t		solid;
@@ -999,7 +999,7 @@ struct edict_s
 
 	//================================
 	int			movetype;
-	int			flags;
+	unsigned int			flags;
 
 	const char		*model;
 	float		freetime;			// sv.time when the object was freed
@@ -1009,7 +1009,7 @@ struct edict_s
 	//
 	char		*message;
 	const char		*classname;
-	int			spawnflags;
+	unsigned int spawnflags;
 
 	float		timestamp;
 
