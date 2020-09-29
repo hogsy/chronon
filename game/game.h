@@ -148,7 +148,7 @@ typedef struct
 	void	(*WriteShort) (int c);
 	void	(*WriteLong) (int c);
 	void	(*WriteFloat) (float f);
-	void	(*WriteString) (char *s);
+	void	(*WriteString) (const char *s);
 	void	(*WritePosition) (vec3_t pos);	// some fractional bits
 	void	(*WriteDir) (vec3_t pos);		// single byte encoded, very coarse
 	void	(*WriteAngle) (float f);
@@ -160,8 +160,8 @@ typedef struct
 
 	// console variable interaction
 	cvar_t	*(*cvar) (const char *var_name, const char *value, int flags);
-	cvar_t	*(*cvar_set) (const char *var_name, char *value);
-	cvar_t	*(*cvar_forceset) (const char *var_name, char *value);
+	cvar_t	*(*cvar_set) (const char *var_name, const char *value);
+	cvar_t	*(*cvar_forceset) (const char *var_name, const char *value);
 
 	// ClientCommand and ServerCommand parameter access
 	int		(*argc) ();
@@ -185,8 +185,8 @@ typedef struct
 	// the init function will only be called when a game starts,
 	// not each time a level is loaded.  Persistant data for clients
 	// and the server can be allocated in init
-	void		(*Init) (void);
-	void		(*Shutdown) (void);
+	void		(*Init) ();
+	void		(*Shutdown) ();
 
 	// each new level entered will cause a call to SpawnEntities
 	void		(*SpawnEntities) (char *mapname, char *entstring, char *spawnpoint);
@@ -216,7 +216,7 @@ typedef struct
 	// server console.
 	// The game can issue gi.argc() / gi.argv() commands to get the rest
 	// of the parameters
-	void		(*ServerCommand) (void);
+	void		(*ServerCommand) ();
 
 	//
 	// global variables shared between game and server

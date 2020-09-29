@@ -555,7 +555,7 @@ void COM_StripExtension( char *in, char *out ) {
 COM_FileExtension
 ============
 */
-char *COM_FileExtension( char *in ) {
+const char *COM_FileExtension( char *in ) {
 	static char exten[ 8 ];
 	int		i;
 
@@ -750,7 +750,7 @@ varargs versions of all text functions.
 FIXME: make this buffer size safe someday
 ============
 */
-char *va( char *format, ... ) {
+char *va( const char *format, ... ) {
 	va_list		argptr;
 	static char		string[ 1024 ];
 
@@ -771,7 +771,7 @@ COM_Parse
 Parse a token out of a string
 ==============
 */
-char *COM_Parse( char **data_p ) {
+const char *COM_Parse( char **data_p ) {
 	int		c;
 	int		len;
 	char *data;
@@ -781,7 +781,7 @@ char *COM_Parse( char **data_p ) {
 	com_token[ 0 ] = 0;
 
 	if( !data ) {
-		*data_p = NULL;
+		*data_p = nullptr;
 		return "";
 	}
 
@@ -789,7 +789,7 @@ char *COM_Parse( char **data_p ) {
 skipwhite:
 	while( ( c = *data ) <= ' ' ) {
 		if( c == 0 ) {
-			*data_p = NULL;
+			*data_p = nullptr;
 			return "";
 		}
 		data++;
@@ -984,7 +984,7 @@ const char *Info_ValueForKey( char *s, const char *key ) {
 	}
 }
 
-void Info_RemoveKey( char *s, char *key ) {
+void Info_RemoveKey( char *s, const char *key ) {
 	char *start;
 	char	pkey[ 512 ];
 	char	value[ 512 ];
@@ -1044,10 +1044,10 @@ qboolean Info_Validate( char *s ) {
 	return true;
 }
 
-void Info_SetValueForKey( char *s, char *key, char *value ) {
+void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 	char	newi[ MAX_INFO_STRING ], *v;
 	int		c;
-	int		maxsize = MAX_INFO_STRING;
+	unsigned int		maxsize = MAX_INFO_STRING;
 
 	if( strstr( key, "\\" ) || strstr( value, "\\" ) ) {
 		Com_Printf( "Can't use keys or values with a \\\n" );

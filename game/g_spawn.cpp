@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 typedef struct {
-	char *name;
+	const char *name;
 	void	( *spawn )( edict_t *ent );
 } spawn_t;
 
@@ -216,7 +216,7 @@ void ED_CallSpawn( edict_t *ent ) {
 ED_NewString
 =============
 */
-char *ED_NewString( char *string ) {
+char *ED_NewString( const char *string ) {
 	char *newb, *new_p;
 	int		i, l;
 
@@ -251,7 +251,7 @@ Takes a key/value pair and sets the binary values
 in an edict
 ===============
 */
-void ED_ParseField( char *key, char *value, edict_t *ent ) {
+void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 	field_t *f;
 	byte *b;
 	float	v;
@@ -306,7 +306,7 @@ ed should be a properly initialized empty edict.
 char *ED_ParseEdict( char *data, edict_t *ent ) {
 	qboolean	init;
 	char		keyname[ 256 ];
-	char *com_token;
+	const char *com_token;
 
 	init = false;
 	memset( &st, 0, sizeof( st ) );
@@ -406,7 +406,7 @@ parsing textual entity definitions out of an ent file.
 void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
 	edict_t *ent;
 	int			inhibit;
-	char *com_token;
+	const char *com_token;
 	int			i;
 	float		skill_level;
 
@@ -523,7 +523,7 @@ endif
 
 #endif
 
-char *single_statusbar =
+const char *single_statusbar =
 "yb	-24 "
 
 // health
@@ -581,7 +581,7 @@ char *single_statusbar =
 "endif "
 ;
 
-char *dm_statusbar =
+const char *dm_statusbar =
 "yb	-24 "
 
 // health

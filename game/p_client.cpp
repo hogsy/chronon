@@ -194,8 +194,8 @@ qboolean IsNeutral( edict_t *ent ) {
 
 void ClientObituary( edict_t *self, edict_t *inflictor, edict_t *attacker ) {
 	int			mod;
-	char *message;
-	char *message2;
+	const char *message;
+	const char *message2;
 	qboolean	ff;
 
 	if( coop->value && attacker->client )
@@ -765,22 +765,22 @@ edict_t *SelectDeathmatchSpawnPoint( void ) {
 
 edict_t *SelectCoopSpawnPoint( edict_t *ent ) {
 	int		index;
-	edict_t *spot = NULL;
-	char *target;
+	edict_t *spot = nullptr;
+	const char *target;
 
 	index = ent->client - game.clients;
 
 	// player 0 starts in normal player spawn point
 	if( !index )
-		return NULL;
+		return nullptr;
 
-	spot = NULL;
+	spot = nullptr;
 
 	// assume there are four coop spots at each spawnpoint
 	while( 1 ) {
 		spot = G_Find( spot, FOFS( classname ), "info_player_coop" );
 		if( !spot )
-			return NULL;	// we didn't have enough...
+			return nullptr;	// we didn't have enough...
 
 		target = spot->targetname;
 		if( !target )

@@ -992,7 +992,7 @@ and for each item in each client's inventory.
 */
 void PrecacheItem (gitem_t *it)
 {
-	char	*s, *start;
+	const char	*s, *start;
 	char	data[MAX_QPATH];
 	int		len;
 	gitem_t	*ammo;

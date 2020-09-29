@@ -277,7 +277,7 @@ short BigShort(short l);
 int	LittleLong(int l);
 float LittleFloat(float f);
 
-char* va(char* format, ...);
+char* va(const char* format, ...);
 // does a varargs printf into a temp buffer
 #endif
 
