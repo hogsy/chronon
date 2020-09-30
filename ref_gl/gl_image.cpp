@@ -978,17 +978,12 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 		{ "png", 32, NULL, LoadImage32 },
 		{ "bmp", 32, NULL, LoadImage32 },
 		{ "pcx", 8, LoadPCX, NULL },
-		{ NULL }
 	};
 
 	char uname[ MAX_QPATH ];
 	strcpy( uname, name );
 
 	for(auto & loader : loaders) {
-		if( loader.extension[ 0 ] == '\0' ) {
-			break;
-		}
-
 		uname[ len - 3 ] = '\0';
 		strcat( uname, loader.extension );
 
@@ -1027,7 +1022,7 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 R_RegisterSkin
 ===============
 */
-struct image_s *R_RegisterSkin( char *name ) {
+struct image_s *R_RegisterSkin( const char *name ) {
 	return GL_FindImage( name, it_skin );
 }
 

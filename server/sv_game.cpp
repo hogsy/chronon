@@ -61,7 +61,7 @@ PF_dprintf
 Debug print to server console
 ===============
 */
-void PF_dprintf (char *fmt, ...)
+static void PF_dprintf (const char *fmt, ...)
 {
 	char		msg[1024];
 	va_list		argptr;
@@ -81,7 +81,7 @@ PF_cprintf
 Print to a single client
 ===============
 */
-void PF_cprintf (edict_t *ent, int level, char *fmt, ...)
+static void PF_cprintf (edict_t *ent, int level, const char *fmt, ...)
 {
 	char		msg[1024];
 	va_list		argptr;
@@ -112,7 +112,7 @@ PF_centerprintf
 centerprint to a single client
 ===============
 */
-void PF_centerprintf (edict_t *ent, char *fmt, ...)
+static void PF_centerprintf (edict_t *ent, const char *fmt, ...)
 {
 	char		msg[1024];
 	va_list		argptr;
@@ -139,7 +139,7 @@ PF_error
 Abort the server with a game error
 ===============
 */
-void PF_error (char *fmt, ...)
+static void PF_error (const char *fmt, ...)
 {
 	char		msg[1024];
 	va_list		argptr;
@@ -159,7 +159,7 @@ PF_setmodel
 Also sets mins and maxs for inline bmodels
 =================
 */
-void PF_setmodel (edict_t *ent, char *name)
+static void PF_setmodel (edict_t *ent, const char *name)
 {
 	int		i;
 	cmodel_t	*mod;
@@ -189,7 +189,7 @@ PF_Configstring
 
 ===============
 */
-void PF_Configstring (int index, char *val)
+static void PF_Configstring (int index, const char *val)
 {
 	if (index < 0 || index >= MAX_CONFIGSTRINGS)
 		Com_Error (ERR_DROP, "configstring: bad index %i\n", index);
@@ -219,7 +219,7 @@ void PF_WriteByte (int c) {MSG_WriteByte (&sv.multicast, c);}
 void PF_WriteShort (int c) {MSG_WriteShort (&sv.multicast, c);}
 void PF_WriteLong (int c) {MSG_WriteLong (&sv.multicast, c);}
 void PF_WriteFloat (float f) {MSG_WriteFloat (&sv.multicast, f);}
-void PF_WriteString (char *s) {MSG_WriteString (&sv.multicast, s);}
+void PF_WriteString (const char *s) {MSG_WriteString (&sv.multicast, s);}
 void PF_WritePos (vec3_t pos) {MSG_WritePos (&sv.multicast, pos);}
 void PF_WriteDir (vec3_t dir) {MSG_WriteDir (&sv.multicast, dir);}
 void PF_WriteAngle (float f) {MSG_WriteAngle (&sv.multicast, f);}

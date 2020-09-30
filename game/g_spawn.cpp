@@ -304,7 +304,7 @@ Parses an edict out of the given string, returning the new position
 ed should be a properly initialized empty edict.
 ====================
 */
-char *ED_ParseEdict( char *data, edict_t *ent ) {
+static const char *ED_ParseEdict( const char *data, edict_t *ent ) {
 	qboolean	init;
 	char		keyname[ 256 ];
 	const char *com_token;
@@ -404,7 +404,7 @@ Creates a server's entity / program execution context by
 parsing textual entity definitions out of an ent file.
 ==============
 */
-void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
+void SpawnEntities( char *mapname, const char *entities, char *spawnpoint ) {
 	edict_t *ent;
 	int			inhibit;
 	const char *com_token;
@@ -500,29 +500,6 @@ void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
 
 
 //===================================================================
-
-#if 0
-	// cursor positioning
-xl <value>
-xr <value>
-yb <value>
-yt <value>
-xv <value>
-yv <value>
-
-// drawing
-statpic <name>
-pic <stat>
-num <fieldwidth> <stat>
-string <stat>
-
-// control
-if <stat>
-ifeq <stat> <value>
-ifbit <stat> <value>
-endif
-
-#endif
 
 const char *single_statusbar =
 "yb	-24 "

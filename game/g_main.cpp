@@ -72,7 +72,7 @@ cvar_t	*flood_waitdelay;
 
 cvar_t	*sv_maplist;
 
-void SpawnEntities (char *mapname, char *entities, char *spawnpoint);
+void SpawnEntities (char *mapname, const char *entities, char *spawnpoint);
 void ClientThink (edict_t *ent, usercmd_t *cmd);
 qboolean ClientConnect (edict_t *ent, char *userinfo);
 void ClientUserinfoChanged (edict_t *ent, char *userinfo);
@@ -152,7 +152,7 @@ void Sys_Error (const char *error, ...)
 	gi.error (ERR_FATAL, "%s", text);
 }
 
-void Com_Printf (char *msg, ...)
+void Com_Printf (const char *msg, ...)
 {
 	va_list		argptr;
 	char		text[1024];

@@ -90,7 +90,7 @@ void Draw_Char( int x, int y, int num ) {
 Draw_FindPic
 =============
 */
-image_t *Draw_FindPic( char *name ) {
+image_t *Draw_FindPic( const char *name ) {
 	image_t *gl;
 	char	fullname[ MAX_QPATH ];
 
@@ -108,7 +108,7 @@ image_t *Draw_FindPic( char *name ) {
 Draw_GetPicSize
 =============
 */
-void Draw_GetPicSize( int *w, int *h, char *pic ) {
+void Draw_GetPicSize( int *w, int *h, const char *pic ) {
 	image_t *gl;
 
 	gl = Draw_FindPic( pic );
@@ -125,7 +125,7 @@ void Draw_GetPicSize( int *w, int *h, char *pic ) {
 Draw_StretchPic
 =============
 */
-void Draw_StretchPic( int x, int y, int w, int h, char *pic ) {
+void Draw_StretchPic( int x, int y, int w, int h, const char *pic ) {
 	image_t *gl;
 
 	gl = Draw_FindPic( pic );
@@ -162,7 +162,7 @@ void Draw_StretchPic( int x, int y, int w, int h, char *pic ) {
 Draw_Pic
 =============
 */
-void Draw_Pic( int x, int y, char *pic ) {
+void Draw_Pic( int x, int y, const char *pic ) {
 	image_t *gl;
 
 	gl = Draw_FindPic( pic );
@@ -200,7 +200,7 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 =============
 */
-void Draw_TileClear( int x, int y, int w, int h, char *pic ) {
+void Draw_TileClear( int x, int y, int w, int h, const char *pic ) {
 	image_t *image;
 
 	image = Draw_FindPic( pic );

@@ -283,11 +283,11 @@ char* va(const char* format, ...);
 
 void COM_StripExtension(char* in, char* out);
 
-void Draw_GetPicSize(int* w, int* h, char* name);
-void Draw_Pic(int x, int y, char* name);
-void Draw_StretchPic(int x, int y, int w, int h, char* name);
+void Draw_GetPicSize(int* w, int* h, const char* name);
+void Draw_Pic(int x, int y, const char* name);
+void Draw_StretchPic(int x, int y, int w, int h, const char* name);
 void Draw_Char(int x, int y, int c);
-void Draw_TileClear(int x, int y, int w, int h, char* name);
+void Draw_TileClear(int x, int y, int w, int h, const char* name);
 void Draw_Fill(int x, int y, int w, int h, int c);
 void Draw_FadeScreen(void);
 void Draw_StretchRaw(int x, int y, int w, int h, int cols, int rows,
@@ -302,7 +302,7 @@ int Draw_GetPalette(void);
 void GL_ResampleTexture(unsigned* in, int inwidth, int inheight, unsigned* out,
                         int outwidth, int outheight);
 
-struct image_s* R_RegisterSkin(char* name);
+struct image_s* R_RegisterSkin(const char* name);
 
 void LoadPCX( const char* filename, byte** pic, byte** palette, int* width,
              int* height);

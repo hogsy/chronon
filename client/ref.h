@@ -155,19 +155,19 @@ typedef struct
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void	(*BeginRegistration) (char *map);
-	struct model_s *(*RegisterModel) (char *name);
-	struct image_s *(*RegisterSkin) (char *name);
-	struct image_s *(*RegisterPic) (char *name);
+	struct model_s *(*RegisterModel) (const char *name);
+	struct image_s *(*RegisterSkin) (const char *name);
+	struct image_s *(*RegisterPic) (const char *name);
 	void	(*SetSky) (char *name, float rotate, vec3_t axis);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);
 
-	void	(*DrawGetPicSize) (int *w, int *h, char *name);	// will return 0 0 if not found
-	void	(*DrawPic) (int x, int y, char *name);
-	void	(*DrawStretchPic) (int x, int y, int w, int h, char *name);
+	void	(*DrawGetPicSize) (int *w, int *h, const char *name);	// will return 0 0 if not found
+	void	(*DrawPic) (int x, int y, const char *name);
+	void	(*DrawStretchPic) (int x, int y, int w, int h, const char *name);
 	void	(*DrawChar) (int x, int y, int c);
-	void	(*DrawTileClear) (int x, int y, int w, int h, char *name);
+	void	(*DrawTileClear) (int x, int y, int w, int h, const char *name);
 	void	(*DrawFill) (int x, int y, int w, int h, int c);
 	void	(*DrawFadeScreen) (void);
 

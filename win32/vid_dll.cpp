@@ -104,7 +104,7 @@ DLL GLUE
 */
 
 #define MAXPRINTMSG 4096
-void VID_Printf( int print_level, char *fmt, ... ) {
+static void VID_Printf( int print_level, const char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
@@ -124,7 +124,7 @@ void VID_Printf( int print_level, char *fmt, ... ) {
 	Z_Free( msg );
 }
 
-void VID_Error( int err_level, char *fmt, ... ) {
+static void VID_Error( int err_level, const char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;

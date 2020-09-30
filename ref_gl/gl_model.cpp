@@ -153,7 +153,7 @@ Mod_ForName
 Loads in a model for the given name
 ==================
 */
-model_t *Mod_ForName( char *name, qboolean crash ) {
+model_t *Mod_ForName( const char *name, qboolean crash ) {
 	model_t *mod;
 	unsigned *buf;
 	int i;
@@ -1092,7 +1092,7 @@ R_RegisterModel
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-struct model_s *R_RegisterModel( char *name ) {
+struct model_s *R_RegisterModel( const char *name ) {
 	model_t *mod = Mod_ForName( name, false );
 	if( mod ) {
 		mod->registration_sequence = registration_sequence;
