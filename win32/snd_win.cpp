@@ -624,11 +624,11 @@ int SNDDMA_GetDMAPos( void ) {
 		s = mmtime.u.sample - mmstarttime.u.sample;
 	} else if( wav_init ) {
 		s = snd_sent * WAV_BUFFER_SIZE;
+	} else {
+		return 0;
 	}
 
-
 	s >>= sample16;
-
 	s &= ( dma.samples - 1 );
 
 	return s;

@@ -246,14 +246,14 @@ typedef struct model_s
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);
-model_t *Mod_ForName (char *name, qboolean crash);
+model_t *Mod_ForName (const char *name, qboolean crash);
 mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
 byte	*Mod_ClusterPVS (int cluster, model_t *model);
 
 void	Mod_Modellist_f (void);
 
-void	*Hunk_Begin (int maxsize);
-void	*Hunk_Alloc (int size);
+void	*Hunk_Begin ( size_t maxsize);
+void	*Hunk_Alloc ( size_t size);
 int		Hunk_End (void);
 void	Hunk_Free (void *base);
 

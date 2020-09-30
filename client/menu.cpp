@@ -2526,7 +2526,7 @@ void StartServer_MenuInit( void )
 //=======
 	char *buffer;
 	char  mapsname[1024];
-	char *s;
+	const char *s;
 	int length;
 	int i;
 	FILE *fp;

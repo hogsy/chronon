@@ -24,9 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // edict->svflags
 
-#define	SVF_NOCLIENT			0x00000001	// don't send entity to clients, even if it has effects
-#define	SVF_DEADMONSTER			0x00000002	// treat as CONTENTS_DEADMONSTER for collision
-#define	SVF_MONSTER				0x00000004	// treat as CONTENTS_MONSTER for collision
+#define	SVF_NOCLIENT			0x00000001U	// don't send entity to clients, even if it has effects
+#define	SVF_DEADMONSTER			0x00000002U	// treat as CONTENTS_DEADMONSTER for collision
+#define	SVF_MONSTER				0x00000004U	// treat as CONTENTS_MONSTER for collision
 
 // edict->solid values
 
@@ -102,10 +102,10 @@ struct edict_s
 typedef struct
 {
 	// special messages
-	void	(*bprintf) (int printlevel, char *fmt, ...);
-	void	(*dprintf) (char *fmt, ...);
-	void	(*cprintf) (edict_t *ent, int printlevel, char *fmt, ...);
-	void	(*centerprintf) (edict_t *ent, char *fmt, ...);
+	void	(*bprintf) (int printlevel, const char *fmt, ...);
+	void	(*dprintf) (const char *fmt, ...);
+	void	(*cprintf) (edict_t *ent, int printlevel, const char *fmt, ...);
+	void	(*centerprintf) (edict_t *ent, const char *fmt, ...);
 	void	(*sound) (edict_t *ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
 	void	(*positioned_sound) (vec3_t origin, edict_t *ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
 
@@ -113,16 +113,16 @@ typedef struct
 	// and misc data like the sky definition and cdtrack.
 	// All of the current configstrings are sent to clients when
 	// they connect, and changes are sent to all connected clients.
-	void	(*configstring) (int num, char *string);
+	void	(*configstring) (int num, const char *string);
 
-	void	(*error) (char *fmt, ...);
+	void	(*error) (const char *fmt, ...);
 
 	// the *index functions create configstrings and some internal server state
-	int		(*modelindex) (char *name);
-	int		(*soundindex) (char *name);
-	int		(*imageindex) (char *name);
+	int		(*modelindex) (const char *name);
+	int		(*soundindex) (const char *name);
+	int		(*imageindex) (const char *name);
 
-	void	(*setmodel) (edict_t *ent, char *name);
+	void	(*setmodel) (edict_t *ent, const char *name);
 
 	// collision detection
 	trace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask);
@@ -148,7 +148,7 @@ typedef struct
 	void	(*WriteShort) (int c);
 	void	(*WriteLong) (int c);
 	void	(*WriteFloat) (float f);
-	void	(*WriteString) (char *s);
+	void	(*WriteString) (const char *s);
 	void	(*WritePosition) (vec3_t pos);	// some fractional bits
 	void	(*WriteDir) (vec3_t pos);		// single byte encoded, very coarse
 	void	(*WriteAngle) (float f);
@@ -160,17 +160,17 @@ typedef struct
 
 	// console variable interaction
 	cvar_t	*(*cvar) (const char *var_name, const char *value, int flags);
-	cvar_t	*(*cvar_set) (char *var_name, char *value);
-	cvar_t	*(*cvar_forceset) (char *var_name, char *value);
+	cvar_t	*(*cvar_set) (const char *var_name, const char *value);
+	cvar_t	*(*cvar_forceset) (const char *var_name, const char *value);
 
 	// ClientCommand and ServerCommand parameter access
-	int		(*argc) (void);
+	int		(*argc) ();
 	char	*(*argv) (int n);
-	char	*(*args) (void);	// concatenation of all argv >= 1
+	char	*(*args) ();	// concatenation of all argv >= 1
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
-	void	(*AddCommandString) (char *text);
+	void	(*AddCommandString) (const char *text);
 
 	void	(*DebugGraph) (float value, int color);
 } game_import_t;
@@ -185,11 +185,11 @@ typedef struct
 	// the init function will only be called when a game starts,
 	// not each time a level is loaded.  Persistant data for clients
 	// and the server can be allocated in init
-	void		(*Init) (void);
-	void		(*Shutdown) (void);
+	void		(*Init) ();
+	void		(*Shutdown) ();
 
 	// each new level entered will cause a call to SpawnEntities
-	void		(*SpawnEntities) (char *mapname, char *entstring, char *spawnpoint);
+	void		(*SpawnEntities) (char *mapname, const char *entstring, char *spawnpoint);
 
 	// Read/Write Game is for storing persistant cross level information
 	// about the world state and the clients.
@@ -216,7 +216,7 @@ typedef struct
 	// server console.
 	// The game can issue gi.argc() / gi.argv() commands to get the rest
 	// of the parameters
-	void		(*ServerCommand) (void);
+	void		(*ServerCommand) ();
 
 	//
 	// global variables shared between game and server

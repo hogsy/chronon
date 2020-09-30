@@ -40,9 +40,9 @@ gitem_armor_t jacketarmor_info	= { 25,  50, .30, .00, ARMOR_JACKET};
 gitem_armor_t combatarmor_info	= { 50, 100, .60, .30, ARMOR_COMBAT};
 gitem_armor_t bodyarmor_info	= {100, 200, .80, .60, ARMOR_BODY};
 
-static int	jacket_armor_index;
-static int	combat_armor_index;
-static int	body_armor_index;
+int	jacket_armor_index;
+int	combat_armor_index;
+int	body_armor_index;
 static int	power_screen_index;
 static int	power_shield_index;
 
@@ -62,7 +62,7 @@ GetItemByIndex
 gitem_t	*GetItemByIndex (int index)
 {
 	if (index == 0 || index >= game.num_items)
-		return NULL;
+		return nullptr;
 
 	return &itemlist[index];
 }
@@ -74,7 +74,7 @@ FindItemByClassname
 
 ===============
 */
-gitem_t	*FindItemByClassname (char *classname)
+gitem_t	*FindItemByClassname ( const char *classname)
 {
 	int		i;
 	gitem_t	*it;
@@ -88,7 +88,7 @@ gitem_t	*FindItemByClassname (char *classname)
 			return it;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -97,7 +97,7 @@ FindItem
 
 ===============
 */
-gitem_t	*FindItem (char *pickup_name)
+gitem_t	*FindItem ( const char *pickup_name)
 {
 	int		i;
 	gitem_t	*it;
@@ -111,7 +111,7 @@ gitem_t	*FindItem (char *pickup_name)
 			return it;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //======================================================================
@@ -992,7 +992,7 @@ and for each item in each client's inventory.
 */
 void PrecacheItem (gitem_t *it)
 {
-	char	*s, *start;
+	const char	*s, *start;
 	char	data[MAX_QPATH];
 	int		len;
 	gitem_t	*ammo;

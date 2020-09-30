@@ -93,7 +93,7 @@ Both client and server can use this, and it will output
 to the apropriate place.
 =============
 */
-void Com_Printf( char *fmt, ... ) {
+void Com_Printf( const char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
@@ -311,7 +311,7 @@ void MSG_WriteFloat( sizebuf_t *sb, float f ) {
 	SZ_Write( sb, &dat.l, 4 );
 }
 
-void MSG_WriteString( sizebuf_t *sb, char *s ) {
+void MSG_WriteString( sizebuf_t *sb, const char *s ) {
 	if( !s )
 		SZ_Write( sb, "", 1 );
 	else
@@ -764,7 +764,7 @@ void *SZ_GetSpace( sizebuf_t *buf, int length ) {
 	return data;
 }
 
-void SZ_Write( sizebuf_t *buf, void *data, int length ) {
+void SZ_Write( sizebuf_t *buf, const void *data, int length ) {
 	memcpy( SZ_GetSpace( buf, length ), data, length );
 }
 

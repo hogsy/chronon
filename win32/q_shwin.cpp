@@ -38,7 +38,7 @@ int		cursize;
 
 //#define	VIRTUAL_ALLOC
 
-void *Hunk_Begin (int maxsize)
+void *Hunk_Begin (size_t maxsize)
 {
 	// reserve a huge chunk of memory, but don't commit any yet
 	cursize = 0;
@@ -54,7 +54,7 @@ void *Hunk_Begin (int maxsize)
 	return (void *)membase;
 }
 
-void *Hunk_Alloc (int size)
+void *Hunk_Alloc (size_t size)
 {
 	// round to cacheline
 	size = (size+31)&~31;

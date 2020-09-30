@@ -73,7 +73,7 @@ typedef struct entity_s
 	float	alpha;					// ignore if RF_TRANSLUCENT isn't set
 
 	struct image_s	*skin;			// NULL for inline skin
-	int		flags;
+	unsigned int		flags;
 
 } entity_t;
 
@@ -155,19 +155,19 @@ typedef struct
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void	(*BeginRegistration) (char *map);
-	struct model_s *(*RegisterModel) (char *name);
-	struct image_s *(*RegisterSkin) (char *name);
-	struct image_s *(*RegisterPic) (char *name);
+	struct model_s *(*RegisterModel) (const char *name);
+	struct image_s *(*RegisterSkin) (const char *name);
+	struct image_s *(*RegisterPic) (const char *name);
 	void	(*SetSky) (char *name, float rotate, vec3_t axis);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);
 
-	void	(*DrawGetPicSize) (int *w, int *h, char *name);	// will return 0 0 if not found
-	void	(*DrawPic) (int x, int y, char *name);
-	void	(*DrawStretchPic) (int x, int y, int w, int h, char *name);
+	void	(*DrawGetPicSize) (int *w, int *h, const char *name);	// will return 0 0 if not found
+	void	(*DrawPic) (int x, int y, const char *name);
+	void	(*DrawStretchPic) (int x, int y, int w, int h, const char *name);
 	void	(*DrawChar) (int x, int y, int c);
-	void	(*DrawTileClear) (int x, int y, int w, int h, char *name);
+	void	(*DrawTileClear) (int x, int y, int w, int h, const char *name);
 	void	(*DrawFill) (int x, int y, int w, int h, int c);
 	void	(*DrawFadeScreen) (void);
 
@@ -190,15 +190,15 @@ typedef struct
 //
 typedef struct
 {
-	void	(*Sys_Error) (int err_level, char *str, ...);
+	void	(*Sys_Error) (int err_level, const char *str, ...);
 
-	void	(*Cmd_AddCommand) (char *name, void(*cmd)(void));
-	void	(*Cmd_RemoveCommand) (char *name);
+	void	(*Cmd_AddCommand) (const char *name, void(*cmd)(void));
+	void	(*Cmd_RemoveCommand) (const char *name);
 	int		(*Cmd_Argc) (void);
 	char	*(*Cmd_Argv) (int i);
-	void	(*Cmd_ExecuteText) (int exec_when, char *text);
+	void	(*Cmd_ExecuteText) (int exec_when, const char *text);
 
-	void	(*Con_Printf) (int print_level, char *str, ...);
+	void	(*Con_Printf) (int print_level, const char *str, ...);
 
 	// files will be memory mapped read only
 	// the returned buffer may be part of a larger pak file,
@@ -213,8 +213,8 @@ typedef struct
 	char	*(*FS_Gamedir) (void);
 
 	cvar_t	*(*Cvar_Get) (const char *name, const char *value, int flags);
-	cvar_t	*(*Cvar_Set)( char *name, char *value );
-	void	 (*Cvar_SetValue)( char *name, float value );
+	cvar_t	*(*Cvar_Set)( const char *name, const char *value );
+	void	 (*Cvar_SetValue)( const char *name, float value );
 
 	qboolean	(*Vid_GetModeInfo)( int *width, int *height, int mode );
 	void		(*Vid_MenuInit)( void );

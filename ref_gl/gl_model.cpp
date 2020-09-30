@@ -153,7 +153,7 @@ Mod_ForName
 Loads in a model for the given name
 ==================
 */
-model_t *Mod_ForName( char *name, qboolean crash ) {
+model_t *Mod_ForName( const char *name, qboolean crash ) {
 	model_t *mod;
 	unsigned *buf;
 	int i;
@@ -766,7 +766,6 @@ Mod_LoadBrushModel
 =================
 */
 void Mod_LoadBrushModel( model_t *mod, void *buffer ) {
-	int i;
 	dheader_t *header;
 	mmodel_t *bm;
 
@@ -776,17 +775,19 @@ void Mod_LoadBrushModel( model_t *mod, void *buffer ) {
 
 	header = (dheader_t *)buffer;
 
-	i = LittleLong( header->version );
-	if( i != BSPVERSION )
+	unsigned int version = LittleLong( header->version );
+	if( version != BSPVERSION )
 		ri.Sys_Error(
 			ERR_DROP,
 			"Mod_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			mod->name, i, BSPVERSION );
+			mod->name, version
+
+		        , BSPVERSION );
 
 	// swap all the lumps
 	mod_base = (byte *)header;
 
-	for( i = 0; i < sizeof( dheader_t ) / 4; i++ )
+	for( unsigned int i = 0; i < sizeof( dheader_t ) / 4; i++ )
 		( (int *)header )[ i ] = LittleLong( ( (int *)header )[ i ] );
 
 	// load into heap
@@ -808,7 +809,7 @@ void Mod_LoadBrushModel( model_t *mod, void *buffer ) {
 	//
 	// set up the submodels
 	//
-	for( i = 0; i < mod->numsubmodels; i++ ) {
+	for( int i = 0; i < mod->numsubmodels; i++ ) {
 		model_t *starmod;
 
 		bm = &mod->submodels[ i ];
@@ -894,7 +895,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	pinst = (dstvert_t *)( (byte *)pinmodel + pheader->ofs_st );
 	poutst = (dstvert_t *)( (byte *)pheader + pheader->ofs_st );
-	for( unsigned int i = 0; i < pheader->num_st; i++ ) {
+	for( int i = 0; i < pheader->num_st; i++ ) {
 		poutst[ i ].s = LittleShort( pinst[ i ].s );
 		poutst[ i ].t = LittleShort( pinst[ i ].t );
 	}
@@ -904,7 +905,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	dtriangle_t *pintri = (dtriangle_t *)( (byte *)pinmodel + pheader->ofs_tris );
 	dtriangle_t *pouttri = (dtriangle_t *)( (byte *)pheader + pheader->ofs_tris );
-	for( unsigned int i = 0; i < pheader->num_tris; i++ ) {
+	for( int i = 0; i < pheader->num_tris; i++ ) {
 		for( unsigned int j = 0; j < 3; j++ ) {
 			pouttri[ i ].index_xyz[ j ] = LittleShort( pintri[ i ].index_xyz[ j ] );
 			pouttri[ i ].index_st[ j ] = LittleShort( pintri[ i ].index_st[ j ] );
@@ -914,7 +915,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	// load the frames
 	//
-	for( unsigned int i = 0; i < pheader->num_frames; i++ ) {
+	for( int i = 0; i < pheader->num_frames; i++ ) {
 		switch( pheader->resolution ) {
 		case 0:
 		{
@@ -927,7 +928,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
 			}
 
-			for( unsigned int j = 0; j < pheader->num_xyz; ++j ) {
+			for( int j = 0; j < pheader->num_xyz; ++j ) {
 				for( unsigned int k = 0; k < 3; ++k ) {
 					poutframe->verts[ j ].vertexIndices[ k ] = pinframe->verts[ j ].vertexIndices[ k ];
 				}
@@ -946,7 +947,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
 			}
 
-			for( unsigned int j = 0; j < pheader->num_xyz; ++j ) {
+			for( int j = 0; j < pheader->num_xyz; ++j ) {
 				poutframe->verts[ j ].vertexIndices = pinframe->verts[ j ].vertexIndices;
 				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
 			}
@@ -963,7 +964,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
 			}
 
-			for( unsigned int j = 0; j < pheader->num_xyz; ++j ) {
+			for( int j = 0; j < pheader->num_xyz; ++j ) {
 				for( unsigned int k = 0; k < 3; ++k ) {
 					poutframe->verts[ j ].vertexIndices[ k ] = pinframe->verts[ j ].vertexIndices[ k ];
 				}
@@ -983,13 +984,13 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 	//
 	pincmd = (int *)( (byte *)pinmodel + pheader->ofs_glcmds );
 	poutcmd = (int *)( (byte *)pheader + pheader->ofs_glcmds );
-	for( unsigned int i = 0; i < pheader->num_glcmds; i++ ) poutcmd[ i ] = LittleLong( pincmd[ i ] );
+	for( int i = 0; i < pheader->num_glcmds; i++ ) poutcmd[ i ] = LittleLong( pincmd[ i ] );
 
 	// register all skins
 	memcpy( (char *)pheader + pheader->ofs_skins,
 		(char *)pinmodel + pheader->ofs_skins,
 		pheader->num_skins * MAX_SKINNAME );
-	for( unsigned int i = 0; i < pheader->num_skins; i++ ) {
+	for( int i = 0; i < pheader->num_skins; i++ ) {
 		char skin_path[ MAX_QPATH ];
 		snprintf( skin_path, sizeof( skin_path ), "%s", mod->name );
 		strcpy( strrchr( skin_path, '/' ) + 1, (char *)pheader + pheader->ofs_skins + i * MAX_SKINNAME );
@@ -1091,7 +1092,7 @@ R_RegisterModel
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-struct model_s *R_RegisterModel( char *name ) {
+struct model_s *R_RegisterModel( const char *name ) {
 	model_t *mod = Mod_ForName( name, false );
 	if( mod ) {
 		mod->registration_sequence = registration_sequence;

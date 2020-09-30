@@ -120,12 +120,12 @@ static qboolean StringToFilter (char *s, ipfilter_t *f)
 SV_FilterPacket
 =================
 */
-qboolean SV_FilterPacket (char *from)
+qboolean SV_FilterPacket ( const char *from)
 {
 	int		i;
 	unsigned	in;
 	byte m[4];
-	char *p;
+	const char *p;
 
 	i = 0;
 	p = from;

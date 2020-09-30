@@ -123,12 +123,12 @@ void BeginIntermission (edict_t *targ)
 	level.exitintermission = 0;
 
 	// find an intermission spot
-	ent = G_Find (NULL, FOFS(classname), "info_player_intermission");
+	ent = G_Find (nullptr, FOFS(classname), "info_player_intermission");
 	if (!ent)
 	{	// the map creator forgot to put in an intermission point...
-		ent = G_Find (NULL, FOFS(classname), "info_player_start");
+		ent = G_Find (nullptr, FOFS(classname), "info_player_start");
 		if (!ent)
-			ent = G_Find (NULL, FOFS(classname), "info_player_deathmatch");
+			ent = G_Find (nullptr, FOFS(classname), "info_player_deathmatch");
 	}
 	else
 	{	// chose one of four spots
@@ -170,11 +170,10 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 	int		sorted[MAX_CLIENTS];
 	int		sortedscores[MAX_CLIENTS];
 	int		score, total;
-	int		picnum;
 	int		x, y;
 	gclient_t	*cl;
 	edict_t		*cl_ent;
-	char	*tag;
+	const char	*tag;
 
 	// sort the clients by score
 	total = 0;
@@ -213,7 +212,6 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 		cl = &game.clients[sorted[i]];
 		cl_ent = g_edicts + 1 + sorted[i];
 
-		picnum = gi.imageindex ("i_fixme");
 		x = (i>=6) ? 160 : 0;
 		y = 32 + 32 * (i%6);
 
@@ -223,7 +221,7 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 		else if (cl_ent == killer)
 			tag = "tag2";
 		else
-			tag = NULL;
+			tag = nullptr;
 		if (tag)
 		{
 			Com_sprintf (entry, sizeof(entry),
@@ -302,7 +300,7 @@ Draw help computer.
 void HelpComputer (edict_t *ent)
 {
 	char	string[1024];
-	char	*sk;
+	const char	*sk;
 
 	if (skill->value == 0)
 		sk = "easy";

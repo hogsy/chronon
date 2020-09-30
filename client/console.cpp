@@ -30,7 +30,7 @@ extern char key_lines[ 32 ][ MAXCMDLINE ];
 extern int edit_line;
 extern int key_linepos;
 
-void DrawString( int x, int y, char *s ) {
+void DrawString( int x, int y, const char *s ) {
 	while( *s ) {
 		re.DrawChar( x, y, *s );
 		x += 8;
@@ -38,7 +38,7 @@ void DrawString( int x, int y, char *s ) {
 	}
 }
 
-void DrawAltString( int x, int y, char *s ) {
+void DrawAltString( int x, int y, const char *s ) {
 	while( *s ) {
 		re.DrawChar( x, y, *s ^ 0x80 );
 		x += 8;

@@ -85,7 +85,7 @@ typedef struct sizebuf_s {
 void SZ_Init( sizebuf_t *buf, byte *data, int length );
 void SZ_Clear( sizebuf_t *buf );
 void *SZ_GetSpace( sizebuf_t *buf, int length );
-void SZ_Write( sizebuf_t *buf, void *data, int length );
+void SZ_Write( sizebuf_t *buf, const void *data, int length );
 void SZ_Print( sizebuf_t *buf, char *data );  // strcats onto the sizebuf
 
 //============================================================================
@@ -98,7 +98,7 @@ void MSG_WriteByte( sizebuf_t *sb, int c );
 void MSG_WriteShort( sizebuf_t *sb, int c );
 void MSG_WriteLong( sizebuf_t *sb, int c );
 void MSG_WriteFloat( sizebuf_t *sb, float f );
-void MSG_WriteString( sizebuf_t *sb, char *s );
+void MSG_WriteString( sizebuf_t *sb, const char *s );
 void MSG_WriteCoord( sizebuf_t *sb, float f );
 void MSG_WritePos( sizebuf_t *sb, vec3_t pos );
 void MSG_WriteAngle( sizebuf_t *sb, float f );
@@ -355,16 +355,16 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 void Cbuf_Init( void );
 // allocates an initial text buffer that will grow as needed
 
-void Cbuf_AddText( char *text );
+void Cbuf_AddText( const char *text );
 // as new commands are generated from the console or keybindings,
 // the text is added to the end of the command buffer.
 
-void Cbuf_InsertText( char *text );
+void Cbuf_InsertText( const char *text );
 // when a command wants to issue other commands immediately, the text is
 // inserted at the beginning of the buffer, before any remaining unexecuted
 // commands.
 
-void Cbuf_ExecuteText( int exec_when, char *text );
+void Cbuf_ExecuteText( int exec_when, const char *text );
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
 
 void Cbuf_AddEarlyCommands( qboolean clear );
@@ -399,18 +399,18 @@ typedef void ( *xcommand_t )( void );
 
 void Cmd_Init( void );
 
-void Cmd_AddCommand( char *cmd_name, xcommand_t function );
+void Cmd_AddCommand( const char *cmd_name, xcommand_t function );
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory
 // if function is NULL, the command will be forwarded to the server
 // as a clc_stringcmd instead of executed locally
-void Cmd_RemoveCommand( char *cmd_name );
+void Cmd_RemoveCommand( const char *cmd_name );
 
 qboolean Cmd_Exists( char *cmd_name );
 // used by the cvar code to check for cvar / command name overlap
 
-char *Cmd_CompleteCommand( char *partial );
+const char *Cmd_CompleteCommand( const char *partial );
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 
@@ -421,11 +421,11 @@ char *Cmd_Args( void );
 // functions. Cmd_Argv () will return an empty string, not a NULL
 // if arg > argc, so string operations are always safe.
 
-void Cmd_TokenizeString( char *text, qboolean macroExpand );
+void Cmd_TokenizeString( const char *text, qboolean macroExpand );
 // Takes a null terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.
 
-void Cmd_ExecuteString( char *text );
+void Cmd_ExecuteString( const char *text );
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
 
@@ -462,24 +462,24 @@ cvar_t *Cvar_Get( const char *var_name, const char *value, int flags );
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
 
-cvar_t *Cvar_Set( char *var_name, char *value );
+cvar_t *Cvar_Set( const char *var_name, const char *value );
 // will create the variable if it doesn't exist
 
-cvar_t *Cvar_ForceSet( char *var_name, char *value );
+cvar_t *Cvar_ForceSet( const char *var_name, const char *value );
 // will set the variable even if NOSET or LATCH
 
 cvar_t *Cvar_FullSet( const char *var_name, const char *value, int flags );
 
-void Cvar_SetValue( char *var_name, float value );
+void Cvar_SetValue( const char *var_name, float value );
 // expands value to a string and calls Cvar_Set
 
 float Cvar_VariableValue( char *var_name );
 // returns 0 if not defined or non numeric
 
-char *Cvar_VariableString( char *var_name );
+char *Cvar_VariableString( const char *var_name );
 // returns an empty string if not defined
 
-char *Cvar_CompleteVariable( char *partial );
+char *Cvar_CompleteVariable( const char *partial );
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
 
@@ -622,7 +622,7 @@ CMODEL
 #include "../qcommon/qfiles.h"
 
 cmodel_t *CM_LoadMap( char *name, qboolean clientload, unsigned *checksum );
-cmodel_t *CM_InlineModel( char *name );  // *1, *2, etc
+cmodel_t *CM_InlineModel( const char *name );  // *1, *2, etc
 
 int CM_NumClusters( void );
 int CM_NumInlineModels( void );
@@ -725,7 +725,7 @@ MISC
 
 void Com_BeginRedirect( int target, char *buffer, int buffersize, void( *flush ) );
 void Com_EndRedirect( void );
-void Com_Printf( char *fmt, ... );
+void Com_Printf( const char *fmt, ... );
 void Com_DPrintf( char *fmt, ... );
 void Com_Error( int code, char *fmt, ... );
 void Com_Quit( void );

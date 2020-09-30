@@ -636,7 +636,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 CM_InlineModel
 ==================
 */
-cmodel_t	*CM_InlineModel (char *name)
+cmodel_t	*CM_InlineModel (const char *name)
 {
 	int		num;
 

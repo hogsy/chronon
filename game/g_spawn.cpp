@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 typedef struct {
-	char *name;
+	const char *name;
 	void	( *spawn )( edict_t *ent );
 } spawn_t;
 
@@ -216,7 +216,7 @@ void ED_CallSpawn( edict_t *ent ) {
 ED_NewString
 =============
 */
-char *ED_NewString( char *string ) {
+char *ED_NewString( const char *string ) {
 	char *newb, *new_p;
 	int		i, l;
 
@@ -251,7 +251,7 @@ Takes a key/value pair and sets the binary values
 in an edict
 ===============
 */
-void ED_ParseField( char *key, char *value, edict_t *ent ) {
+void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 	field_t *f;
 	byte *b;
 	float	v;
@@ -275,17 +275,18 @@ void ED_ParseField( char *key, char *value, edict_t *ent ) {
 				( (float *)( b + f->ofs ) )[ 2 ] = vec[ 2 ];
 				break;
 			case F_INT:
-				*(int *)( b + f->ofs ) = atoi( value );
+				*(int *)( b + f->ofs ) = static_cast< int >( strtol( value, nullptr, 10 ) );
 				break;
 			case F_FLOAT:
-				*(float *)( b + f->ofs ) = atof( value );
+				*(float *)( b + f->ofs ) = strtof( value, nullptr );
 				break;
 			case F_ANGLEHACK:
-				v = atof( value );
+				v = strtof( value, nullptr );
 				( (float *)( b + f->ofs ) )[ 0 ] = 0;
 				( (float *)( b + f->ofs ) )[ 1 ] = v;
 				( (float *)( b + f->ofs ) )[ 2 ] = 0;
 				break;
+			default:
 			case F_IGNORE:
 				break;
 			}
@@ -303,10 +304,10 @@ Parses an edict out of the given string, returning the new position
 ed should be a properly initialized empty edict.
 ====================
 */
-char *ED_ParseEdict( char *data, edict_t *ent ) {
+static const char *ED_ParseEdict( const char *data, edict_t *ent ) {
 	qboolean	init;
 	char		keyname[ 256 ];
-	char *com_token;
+	const char *com_token;
 
 	init = false;
 	memset( &st, 0, sizeof( st ) );
@@ -357,7 +358,7 @@ All but the first will have the FL_TEAMSLAVE flag set.
 All but the last will have the teamchain field set to the next one
 ================
 */
-void G_FindTeams( void ) {
+void G_FindTeams( ) {
 	edict_t *e, *e2, *chain;
 	int		i, j;
 	int		c, c2;
@@ -403,10 +404,10 @@ Creates a server's entity / program execution context by
 parsing textual entity definitions out of an ent file.
 ==============
 */
-void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
+void SpawnEntities( char *mapname, const char *entities, char *spawnpoint ) {
 	edict_t *ent;
 	int			inhibit;
-	char *com_token;
+	const char *com_token;
 	int			i;
 	float		skill_level;
 
@@ -432,7 +433,7 @@ void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
 	for( i = 0; i < game.maxclients; i++ )
 		g_edicts[ i + 1 ].client = game.clients + i;
 
-	ent = NULL;
+	ent = nullptr;
 	inhibit = 0;
 
 	// parse ents
@@ -500,30 +501,7 @@ void SpawnEntities( char *mapname, char *entities, char *spawnpoint ) {
 
 //===================================================================
 
-#if 0
-	// cursor positioning
-xl <value>
-xr <value>
-yb <value>
-yt <value>
-xv <value>
-yv <value>
-
-// drawing
-statpic <name>
-pic <stat>
-num <fieldwidth> <stat>
-string <stat>
-
-// control
-if <stat>
-ifeq <stat> <value>
-ifbit <stat> <value>
-endif
-
-#endif
-
-char *single_statusbar =
+const char *single_statusbar =
 "yb	-24 "
 
 // health
@@ -581,7 +559,7 @@ char *single_statusbar =
 "endif "
 ;
 
-char *dm_statusbar =
+const char *dm_statusbar =
 "yb	-24 "
 
 // health

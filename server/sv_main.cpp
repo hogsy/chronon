@@ -900,7 +900,7 @@ into a more C freindly form.
 */
 void SV_UserinfoChanged (client_t *cl)
 {
-	char	*val;
+	const char	*val;
 	int		i;
 
 	// call prog code to allow overrides

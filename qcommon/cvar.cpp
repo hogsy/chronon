@@ -76,7 +76,7 @@ float Cvar_VariableValue (char *var_name)
 Cvar_VariableString
 ============
 */
-char *Cvar_VariableString (char *var_name)
+char *Cvar_VariableString (const char *var_name)
 {
 	cvar_t *var;
 	
@@ -92,7 +92,7 @@ char *Cvar_VariableString (char *var_name)
 Cvar_CompleteVariable
 ============
 */
-char *Cvar_CompleteVariable (char *partial)
+char *Cvar_CompleteVariable (const char *partial)
 {
 	cvar_t		*cvar;
 	int			len;
@@ -176,7 +176,7 @@ cvar_t *Cvar_Get ( const char *var_name, const char *var_value, int flags)
 Cvar_Set2
 ============
 */
-cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
+static cvar_t *Cvar_Set2 (const char *var_name, const char *value, qboolean force)
 {
 	cvar_t	*var;
 
@@ -265,7 +265,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 Cvar_ForceSet
 ============
 */
-cvar_t *Cvar_ForceSet (char *var_name, char *value)
+cvar_t *Cvar_ForceSet (const char *var_name, const char *value)
 {
 	return Cvar_Set2 (var_name, value, true);
 }
@@ -275,7 +275,7 @@ cvar_t *Cvar_ForceSet (char *var_name, char *value)
 Cvar_Set
 ============
 */
-cvar_t *Cvar_Set (char *var_name, char *value)
+cvar_t *Cvar_Set (const char *var_name, const char *value)
 {
 	return Cvar_Set2 (var_name, value, false);
 }
@@ -314,7 +314,7 @@ cvar_t *Cvar_FullSet ( const char *var_name, const char *value, int flags)
 Cvar_SetValue
 ============
 */
-void Cvar_SetValue (char *var_name, float value)
+void Cvar_SetValue (const char *var_name, float value)
 {
 	char	val[32];
 

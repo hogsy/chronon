@@ -215,19 +215,22 @@ void COM_FileBase(char *in, char *out);
 void COM_FilePath(char *in, char *out);
 void COM_DefaultExtension(char *path, char *extension);
 
-char *COM_Parse(char **data_p);
+const char *COM_Parse(const char **data_p);
 // data is an in/out parm, returns a parsed out token
 
-void Com_sprintf(char *dest, int size, char *fmt, ...);
+void Com_sprintf(char *dest, int size, const char *fmt, ...);
 
 void Com_PageInMemory(byte *buffer, int size);
 
 //=============================================
 
 // portable case insensitive compare
-int Q_stricmp(char *s1, char *s2);
-int Q_strcasecmp(char *s1, char *s2);
+int Q_stricmp(const char *s1, const char *s2);
+int Q_strcasecmp(const char *s1, const char *s2);
 int Q_strncasecmp( const char *s1, const char *s2, int n);
+
+char *Q_strtolower( char *s );
+char *Q_strntolower( char *s, size_t n );
 
 int Q_vscprintf( const char *format, va_list pArgs );
 
@@ -241,7 +244,7 @@ float BigFloat(float l);
 float LittleFloat(float l);
 
 void Swap_Init(void);
-char *va(char *format, ...);
+char *va(const char *format, ...);
 
 //=============================================
 
@@ -252,9 +255,9 @@ char *va(char *format, ...);
 #define MAX_INFO_VALUE 64
 #define MAX_INFO_STRING 512
 
-char *Info_ValueForKey(char *s, char *key);
-void Info_RemoveKey(char *s, char *key);
-void Info_SetValueForKey(char *s, char *key, char *value);
+const char *Info_ValueForKey(char *s, const char *key);
+void Info_RemoveKey(char *s, const char *key);
+void Info_SetValueForKey(char *s, const char *key, const char *value);
 qboolean Info_Validate(char *s);
 
 /*
@@ -267,14 +270,14 @@ SYSTEM SPECIFIC
 
 extern int curtime;  // time returned by last Sys_Milliseconds
 
-int Sys_Milliseconds(void);
+int Sys_Milliseconds();
 void Sys_Mkdir(char *path);
 
 // large block stack allocation routines
-void *Hunk_Begin(int maxsize);
-void *Hunk_Alloc(int size);
+void *Hunk_Begin( size_t maxsize);
+void *Hunk_Alloc( size_t size);
 void Hunk_Free(void *buf);
-int Hunk_End(void);
+int Hunk_End();
 
 // directory searching
 #define SFF_ARCH 0x01
@@ -288,11 +291,11 @@ int Hunk_End(void);
 */
 char *Sys_FindFirst(char *path, unsigned musthave, unsigned canthave);
 char *Sys_FindNext(unsigned musthave, unsigned canthave);
-void Sys_FindClose(void);
+void Sys_FindClose();
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link
 void Sys_Error(const char *error, ...);
-void Com_Printf(char *msg, ...);
+void Com_Printf(const char *msg, ...);
 
 /*
 ==========================================================

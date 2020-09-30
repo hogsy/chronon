@@ -118,7 +118,7 @@ void GL_MBind( GLenum target, int texnum ) {
 }
 
 typedef struct {
-	char *name;
+	const char *name;
 	int	minimize, maximize;
 } glmode_t;
 
@@ -134,7 +134,7 @@ glmode_t modes[] = {
 #define NUM_GL_MODES (sizeof(modes) / sizeof (glmode_t))
 
 typedef struct {
-	char *name;
+	const char *name;
 	int mode;
 } gltmode_t;
 
@@ -201,7 +201,7 @@ GL_TextureAlphaMode
 ===============
 */
 void GL_TextureAlphaMode( char *string ) {
-	int		i;
+	unsigned int		i;
 
 	for( i = 0; i < NUM_GL_ALPHA_MODES; i++ ) {
 		if( !Q_stricmp( gl_alpha_modes[ i ].name, string ) )
@@ -222,7 +222,7 @@ GL_TextureSolidMode
 ===============
 */
 void GL_TextureSolidMode( char *string ) {
-	int		i;
+	unsigned int		i;
 
 	for( i = 0; i < NUM_GL_SOLID_MODES; i++ ) {
 		if( !Q_stricmp( gl_solid_modes[ i ].name, string ) )
@@ -846,7 +846,7 @@ GL_LoadPic
 This is also used as an entry point for the generated r_notexture
 ================
 */
-image_t *GL_LoadPic( char *name, byte *pic, int width, int height, imagetype_t type, int bits ) {
+image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagetype_t type, int bits ) {
 	image_t *image;
 	int			i;
 
@@ -967,40 +967,35 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 		{ "png", 32, NULL, LoadImage32 },
 		{ "bmp", 32, NULL, LoadImage32 },
 		{ "pcx", 8, LoadPCX, NULL },
-		{ NULL }
 	};
 
 	char uname[ MAX_QPATH ];
 	strcpy( uname, name );
 
-	for( unsigned int i = 0; i < ARRAY_LENGTH( loaders ); ++i ) {
-		if( loaders[ i ].extension == '\0' ) {
-			break;
-		}
-
+	for(auto & loader : loaders) {
 		uname[ len - 3 ] = '\0';
-		strcat( uname, loaders[ i ].extension );
+		strcat( uname, loader.extension );
 
-		pic = NULL;
-		palette = NULL;
-		if( loaders[ i ].depth == 8 ) {
-			loaders[ i ].Load8bpp( uname, &pic, &palette, &width, &height );
+		pic = nullptr;
+		palette = nullptr;
+		if( loader.depth == 8 ) {
+			loader.Load8bpp( uname, &pic, &palette, &width, &height );
 		} else {
-			loaders[ i ].Load32bpp( uname, &pic, &width, &height );
+			loader.Load32bpp( uname, &pic, &width, &height );
 		}
 
-		if( pic == NULL ) {
+		if( pic == nullptr ) {
 			continue;
 		}
 
-		image = GL_LoadPic( uname, pic, width, height, type, loaders[ i ].depth );
+		image = GL_LoadPic( uname, pic, width, height, type, loader.depth );
 		// HACK: store the original name for comparing later!
 		strcpy( image->name, name );
 	}
 
-	if( image == NULL ) {
+	if( image == nullptr ) {
 		Com_Printf( "WARNING: Failed to find \"%s\"!\n", uname );
-		return NULL;
+		return nullptr;
 	}
 
 	free( pic );
@@ -1016,7 +1011,7 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 R_RegisterSkin
 ===============
 */
-struct image_s *R_RegisterSkin( char *name ) {
+struct image_s *R_RegisterSkin( const char *name ) {
 	return GL_FindImage( name, it_skin );
 }
 

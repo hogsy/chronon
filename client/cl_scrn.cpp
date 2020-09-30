@@ -826,7 +826,7 @@ void SizeHUDString (char *string, int *w, int *h)
 	*h = lines * 8;
 }
 
-void DrawHUDString (char *string, int x, int y, int centerwidth, int xor)
+static void DrawHUDString (const char *string, int x, int y, int centerwidth, int xor)
 {
 	int		margin;
 	char	line[1024];
@@ -938,11 +938,11 @@ SCR_ExecuteLayoutString
 
 ================
 */
-void SCR_ExecuteLayoutString (char *s)
+static void SCR_ExecuteLayoutString (const char *s)
 {
 	int		x, y;
 	int		value;
-	char	*token;
+	const char	*token;
 	int		width;
 	int		index;
 	clientinfo_t	*ci;
