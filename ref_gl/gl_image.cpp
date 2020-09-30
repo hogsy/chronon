@@ -802,7 +802,7 @@ static qboolean IsPowerOf2( int value )
 */
 
 qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolean is_sky ) {
-	unsigned	trans[ 512 * 256 ];
+	unsigned	trans[ 640 * 256 ];
 	int			i, s;
 	int			p;
 
