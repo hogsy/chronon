@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-char *svc_strings[256] =
+const char *svc_strings[256] =
 {
 	"svc_bad",
 
@@ -643,7 +643,7 @@ void CL_ParseStartSoundPacket(void)
 }       
 
 
-void SHOWNET(char *s)
+void SHOWNET( const char *s)
 {
 	if (cl_shownet->value>=2)
 		Com_Printf ("%3i:%s\n", net_message.readcount-1, s);

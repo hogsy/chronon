@@ -60,14 +60,14 @@ static cvar_t *Cvar_FindVar (const char *var_name)
 Cvar_VariableValue
 ============
 */
-float Cvar_VariableValue (char *var_name)
+float Cvar_VariableValue ( const char *var_name)
 {
 	cvar_t	*var;
 	
 	var = Cvar_FindVar (var_name);
 	if (!var)
 		return 0;
-	return atof (var->string);
+	return strtof (var->string, nullptr);
 }
 
 

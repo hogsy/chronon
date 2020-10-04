@@ -612,11 +612,11 @@ int entitycmpfnc( const entity_t *a, const entity_t *b )
 	*/
 	if ( a->model == b->model )
 	{
-		return ( ( int ) a->skin - ( int ) b->skin );
+		return ( long ) a->skin - ( long ) b->skin;
 	}
 	else
 	{
-		return ( ( int ) a->model - ( int ) b->model );
+		return ( long ) a->model - ( long ) b->model;
 	}
 }
 
@@ -776,7 +776,7 @@ void SCR_TileClear (void)
 
 
 #define STAT_MINUS		10	// num frame for '-' stats digit
-char		*sb_nums[2][11] = 
+static const char		*sb_nums[2][11] =
 {
 	{"num_0", "num_1", "num_2", "num_3", "num_4", "num_5",
 	"num_6", "num_7", "num_8", "num_9", "num_minus"},
@@ -826,7 +826,7 @@ void SizeHUDString (char *string, int *w, int *h)
 	*h = lines * 8;
 }
 
-static void DrawHUDString (const char *string, int x, int y, int centerwidth, int xor)
+static void DrawHUDString (const char *string, int x, int y, int centerwidth, int xOr)
 {
 	int		margin;
 	char	line[1024];
@@ -849,7 +849,7 @@ static void DrawHUDString (const char *string, int x, int y, int centerwidth, in
 			x = margin;
 		for (i=0 ; i<width ; i++)
 		{
-			re.DrawChar (x, y, line[i]^xor);
+			re.DrawChar (x, y, line[i]^xOr);
 			x += 8;
 		}
 		if (*string)

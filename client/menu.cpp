@@ -28,9 +28,9 @@ static int	m_main_cursor;
 
 #define NUM_CURSOR_FRAMES 15
 
-static char *menu_in_sound		= "misc/menu1.wav";
-static char *menu_move_sound	= "misc/menu2.wav";
-static char *menu_out_sound		= "misc/menu3.wav";
+static const char *menu_in_sound		= "misc/menu1.wav";
+static const char *menu_move_sound	= "misc/menu2.wav";
+static const char *menu_out_sound		= "misc/menu3.wav";
 
 void M_Menu_Main_f (void);
 	void M_Menu_Game_f (void);
@@ -72,7 +72,7 @@ typedef struct
 menulayer_t	m_layers[MAX_MENU_DEPTH];
 int		m_menudepth;
 
-static void M_Banner( char *name )
+static void M_Banner( const char *name )
 {
 	int w, h;
 
@@ -80,7 +80,7 @@ static void M_Banner( char *name )
 	re.DrawPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, name );
 }
 
-void M_PushMenu ( void (*draw) (void), const char *(*key) (int k) )
+void M_PushMenu ( void (*draw) (), const char *(*key) (int k) )
 {
 	int		i;
 
@@ -268,10 +268,10 @@ higher res screens.
 */
 void M_DrawCharacter (int cx, int cy, int num)
 {
-	re.DrawChar ( cx + ((viddef.width - 320)>>1), cy + ((viddef.height - 240)>>1), num);
+	re.DrawChar ( cx + ((viddef.width - 320U)>>1U), cy + ((viddef.height - 240U)>>1U), num);
 }
 
-void M_Print (int cx, int cy, char *str)
+void M_Print (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -391,7 +391,7 @@ void M_Main_Draw (void)
 	int widest = -1;
 	int totalheight = 0;
 	char litname[80];
-	char *names[] =
+	static const char *names[] =
 	{
 		"m_main_game",
 		"m_main_multiplayer",
@@ -584,7 +584,7 @@ KEYS MENU
 
 =======================================================================
 */
-char *bindnames[][2] =
+static const char *bindnames[][2] =
 {
 {"+attack", 		"attack"},
 {"weapnext", 		"next weapon"},
@@ -643,7 +643,7 @@ static menuaction_s		s_keys_inv_next_action;
 
 static menuaction_s		s_keys_help_computer_action;
 
-static void M_UnbindCommand (char *command)
+static void M_UnbindCommand ( const char *command)
 {
 	int		j;
 	int		l;
@@ -661,7 +661,7 @@ static void M_UnbindCommand (char *command)
 	}
 }
 
-static void M_FindKeysForCommand (char *command, int *twokeys)
+static void M_FindKeysForCommand ( const char *command, int *twokeys)
 {
 	int		count;
 	int		j;
@@ -1432,7 +1432,6 @@ END GAME MENU
 */
 static int credits_start_time;
 static const char **credits;
-static char *creditsIndex[256];
 static char *creditsBuffer;
 static const char *idcredits[] =
 {
@@ -2454,7 +2453,7 @@ void StartServerActionFunc( void *self )
 	int		timelimit;
 	int		fraglimit;
 	int		maxclients;
-	char	*spot;
+	const char	*spot;
 
 	strcpy( startmap, strchr( mapnames[s_startmap_list.curvalue], '\n' ) + 1 );
 
@@ -2469,7 +2468,7 @@ void StartServerActionFunc( void *self )
 //	Cvar_SetValue ("deathmatch", !s_rules_box.curvalue );
 //	Cvar_SetValue ("coop", s_rules_box.curvalue );
 
-	spot = NULL;
+	spot = nullptr;
 	if (s_rules_box.curvalue == 1)		// PGM
 	{
  		if(Q_stricmp(startmap, "bunk1") == 0)
@@ -2760,13 +2759,6 @@ static menulist_s	s_allow_exit_box;
 static menulist_s	s_infinite_ammo_box;
 static menulist_s	s_fixed_fov_box;
 static menulist_s	s_quad_drop_box;
-
-//ROGUE
-static menulist_s	s_no_mines_box;
-static menulist_s	s_no_nukes_box;
-static menulist_s	s_stack_double_box;
-static menulist_s	s_no_spheres_box;
-//ROGUE
 
 static void DMFlagCallback( void *self )
 {
@@ -3531,7 +3523,6 @@ static int pmicmpfnc( const void *_a, const void *_b )
 qboolean PlayerConfig_MenuInit( void )
 {
 	extern cvar_t *name;
-	extern cvar_t *team;
 	extern cvar_t *skin;
 	char currentdirectory[1024];
 	char currentskin[1024];

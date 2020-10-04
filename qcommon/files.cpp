@@ -73,14 +73,14 @@ static void FS_CanonicalisePath( char *path ) {
  * Search for the given file within a package and return it's index.
  */
 static const PackageIndex *FS_GetPackageFileIndex( const Package *package, const char *fileName ) {
-	for( int i = 0; i < package->numFiles; ++i ) {
+	for( unsigned int i = 0; i < package->numFiles; ++i ) {
 		const PackageIndex *index = &package->indices[ i ];
 		if( Q_strncasecmp( index->name, fileName, sizeof( index->name ) ) == 0 ) {
 			return index;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -519,7 +519,7 @@ FS_Gamedir
 Called to find where to write a file (demos, savegames, etc)
 ============
 */
-char *FS_Gamedir( void ) {
+const char *FS_Gamedir( ) {
 	if( *fs_gamedir )
 		return fs_gamedir;
 	else

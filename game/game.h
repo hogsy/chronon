@@ -165,7 +165,7 @@ typedef struct
 
 	// ClientCommand and ServerCommand parameter access
 	int		(*argc) ();
-	char	*(*argv) (int n);
+	const char	*(*argv) (int n);
 	char	*(*args) ();	// concatenation of all argv >= 1
 
 	// add commands to the server console as if they were typed in
