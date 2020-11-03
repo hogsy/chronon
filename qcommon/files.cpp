@@ -1,6 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
-Copyright (C) 2020 Mark E Sowden <markelswo@gmail.com>
+Copyright (C) 2020 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -781,6 +781,3 @@ void FS_InitFilesystem( void ) {
 	if( fs_gamedirvar->string[ 0 ] )
 		FS_SetGamedir( fs_gamedirvar->string );
 }
-
-
-

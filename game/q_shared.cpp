@@ -764,7 +764,143 @@ char *va( const char *format, ... ) {
 }
 
 
-char	com_token[ MAX_TOKEN_CHARS ];
+static char com_token[ MAX_TOKEN_CHARS ];
+
+/*
+==============
+Script_GetLineLength
+
+Check how long the current line is, so we can allocate a buffer to store it.
+==============
+*/
+size_t Script_GetLineLength( const char *data ) {
+	const char *p = data;
+	while( *p != '\0' && *p != '\n' && *p != '\r' ) {
+		p++;
+	}
+
+	return p - data;
+}
+
+/*
+==============
+Script_GetLine
+
+Read the line into the specified buffer.
+==============
+*/
+const char *Script_GetLine( const char *data, char *dest, size_t destSize ) {
+	const char *p = data;
+	char *d = dest;
+
+	size_t length = Script_GetLineLength( data );
+	for( size_t i = 0; i < length; ++i ) {
+		*d++ = *p++;
+		if( d - dest >= destSize ) {
+#if defined( _DEBUG )
+			assert( 0 );
+#endif
+			break;
+		}
+	}
+
+	return p + length;
+}
+
+const char *Script_SkipWhitespace( const char *data ) {
+	int c;
+	while( ( c = *data ) <= ' ' ) {
+		if( c == 0 ) {
+			return nullptr;
+		}
+		data++;
+	}
+
+	return data;
+}
+
+const char *Script_SkipComment( const char *data ) {
+	// Single line comment
+	if( data[ 0 ] == '/' && data[ 1 ] == '/' ) {
+		while( *data && *data != '\n' ) {
+			data++;
+		}
+	}
+
+	// Multi line comment
+	if( data[ 0 ] == '/' && data[ 1 ] == '*' ) {
+		while( *data && data[ 0 ] != '*' && data[ 1 ] != '/' ) {
+			data++;
+		}
+	}
+
+	return data;
+}
+
+/*
+==============
+Script_Parse
+
+Like COM_Parse, but let's you specify what deliminator you want to use before
+returning a token.
+==============
+*/
+const char *Script_Parse( const char **buffer, const char *deliminator ) {
+	com_token[ 0 ] = '\0';
+
+	const char *data = *buffer;
+	if( data == nullptr ) {
+		*buffer = nullptr;
+		return "";
+	}
+
+	int length = 0;
+	while( true ) {
+		data = Script_SkipWhitespace( data );
+		if( data == nullptr ) {
+			*buffer = nullptr;
+			return "";
+		}
+
+		const char *oldPos = data;
+		data = Script_SkipComment( data );
+		if( data != oldPos ) {
+			continue;
+		}
+
+		while( true ) {
+			int c = *data++;
+
+			// Check for the deliminators
+			const char *d = deliminator;
+			while( d != '\0' ) {
+				if( c == '\0' || *d == c ) {
+					*buffer = data;
+					com_token[ length ] = '\0';
+					return com_token;
+				}
+
+				d++;
+			}
+
+			if( length < MAX_TOKEN_CHARS ) {
+				com_token[ length ] = c;
+				length++;
+			}
+		}
+
+		if( length >= MAX_TOKEN_CHARS ) {
+			Com_Printf( "Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS );
+			length = 0;
+		}
+
+		com_token[ length ] = '\0';
+		break;
+	}
+
+	*buffer = data;
+	return com_token;
+}
 
 /*
 ==============
@@ -774,14 +910,9 @@ Parse a token out of a string
 ==============
 */
 const char *COM_Parse( const char **data_p ) {
-	int		c;
-	int		len;
-	const char *data;
-
-	data = *data_p;
-	len = 0;
 	com_token[ 0 ] = 0;
 
+	const char *data = *data_p;
 	if( !data ) {
 		*data_p = nullptr;
 		return "";
@@ -789,22 +920,21 @@ const char *COM_Parse( const char **data_p ) {
 
 	// skip whitespace
 skipwhite:
-	while( ( c = *data ) <= ' ' ) {
-		if( c == 0 ) {
-			*data_p = nullptr;
-			return "";
-		}
-		data++;
+	data = Script_SkipWhitespace( data );
+	if( data == nullptr ) {
+		*data_p = nullptr;
+		return "";
 	}
 
-	// skip // comments
-	if( c == '/' && data[ 1 ] == '/' ) {
-		while( *data && *data != '\n' )
-			data++;
+	const char *oldPos = data;
+	data = Script_SkipComment( data );
+	if( data != oldPos ) {
 		goto skipwhite;
 	}
 
 	// handle quoted strings specially
+	int len = 0;
+	int c = *data;
 	if( c == '\"' ) {
 		data++;
 		while( 1 ) {
@@ -832,7 +962,7 @@ skipwhite:
 	} while( c > 32 );
 
 	if( len == MAX_TOKEN_CHARS ) {
-		//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		Com_Printf( "Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS );
 		len = 0;
 	}
 	com_token[ len ] = 0;
@@ -904,21 +1034,21 @@ int Q_strcasecmp( const char *s1, const char *s2 ) {
 	return Q_strncasecmp( s1, s2, 99999 );
 }
 
-char *Q_strtolower(char *s) {
-    for(size_t i = 0; s[i] != '\0'; ++i) {
-        s[i] = (char)tolower(s[i]);
-    }
-    return s;
+char *Q_strtolower( char *s ) {
+	for( size_t i = 0; s[ i ] != '\0'; ++i ) {
+		s[ i ] = (char)tolower( s[ i ] );
+	}
+	return s;
 }
 
-char *Q_strntolower(char *s, size_t n) {
-    for(size_t i = 0; i < n; ++i) {
-        if(s[i] == '\0') {
-            break;
-        }
-        s[i] = (char)tolower(s[i]);
-    }
-    return s;
+char *Q_strntolower( char *s, size_t n ) {
+	for( size_t i = 0; i < n; ++i ) {
+		if( s[ i ] == '\0' ) {
+			break;
+		}
+		s[ i ] = (char)tolower( s[ i ] );
+	}
+	return s;
 }
 
 /* https://stackoverflow.com/a/19692380 */
