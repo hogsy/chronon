@@ -804,7 +804,7 @@ const char *Script_GetLine( const char *data, char *dest, size_t destSize ) {
 		}
 	}
 
-	return p + length;
+	return p;
 }
 
 const char *Script_SkipWhitespace( const char *data ) {
@@ -869,11 +869,11 @@ const char *Script_Parse( const char **buffer, const char *deliminator ) {
 		}
 
 		while( true ) {
-			int c = *data++;
+			char c = *data++;
 
 			// Check for the deliminators
 			const char *d = deliminator;
-			while( d != '\0' ) {
+			while( *d ) {
 				if( c == '\0' || *d == c ) {
 					*buffer = data;
 					com_token[ length ] = '\0';

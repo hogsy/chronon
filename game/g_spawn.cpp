@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
-typedef void( *EntityTypeSpawnFunction )( edict_t *self );
-static std::map< const char *, EntityTypeSpawnFunction > entityTypes = {
+typedef void( *EntitySpawnFunction )( edict_t *self );
+static std::map< const char *, EntitySpawnFunction > entityTypes = {
 	{ "charfly", nullptr },
 	{ "charhover", nullptr },
 	{ "charroll", nullptr },
@@ -46,6 +46,7 @@ static std::map< const char *, EntityTypeSpawnFunction > entityTypes = {
 
 // As provided by entity.dat
 struct EntityCustomClassDeclaration {
+	char className[ 64 ];
 	char modelPath[ MAX_QPATH ];
 
 	vec3_t scale;
@@ -73,18 +74,75 @@ struct EntityCustomClassDeclaration {
 
 static std::map< std::string, EntityCustomClassDeclaration > entityCustomClasses;
 
-static void Spawn_ParseCustomClassField( unsigned int fieldIndex, const char *field ) {
-	switch( fieldIndex ) {
-	case 0: // classname
-		break;
-	}
-}
-
 static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength ) {
+	EntityCustomClassDeclaration customClass;
+	memset( &customClass, 0, sizeof( EntityCustomClassDeclaration ) );
 
-	//		if( fieldIndex > 24 ) {
-	//			fieldIndex = 0;
-	//		}
+	unsigned int i;
+	for( i = 0; i < 24; ++i ) {
+		const char *token = Script_Parse( &lineDef, "|\n" );
+		if( token == nullptr ) {
+			break;
+		}
+
+		// This is fucking awful, but I can't think of a better way right now
+		switch( i ) {
+		case 0: // classname
+			snprintf( customClass.className, sizeof( customClass.className ), "%s", token );
+			break;
+		case 1: // model_path
+			snprintf( customClass.modelPath, sizeof( customClass.modelPath ), "%s", token );
+			break;
+
+		case 2: // scale_x
+			customClass.scale[ 0 ] = strtof( token, nullptr );
+			break;
+		case 3: // scale_y
+			customClass.scale[ 1 ] = strtof( token, nullptr );
+			break;
+		case 4: // scale_z
+			customClass.scale[ 2 ] = strtof( token, nullptr );
+			break;
+
+		case 5: // entity_type
+			snprintf( customClass.entityType, sizeof( customClass.entityType ), "%s", token );
+			break;
+
+		case 6: // box_xmin
+			customClass.bbMins[ 0 ] = strtof( token, nullptr );
+			break;
+		case 7: // box_ymin
+			customClass.bbMins[ 1 ] = strtof( token, nullptr );
+			break;
+		case 8: // box_zmin
+			customClass.bbMins[ 2 ] = strtof( token, nullptr );
+			break;
+
+		case 9: // box_xmax
+			customClass.bbMaxs[ 0 ] = strtof( token, nullptr );
+			break;
+		case 10: // box_ymax
+			customClass.bbMaxs[ 1 ] = strtof( token, nullptr );
+			break;
+		case 11: // box_zmax
+			customClass.bbMaxs[ 2 ] = strtof( token, nullptr );
+			break;
+
+		case 12: // noshadow
+			customClass.showShadow = ( Q_strcasecmp( token, "shadow" ) == 0 );
+			break;
+
+		default:
+			gi.dprintf( "Skipping field %s\n", token );
+			break;
+		}
+	}
+
+	if( customClass.className == '\0' ) {
+		gi.error( "Invalid classname for custom entity class in \"models/entity.dat\"!\n" );
+	}
+
+	entityCustomClasses.insert( std::make_pair( customClass.className, customClass ) );
 }
 
 static void Spawn_PopulateCustomClassList( void ) {
@@ -109,7 +167,7 @@ static void Spawn_PopulateCustomClassList( void ) {
 
 		// Read in the line
 		size_t lLength = Script_GetLineLength( p ) + 1;
-		char *lBuf = ( char * ) gi.TagMalloc( lLength, TAG_GAME );
+		char *lBuf = (char *)gi.TagMalloc( lLength, TAG_GAME );
 
 		p = Script_GetLine( p, lBuf, lLength );
 		if( *lBuf == ';' || *lBuf == '\0' ) {
@@ -124,11 +182,6 @@ static void Spawn_PopulateCustomClassList( void ) {
 
 	gi.FreeFile( fileBuffer );
 }
-
-struct spawn_t {
-	const char *name;
-	void	( *spawn )( edict_t *ent );
-};
 
 void SP_info_player_start( edict_t *ent );
 void SP_func_plat( edict_t *ent );
@@ -169,7 +222,7 @@ void SP_path_corner( edict_t *self );
 
 void SP_monster_berserk( edict_t *self );
 
-spawn_t	spawns[] = {
+std::map< std::string, EntitySpawnFunction > entitySpawnClasses = {
 	{"info_player_start", SP_info_player_start},
 
 	{"func_plat", SP_func_plat},
@@ -247,8 +300,6 @@ spawn_t	spawns[] = {
 
 	// tmp
 	{ "npc_alien_rowdy", SP_monster_berserk },
-
-	{NULL, NULL}
 };
 
 /*
@@ -259,32 +310,44 @@ Finds the spawn function for the entity and calls it
 ===============
 */
 void ED_CallSpawn( edict_t *ent ) {
-	spawn_t *s;
-	gitem_t *item;
-	int		i;
-
 	if( !ent->classname ) {
 		gi.dprintf( "ED_CallSpawn: NULL classname\n" );
 		return;
 	}
 
 	// check item spawn functions
+	gitem_t *item;
+	int i;
 	for( i = 0, item = itemlist; i < game.num_items; i++, item++ ) {
 		if( !item->classname )
 			continue;
+
 		if( !strcmp( item->classname, ent->classname ) ) {	// found it
 			SpawnItem( ent, item );
 			return;
 		}
 	}
 
-	// check normal spawn functions
-	for( s = spawns; s->name; s++ ) {
-		if( !strcmp( s->name, ent->classname ) ) {	// found it
-			s->spawn( ent );
+	// Check custom spawn function
+	auto customClass = entityCustomClasses.find( ent->classname );
+	if( customClass != entityCustomClasses.end() ) {
+		auto type = entityTypes.find( customClass->second.entityType );
+		if( type == entityTypes.end() ) {
+			gi.dprintf( "%s doesn't have a valid entity type (%s)!\n", ent->classname, customClass->second.entityType );
 			return;
 		}
+
+		type->second( ent );
+		return;
 	}
+
+	// check normal spawn functions
+	auto spawnClass = entitySpawnClasses.find( ent->classname );
+	if( spawnClass != entitySpawnClasses.end() ) {
+		spawnClass->second( ent );
+		return;
+	}
+
 	gi.dprintf( "%s doesn't have a spawn function\n", ent->classname );
 }
 
