@@ -974,6 +974,14 @@ R_SetMode
 ==================
 */
 qboolean R_SetMode( void ) {
+#if 1 // simplified until we get SDL2 implemented
+	rserr_t err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value, false );
+	
+	vid_fullscreen->modified = false;
+	gl_mode->modified = false;
+
+	return ( err == rserr_ok );
+#else
 	rserr_t err;
 	qboolean fullscreen;
 
@@ -1017,6 +1025,7 @@ qboolean R_SetMode( void ) {
 		}
 	}
 	return true;
+#endif
 }
 
 /*
