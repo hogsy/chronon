@@ -24,26 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
-typedef void( *EntitySpawnFunction )( edict_t *self );
-static std::map< const char *, EntitySpawnFunction > entityTypes = {
-	{ "charfly", nullptr },
-	{ "charhover", nullptr },
-	{ "charroll", nullptr },
-	{ "effect", nullptr },
-	{ "pickup", nullptr },
-	{ "container", nullptr },
-	{ "keyitem", nullptr },
-	{ "scavenger", nullptr },
-	{ "trashpawn", nullptr },
-	{ "bugspawn", nullptr },
-	{ "general", nullptr },
-	{ "bipidri", nullptr },
-	{ "sprite", nullptr },
-	{ "playerchar", nullptr },
-	{ "noclip", nullptr },
-	{ "floater", nullptr },
-};
-
 // As provided by entity.dat
 struct EntityCustomClassDeclaration {
 	char className[ 64 ];
@@ -71,8 +51,41 @@ struct EntityCustomClassDeclaration {
 	char spawnSequence[ 64 ];
 	char description[ 64 ];
 };
-
 static std::map< std::string, EntityCustomClassDeclaration > entityCustomClasses;
+
+static void ProtoSpawner( edict_t *self, const EntityCustomClassDeclaration &spawnData ) {
+	self->movetype = MOVETYPE_NONE;
+	self->solid = SOLID_BBOX;
+	self->s.modelindex = gi.modelindex( spawnData.modelPath );
+
+	VectorCopy( spawnData.scale, self->size );
+
+	VectorCopy( spawnData.bbMins, self->mins );
+	VectorCopy( spawnData.bbMaxs, self->maxs );
+
+	gi.linkentity( self );
+}
+
+typedef void( *EntityCustomClassSpawnFunction )( edict_t *self, const EntityCustomClassDeclaration &spawnData );
+static std::map< std::string, EntityCustomClassSpawnFunction > entityTypes = {
+	{ "char", ProtoSpawner },
+	{ "charfly", ProtoSpawner },
+	{ "charhover", ProtoSpawner },
+	{ "charroll", ProtoSpawner },
+	{ "effect", ProtoSpawner },
+	{ "pickup", ProtoSpawner },
+	{ "container", ProtoSpawner },
+	{ "keyitem", ProtoSpawner },
+	{ "scavenger", ProtoSpawner },
+	{ "trashpawn", ProtoSpawner },
+	{ "bugspawn", ProtoSpawner },
+	{ "general", ProtoSpawner },
+	{ "bipidri", ProtoSpawner },
+	{ "sprite", ProtoSpawner },
+	{ "playerchar", ProtoSpawner },
+	{ "noclip", ProtoSpawner },
+	{ "floater", ProtoSpawner },
+};
 
 static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength ) {
 	EntityCustomClassDeclaration customClass;
@@ -222,6 +235,7 @@ void SP_path_corner( edict_t *self );
 
 void SP_monster_berserk( edict_t *self );
 
+typedef void( *EntitySpawnFunction )( edict_t *self );
 std::map< std::string, EntitySpawnFunction > entitySpawnClasses = {
 	{"info_player_start", SP_info_player_start},
 
@@ -337,7 +351,7 @@ void ED_CallSpawn( edict_t *ent ) {
 			return;
 		}
 
-		type->second( ent );
+		type->second( ent, customClass->second );
 		return;
 	}
 
@@ -379,9 +393,6 @@ char *ED_NewString( const char *string ) {
 
 	return newb;
 }
-
-
-
 
 /*
 ===============
@@ -830,11 +841,13 @@ void SP_worldspawn( edict_t *ent ) {
 
 	gi.configstring( CS_MAXCLIENTS, va( "%i", (int)( maxclients->value ) ) );
 
+#if 0
 	// status bar program
 	if( deathmatch->value )
 		gi.configstring( CS_STATUSBAR, dm_statusbar );
 	else
 		gi.configstring( CS_STATUSBAR, single_statusbar );
+#endif
 
 	//---------------
 

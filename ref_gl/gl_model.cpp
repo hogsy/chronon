@@ -227,8 +227,11 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 		break;
 
 	default:
-		ri.Sys_Error( ERR_DROP, "Mod_NumForName: unknown fileid for %s",
-			mod->name );
+#if defined( _DEBUG )
+		ri.Con_Printf( PRINT_ALL, "Mod_NumForName: unknown fileid for %s", mod->name );
+#else
+		ri.Sys_Error( ERR_DROP, "Mod_NumForName: unknown fileid for %s", mod->name );
+#endif
 		break;
 	}
 

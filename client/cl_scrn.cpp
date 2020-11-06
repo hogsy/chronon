@@ -463,8 +463,8 @@ void SCR_DrawPause (void)
 	if (!cl_paused->value)
 		return;
 
-	re.DrawGetPicSize (&w, &h, "pause");
-	re.DrawPic ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
+	re.DrawGetPicSize (&w, &h, "menu/pause");
+	re.DrawPic ((viddef.width-w)/2, viddef.height/2 + 8, "menu/pause");
 }
 
 /*
@@ -480,8 +480,8 @@ void SCR_DrawLoading (void)
 		return;
 
 	scr_draw_loading = false;
-	re.DrawGetPicSize (&w, &h, "loading");
-	re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
+	re.DrawGetPicSize (&w, &h, "menu/loading");
+	re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "menu/loading");
 }
 
 //=============================================================================
@@ -778,10 +778,10 @@ void SCR_TileClear (void)
 #define STAT_MINUS		10	// num frame for '-' stats digit
 char		*sb_nums[2][11] = 
 {
-	{"num_0", "num_1", "num_2", "num_3", "num_4", "num_5",
-	"num_6", "num_7", "num_8", "num_9", "num_minus"},
-	{"anum_0", "anum_1", "anum_2", "anum_3", "anum_4", "anum_5",
-	"anum_6", "anum_7", "anum_8", "anum_9", "anum_minus"}
+	{"num0", "num1", "num2", "num3", "num4", "num5",
+	"num6", "num7", "num8", "num9", "white"},
+	{"num0", "num1", "num2", "num3", "num4", "num5",
+	"num6", "num7", "num8", "num9", "white"}
 };
 
 #define	ICON_WIDTH	24
@@ -920,6 +920,7 @@ void SCR_TouchPics (void)
 		for (j=0 ; j<11 ; j++)
 			re.RegisterPic (sb_nums[i][j]);
 
+#if 0
 	if (crosshair->value)
 	{
 		if (crosshair->value > 3 || crosshair->value < 0)
@@ -930,6 +931,7 @@ void SCR_TouchPics (void)
 		if (!crosshair_width)
 			crosshair_pic[0] = 0;
 	}
+#endif
 }
 
 /*
