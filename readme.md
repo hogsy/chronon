@@ -8,6 +8,13 @@ This is an open-source reimplementation of Anachronox, built on top of the
 Quake 2 engine (which funnily enough is the same engine Anachronox was
 developed upon).
 
+The project has the following goals, somewhat in order of priority.
+
+- Reimplement Anachronox (duh)
+- Support for multiple platforms; linux, android and more
+- Make the game easier to modify (i.e. support for larger texture sizes)
+- Improved visuals
+
 It's still in a very early stage of development so nothing is playable yet.
 Below is a list of what's been done thus far.
 
