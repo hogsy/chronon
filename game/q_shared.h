@@ -79,7 +79,7 @@ typedef bool qboolean;
 #define MAX_STRING_CHARS \
   1024  // max length of a string passed to Cmd_TokenizeString
 #define MAX_STRING_TOKENS 80  // max tokens resulting from Cmd_TokenizeString
-#define MAX_TOKEN_CHARS 128   // max length of an individual token
+#define MAX_TOKEN_CHARS 256   // max length of an individual token
 
 #define MAX_QPATH 64    // max length of a quake game pathname
 #define MAX_OSPATH 128  // max length of a filesystem pathname
@@ -214,6 +214,12 @@ void COM_StripExtension(char *in, char *out);
 void COM_FileBase(char *in, char *out);
 void COM_FilePath(char *in, char *out);
 void COM_DefaultExtension(char *path, char *extension);
+
+size_t Script_GetLineLength( const char *data );
+const char *Script_GetLine( const char *data, char *dest, size_t destSize );
+const char *Script_SkipWhitespace( const char *data );
+const char *Script_SkipComment( const char *data );
+const char *Script_Parse( const char **buffer, const char *deliminator );
 
 const char *COM_Parse(const char **data_p);
 // data is an in/out parm, returns a parsed out token

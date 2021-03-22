@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2020 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,24 +19,184 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#include <string>
+#include <map>
+
 #include "g_local.h"
 
-typedef struct {
-	const char *name;
-	void	( *spawn )( edict_t *ent );
-} spawn_t;
+// As provided by entity.dat
+struct EntityCustomClassDeclaration {
+	char className[ 64 ];
+	char modelPath[ MAX_QPATH ];
 
+	vec3_t scale;
 
-void SP_item_health( edict_t *self );
-void SP_item_health_small( edict_t *self );
-void SP_item_health_large( edict_t *self );
-void SP_item_health_mega( edict_t *self );
+	char entityType[ 64 ];
+
+	vec3_t bbMins;
+	vec3_t bbMaxs;
+
+	bool showShadow;
+
+	unsigned int solidFlag;
+
+	float walkSpeed;
+	float runSpeed;
+	float speed;
+
+	unsigned int lighting, blending;
+	char targetSequence[ 64 ];
+	int miscValue;
+	bool noMip;
+	char spawnSequence[ 64 ];
+	char description[ 64 ];
+};
+static std::map< std::string, EntityCustomClassDeclaration > entityCustomClasses;
+
+static void ProtoSpawner( edict_t *self, const EntityCustomClassDeclaration &spawnData ) {
+	self->movetype = MOVETYPE_NONE;
+	self->solid = SOLID_BBOX;
+	self->s.modelindex = gi.modelindex( spawnData.modelPath );
+
+	VectorCopy( spawnData.scale, self->size );
+
+	VectorCopy( spawnData.bbMins, self->mins );
+	VectorCopy( spawnData.bbMaxs, self->maxs );
+
+	gi.linkentity( self );
+}
+
+typedef void( *EntityCustomClassSpawnFunction )( edict_t *self, const EntityCustomClassDeclaration &spawnData );
+static std::map< std::string, EntityCustomClassSpawnFunction > entityTypes = {
+	{ "char", ProtoSpawner },
+	{ "charfly", ProtoSpawner },
+	{ "charhover", ProtoSpawner },
+	{ "charroll", ProtoSpawner },
+	{ "effect", ProtoSpawner },
+	{ "pickup", ProtoSpawner },
+	{ "container", ProtoSpawner },
+	{ "keyitem", ProtoSpawner },
+	{ "scavenger", ProtoSpawner },
+	{ "trashpawn", ProtoSpawner },
+	{ "bugspawn", ProtoSpawner },
+	{ "general", ProtoSpawner },
+	{ "bipidri", ProtoSpawner },
+	{ "sprite", ProtoSpawner },
+	{ "playerchar", ProtoSpawner },
+	{ "noclip", ProtoSpawner },
+	{ "floater", ProtoSpawner },
+};
+
+static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength ) {
+	EntityCustomClassDeclaration customClass;
+	memset( &customClass, 0, sizeof( EntityCustomClassDeclaration ) );
+
+	unsigned int i;
+	for( i = 0; i < 24; ++i ) {
+		const char *token = Script_Parse( &lineDef, "|\n" );
+		if( token == nullptr ) {
+			break;
+		}
+
+		// This is fucking awful, but I can't think of a better way right now
+		switch( i ) {
+		case 0: // classname
+			snprintf( customClass.className, sizeof( customClass.className ), "%s", token );
+			break;
+		case 1: // model_path
+			snprintf( customClass.modelPath, sizeof( customClass.modelPath ), "%s", token );
+			break;
+
+		case 2: // scale_x
+			customClass.scale[ 0 ] = strtof( token, nullptr );
+			break;
+		case 3: // scale_y
+			customClass.scale[ 1 ] = strtof( token, nullptr );
+			break;
+		case 4: // scale_z
+			customClass.scale[ 2 ] = strtof( token, nullptr );
+			break;
+
+		case 5: // entity_type
+			snprintf( customClass.entityType, sizeof( customClass.entityType ), "%s", token );
+			break;
+
+		case 6: // box_xmin
+			customClass.bbMins[ 0 ] = strtof( token, nullptr );
+			break;
+		case 7: // box_ymin
+			customClass.bbMins[ 1 ] = strtof( token, nullptr );
+			break;
+		case 8: // box_zmin
+			customClass.bbMins[ 2 ] = strtof( token, nullptr );
+			break;
+
+		case 9: // box_xmax
+			customClass.bbMaxs[ 0 ] = strtof( token, nullptr );
+			break;
+		case 10: // box_ymax
+			customClass.bbMaxs[ 1 ] = strtof( token, nullptr );
+			break;
+		case 11: // box_zmax
+			customClass.bbMaxs[ 2 ] = strtof( token, nullptr );
+			break;
+
+		case 12: // noshadow
+			customClass.showShadow = ( Q_strcasecmp( token, "shadow" ) == 0 );
+			break;
+
+		default:
+			gi.dprintf( "Skipping field %s\n", token );
+			break;
+		}
+	}
+
+	if( customClass.className == '\0' ) {
+		gi.error( "Invalid classname for custom entity class in \"models/entity.dat\"!\n" );
+	}
+
+	entityCustomClasses.insert( std::make_pair( customClass.className, customClass ) );
+}
+
+static void Spawn_PopulateCustomClassList( void ) {
+	char *fileBuffer;
+	gi.LoadFile( "models/entity.dat", (void **)&fileBuffer );
+	if( fileBuffer == nullptr ) {
+		gi.error( "Failed to find \"models/entity.dat\"!\n" );
+	}
+
+	const char *p = fileBuffer;
+	while( true ) {
+		p = Script_SkipWhitespace( p );
+		if( p == nullptr ) {
+			break;
+		}
+
+		const char *oldPos = p;
+		p = Script_SkipComment( p );
+		if( p != oldPos ) {
+			continue;
+		}
+
+		// Read in the line
+		size_t lLength = Script_GetLineLength( p ) + 1;
+		char *lBuf = (char *)gi.TagMalloc( lLength, TAG_GAME );
+
+		p = Script_GetLine( p, lBuf, lLength );
+		if( *lBuf == ';' || *lBuf == '\0' ) {
+			gi.TagFree( lBuf );
+			break;
+		}
+
+		Spawn_ParseCustomClass( lBuf, lLength );
+
+		gi.TagFree( lBuf );
+	}
+
+	gi.FreeFile( fileBuffer );
+}
 
 void SP_info_player_start( edict_t *ent );
-void SP_info_player_deathmatch( edict_t *ent );
-void SP_info_player_coop( edict_t *ent );
-void SP_info_player_intermission( edict_t *ent );
-
 void SP_func_plat( edict_t *ent );
 void SP_func_rotating( edict_t *ent );
 void SP_func_button( edict_t *ent );
@@ -52,7 +213,6 @@ void SP_func_timer( edict_t *self );
 void SP_func_areaportal( edict_t *ent );
 void SP_func_clock( edict_t *ent );
 void SP_func_killbox( edict_t *ent );
-
 void SP_trigger_always( edict_t *ent );
 void SP_trigger_once( edict_t *ent );
 void SP_trigger_multiple( edict_t *ent );
@@ -63,115 +223,97 @@ void SP_trigger_key( edict_t *ent );
 void SP_trigger_counter( edict_t *ent );
 void SP_trigger_elevator( edict_t *ent );
 void SP_trigger_gravity( edict_t *ent );
-void SP_trigger_monsterjump( edict_t *ent );
-
 void SP_target_temp_entity( edict_t *ent );
 void SP_target_speaker( edict_t *ent );
-void SP_target_explosion( edict_t *ent );
-void SP_target_changelevel( edict_t *ent );
-void SP_target_secret( edict_t *ent );
-void SP_target_goal( edict_t *ent );
-void SP_target_splash( edict_t *ent );
-void SP_target_spawner( edict_t *ent );
-void SP_target_blaster( edict_t *ent );
-void SP_target_crosslevel_trigger( edict_t *ent );
-void SP_target_crosslevel_target( edict_t *ent );
-void SP_target_laser( edict_t *self );
-void SP_target_help( edict_t *ent );
-void SP_target_actor( edict_t *ent );
 void SP_target_lightramp( edict_t *self );
-void SP_target_earthquake( edict_t *ent );
-void SP_target_character( edict_t *ent );
-void SP_target_string( edict_t *ent );
-
 void SP_worldspawn( edict_t *ent );
 void SP_viewthing( edict_t *ent );
-
 void SP_light( edict_t *self );
-void SP_light_mine1( edict_t *ent );
-void SP_light_mine2( edict_t *ent );
 void SP_info_null( edict_t *self );
 void SP_info_notnull( edict_t *self );
 void SP_path_corner( edict_t *self );
-void SP_point_combat( edict_t *self );
 
 void SP_monster_berserk( edict_t *self );
 
-spawn_t	spawns[] = {
-	{"item_health", SP_item_health},
-	{"item_health_small", SP_item_health_small},
-	{"item_health_large", SP_item_health_large},
-	{"item_health_mega", SP_item_health_mega},
-
+typedef void( *EntitySpawnFunction )( edict_t *self );
+std::map< std::string, EntitySpawnFunction > entitySpawnClasses = {
 	{"info_player_start", SP_info_player_start},
-	{"info_player_deathmatch", SP_info_player_deathmatch},
-	{"info_player_coop", SP_info_player_coop},
-	{"info_player_intermission", SP_info_player_intermission},
 
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
 	{"func_door", SP_func_door},
-	{"func_door_secret", SP_func_door_secret},
 	{"func_door_rotating", SP_func_door_rotating},
 	{"func_rotating", SP_func_rotating},
 	{"func_train", SP_func_train},
 	{"func_water", SP_func_water},
 	{"func_conveyor", SP_func_conveyor},
 	{"func_areaportal", SP_func_areaportal},
-	{"func_clock", SP_func_clock},
+	{"func_clock", SP_func_clock}, // Not actually in Anox, but could be useful for custom maps?
 	{"func_wall", SP_func_wall},
-	{"func_object", SP_func_object},
-	{"func_timer", SP_func_timer},
-	{"func_explosive", SP_func_explosive},
-	{"func_killbox", SP_func_killbox},
+	// todo: func_fog
+	// todo: func_particle
+	{"func_object", SP_func_object}, // Not actually in Anox, but could be useful for custom maps?
+	{"func_timer", SP_func_timer}, // Not actually in Anox, but could be useful for custom maps?
+	{"func_explosive", SP_func_explosive}, // Not actually in Anox, but could be useful for custom maps?
+	{"func_killbox", SP_func_killbox}, // Not actually in Anox, but could be useful for custom maps?
 
 	{"trigger_always", SP_trigger_always},
 	{"trigger_once", SP_trigger_once},
 	{"trigger_multiple", SP_trigger_multiple},
 	{"trigger_relay", SP_trigger_relay},
 	{"trigger_push", SP_trigger_push},
-	{"trigger_hurt", SP_trigger_hurt},
-	{"trigger_key", SP_trigger_key},
+	{"trigger_hurt", SP_trigger_hurt}, // Not actually in Anox, but could be useful for custom maps?
+	{"trigger_key", SP_trigger_key}, // Not actually in Anox, but could be useful for custom maps?
 	{"trigger_counter", SP_trigger_counter},
 	{"trigger_elevator", SP_trigger_elevator},
 	{"trigger_gravity", SP_trigger_gravity},
-	{"trigger_monsterjump", SP_trigger_monsterjump},
+	// todo: trigger_watercurrent
 
-	{"target_temp_entity", SP_target_temp_entity},
+	{"target_temp_entity", SP_target_temp_entity}, // Not actually in Anox, but could be useful for custom maps?
 	{"target_speaker", SP_target_speaker},
-	{"target_explosion", SP_target_explosion},
-	{"target_changelevel", SP_target_changelevel},
-	{"target_secret", SP_target_secret},
-	{"target_goal", SP_target_goal},
-	{"target_splash", SP_target_splash},
-	{"target_spawner", SP_target_spawner},
-	{"target_blaster", SP_target_blaster},
-	{"target_crosslevel_trigger", SP_target_crosslevel_trigger},
-	{"target_crosslevel_target", SP_target_crosslevel_target},
-	{"target_laser", SP_target_laser},
-	{"target_help", SP_target_help},
-	{"target_actor", SP_target_actor},
 	{"target_lightramp", SP_target_lightramp},
-	{"target_earthquake", SP_target_earthquake},
-	{"target_character", SP_target_character},
-	{"target_string", SP_target_string},
 
 	{"worldspawn", SP_worldspawn},
 	{"viewthing", SP_viewthing},
 
 	{"light", SP_light},
-	{"light_mine1", SP_light_mine1},
-	{"light_mine2", SP_light_mine2},
+	// todo: sun
+	// todo: spew (wut?)
+	// todo: modellight
+	// todo: dirlightsource
+
 	{"info_null", SP_info_null},
 	{"func_group", SP_info_null},
 	{"info_notnull", SP_info_notnull},
 	{"path_corner", SP_path_corner},
-	{"point_combat", SP_point_combat},
+	// todo: beam_target
+	// todo: path_grid_center
+
+	// todo: effect_sprite
+
+	// todo: trigger_changelevel
+	// todo: trigger_battle
+	// todo: trigger_console
+	// todo: trigger_console_once
+	// todo: trigger_music
+
+	// todo: info_battle_posp
+	// todo: info_battle_pose
+	// todo: info_battle_cam
+	// todo: info_battle_node
+	// todo: info_battle_manager
+	// todo: info_trash_generator
+	// todo: info_bug_generator
+
+	// todo: ob_sewagecrates
+	// todo: ob_sewageexplode
+
+	// todo: func_ridebox
+
+	// todo: info_party_start
 
 	// tmp
-{ "npc_alien_rowdy", SP_monster_berserk },
-
-	{NULL, NULL}
+	{ "npc_alien_rowdy", SP_monster_berserk },
 };
 
 /*
@@ -182,32 +324,44 @@ Finds the spawn function for the entity and calls it
 ===============
 */
 void ED_CallSpawn( edict_t *ent ) {
-	spawn_t *s;
-	gitem_t *item;
-	int		i;
-
 	if( !ent->classname ) {
 		gi.dprintf( "ED_CallSpawn: NULL classname\n" );
 		return;
 	}
 
 	// check item spawn functions
+	gitem_t *item;
+	int i;
 	for( i = 0, item = itemlist; i < game.num_items; i++, item++ ) {
 		if( !item->classname )
 			continue;
+
 		if( !strcmp( item->classname, ent->classname ) ) {	// found it
 			SpawnItem( ent, item );
 			return;
 		}
 	}
 
-	// check normal spawn functions
-	for( s = spawns; s->name; s++ ) {
-		if( !strcmp( s->name, ent->classname ) ) {	// found it
-			s->spawn( ent );
+	// Check custom spawn function
+	auto customClass = entityCustomClasses.find( ent->classname );
+	if( customClass != entityCustomClasses.end() ) {
+		auto type = entityTypes.find( customClass->second.entityType );
+		if( type == entityTypes.end() ) {
+			gi.dprintf( "%s doesn't have a valid entity type (%s)!\n", ent->classname, customClass->second.entityType );
 			return;
 		}
+
+		type->second( ent, customClass->second );
+		return;
 	}
+
+	// check normal spawn functions
+	auto spawnClass = entitySpawnClasses.find( ent->classname );
+	if( spawnClass != entitySpawnClasses.end() ) {
+		spawnClass->second( ent );
+		return;
+	}
+
 	gi.dprintf( "%s doesn't have a spawn function\n", ent->classname );
 }
 
@@ -239,9 +393,6 @@ char *ED_NewString( const char *string ) {
 
 	return newb;
 }
-
-
-
 
 /*
 ===============
@@ -275,7 +426,7 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 				( (float *)( b + f->ofs ) )[ 2 ] = vec[ 2 ];
 				break;
 			case F_INT:
-				*(int *)( b + f->ofs ) = static_cast< int >( strtol( value, nullptr, 10 ) );
+				*(int *)( b + f->ofs ) = static_cast<int>( strtol( value, nullptr, 10 ) );
 				break;
 			case F_FLOAT:
 				*(float *)( b + f->ofs ) = strtof( value, nullptr );
@@ -358,7 +509,7 @@ All but the first will have the FL_TEAMSLAVE flag set.
 All but the last will have the teamchain field set to the next one
 ================
 */
-void G_FindTeams( ) {
+void G_FindTeams() {
 	edict_t *e, *e2, *chain;
 	int		i, j;
 	int		c, c2;
@@ -411,7 +562,7 @@ void SpawnEntities( char *mapname, const char *entities, char *spawnpoint ) {
 	int			i;
 	float		skill_level;
 
-	skill_level = floor( skill->value );
+	skill_level = floorf( skill->value );
 	if( skill_level < 0 )
 		skill_level = 0;
 	if( skill_level > 3 )
@@ -435,6 +586,8 @@ void SpawnEntities( char *mapname, const char *entities, char *spawnpoint ) {
 
 	ent = nullptr;
 	inhibit = 0;
+
+	Spawn_PopulateCustomClassList();
 
 	// parse ents
 	while( 1 ) {
@@ -649,7 +802,7 @@ Only used for the world.
 "gravity"	800 is default gravity
 "message"	text to print at user logon
 */
-void SP_worldspawn( edict_t * ent ) {
+void SP_worldspawn( edict_t *ent ) {
 	ent->movetype = MOVETYPE_PUSH;
 	ent->solid = SOLID_BSP;
 	ent->inuse = true;			// since the world doesn't use G_Spawn()
@@ -688,11 +841,13 @@ void SP_worldspawn( edict_t * ent ) {
 
 	gi.configstring( CS_MAXCLIENTS, va( "%i", (int)( maxclients->value ) ) );
 
+#if 0
 	// status bar program
 	if( deathmatch->value )
 		gi.configstring( CS_STATUSBAR, dm_statusbar );
 	else
 		gi.configstring( CS_STATUSBAR, single_statusbar );
+#endif
 
 	//---------------
 

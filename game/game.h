@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // game.h -- game dll information visible to server
 
-#define	GAME_API_VERSION	3
+#define	GAME_API_VERSION	4
 
 // edict->svflags
 
@@ -173,6 +173,10 @@ typedef struct
 	void	(*AddCommandString) (const char *text);
 
 	void	(*DebugGraph) (float value, int color);
+
+	// File System
+	int ( *LoadFile )( const char *path, void **buffer );
+	void ( *FreeFile )( void *buffer );
 } game_import_t;
 
 //
