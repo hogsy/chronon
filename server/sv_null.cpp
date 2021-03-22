@@ -24,7 +24,7 @@ void SV_Init (void)
 {
 }
 
-void SV_Shutdown (char *finalmsg, qboolean reconnect)
+void SV_Shutdown ( const char *finalmsg, bool reconnect)
 {
 }
 

@@ -151,7 +151,6 @@ Give items to a client
 */
 void Cmd_Give_f (edict_t *ent)
 {
-	char		*name;
 	gitem_t		*it;
 	int			index;
 	int			i;
@@ -164,7 +163,7 @@ void Cmd_Give_f (edict_t *ent)
 		return;
 	}
 
-	name = gi.args();
+	const char *name = gi.args();
 
 	if (Q_stricmp(name, "all") == 0)
 		give_all = true;
@@ -907,12 +906,10 @@ ClientCommand
 */
 void ClientCommand (edict_t *ent)
 {
-	char	*cmd;
-
 	if (!ent->client)
 		return;		// not fully in game yet
 
-	cmd = gi.argv(0);
+	const char *cmd = gi.argv(0);
 
 	if (Q_stricmp (cmd, "players") == 0)
 	{

@@ -73,7 +73,7 @@ int			numipfilters;
 StringToFilter
 =================
 */
-static qboolean StringToFilter (char *s, ipfilter_t *f)
+static qboolean StringToFilter (const char *s, ipfilter_t *f)
 {
 	char	num[128];
 	int		i, j;
@@ -281,9 +281,7 @@ of the parameters
 */
 void	ServerCommand (void)
 {
-	char	*cmd;
-
-	cmd = gi.argv(1);
+	const char *cmd = gi.argv(1);
 	if (Q_stricmp (cmd, "test") == 0)
 		Svcmd_Test_f ();
 	else if (Q_stricmp (cmd, "addip") == 0)

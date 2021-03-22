@@ -129,7 +129,7 @@ Netchan_OutOfBandPrint
 Sends a text message in an out-of-band datagram
 ================
 */
-void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...)
+void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, const char *format, ...)
 {
 	va_list		argptr;
 	static char		string[MAX_MSGLEN - 4];
@@ -299,7 +299,6 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 {
 	unsigned	sequence, sequence_ack;
 	unsigned	reliable_ack, reliable_message;
-	int			qport;
 
 // get sequence numbers		
 	MSG_BeginReading (msg);
@@ -308,13 +307,13 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 
 	// read the qport if we are a server
 	if (chan->sock == NS_SERVER)
-		qport = MSG_ReadShort (msg);
+		/* qport = */ MSG_ReadShort (msg);
 
-	reliable_message = sequence >> 31;
-	reliable_ack = sequence_ack >> 31;
+	reliable_message = sequence >> 31U;
+	reliable_ack = sequence_ack >> 31U;
 
-	sequence &= ~(1<<31);
-	sequence_ack &= ~(1<<31);	
+	sequence &= ~(1U<<31U);
+	sequence_ack &= ~(1U<<31U);
 
 	if (showpackets->value)
 	{

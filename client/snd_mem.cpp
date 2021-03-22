@@ -207,7 +207,7 @@ int GetLittleLong(void)
 	return val;
 }
 
-void FindNextChunk(char *name)
+void FindNextChunk( const char *name)
 {
 	while (1)
 	{
@@ -235,7 +235,7 @@ void FindNextChunk(char *name)
 	}
 }
 
-void FindChunk(char *name)
+void FindChunk( const char *name)
 {
 	last_chunk = iff_data;
 	FindNextChunk (name);
@@ -253,7 +253,7 @@ void DumpChunks(void)
 		memcpy (str, data_p, 4);
 		data_p += 4;
 		iff_chunk_len = GetLittleLong();
-		Com_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);
+		Com_Printf ("0x%x : %s (%d)\n", (long)(data_p - 4), str, iff_chunk_len);
 		data_p += (iff_chunk_len + 1) & ~1;
 	} while (data_p < iff_end);
 }

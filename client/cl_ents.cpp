@@ -1356,7 +1356,6 @@ void CL_CalcViewValues (void)
 {
 	int			i;
 	float		lerp, backlerp;
-	centity_t	*ent;
 	frame_t		*oldframe;
 	player_state_t	*ps, *ops;
 
@@ -1374,7 +1373,6 @@ void CL_CalcViewValues (void)
 		|| abs(ops->pmove.origin[2] - ps->pmove.origin[2]) > 256*8)
 		ops = ps;		// don't interpolate
 
-	ent = &cl_entities[cl.playernum+1];
 	lerp = cl.lerpfrac;
 
 	// calculate the origin
@@ -1393,14 +1391,14 @@ void CL_CalcViewValues (void)
 		// smooth out stair climbing
 		delta = cls.realtime - cl.predicted_step_time;
 		if (delta < 100)
-			cl.refdef.vieworg[2] -= cl.predicted_step * (100 - delta) * 0.01;
+			cl.refdef.vieworg[2] -= cl.predicted_step * (100.0f - delta) * 0.01f;
 	}
 	else
 	{	// just use interpolated values
 		for (i=0 ; i<3 ; i++)
-			cl.refdef.vieworg[i] = ops->pmove.origin[i]*0.125 + ops->viewoffset[i] 
-				+ lerp * (ps->pmove.origin[i]*0.125 + ps->viewoffset[i] 
-				- (ops->pmove.origin[i]*0.125 + ops->viewoffset[i]) );
+			cl.refdef.vieworg[i] = ops->pmove.origin[i]*0.125f + ops->viewoffset[i]
+				+ lerp * (ps->pmove.origin[i]*0.125f + ps->viewoffset[i]
+				- (ops->pmove.origin[i]*0.125f + ops->viewoffset[i]) );
 	}
 
 	// if not running a demo or on a locked frame, add the local angle movement

@@ -492,7 +492,7 @@ void CL_BaseMove (usercmd_t *cmd);
 void IN_CenterView (void);
 
 float CL_KeyState (kbutton_t *key);
-char *Key_KeynumToString (int keynum);
+const char *Key_KeynumToString (int keynum);
 
 //
 // cl_demo.c
@@ -504,11 +504,11 @@ void CL_Record_f (void);
 //
 // cl_parse.c
 //
-extern	char *svc_strings[256];
+extern	const char *svc_strings[256];
 
 void CL_ParseServerMessage (void);
 void CL_LoadClientinfo (clientinfo_t *ci, char *s);
-void SHOWNET(char *s);
+void SHOWNET( const char *s);
 void CL_ParseClientinfo (int player);
 void CL_Download_f (void);
 

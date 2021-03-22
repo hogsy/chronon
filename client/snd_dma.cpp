@@ -22,10 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "snd_loc.h"
 
-void S_Play(void);
-void S_SoundList(void);
+void S_Play();
+void S_SoundList();
 void S_Update_();
-void S_StopAllSounds(void);
 
 
 // =======================================================================
@@ -89,7 +88,7 @@ portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 // ====================================================================
 
 
-void S_SoundInfo_f(void)
+void S_SoundInfo_f()
 {
 	if (!sound_started)
 	{
@@ -223,7 +222,7 @@ sfx_t *S_FindName (const char *name, qboolean create)
 		}
 
 	if (!create)
-		return NULL;
+		return nullptr;
 
 	// find a free sfx
 	for (i=0 ; i < num_sfx ; i++)
@@ -302,12 +301,12 @@ S_RegisterSound
 
 ==================
 */
-sfx_t *S_RegisterSound (char *name)
+sfx_t *S_RegisterSound ( const char *name)
 {
 	sfx_t	*sfx;
 
 	if (!sound_started)
-		return NULL;
+		return nullptr;
 
 	sfx = S_FindName (name, true);
 	sfx->registration_sequence = s_registration_sequence;
@@ -407,7 +406,7 @@ channel_t *S_PickChannel(int entnum, int entchannel)
    }
 
 	if (first_to_die == -1)
-		return NULL;
+		return nullptr;
 
 	ch = &channels[first_to_die];
 	memset (ch, 0, sizeof(*ch));
@@ -737,7 +736,7 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfx_t *sfx, float f
 S_StartLocalSound
 ==================
 */
-void S_StartLocalSound (char *sound)
+void S_StartLocalSound ( const char *sound)
 {
 	sfx_t	*sfx;
 
@@ -750,7 +749,7 @@ void S_StartLocalSound (char *sound)
 		Com_Printf ("S_StartLocalSound: can't cache %s\n", sound);
 		return;
 	}
-	S_StartSound (NULL, cl.playernum+1, 0, sfx, 1, 1, 0);
+	S_StartSound (nullptr, cl.playernum+1, 0, sfx, 1, 1, 0);
 }
 
 
@@ -1180,7 +1179,7 @@ void S_Play(void)
 	}
 }
 
-void S_SoundList(void)
+void S_SoundList()
 {
 	int		i;
 	sfx_t	*sfx;
