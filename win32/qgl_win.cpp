@@ -60,7 +60,7 @@ qboolean QGL_Init( void ) {
 	GLenum err = glewInit();
 	if( err != GLEW_OK ) {
 		const char *msg = (const char *)glewGetErrorString( err );
-		ri.Con_Printf( PRINT_ALL, "Failed to initialize glew, %s\n", msg );
+		VID_Printf( PRINT_ALL, "Failed to initialize glew, %s\n", msg );
 		return false;
 	}
 
@@ -97,7 +97,7 @@ void GLimp_EnableLogging( qboolean enable ) {
 	asctime( newtime );
 
 	char buffer[ 1024 ];
-	Com_sprintf( buffer, sizeof( buffer ), "%s/gl.log", ri.FS_Gamedir() );
+	Com_sprintf( buffer, sizeof( buffer ), "%s/gl.log", FS_Gamedir() );
 	glw_state.log_fp = fopen( buffer, "wt" );
 
 	fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );

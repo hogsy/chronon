@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "qmenu.h"
 
+#include "../ref_gl/gl_local.h"
+
 static void	 Action_DoEnter( menuaction_s *a );
 static void	 Action_Draw( menuaction_s *a );
 static void  Menu_DrawStatusBar( const char *string );
@@ -36,14 +38,8 @@ static void	 SpinControl_DoSlide( menulist_s *s, int dir );
 #define RCOLUMN_OFFSET  16
 #define LCOLUMN_OFFSET -16
 
-extern refexport_t re;
-extern viddef_t viddef;
-
 #define VID_WIDTH viddef.width
 #define VID_HEIGHT viddef.height
-
-#define Draw_Char re.DrawChar
-#define Draw_Fill re.DrawFill
 
 void Action_DoEnter( menuaction_s *a )
 {

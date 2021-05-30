@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
+#include "../ref_gl/gl_local.h"
+
 console_t con;
 
 cvar_t *con_notifytime;
@@ -32,7 +34,7 @@ extern int key_linepos;
 
 void DrawString( int x, int y, const char *s ) {
 	while( *s ) {
-		re.DrawChar( x, y, *s );
+		Draw_Char( x, y, *s );
 		x += 8;
 		s++;
 	}
@@ -40,7 +42,7 @@ void DrawString( int x, int y, const char *s ) {
 
 void DrawAltString( int x, int y, const char *s ) {
 	while( *s ) {
-		re.DrawChar( x, y, *s ^ 0x80 );
+		Draw_Char( x, y, *s ^ 0x80 );
 		x += 8;
 		s++;
 	}
@@ -411,7 +413,7 @@ void Con_DrawInput( void ) {
 	y = con.vislines - 16;
 
 	for( i = 0; i < con.linewidth; i++ )
-		re.DrawChar( ( i + 1 ) << 3, con.vislines - 22, text[ i ] );
+		Draw_Char( ( i + 1 ) << 3, con.vislines - 22, text[ i ] );
 
 	// remove cursor
 	key_lines[ edit_line ][ key_linepos ] = 0;
@@ -441,7 +443,7 @@ void Con_DrawNotify( void ) {
 		if( time > con_notifytime->value * 1000 ) continue;
 		text = con.text + ( i % con.totallines ) * con.linewidth;
 
-		for( x = 0; x < con.linewidth; x++ ) re.DrawChar( ( x + 1 ) << 3, v, text[ x ] );
+		for( x = 0; x < con.linewidth; x++ ) Draw_Char( ( x + 1 ) << 3, v, text[ x ] );
 
 		v += 8;
 	}
@@ -460,10 +462,10 @@ void Con_DrawNotify( void ) {
 			s += chat_bufferlen - ( ( viddef.width >> 3 ) - ( skip + 1 ) );
 		x = 0;
 		while( s[ x ] ) {
-			re.DrawChar( ( x + skip ) << 3, v, s[ x ] );
+			Draw_Char( ( x + skip ) << 3, v, s[ x ] );
 			x++;
 		}
-		re.DrawChar( ( x + skip ) << 3, v, 10 + ( ( cls.realtime >> 8 ) & 1 ) );
+		Draw_Char( ( x + skip ) << 3, v, 10 + ( ( cls.realtime >> 8 ) & 1 ) );
 		v += 8;
 	}
 
@@ -494,7 +496,7 @@ void Con_DrawConsole( float frac ) {
 	if( lines > viddef.height ) lines = viddef.height;
 
 	// draw the background
-	re.DrawStretchPic( 0, -viddef.height + lines, viddef.width, viddef.height,
+	Draw_StretchPic( 0, -viddef.height + lines, viddef.width, viddef.height,
 		"conback" );
 	SCR_AddDirtyPoint( 0, 0 );
 	SCR_AddDirtyPoint( viddef.width - 1, lines - 1 );
@@ -503,7 +505,7 @@ void Con_DrawConsole( float frac ) {
 	snprintf( version, sizeof( version ), ENGINE_NAME " v%4.2f", ENGINE_VERSION );
 	size_t len = strlen( version );
 	for( x = 0; x < len; x++ ) {
-		re.DrawChar( viddef.width - len * 8 + x * 8, lines - 12, 128 + version[ x ] );
+		Draw_Char( viddef.width - len * 8 + x * 8, lines - 12, 128 + version[ x ] );
 	}
 
 	// draw the text
@@ -522,7 +524,7 @@ void Con_DrawConsole( float frac ) {
 	// draw from the bottom up
 	if( con.display != con.current ) {
 		// draw arrows to show the buffer is backscrolled
-		for( x = 0; x < con.linewidth; x += 4 ) re.DrawChar( ( x + 1 ) << 3, y, '^' );
+		for( x = 0; x < con.linewidth; x += 4 ) Draw_Char( ( x + 1 ) << 3, y, '^' );
 
 		y -= 8;
 		rows--;
@@ -536,7 +538,7 @@ void Con_DrawConsole( float frac ) {
 
 		text = con.text + ( row % con.totallines ) * con.linewidth;
 
-		for( x = 0; x < con.linewidth; x++ ) re.DrawChar( ( x + 1 ) << 3, y, text[ x ] );
+		for( x = 0; x < con.linewidth; x++ ) Draw_Char( ( x + 1 ) << 3, y, text[ x ] );
 	}
 
 	// ZOID
@@ -579,7 +581,7 @@ void Con_DrawConsole( float frac ) {
 
 		// draw it
 		y = con.vislines - 12;
-		for( i = 0; i < strlen( dlbar ); i++ ) re.DrawChar( ( i + 1 ) << 3, y, dlbar[ i ] );
+		for( i = 0; i < strlen( dlbar ); i++ ) Draw_Char( ( i + 1 ) << 3, y, dlbar[ i ] );
 	}
 	// ZOID
 

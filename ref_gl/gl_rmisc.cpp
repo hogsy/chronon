@@ -96,7 +96,7 @@ void GL_ScreenShot_f( void ) {
 	FILE *f;
 
 	// create the scrnshots directory if it doesn't exist
-	Com_sprintf( checkname, sizeof( checkname ), "%s/screenshots", ri.FS_Gamedir() );
+	Com_sprintf( checkname, sizeof( checkname ), "%s/screenshots", FS_Gamedir() );
 	Sys_Mkdir( checkname );
 
 	// 
@@ -107,14 +107,14 @@ void GL_ScreenShot_f( void ) {
 	for( i = 0; i <= 99; i++ ) {
 		picname[ 0 ] = i / 10 + '0';
 		picname[ 1 ] = i % 10 + '0';
-		Com_sprintf( checkname, sizeof( checkname ), "%s/screenshots/%s", ri.FS_Gamedir(), picname );
+		Com_sprintf( checkname, sizeof( checkname ), "%s/screenshots/%s", FS_Gamedir(), picname );
 		f = fopen( checkname, "rb" );
 		if( !f )
 			break;	// file doesn't exist
 		fclose( f );
 	}
 	if( i == 100 ) {
-		ri.Con_Printf( PRINT_ALL, "SCR_ScreenShot_f: Couldn't create a file\n" );
+		VID_Printf( PRINT_ALL, "SCR_ScreenShot_f: Couldn't create a file\n" );
 		return;
 	}
 
@@ -143,17 +143,17 @@ void GL_ScreenShot_f( void ) {
 	fclose( f );
 
 	free( buffer );
-	ri.Con_Printf( PRINT_ALL, "Wrote %s\n", picname );
+	VID_Printf( PRINT_ALL, "Wrote %s\n", picname );
 }
 
 /*
 ** GL_Strings_f
 */
 void GL_Strings_f( void ) {
-	ri.Con_Printf( PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
-	ri.Con_Printf( PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
-	ri.Con_Printf( PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
-	ri.Con_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	VID_Printf( PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
+	VID_Printf( PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
+	VID_Printf( PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
+	VID_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 }
 
 /*

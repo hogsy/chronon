@@ -150,7 +150,7 @@
       <ObjectFileName>.\debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\debug\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>3rdparty\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rdparty\;3rdparty\glew\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -171,7 +171,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rdparty\glew\lib\Release\Win32\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -289,6 +290,15 @@
     <ClCompile Include="qcommon\md4.cpp" />
     <ClCompile Include="qcommon\net_chan.cpp" />
     <ClCompile Include="qcommon\pmove.cpp" />
+    <ClCompile Include="ref_gl\gl_draw.cpp" />
+    <ClCompile Include="ref_gl\gl_image.cpp" />
+    <ClCompile Include="ref_gl\gl_light.cpp" />
+    <ClCompile Include="ref_gl\gl_mesh.cpp" />
+    <ClCompile Include="ref_gl\gl_model.cpp" />
+    <ClCompile Include="ref_gl\gl_rmain.cpp" />
+    <ClCompile Include="ref_gl\gl_rmisc.cpp" />
+    <ClCompile Include="ref_gl\gl_rsurf.cpp" />
+    <ClCompile Include="ref_gl\gl_warp.cpp" />
     <ClCompile Include="server\sv_ccmds.cpp" />
     <ClCompile Include="server\sv_ents.cpp" />
     <ClCompile Include="server\sv_game.cpp" />
@@ -299,8 +309,10 @@
     <ClCompile Include="server\sv_world.cpp" />
     <ClCompile Include="win32\cd_win.cpp" />
     <ClCompile Include="win32\conproc.cpp" />
+    <ClCompile Include="win32\glw_imp.cpp" />
     <ClCompile Include="win32\in_win.cpp" />
     <ClCompile Include="win32\net_wins.cpp" />
+    <ClCompile Include="win32\qgl_win.cpp" />
     <ClCompile Include="win32\q_shwin.cpp" />
     <ClCompile Include="win32\snd_win.cpp" />
     <ClCompile Include="win32\sys_win.cpp" />
@@ -346,10 +358,6 @@
   <ItemGroup>
     <ProjectReference Include="game\game.vcxproj">
       <Project>{488c3955-1624-4978-a550-966c2b1b31e5}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="ref_gl\ref_gl.vcxproj">
-      <Project>{b298995a-10b8-408d-95de-8207d9110e4c}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

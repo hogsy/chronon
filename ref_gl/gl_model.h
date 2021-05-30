@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2020-2021 Mark E Sowden <markelswo@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,126 +41,125 @@ BRUSH MODELS
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
 {
-	vec3_t		position;
+	vec3_t position;
 } mvertex_t;
 
 typedef struct
 {
-	vec3_t		mins, maxs;
-	vec3_t		origin;		// for sounds or lights
-	float		radius;
-	int			headnode;
-	int			visleafs;		// not including the solid leaf 0
-	int			firstface, numfaces;
+	vec3_t mins, maxs;
+	vec3_t origin;// for sounds or lights
+	float  radius;
+	int    headnode;
+	int    visleafs;// not including the solid leaf 0
+	int    firstface, numfaces;
 } mmodel_t;
 
 
-#define	SIDE_FRONT	0
-#define	SIDE_BACK	1
-#define	SIDE_ON		2
+#define SIDE_FRONT 0
+#define SIDE_BACK  1
+#define SIDE_ON    2
 
 
-#define	SURF_PLANEBACK		2
-#define	SURF_DRAWSKY		4
-#define SURF_DRAWTURB		0x10
-#define SURF_DRAWBACKGROUND	0x40
-#define SURF_UNDERWATER		0x80
+#define SURF_PLANEBACK      2
+#define SURF_DRAWSKY        4
+#define SURF_DRAWTURB       0x10
+#define SURF_DRAWBACKGROUND 0x40
+#define SURF_UNDERWATER     0x80
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
 {
-	unsigned short	v[2];
-	unsigned int	cachededgeoffset;
+	unsigned short v[ 2 ];
+	unsigned int   cachededgeoffset;
 } medge_t;
 
 typedef struct mtexinfo_s
 {
-	float		vecs[2][4];
-	int			flags;
-	int			numframes;
-	struct mtexinfo_s	*next;		// animation chain
-	image_t		*image;
+	float              vecs[ 2 ][ 4 ];
+	int                flags;
+	int                numframes;
+	struct mtexinfo_s *next;// animation chain
+	image_t *          image;
 } mtexinfo_t;
 
-#define	VERTEXSIZE	7
+#define VERTEXSIZE 7
 
 typedef struct glpoly_s
 {
-	struct	glpoly_s	*next;
-	struct	glpoly_s	*chain;
-	int		numverts;
-	int		flags;			// for SURF_UNDERWATER (not needed anymore?)
-	float	verts[4][VERTEXSIZE];	// variable sized (xyz s1t1 s2t2)
+	struct glpoly_s *next;
+	struct glpoly_s *chain;
+	int              numverts;
+	int              flags;                   // for SURF_UNDERWATER (not needed anymore?)
+	float            verts[ 4 ][ VERTEXSIZE ];// variable sized (xyz s1t1 s2t2)
 } glpoly_t;
 
 typedef struct msurface_s
 {
-	int			visframe;		// should be drawn when node is crossed
+	int visframe;// should be drawn when node is crossed
 
-	cplane_t	*plane;
-	int			flags;
+	cplane_t *plane;
+	int       flags;
 
-	int			firstedge;	// look up in model->surfedges[], negative numbers
-	int			numedges;	// are backwards edges
-	
-	short		texturemins[2];
-	short		extents[2];
+	int firstedge;// look up in model->surfedges[], negative numbers
+	int numedges; // are backwards edges
 
-	int			light_s, light_t;	// gl lightmap coordinates
-	int			dlight_s, dlight_t; // gl lightmap coordinates for dynamic lightmaps
+	short texturemins[ 2 ];
+	short extents[ 2 ];
 
-	glpoly_t	*polys;				// multiple if warped
-	struct	msurface_s	*texturechain;
-	struct  msurface_s	*lightmapchain;
+	int light_s, light_t;  // gl lightmap coordinates
+	int dlight_s, dlight_t;// gl lightmap coordinates for dynamic lightmaps
 
-	mtexinfo_t	*texinfo;
-	
-// lighting info
-	int			dlightframe;
-	int			dlightbits;
+	glpoly_t *         polys;// multiple if warped
+	struct msurface_s *texturechain;
+	struct msurface_s *lightmapchain;
 
-	int			lightmaptexturenum;
-	byte		styles[MAXLIGHTMAPS];
-	float		cached_light[MAXLIGHTMAPS];	// values currently used in lightmap
-	byte		*samples;		// [numstyles*surfsize]
+	mtexinfo_t *texinfo;
+
+	// lighting info
+	int dlightframe;
+	int dlightbits;
+
+	int   lightmaptexturenum;
+	byte  styles[ MAXLIGHTMAPS ];
+	float cached_light[ MAXLIGHTMAPS ];// values currently used in lightmap
+	byte *samples;                     // [numstyles*surfsize]
 } msurface_t;
 
 typedef struct mnode_s
 {
-// common with leaf
-	int			contents;		// -1, to differentiate from leafs
-	int			visframe;		// node needs to be traversed if current
-	
-	float		minmaxs[6];		// for bounding box culling
+	// common with leaf
+	int contents;// -1, to differentiate from leafs
+	int visframe;// node needs to be traversed if current
 
-	struct mnode_s	*parent;
+	float minmaxs[ 6 ];// for bounding box culling
 
-// node specific
-	cplane_t	*plane;
-	struct mnode_s	*children[2];	
+	struct mnode_s *parent;
 
-	unsigned short		firstsurface;
-	unsigned short		numsurfaces;
+	// node specific
+	cplane_t *      plane;
+	struct mnode_s *children[ 2 ];
+
+	unsigned short firstsurface;
+	unsigned short numsurfaces;
 } mnode_t;
-
 
 
 typedef struct mleaf_s
 {
-// common with node
-	int			contents;		// wil be a negative contents number
-	int			visframe;		// node needs to be traversed if current
+	// common with node
+	int contents;// wil be a negative contents number
+	int visframe;// node needs to be traversed if current
 
-	float		minmaxs[6];		// for bounding box culling
+	float minmaxs[ 6 ];// for bounding box culling
 
-	struct mnode_s	*parent;
+	struct mnode_s *parent;
 
-// leaf specific
-	int			cluster;
-	int			area;
+	// leaf specific
+	int cluster;
+	int area;
 
-	msurface_t	**firstmarksurface;
-	int			nummarksurfaces;
+	msurface_t **firstmarksurface;
+	int          nummarksurfaces;
 } mleaf_t;
 
 
@@ -169,93 +169,104 @@ typedef struct mleaf_s
 // Whole model
 //
 
-typedef enum {mod_bad, mod_brush, mod_sprite, mod_alias } modtype_t;
+typedef enum
+{
+	mod_bad,
+	mod_brush,
+	mod_sprite,
+	mod_alias
+} modtype_t;
 
 typedef struct model_s
 {
-	char		name[MAX_QPATH];
+	char name[ MAX_QPATH ];
 
-	int			registration_sequence;
+	int registration_sequence;
 
-	modtype_t	type;
-	int			numframes;
-	
-	int			flags;
+	modtype_t type;
+	int       numframes;
 
-//
-// volume occupied by the model graphics
-//		
-	vec3_t		mins, maxs;
-	float		radius;
+	int flags;
 
-//
-// solid volume for clipping 
-//
-	qboolean	clipbox;
-	vec3_t		clipmins, clipmaxs;
+	//
+	// volume occupied by the model graphics
+	//
+	vec3_t mins, maxs;
+	float  radius;
 
-//
-// brush model
-//
-	int			firstmodelsurface, nummodelsurfaces;
-	int			lightmap;		// only for submodels
+	//
+	// solid volume for clipping
+	//
+	qboolean clipbox;
+	vec3_t   clipmins, clipmaxs;
 
-	int			numsubmodels;
-	mmodel_t	*submodels;
+	//
+	// brush model
+	//
+	int firstmodelsurface, nummodelsurfaces;
+	int lightmap;// only for submodels
 
-	int			numplanes;
-	cplane_t	*planes;
+	int       numsubmodels;
+	mmodel_t *submodels;
 
-	int			numleafs;		// number of visible leafs, not counting 0
-	mleaf_t		*leafs;
+	int       numplanes;
+	cplane_t *planes;
 
-	int			numvertexes;
-	mvertex_t	*vertexes;
+	int      numleafs;// number of visible leafs, not counting 0
+	mleaf_t *leafs;
 
-	int			numedges;
-	medge_t		*edges;
+	int        numvertexes;
+	mvertex_t *vertexes;
 
-	int			numnodes;
-	int			firstnode;
-	mnode_t		*nodes;
+	int      numedges;
+	medge_t *edges;
 
-	int			numtexinfo;
-	mtexinfo_t	*texinfo;
+	int      numnodes;
+	int      firstnode;
+	mnode_t *nodes;
 
-	int			numsurfaces;
-	msurface_t	*surfaces;
+	int         numtexinfo;
+	mtexinfo_t *texinfo;
 
-	int			numsurfedges;
-	int			*surfedges;
+	int         numsurfaces;
+	msurface_t *surfaces;
 
-	int			nummarksurfaces;
-	msurface_t	**marksurfaces;
+	int  numsurfedges;
+	int *surfedges;
 
-	dvis_t		*vis;
+	int          nummarksurfaces;
+	msurface_t **marksurfaces;
 
-	byte		*lightdata;
+	dvis_t *vis;
+
+	byte *lightdata;
 
 	// for alias models and skins
-	image_t		*skins[MAX_MD2SKINS];
+	image_t *skins[ MAX_MD2SKINS ];
 
-	int			extradatasize;
-	void		*extradata;
+	int   extradatasize;
+	void *extradata;
 } model_t;
 
 //============================================================================
 
-void	Mod_Init (void);
-void	Mod_ClearAll (void);
-model_t *Mod_ForName (const char *name, qboolean crash);
-mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
-byte	*Mod_ClusterPVS (int cluster, model_t *model);
+void     Mod_Init( void );
+void     Mod_ClearAll( void );
+model_t *Mod_ForName( const char *name, qboolean crash );
+mleaf_t *Mod_PointInLeaf( float *p, model_t *model );
+byte *   Mod_ClusterPVS( int cluster, model_t *model );
 
-void	Mod_Modellist_f (void);
+void Mod_Modellist_f( void );
 
-void	*Hunk_Begin ( size_t maxsize);
-void	*Hunk_Alloc ( size_t size);
-int		Hunk_End (void);
-void	Hunk_Free (void *base);
+void *Hunk_Begin( size_t maxsize );
+void *Hunk_Alloc( size_t size );
+int   Hunk_End( void );
+void  Hunk_Free( void *base );
 
-void	Mod_FreeAll (void);
-void	Mod_Free (model_t *mod);
+void Mod_FreeAll( void );
+void Mod_Free( model_t *mod );
+
+void Mod_BeginRegistration( const char *model );
+void Mod_EndRegistration( void );
+
+struct model_s *Mod_RegisterModel( const char *name );

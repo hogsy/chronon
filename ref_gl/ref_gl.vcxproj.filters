@@ -51,9 +51,6 @@
     <ClCompile Include="..\win32\q_shwin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win32\qgl_win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\game\q_shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

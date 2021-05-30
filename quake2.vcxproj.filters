@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Common">
       <UniqueIdentifier>{ecbe23de-6007-4359-adc3-3e38d67d3d24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{69c3da30-f412-4773-93a2-dbeb655ae2f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\miniz\miniz.c">
@@ -173,6 +176,39 @@
     </ClCompile>
     <ClCompile Include="win32\vid_dll.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_draw.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_image.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_light.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_mesh.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_model.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_rmain.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_rmisc.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_rsurf.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ref_gl\gl_warp.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="win32\glw_imp.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="win32\qgl_win.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

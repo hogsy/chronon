@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // vid.h -- video driver defs
 
+#pragma once
+
 typedef struct vrect_s
 {
 	int				x,y,width,height;
@@ -30,6 +32,9 @@ typedef struct
 } viddef_t;
 
 extern	viddef_t	viddef;				// global video state
+
+qboolean VID_GetModeInfo( int *width, int *height, int mode );
+void     VID_NewWindow( int width, int height );
 
 // Video module initialisation etc
 void	VID_Init (void);

@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
+#include "../ref_gl/gl_local.h"
+
 
 extern	struct model_s	*cl_mod_powerscreen;
 
@@ -805,19 +807,19 @@ struct model_s *S_RegisterSexedModel (entity_state_t *ent, char *base)
 		strcpy(model, "male");
 
 	Com_sprintf (buffer, sizeof(buffer), "players/%s/%s", model, base+1);
-	mdl = re.RegisterModel(buffer);
+	mdl = Mod_RegisterModel( buffer );
 	if (!mdl) {
 		// not found, try default weapon model
 		Com_sprintf (buffer, sizeof(buffer), "players/%s/weapon.md2", model);
-		mdl = re.RegisterModel(buffer);
+		mdl = Mod_RegisterModel( buffer );
 		if (!mdl) {
 			// no, revert to the male model
 			Com_sprintf (buffer, sizeof(buffer), "players/%s/%s", "male", base+1);
-			mdl = re.RegisterModel(buffer);
+			mdl = Mod_RegisterModel( buffer );
 			if (!mdl) {
 				// last try, default male weapon.md2
 				Com_sprintf (buffer, sizeof(buffer), "players/male/weapon.md2");
-				mdl = re.RegisterModel(buffer);
+				mdl = Mod_RegisterModel( buffer );
 			}
 		} 
 	}
@@ -951,18 +953,18 @@ void CL_AddPacketEntities (frame_t *frame)
 				{
 					if(!strncmp((char *)ent.skin, "players/male", 12))
 					{
-						ent.skin = re.RegisterSkin ("players/male/disguise.pcx");
-						ent.model = re.RegisterModel ("players/male/tris.md2");
+						ent.skin = R_RegisterSkin("players/male/disguise.pcx");
+						ent.model = Mod_RegisterModel( "players/male/tris.md2" );
 					}
 					else if(!strncmp((char *)ent.skin, "players/female", 14))
 					{
-						ent.skin = re.RegisterSkin ("players/female/disguise.pcx");
-						ent.model = re.RegisterModel ("players/female/tris.md2");
+						ent.skin  = R_RegisterSkin( "players/female/disguise.pcx" );
+						ent.model = Mod_RegisterModel( "players/female/tris.md2" );
 					}
 					else if(!strncmp((char *)ent.skin, "players/cyborg", 14))
 					{
-						ent.skin = re.RegisterSkin ("players/cyborg/disguise.pcx");
-						ent.model = re.RegisterModel ("players/cyborg/tris.md2");
+						ent.skin  = R_RegisterSkin( "players/cyborg/disguise.pcx" );
+						ent.model = Mod_RegisterModel( "players/cyborg/tris.md2" );
 					}
 				}
 //PGM
@@ -1227,17 +1229,11 @@ void CL_AddPacketEntities (frame_t *frame)
 			}
 			else if (effects & EF_TRACKERTRAIL)
 			{
-				if (effects & EF_TRACKER)
+				if ( effects & EF_TRACKER )
 				{
-					float intensity;
-
-					intensity = 50 + (500 * (sin(cl.time/500.0) + 1.0));
-					// FIXME - check out this effect in rendition
-					if(vidref_val == VIDREF_GL)
-						V_AddLight (ent.origin, intensity, -1.0, -1.0, -1.0);
-					else
-						V_AddLight (ent.origin, -1.0 * intensity, 1.0, 1.0, 1.0);
-					}
+					float intensity = 50 + ( 500 * ( sin( cl.time / 500.0 ) + 1.0 ) );
+					V_AddLight( ent.origin, intensity, -1.0, -1.0, -1.0 );
+				}
 				else
 				{
 					CL_Tracker_Shell (cent->lerp_origin);

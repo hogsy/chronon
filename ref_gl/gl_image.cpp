@@ -178,7 +178,7 @@ void GL_TextureMode( char *string ) {
 	}
 
 	if( i == NUM_GL_MODES ) {
-		ri.Con_Printf( PRINT_ALL, "bad filter name\n" );
+		VID_Printf( PRINT_ALL, "bad filter name\n" );
 		return;
 	}
 
@@ -209,7 +209,7 @@ void GL_TextureAlphaMode( char *string ) {
 	}
 
 	if( i == NUM_GL_ALPHA_MODES ) {
-		ri.Con_Printf( PRINT_ALL, "bad alpha texture mode name\n" );
+		VID_Printf( PRINT_ALL, "bad alpha texture mode name\n" );
 		return;
 	}
 
@@ -230,7 +230,7 @@ void GL_TextureSolidMode( char *string ) {
 	}
 
 	if( i == NUM_GL_SOLID_MODES ) {
-		ri.Con_Printf( PRINT_ALL, "bad solid texture mode name\n" );
+		VID_Printf( PRINT_ALL, "bad solid texture mode name\n" );
 		return;
 	}
 
@@ -252,7 +252,7 @@ void	GL_ImageList_f( void ) {
 		"PAL"
 	};
 
-	ri.Con_Printf( PRINT_ALL, "------------------\n" );
+	VID_Printf( PRINT_ALL, "------------------\n" );
 	texels = 0;
 
 	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
@@ -261,26 +261,26 @@ void	GL_ImageList_f( void ) {
 		texels += image->upload_width * image->upload_height;
 		switch( image->type ) {
 		case it_skin:
-			ri.Con_Printf( PRINT_ALL, "M" );
+			VID_Printf( PRINT_ALL, "M" );
 			break;
 		case it_sprite:
-			ri.Con_Printf( PRINT_ALL, "S" );
+			VID_Printf( PRINT_ALL, "S" );
 			break;
 		case it_wall:
-			ri.Con_Printf( PRINT_ALL, "W" );
+			VID_Printf( PRINT_ALL, "W" );
 			break;
 		case it_pic:
-			ri.Con_Printf( PRINT_ALL, "P" );
+			VID_Printf( PRINT_ALL, "P" );
 			break;
 		default:
-			ri.Con_Printf( PRINT_ALL, " " );
+			VID_Printf( PRINT_ALL, " " );
 			break;
 		}
 
-		ri.Con_Printf( PRINT_ALL, " %3i %3i %s: %s\n",
+		VID_Printf( PRINT_ALL, " %3i %3i %s: %s\n",
 			image->upload_width, image->upload_height, palstrings[ image->paletted ], image->name );
 	}
-	ri.Con_Printf( PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels );
+	VID_Printf( PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels );
 }
 
 
@@ -377,9 +377,9 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 	//
 	// load the file
 	//
-	len = ri.FS_LoadFile( filename, (void **)&raw );
+	len = FS_LoadFile( filename, (void **)&raw );
 	if( !raw ) {
-		ri.Con_Printf( PRINT_DEVELOPER, "Bad pcx file %s\n", filename );
+		VID_Printf( PRINT_DEVELOPER, "Bad pcx file %s\n", filename );
 		return;
 	}
 
@@ -405,7 +405,7 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 		|| pcx->bits_per_pixel != 8
 		|| pcx->xmax >= 640
 		|| pcx->ymax >= 480 ) {
-		ri.Con_Printf( PRINT_ALL, "Bad pcx file %s\n", filename );
+		VID_Printf( PRINT_ALL, "Bad pcx file %s\n", filename );
 		return;
 	}
 
@@ -441,33 +441,33 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 	}
 
 	if( raw - (byte *)pcx > len ) {
-		ri.Con_Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
+		VID_Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
 		delete[] *pic;
 		*pic = NULL;
 	}
 
-	ri.FS_FreeFile( pcx );
+	FS_FreeFile( pcx );
 }
 
 static void LoadImage32( const char *name, byte **pic, int *width, int *height ) {
 	*pic = NULL;
 
 	byte *buffer;
-	int length = ri.FS_LoadFile( name, (void **)&buffer );
+	int length = FS_LoadFile( name, (void **)&buffer );
 	if( buffer == NULL ) {
-		ri.Con_Printf( PRINT_DEVELOPER, "Bad image file %s\n", name );
+		VID_Printf( PRINT_DEVELOPER, "Bad image file %s\n", name );
 		return;
 	}
 
 	int comp; /* this gets ignored for now */
 	byte *rgbData = stbi_load_from_memory( buffer, length, width, height, &comp, 4 );
 	if( rgbData == NULL ) {
-		ri.Sys_Error( ERR_DROP, "Failed to read %s!\n%s\n", name, stbi_failure_reason() );
+		VID_Error( ERR_DROP, "Failed to read %s!\n%s\n", name, stbi_failure_reason() );
 	}
 
 	*pic = rgbData;
 
-	ri.FS_FreeFile( buffer );
+	FS_FreeFile( buffer );
 }
 
 /*
@@ -696,7 +696,7 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 	upload_height = scaled_height;
 
 	if( scaled_width * scaled_height > sizeof( scaled ) / 4 )
-		ri.Sys_Error( ERR_DROP, "GL_Upload32: too big" );
+		VID_Error( ERR_DROP, "GL_Upload32: too big" );
 
 	// scan the texture for any non-255 alpha
 	c = width * height;
@@ -714,7 +714,7 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 	else if( samples == gl_alpha_format )
 		comp = gl_tex_alpha_format;
 	else {
-		ri.Con_Printf( PRINT_ALL,
+		VID_Printf( PRINT_ALL,
 			"Unknown number of texture components %i\n",
 			samples );
 		comp = samples;
@@ -808,7 +808,7 @@ qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolea
 	s = width * height;
 
 	if( s > sizeof( trans ) / 4 )
-		ri.Sys_Error( ERR_DROP, "GL_Upload8: too large" );
+		VID_Error( ERR_DROP, "GL_Upload8: too large" );
 
 	for( i = 0; i < s; i++ ) {
 		p = data[ i ];
@@ -856,13 +856,13 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 	}
 	if( i == numgltextures ) {
 		if( numgltextures == MAX_GLTEXTURES )
-			ri.Sys_Error( ERR_DROP, "MAX_GLTEXTURES" );
+			VID_Error( ERR_DROP, "MAX_GLTEXTURES" );
 		numgltextures++;
 	}
 	image = &gltextures[ i ];
 
 	if( strlen( name ) >= sizeof( image->name ) )
-		ri.Sys_Error( ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name );
+		VID_Error( ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name );
 	strcpy( image->name, name );
 	image->registration_sequence = registration_sequence;
 
@@ -877,7 +877,7 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 	if( image->type == it_pic && bits == 8
 		&& image->width < 64 && image->height < 64 ) {
 		int		x, y;
-		int		i, j, k;
+		int		j, k;
 		int		texnum;
 
 		texnum = Scrap_AllocBlock( image->width, image->height, &x, &y );
@@ -1061,7 +1061,7 @@ int Draw_GetPalette( void ) {
 
 	LoadPCX( "graphics/colormap.pcx", &pic, &pal, &width, &height );
 	if( !pal )
-		ri.Sys_Error( ERR_FATAL, "Couldn't load graphics/colormap.pcx" );
+		VID_Error( ERR_FATAL, "Couldn't load graphics/colormap.pcx" );
 
 	for( i = 0; i < 256; i++ ) {
 		r = pal[ i * 3 + 0 ];
@@ -1093,10 +1093,10 @@ void	GL_InitImages( void ) {
 	registration_sequence = 1;
 
 	// init intensity conversions
-	intensity = ri.Cvar_Get( "intensity", "2", 0 );
+	intensity = Cvar_Get( "intensity", "2", 0 );
 
 	if( intensity->value <= 1 )
-		ri.Cvar_Set( "intensity", "1" );
+		Cvar_Set( "intensity", "1" );
 
 	gl_state.inverse_intensity = 1 / intensity->value;
 

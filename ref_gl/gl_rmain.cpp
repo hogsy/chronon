@@ -26,8 +26,6 @@ void R_Clear( void );
 
 viddef_t vid;
 
-refimport_t ri;
-
 model_t *r_worldmodel;
 
 double gldepthmin, gldepthmax;
@@ -188,7 +186,7 @@ void R_DrawSpriteModel( entity_t *e ) {
 
 #if 0
 	if( e->frame < 0 || e->frame >= psprite->numframes ) {
-		ri.Con_Printf( PRINT_ALL, "no such sprite frame %i\n", e->frame );
+		VID_Printf( PRINT_ALL, "no such sprite frame %i\n", e->frame );
 		e->frame = 0;
 	}
 #endif
@@ -331,7 +329,7 @@ void R_DrawEntitiesOnList( void ) {
 				break;
 			default:
 #if !defined( _DEBUG )
-				ri.Sys_Error( ERR_DROP, "Bad modeltype" );
+				VID_Error( ERR_DROP, "Bad modeltype" );
 #else
 				R_DrawNullModel();
 #endif
@@ -368,7 +366,7 @@ void R_DrawEntitiesOnList( void ) {
 				break;
 			default:
 #if !defined( _DEBUG )
-				ri.Sys_Error( ERR_DROP, "Bad modeltype" );
+				VID_Error( ERR_DROP, "Bad modeltype" );
 #endif
 				break;
 			}
@@ -760,7 +758,7 @@ void R_RenderView( refdef_t *fd ) {
 	r_newrefdef = *fd;
 
 	if( !r_worldmodel && !( r_newrefdef.rdflags & RDF_NOWORLDMODEL ) )
-		ri.Sys_Error( ERR_DROP, "R_RenderView: NULL worldmodel" );
+		VID_Error( ERR_DROP, "R_RenderView: NULL worldmodel" );
 
 	if( r_speeds->value ) {
 		c_brush_polys = 0;
@@ -792,7 +790,7 @@ void R_RenderView( refdef_t *fd ) {
 	R_Flash();
 
 	if( r_speeds->value ) {
-		ri.Con_Printf( PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
+		VID_Printf( PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
 			c_brush_polys, c_alias_polys, c_visible_textures,
 			c_visible_lightmaps );
 	}
@@ -894,84 +892,84 @@ void R_RenderFrame( refdef_t *fd ) {
 }
 
 void R_Register( void ) {
-	r_lefthand = ri.Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
-	r_norefresh = ri.Cvar_Get( "r_norefresh", "0", 0 );
-	r_fullbright = ri.Cvar_Get( "r_fullbright", "0", 0 );
-	r_drawentities = ri.Cvar_Get( "r_drawentities", "1", 0 );
-	r_drawworld = ri.Cvar_Get( "r_drawworld", "1", 0 );
-	r_novis = ri.Cvar_Get( "r_novis", "0", 0 );
-	r_nocull = ri.Cvar_Get( "r_nocull", "0", 0 );
-	r_lerpmodels = ri.Cvar_Get( "r_lerpmodels", "1", 0 );
-	r_speeds = ri.Cvar_Get( "r_speeds", "0", 0 );
+	r_lefthand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
+	r_norefresh = Cvar_Get( "r_norefresh", "0", 0 );
+	r_fullbright = Cvar_Get( "r_fullbright", "0", 0 );
+	r_drawentities = Cvar_Get( "r_drawentities", "1", 0 );
+	r_drawworld = Cvar_Get( "r_drawworld", "1", 0 );
+	r_novis = Cvar_Get( "r_novis", "0", 0 );
+	r_nocull = Cvar_Get( "r_nocull", "0", 0 );
+	r_lerpmodels = Cvar_Get( "r_lerpmodels", "1", 0 );
+	r_speeds = Cvar_Get( "r_speeds", "0", 0 );
 
-	r_lightlevel = ri.Cvar_Get( "r_lightlevel", "0", 0 );
+	r_lightlevel = Cvar_Get( "r_lightlevel", "0", 0 );
 
-	gl_nosubimage = ri.Cvar_Get( "gl_nosubimage", "0", 0 );
-	gl_allow_software = ri.Cvar_Get( "gl_allow_software", "0", 0 );
+	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
+	gl_allow_software = Cvar_Get( "gl_allow_software", "0", 0 );
 
-	gl_particle_min_size = ri.Cvar_Get( "gl_particle_min_size", "2", CVAR_ARCHIVE );
+	gl_particle_min_size = Cvar_Get( "gl_particle_min_size", "2", CVAR_ARCHIVE );
 	gl_particle_max_size =
-		ri.Cvar_Get( "gl_particle_max_size", "40", CVAR_ARCHIVE );
-	gl_particle_size = ri.Cvar_Get( "gl_particle_size", "40", CVAR_ARCHIVE );
-	gl_particle_att_a = ri.Cvar_Get( "gl_particle_att_a", "0.01", CVAR_ARCHIVE );
-	gl_particle_att_b = ri.Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
-	gl_particle_att_c = ri.Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
+		Cvar_Get( "gl_particle_max_size", "40", CVAR_ARCHIVE );
+	gl_particle_size = Cvar_Get( "gl_particle_size", "40", CVAR_ARCHIVE );
+	gl_particle_att_a = Cvar_Get( "gl_particle_att_a", "0.01", CVAR_ARCHIVE );
+	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
+	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
-	gl_modulate = ri.Cvar_Get( "gl_modulate", "1", CVAR_ARCHIVE );
-	gl_log = ri.Cvar_Get( "gl_log", "0", 0 );
-	gl_bitdepth = ri.Cvar_Get( "gl_bitdepth", "0", 0 );
-	gl_mode = ri.Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
-	gl_lightmap = ri.Cvar_Get( "gl_lightmap", "0", 0 );
-	gl_shadows = ri.Cvar_Get( "gl_shadows", "0", CVAR_ARCHIVE );
-	gl_dynamic = ri.Cvar_Get( "gl_dynamic", "1", 0 );
-	gl_nobind = ri.Cvar_Get( "gl_nobind", "0", 0 );
-	gl_round_down = ri.Cvar_Get( "gl_round_down", "1", 0 );
-	gl_picmip = ri.Cvar_Get( "gl_picmip", "0", 0 );
-	gl_skymip = ri.Cvar_Get( "gl_skymip", "0", 0 );
-	gl_showtris = ri.Cvar_Get( "gl_showtris", "0", 0 );
-	gl_ztrick = ri.Cvar_Get( "gl_ztrick", "0", 0 );
-	gl_finish = ri.Cvar_Get( "gl_finish", "0", CVAR_ARCHIVE );
-	gl_clear = ri.Cvar_Get( "gl_clear", "0", 0 );
-	gl_cull = ri.Cvar_Get( "gl_cull", "1", 0 );
-	gl_polyblend = ri.Cvar_Get( "gl_polyblend", "1", 0 );
-	gl_flashblend = ri.Cvar_Get( "gl_flashblend", "0", 0 );
-	gl_playermip = ri.Cvar_Get( "gl_playermip", "0", 0 );
-	gl_monolightmap = ri.Cvar_Get( "gl_monolightmap", "0", 0 );
-	gl_driver = ri.Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
+	gl_modulate = Cvar_Get( "gl_modulate", "1", CVAR_ARCHIVE );
+	gl_log = Cvar_Get( "gl_log", "0", 0 );
+	gl_bitdepth = Cvar_Get( "gl_bitdepth", "0", 0 );
+	gl_mode = Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
+	gl_lightmap = Cvar_Get( "gl_lightmap", "0", 0 );
+	gl_shadows = Cvar_Get( "gl_shadows", "0", CVAR_ARCHIVE );
+	gl_dynamic = Cvar_Get( "gl_dynamic", "1", 0 );
+	gl_nobind = Cvar_Get( "gl_nobind", "0", 0 );
+	gl_round_down = Cvar_Get( "gl_round_down", "1", 0 );
+	gl_picmip = Cvar_Get( "gl_picmip", "0", 0 );
+	gl_skymip = Cvar_Get( "gl_skymip", "0", 0 );
+	gl_showtris = Cvar_Get( "gl_showtris", "0", 0 );
+	gl_ztrick = Cvar_Get( "gl_ztrick", "0", 0 );
+	gl_finish = Cvar_Get( "gl_finish", "0", CVAR_ARCHIVE );
+	gl_clear = Cvar_Get( "gl_clear", "0", 0 );
+	gl_cull = Cvar_Get( "gl_cull", "1", 0 );
+	gl_polyblend = Cvar_Get( "gl_polyblend", "1", 0 );
+	gl_flashblend = Cvar_Get( "gl_flashblend", "0", 0 );
+	gl_playermip = Cvar_Get( "gl_playermip", "0", 0 );
+	gl_monolightmap = Cvar_Get( "gl_monolightmap", "0", 0 );
+	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_texturemode =
-		ri.Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
+		Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_texturealphamode =
-		ri.Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );
+		Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );
 	gl_texturesolidmode =
-		ri.Cvar_Get( "gl_texturesolidmode", "default", CVAR_ARCHIVE );
-	gl_lockpvs = ri.Cvar_Get( "gl_lockpvs", "0", 0 );
+		Cvar_Get( "gl_texturesolidmode", "default", CVAR_ARCHIVE );
+	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 
-	gl_vertex_arrays = ri.Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
+	gl_vertex_arrays = Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
 
-	gl_ext_swapinterval = ri.Cvar_Get( "gl_ext_swapinterval", "1", CVAR_ARCHIVE );
+	gl_ext_swapinterval = Cvar_Get( "gl_ext_swapinterval", "1", CVAR_ARCHIVE );
 	gl_ext_palettedtexture =
-		ri.Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
-	gl_ext_multitexture = ri.Cvar_Get( "gl_ext_multitexture", "1", CVAR_ARCHIVE );
+		Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
+	gl_ext_multitexture = Cvar_Get( "gl_ext_multitexture", "1", CVAR_ARCHIVE );
 	gl_ext_pointparameters =
-		ri.Cvar_Get( "gl_ext_pointparameters", "1", CVAR_ARCHIVE );
+		Cvar_Get( "gl_ext_pointparameters", "1", CVAR_ARCHIVE );
 	gl_ext_compiled_vertex_array =
-		ri.Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
+		Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
 
-	gl_drawbuffer = ri.Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
-	gl_swapinterval = ri.Cvar_Get( "gl_swapinterval", "1", CVAR_ARCHIVE );
+	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
+	gl_swapinterval = Cvar_Get( "gl_swapinterval", "1", CVAR_ARCHIVE );
 
-	gl_saturatelighting = ri.Cvar_Get( "gl_saturatelighting", "0", 0 );
+	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
 
-	gl_3dlabs_broken = ri.Cvar_Get( "gl_3dlabs_broken", "1", CVAR_ARCHIVE );
+	gl_3dlabs_broken = Cvar_Get( "gl_3dlabs_broken", "1", CVAR_ARCHIVE );
 
-	vid_fullscreen = ri.Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
-	vid_gamma = ri.Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
-	vid_ref = ri.Cvar_Get( "vid_ref", "gl", CVAR_ARCHIVE );
+	vid_fullscreen = Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
+	vid_gamma = Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
+	vid_ref = Cvar_Get( "vid_ref", "gl", CVAR_ARCHIVE );
 
-	ri.Cmd_AddCommand( "imagelist", GL_ImageList_f );
-	ri.Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
-	ri.Cmd_AddCommand( "modellist", Mod_Modellist_f );
-	ri.Cmd_AddCommand( "gl_strings", GL_Strings_f );
+	Cmd_AddCommand( "imagelist", GL_ImageList_f );
+	Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
+	Cmd_AddCommand( "modellist", Mod_Modellist_f );
+	Cmd_AddCommand( "gl_strings", GL_Strings_f );
 }
 
 /*
@@ -992,7 +990,7 @@ qboolean R_SetMode( void ) {
 	qboolean fullscreen;
 
 	if( vid_fullscreen->modified && !gl_config.allow_cds ) {
-		ri.Con_Printf( PRINT_ALL,
+		VID_Printf( PRINT_ALL,
 			"R_SetMode() - CDS not allowed with this driver\n" );
 		ri.Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
 		vid_fullscreen->modified = false;
@@ -1010,7 +1008,7 @@ qboolean R_SetMode( void ) {
 		if( err == rserr_invalid_fullscreen ) {
 			ri.Cvar_SetValue( "vid_fullscreen", 0 );
 			vid_fullscreen->modified = false;
-			ri.Con_Printf(
+			VID_Printf(
 				PRINT_ALL,
 				"ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
 			if( ( err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value,
@@ -1019,13 +1017,13 @@ qboolean R_SetMode( void ) {
 		} else if( err == rserr_invalid_mode ) {
 			ri.Cvar_SetValue( "gl_mode", gl_state.prev_mode );
 			gl_mode->modified = false;
-			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n" );
+			VID_Printf( PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n" );
 		}
 
 		// try setting it back to something safe
 		if( ( err = GLimp_SetMode( &vid.width, &vid.height, gl_state.prev_mode,
 			false ) ) != rserr_ok ) {
-			ri.Con_Printf( PRINT_ALL,
+			VID_Printf( PRINT_ALL,
 				"ref_gl::R_SetMode() - could not revert to safe mode\n" );
 			return false;
 		}
@@ -1050,8 +1048,6 @@ int R_Init( void *hinstance, void *hWnd ) {
 		r_turbsin[ j ] *= 0.5;
 	}
 
-	ri.Con_Printf( PRINT_ALL, "ref_gl version: " REF_VERSION "\n" );
-
 	Draw_GetPalette();
 
 	R_Register();
@@ -1068,31 +1064,31 @@ int R_Init( void *hinstance, void *hWnd ) {
 	// create the window and set up the context
 	if( !R_SetMode() ) {
 		QGL_Shutdown();
-		ri.Con_Printf( PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n" );
+		VID_Printf( PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n" );
 		return -1;
 	}
 
 	// initialize our QGL dynamic bindings
 	if( !QGL_Init() ) {
 		QGL_Shutdown();
-		ri.Con_Printf( PRINT_ALL, "ref_gl::R_Init() - could not load \"%s\"\n",
+		VID_Printf( PRINT_ALL, "ref_gl::R_Init() - could not load \"%s\"\n",
 			gl_driver->string );
 		return -1;
 	}
 
-	ri.Vid_MenuInit();
+	VID_MenuInit();
 
 	/*
 	** get our various GL strings
 	*/
 	gl_config.vendor_string = ( const char * ) glGetString( GL_VENDOR );
-	ri.Con_Printf( PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
+	VID_Printf( PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
 	gl_config.renderer_string = ( const char * ) glGetString( GL_RENDERER );
-	ri.Con_Printf( PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
+	VID_Printf( PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
 	gl_config.version_string = ( const char * ) glGetString( GL_VERSION );
-	ri.Con_Printf( PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
+	VID_Printf( PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
 	gl_config.extensions_string = ( const char * ) glGetString( GL_EXTENSIONS );
-	ri.Con_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	VID_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 
 	strcpy( renderer_buffer, gl_config.renderer_string );
 	Q_strtolower( renderer_buffer );
@@ -1111,24 +1107,24 @@ int R_Init( void *hinstance, void *hWnd ) {
 		gl_config.renderer = GL_RENDERER_OTHER;
 
 	if( toupper( gl_monolightmap->string[ 1 ] ) != 'F' ) {
-		ri.Cvar_Set( "gl_monolightmap", "0" );
+		Cvar_Set( "gl_monolightmap", "0" );
 	}
 
 	// power vr can't have anything stay in the framebuffer, so
 	// the screen needs to redraw the tiled background every frame
-	ri.Cvar_Set( "scr_drawall", "0" );
+	Cvar_Set( "scr_drawall", "0" );
 
 	// MCD has buffering issues
 	if( gl_config.renderer == GL_RENDERER_MCD ) {
-		ri.Cvar_SetValue( "gl_finish", 1 );
+		Cvar_SetValue( "gl_finish", 1 );
 	}
 
 	gl_config.allow_cds = true;
 
 	if( gl_config.allow_cds )
-		ri.Con_Printf( PRINT_ALL, "...allowing CDS\n" );
+		VID_Printf( PRINT_ALL, "...allowing CDS\n" );
 	else
-		ri.Con_Printf( PRINT_ALL, "...disabling CDS\n" );
+		VID_Printf( PRINT_ALL, "...disabling CDS\n" );
 
 	GL_SetDefaultState();
 
@@ -1143,7 +1139,7 @@ int R_Init( void *hinstance, void *hWnd ) {
 
 	err = glGetError();
 	if( err != GL_NO_ERROR )
-		ri.Con_Printf( PRINT_ALL, "glGetError() = 0x%x\n", err );
+		VID_Printf( PRINT_ALL, "glGetError() = 0x%x\n", err );
 
 	return true;
 }
@@ -1154,10 +1150,10 @@ R_Shutdown
 ===============
 */
 void R_Shutdown( void ) {
-	ri.Cmd_RemoveCommand( "modellist" );
-	ri.Cmd_RemoveCommand( "screenshot" );
-	ri.Cmd_RemoveCommand( "imagelist" );
-	ri.Cmd_RemoveCommand( "gl_strings" );
+	Cmd_RemoveCommand( "modellist" );
+	Cmd_RemoveCommand( "screenshot" );
+	Cmd_RemoveCommand( "imagelist" );
+	Cmd_RemoveCommand( "gl_strings" );
 
 	Mod_FreeAll();
 
@@ -1192,7 +1188,7 @@ void R_BeginFrame( float camera_separation ) {
 		vid_fullscreen->modified ) {  // FIXME: only restart if CDS is required
 		cvar_t *ref;
 
-		ref = ri.Cvar_Get( "vid_ref", "gl", 0 );
+		ref = Cvar_Get( "vid_ref", "gl", 0 );
 		ref->modified = true;
 	}
 
@@ -1383,93 +1379,3 @@ void R_DrawBeam( entity_t *e ) {
 	glDisable( GL_BLEND );
 	glDepthMask( GL_TRUE );
 }
-
-//===================================================================
-
-void R_BeginRegistration( char *map );
-struct model_s *R_RegisterModel( const char *name );
-struct image_s *R_RegisterSkin( const char *name );
-void R_SetSky( const char *name, float rotate, vec3_t axis );
-void R_EndRegistration( void );
-
-void R_RenderFrame( refdef_t *fd );
-
-struct image_s *Draw_FindPic( const char *name );
-
-void Draw_Pic( int x, int y, const char *name );
-void Draw_Char( int x, int y, int c );
-void Draw_TileClear( int x, int y, int w, int h, const char *name );
-void Draw_Fill( int x, int y, int w, int h, int c );
-void Draw_FadeScreen( void );
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-GetRefAPI
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-refexport_t GetRefAPI( refimport_t rimp ) {
-	refexport_t re;
-
-	ri = rimp;
-
-	re.api_version = API_VERSION;
-
-	re.BeginRegistration = R_BeginRegistration;
-	re.RegisterModel = R_RegisterModel;
-	re.RegisterSkin = R_RegisterSkin;
-	re.RegisterPic = Draw_FindPic;
-	re.SetSky = R_SetSky;
-	re.EndRegistration = R_EndRegistration;
-
-	re.RenderFrame = R_RenderFrame;
-
-	re.DrawGetPicSize = Draw_GetPicSize;
-	re.DrawPic = Draw_Pic;
-	re.DrawStretchPic = Draw_StretchPic;
-	re.DrawChar = Draw_Char;
-	re.DrawTileClear = Draw_TileClear;
-	re.DrawFill = Draw_Fill;
-	re.DrawFadeScreen = Draw_FadeScreen;
-
-	re.DrawStretchRaw = Draw_StretchRaw;
-
-	re.Init = R_Init;
-	re.Shutdown = R_Shutdown;
-
-	re.CinematicSetPalette = R_SetPalette;
-	re.BeginFrame = R_BeginFrame;
-	re.EndFrame = GLimp_EndFrame;
-
-	re.AppActivate = GLimp_AppActivate;
-
-	Swap_Init();
-
-	return re;
-}
-
-#ifndef REF_HARD_LINKED
-// this is only here so the functions in q_shared.c and q_shwin.c can link
-void Sys_Error( const char *error, ... ) {
-	va_list argptr;
-	char text[ 1024 ];
-
-	va_start( argptr, error );
-	vsprintf( text, error, argptr );
-	va_end( argptr );
-
-	ri.Sys_Error( ERR_FATAL, "%s", text );
-}
-
-void Com_Printf( const char *fmt, ... ) {
-	va_list argptr;
-	char text[ 1024 ];
-
-	va_start( argptr, fmt );
-	vsprintf( text, fmt, argptr );
-	va_end( argptr );
-
-	ri.Con_Printf( PRINT_ALL, "%s", text );
-}
-
-#endif

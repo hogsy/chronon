@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
+#include "../ref_gl/gl_local.h"
+
 float		scr_con_current;	// aproaches scr_conlines at scr_conspeed
 float		scr_conlines;		// 0.0 to 1.0 lines of console to display
 
@@ -154,7 +156,7 @@ void SCR_DrawDebugGraph (void)
 
 	x = scr_vrect.x;
 	y = scr_vrect.y+scr_vrect.height;
-	re.DrawFill (x, y-scr_graphheight->value,
+	Draw_Fill (x, y-scr_graphheight->value,
 		w, scr_graphheight->value, 8);
 
 	for (a=0 ; a<w ; a++)
@@ -167,7 +169,7 @@ void SCR_DrawDebugGraph (void)
 		if (v < 0)
 			v += scr_graphheight->value * (1+(int)(-v/scr_graphheight->value));
 		h = (int)v % (int)scr_graphheight->value;
-		re.DrawFill (x+w-1-a, y - h, 1,	h, color);
+		Draw_Fill (x+w-1-a, y - h, 1,	h, color);
 	}
 }
 
@@ -277,7 +279,7 @@ void SCR_DrawCenterString (void)
 		SCR_AddDirtyPoint (x, y);
 		for (j=0 ; j<l ; j++, x+=8)
 		{
-			re.DrawChar (x, y, start[j]);	
+			Draw_Char (x, y, start[j]);	
 			if (!remaining--)
 				return;
 		}
@@ -395,7 +397,7 @@ void SCR_Sky_f (void)
 		axis[2] = 1;
 	}
 
-	re.SetSky (Cmd_Argv(1), rotate, axis);
+	R_SetSky (Cmd_Argv(1), rotate, axis);
 }
 
 //============================================================================
@@ -445,7 +447,7 @@ void SCR_DrawNet (void)
 		< CMD_BACKUP-1)
 		return;
 
-	re.DrawPic (scr_vrect.x+64, scr_vrect.y, "net");
+	Draw_Pic (scr_vrect.x+64, scr_vrect.y, "net");
 }
 
 /*
@@ -463,8 +465,8 @@ void SCR_DrawPause (void)
 	if (!cl_paused->value)
 		return;
 
-	re.DrawGetPicSize (&w, &h, "menu/pause");
-	re.DrawPic ((viddef.width-w)/2, viddef.height/2 + 8, "menu/pause");
+	Draw_GetPicSize (&w, &h, "menu/pause");
+	Draw_Pic ((viddef.width-w)/2, viddef.height/2 + 8, "menu/pause");
 }
 
 /*
@@ -480,8 +482,8 @@ void SCR_DrawLoading (void)
 		return;
 
 	scr_draw_loading = false;
-	re.DrawGetPicSize (&w, &h, "menu/loading");
-	re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "menu/loading");
+	Draw_GetPicSize (&w, &h, "menu/loading");
+	Draw_Pic ((viddef.width-w)/2, (viddef.height-h)/2, "menu/loading");
 }
 
 //=============================================================================
@@ -535,7 +537,7 @@ void SCR_DrawConsole (void)
 	if (cls.state != ca_active || !cl.refresh_prepped)
 	{	// connected, but can't render
 		Con_DrawConsole (0.5);
-		re.DrawFill (0, viddef.height/2, viddef.width, viddef.height/2, 0);
+		Draw_Fill (0, viddef.height/2, viddef.width, viddef.height/2, 0);
 		return;
 	}
 
@@ -633,13 +635,13 @@ void SCR_TimeRefresh_f (void)
 
 	if (Cmd_Argc() == 2)
 	{	// run without page flipping
-		re.BeginFrame( 0 );
+		R_BeginFrame( 0 );
 		for (i=0 ; i<128 ; i++)
 		{
 			cl.refdef.viewangles[1] = i/128.0*360.0;
-			re.RenderFrame (&cl.refdef);
+			R_RenderFrame (&cl.refdef);
 		}
-		re.EndFrame();
+		GLimp_EndFrame();
 	}
 	else
 	{
@@ -647,9 +649,9 @@ void SCR_TimeRefresh_f (void)
 		{
 			cl.refdef.viewangles[1] = i/128.0*360.0;
 
-			re.BeginFrame( 0 );
-			re.RenderFrame (&cl.refdef);
-			re.EndFrame();
+			R_BeginFrame( 0 );
+			R_RenderFrame (&cl.refdef);
+			GLimp_EndFrame();
 		}
 	}
 
@@ -743,28 +745,28 @@ void SCR_TileClear (void)
 	if (clear.y1 < top)
 	{	// clear above view screen
 		i = clear.y2 < top-1 ? clear.y2 : top-1;
-		re.DrawTileClear (clear.x1 , clear.y1,
+		Draw_TileClear (clear.x1 , clear.y1,
 			clear.x2 - clear.x1 + 1, i - clear.y1+1, "backtile");
 		clear.y1 = top;
 	}
 	if (clear.y2 > bottom)
 	{	// clear below view screen
 		i = clear.y1 > bottom+1 ? clear.y1 : bottom+1;
-		re.DrawTileClear (clear.x1, i,
+		Draw_TileClear (clear.x1, i,
 			clear.x2-clear.x1+1, clear.y2-i+1, "backtile");
 		clear.y2 = bottom;
 	}
 	if (clear.x1 < left)
 	{	// clear left of view screen
 		i = clear.x2 < left-1 ? clear.x2 : left-1;
-		re.DrawTileClear (clear.x1, clear.y1,
+		Draw_TileClear (clear.x1, clear.y1,
 			i-clear.x1+1, clear.y2 - clear.y1 + 1, "backtile");
 		clear.x1 = left;
 	}
 	if (clear.x2 > right)
 	{	// clear left of view screen
 		i = clear.x1 > right+1 ? clear.x1 : right+1;
-		re.DrawTileClear (i, clear.y1,
+		Draw_TileClear (i, clear.y1,
 			clear.x2-i+1, clear.y2 - clear.y1 + 1, "backtile");
 		clear.x2 = right;
 	}
@@ -849,7 +851,7 @@ static void DrawHUDString (const char *string, int x, int y, int centerwidth, in
 			x = margin;
 		for (i=0 ; i<width ; i++)
 		{
-			re.DrawChar (x, y, line[i]^xOr);
+			Draw_Char (x, y, line[i]^xOr);
 			x += 8;
 		}
 		if (*string)
@@ -897,7 +899,7 @@ void SCR_DrawField (int x, int y, int color, int width, int value)
 		else
 			frame = *ptr -'0';
 
-		re.DrawPic (x,y,sb_nums[color][frame]);
+		Draw_Pic (x,y,sb_nums[color][frame]);
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
@@ -918,7 +920,7 @@ void SCR_TouchPics (void)
 
 	for (i=0 ; i<2 ; i++)
 		for (j=0 ; j<11 ; j++)
-			re.RegisterPic (sb_nums[i][j]);
+			Draw_FindPic (sb_nums[i][j]);
 
 #if 0
 	if (crosshair->value)
@@ -927,7 +929,7 @@ void SCR_TouchPics (void)
 			crosshair->value = 3;
 
 		Com_sprintf (crosshair_pic, sizeof(crosshair_pic), "ch%i", (int)(crosshair->value));
-		re.DrawGetPicSize (&crosshair_width, &crosshair_height, crosshair_pic);
+		Draw_GetPicSize (&crosshair_width, &crosshair_height, crosshair_pic);
 		if (!crosshair_width)
 			crosshair_pic[0] = 0;
 	}
@@ -1010,7 +1012,7 @@ static void SCR_ExecuteLayoutString (const char *s)
 			{
 				SCR_AddDirtyPoint (x, y);
 				SCR_AddDirtyPoint (x+23, y+23);
-				re.DrawPic (x, y, cl.configstrings[CS_IMAGES+value]);
+				Draw_Pic (x, y, cl.configstrings[CS_IMAGES+value]);
 			}
 			continue;
 		}
@@ -1049,7 +1051,7 @@ static void SCR_ExecuteLayoutString (const char *s)
 
 			if (!ci->icon)
 				ci = &cl.baseclientinfo;
-			re.DrawPic (x, y, ci->iconname);
+			Draw_Pic (x, y, ci->iconname);
 			continue;
 		}
 
@@ -1093,7 +1095,7 @@ static void SCR_ExecuteLayoutString (const char *s)
 			token = COM_Parse (&s);
 			SCR_AddDirtyPoint (x, y);
 			SCR_AddDirtyPoint (x+23, y+23);
-			re.DrawPic (x, y, token);
+			Draw_Pic (x, y, token);
 			continue;
 		}
 
@@ -1121,7 +1123,7 @@ static void SCR_ExecuteLayoutString (const char *s)
 				color = 1;
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 1)
-				re.DrawPic (x, y, "field_3");
+				Draw_Pic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
 			continue;
@@ -1141,7 +1143,7 @@ static void SCR_ExecuteLayoutString (const char *s)
 				continue;	// negative number = don't show
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 4)
-				re.DrawPic (x, y, "field_3");
+				Draw_Pic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
 			continue;
@@ -1159,7 +1161,7 @@ static void SCR_ExecuteLayoutString (const char *s)
 			color = 0;	// green
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 2)
-				re.DrawPic (x, y, "field_3");
+				Draw_Pic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
 			continue;
@@ -1311,16 +1313,16 @@ void SCR_UpdateScreen (void)
 
 	for ( i = 0; i < numframes; i++ )
 	{
-		re.BeginFrame( separation[i] );
+		R_BeginFrame( separation[i] );
 
 		if (scr_draw_loading == 2)
 		{	//  loading plaque over black screen
 			int		w, h;
 
-			re.CinematicSetPalette(NULL);
+			R_SetPalette(NULL);
 			scr_draw_loading = false;
-			re.DrawGetPicSize (&w, &h, "loading");
-			re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
+			Draw_GetPicSize (&w, &h, "loading");
+			Draw_Pic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
 //			re.EndFrame();
 //			return;
 		} 
@@ -1332,7 +1334,7 @@ void SCR_UpdateScreen (void)
 			{
 				if (cl.cinematicpalette_active)
 				{
-					re.CinematicSetPalette(NULL);
+					R_SetPalette(NULL);
 					cl.cinematicpalette_active = false;
 				}
 				M_Draw ();
@@ -1343,7 +1345,7 @@ void SCR_UpdateScreen (void)
 			{
 				if (cl.cinematicpalette_active)
 				{
-					re.CinematicSetPalette(NULL);
+					R_SetPalette(NULL);
 					cl.cinematicpalette_active = false;
 				}
 				SCR_DrawConsole ();
@@ -1363,7 +1365,7 @@ void SCR_UpdateScreen (void)
 			// make sure the game palette is active
 			if (cl.cinematicpalette_active)
 			{
-				re.CinematicSetPalette(NULL);
+				R_SetPalette(NULL);
 				cl.cinematicpalette_active = false;
 			}
 
@@ -1399,5 +1401,5 @@ void SCR_UpdateScreen (void)
 			SCR_DrawLoading ();
 		}
 	}
-	re.EndFrame();
+	GLimp_EndFrame();
 }

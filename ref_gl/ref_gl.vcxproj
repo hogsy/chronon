@@ -266,7 +266,6 @@
   <ItemGroup>
     <ClCompile Include="..\game\q_shared.cpp" />
     <ClCompile Include="..\win32\glw_imp.cpp" />
-    <ClCompile Include="..\win32\qgl_win.cpp" />
     <ClCompile Include="..\win32\q_shwin.cpp" />
     <ClCompile Include="gl_draw.cpp" />
     <ClCompile Include="gl_image.cpp" />

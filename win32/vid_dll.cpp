@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2020-2021 Mark E Sowden <markelswo@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,10 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "..\client\client.h"
 #include "winquake.h"
-//#include "zmouse.h"
 
-// Structure containing functions exported from refresh DLL
-refexport_t re;
+#include "../ref_gl/gl_local.h"
 
 cvar_t *win_noalttab;
 
@@ -40,15 +39,14 @@ cvar_t *win_noalttab;
 static UINT MSH_MOUSEWHEEL;
 
 // Console variables that we need to access from this module
-cvar_t *vid_gamma;
-cvar_t *vid_ref;   // Name of Refresh DLL loaded
+extern cvar_t *vid_ref;   // Name of Refresh DLL loaded
 cvar_t *vid_xpos;  // X coordinate of window position
 cvar_t *vid_ypos;  // Y coordinate of window position
-cvar_t *vid_fullscreen;
+extern cvar_t *vid_fullscreen;
+extern cvar_t *vid_gamma;
 
 // Global variables used internally by this module
 viddef_t viddef;           // global video state; used by other modules
-HINSTANCE reflib_library;  // Handle to refresh DLL
 qboolean reflib_active = 0;
 
 HWND cl_hwnd;  // Main window handle for life of program
@@ -104,7 +102,7 @@ DLL GLUE
 */
 
 #define MAXPRINTMSG 4096
-static void VID_Printf( int print_level, const char *fmt, ... ) {
+void VID_Printf( int print_level, const char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
@@ -124,7 +122,7 @@ static void VID_Printf( int print_level, const char *fmt, ... ) {
 	Z_Free( msg );
 }
 
-static void VID_Error( int err_level, const char *fmt, ... ) {
+void VID_Error( int err_level, const char *fmt, ... ) {
 	va_list argptr;
 	va_start( argptr, fmt );
 	int len = Q_vscprintf( fmt, argptr ) + 1;
@@ -358,7 +356,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 
 		AppActivate( fActive != WA_INACTIVE, fMinimized );
 
-		if( reflib_active ) re.AppActivate( !( fActive == WA_INACTIVE ) );
+		GLimp_AppActivate( !( fActive == WA_INACTIVE ) );
 	}
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 
@@ -522,36 +520,13 @@ void VID_NewWindow( int width, int height ) {
 	cl.force_refdef = true;  // can't use a paused refdef
 }
 
-void VID_FreeReflib( void ) {
-	if( !FreeLibrary( reflib_library ) )
-		Com_Error( ERR_FATAL, "Reflib FreeLibrary failed" );
-	memset( &re, 0, sizeof( re ) );
-	reflib_library = NULL;
-	reflib_active = false;
-}
-
 /*
 ==============
 VID_LoadRefresh
 ==============
 */
 qboolean VID_LoadRefresh( char *name ) {
-	refimport_t ri;
-	GetRefAPI_t GetRefAPI;
-
-	if( reflib_active ) {
-		re.Shutdown();
-		VID_FreeReflib();
-	}
-
-	Com_Printf( "------- Loading %s -------\n", name );
-
-	if( ( reflib_library = LoadLibrary( name ) ) == 0 ) {
-		Com_Printf( "LoadLibrary(\"%s\") failed\n", name );
-
-		return false;
-	}
-
+#if 0
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
 	ri.Cmd_Argc = Cmd_Argc;
@@ -568,27 +543,15 @@ qboolean VID_LoadRefresh( char *name ) {
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
+#endif
 
-	if( ( GetRefAPI = (GetRefAPI_t)GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 ) {
-		Com_Error( ERR_FATAL, "GetProcAddress failed on %s", name );
-		return false;
-	}
-
-	re = GetRefAPI( ri );
-
-	if( re.api_version != API_VERSION ) {
-		VID_FreeReflib();
-		Com_Error( ERR_FATAL, "%s has incompatible api_version", name );
-	}
-
-	if( re.Init( global_hInstance, MainWndProc ) == -1 ) {
-		re.Shutdown();
-		VID_FreeReflib();
+	if( R_Init( global_hInstance, MainWndProc ) == -1 ) {
+		R_Shutdown();
 		return false;
 	}
 
 	Com_Printf( "------------------------------------\n" );
-	reflib_active = true;
+
 	vidref_val = VIDREF_GL;
 
 	return true;
@@ -663,25 +626,6 @@ void VID_Init( void ) {
 	Cmd_AddCommand( "vid_restart", VID_Restart_f );
 	Cmd_AddCommand( "vid_front", VID_Front_f );
 
-	/*
-	** this is a gross hack but necessary to clamp the mode for 3Dfx
-	*/
-#if 0
-	{
-		cvar_t *gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
-		cvar_t *gl_mode = Cvar_Get( "gl_mode", "3", 0 );
-
-		if( stricmp( gl_driver->string, "3dfxgl" ) == 0 ) {
-			Cvar_SetValue( "gl_mode", 3 );
-			viddef.width = 640;
-			viddef.height = 480;
-		}
-	}
-#endif
-
-	/* Disable the 3Dfx splash screen */
-	putenv( "FX_GLIDE_NO_SPLASH=0" );
-
 	/* Start the graphics mode and load refresh DLL */
 	VID_CheckChanges();
 }
@@ -692,8 +636,5 @@ VID_Shutdown
 ============
 */
 void VID_Shutdown( void ) {
-	if( reflib_active ) {
-		re.Shutdown();
-		VID_FreeReflib();
-	}
+	R_Shutdown();
 }

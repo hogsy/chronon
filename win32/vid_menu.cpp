@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "../client/qmenu.h"
 
+#include "../ref_gl/gl_local.h"
+
 #define REF_OPENGL 1
 
 extern cvar_t *vid_ref;
@@ -324,8 +326,8 @@ void VID_MenuDraw(void) {
   /*
   ** draw the banner
   */
-  re.DrawGetPicSize(&w, &h, "m_banner_video");
-  re.DrawPic(viddef.width / 2 - w / 2, viddef.height / 2 - 110,
+  Draw_GetPicSize(&w, &h, "m_banner_video");
+  Draw_Pic(viddef.width / 2 - w / 2, viddef.height / 2 - 110,
              "m_banner_video");
 
   /*

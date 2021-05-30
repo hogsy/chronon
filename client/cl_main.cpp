@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
+#include "../ref_gl/gl_local.h"
+
 cvar_t	*freelook;
 
 cvar_t	*adr0;
@@ -630,7 +632,7 @@ void CL_Disconnect (void)
 	}
 
 	VectorClear (cl.refdef.blend);
-	re.CinematicSetPalette(NULL);
+	R_SetPalette(NULL);
 
 	M_ForceMenuOff ();
 

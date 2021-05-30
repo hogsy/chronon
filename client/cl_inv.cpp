@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
+#include "../ref_gl/gl_local.h"
+
 /*
 ================
 CL_ParseInventory
@@ -44,7 +46,7 @@ void Inv_DrawString (int x, int y, const char *string)
 {
 	while (*string)
 	{
-		re.DrawChar (x, y, *string);
+		Draw_Char (x, y, *string);
 		x+=8;
 		string++;
 	}
@@ -103,7 +105,7 @@ void CL_DrawInventory (void)
 	// repaint everything next frame
 	SCR_DirtyScreen ();
 
-	re.DrawPic (x, y+8, "inventory");
+	Draw_Pic (x, y+8, "inventory");
 
 	y += 24;
 	x += 24;
@@ -130,7 +132,7 @@ void CL_DrawInventory (void)
 		else	// draw a blinky cursor by the selected item
 		{
 			if ( (int)(cls.realtime*10) & 1)
-				re.DrawChar (x-8, y, 15);
+				Draw_Char (x-8, y, 15);
 		}
 		Inv_DrawString (x, y, string);
 		y += 8;
