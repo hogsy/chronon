@@ -253,6 +253,7 @@ float Q_fabs( float f ) {
 #if defined _M_IX86 && !defined C_ONLY
 #pragma warning (disable:4035)
 __declspec( naked ) long Q_ftol( float f ) {
+	( void ) f;
 	static int tmp;
 	__asm fld dword ptr[ esp + 4 ]
 		__asm fistp tmp
@@ -287,10 +288,6 @@ float	anglemod( float a ) {
 	a = ( 360.0 / 65536 ) * ( (int)( a * ( 65536 / 360.0 ) ) & 65535 );
 	return a;
 }
-
-int		i;
-vec3_t	corners[ 2 ];
-
 
 // this is the slow, general version
 int BoxOnPlaneSide2( vec3_t emins, vec3_t emaxs, struct cplane_s *p ) {

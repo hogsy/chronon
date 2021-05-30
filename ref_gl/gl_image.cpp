@@ -409,14 +409,13 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 		return;
 	}
 
-	out = static_cast< byte* >( malloc( ( pcx->ymax + 1 ) * ( pcx->xmax + 1 ) ) );
+	out = new byte[ ( pcx->ymax + 1 ) * ( pcx->xmax + 1 ) ];
 
 	*pic = out;
-
 	pix = out;
 
 	if( palette ) {
-		*palette = static_cast< byte * >( malloc( 768 ) );
+		*palette = new byte[ 768 ];
 		memcpy( *palette, (byte *)pcx + len - 768, 768 );
 	}
 
@@ -443,7 +442,7 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 
 	if( raw - (byte *)pcx > len ) {
 		ri.Con_Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
-		free( *pic );
+		delete[] *pic;
 		*pic = NULL;
 	}
 
@@ -962,7 +961,7 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 		void( *Load32bpp )( const char *filename, byte **pic, int *width, int *height );
 	} ImageLoader;
 
-	ImageLoader loaders[] = {
+	static ImageLoader loaders[] = {
 		{ "tga", 32, NULL, LoadImage32 },
 		{ "png", 32, NULL, LoadImage32 },
 		{ "bmp", 32, NULL, LoadImage32 },
@@ -972,7 +971,7 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	char uname[ MAX_QPATH ];
 	strcpy( uname, name );
 
-	for(auto & loader : loaders) {
+	for( auto &loader : loaders ) {
 		uname[ len - 3 ] = '\0';
 		strcat( uname, loader.extension );
 
@@ -998,8 +997,8 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 		return nullptr;
 	}
 
-	free( pic );
-	free( palette );
+	delete[] pic;
+	delete[] palette;
 
 	return image;
 }
@@ -1040,7 +1039,7 @@ void GL_FreeUnusedImages( void ) {
 		if( image->type == it_pic )
 			continue;		// don't free pics
 		// free it
-		glDeleteTextures( 1, ( GLuint * ) &image->texnum );
+		glDeleteTextures( 1, (GLuint *)&image->texnum );
 		memset( image, 0, sizeof( *image ) );
 	}
 }
@@ -1143,7 +1142,7 @@ void	GL_ShutdownImages( void ) {
 		if( !image->registration_sequence )
 			continue;		// free image_t slot
 		// free it
-		glDeleteTextures( 1, ( GLuint* ) &image->texnum );
+		glDeleteTextures( 1, (GLuint *)&image->texnum );
 		memset( image, 0, sizeof( *image ) );
 	}
 }
