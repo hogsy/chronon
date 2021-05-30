@@ -25,12 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS 50
 
-int com_argc;
-char *com_argv[ MAX_NUM_ARGVS + 1 ];
+static int com_argc;
+static const char *com_argv[ MAX_NUM_ARGVS + 1 ];
 
-int realtime;
-
-jmp_buf abortframe;  // an ERR_DROP occured, exit the entire frame
+static jmp_buf abortframe;  // an ERR_DROP occured, exit the entire frame
 
 FILE *log_stats_file;
 
@@ -63,15 +61,15 @@ CLIENT / SERVER interactions
 
 static int rd_target;
 static char *rd_buffer;
-static int rd_buffersize;
+static size_t rd_buffersize;
 static void ( *rd_flush )( int target, char *buffer );
 
-void Com_BeginRedirect( int target, char *buffer, int buffersize, void( *flush ) ) {
+void Com_BeginRedirect( int target, char *buffer, size_t buffersize, void( *flush )( int, char* ) ) {
 	if( !target || !buffer || !buffersize || !flush ) return;
 	rd_target = target;
 	rd_buffer = buffer;
 	rd_buffersize = buffersize;
-	rd_flush = ( void( * )( int, char * ) )flush;
+	rd_flush = flush;
 
 	*rd_buffer = 0;
 }
@@ -142,7 +140,7 @@ Com_DPrintf
 A Com_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Com_DPrintf( char *fmt, ... ) {
+void Com_DPrintf( const char *fmt, ... ) {
 	if( !developer || !developer->value )
 		return;  // don't confuse non-developers with techie stuff...
 
@@ -166,7 +164,7 @@ Both client and server can use this, and it will
 do the apropriate things.
 =============
 */
-void Com_Error( int code, char *fmt, ... ) {
+void Com_Error( int code, const char *fmt, ... ) {
 	static qboolean recursive = false;
 	if( recursive ) Sys_Error( "Recursive error!" );
 	recursive = true;
@@ -644,7 +642,8 @@ float MSG_ReadFloat( sizebuf_t *msg_read ) {
 
 char *MSG_ReadString( sizebuf_t *msg_read ) {
 	static char string[ 2048 ];
-	int l, c;
+	size_t l;
+	int c;
 
 	l = 0;
 	do {
@@ -661,7 +660,8 @@ char *MSG_ReadString( sizebuf_t *msg_read ) {
 
 char *MSG_ReadStringLine( sizebuf_t *msg_read ) {
 	static char string[ 2048 ];
-	int l, c;
+	size_t l;
+	int c;
 
 	l = 0;
 	do {
@@ -732,7 +732,7 @@ void MSG_ReadData( sizebuf_t *msg_read, void *data, int len ) {
 
 //===========================================================================
 
-void SZ_Init( sizebuf_t *buf, byte *data, int length ) {
+void SZ_Init( sizebuf_t *buf, byte *data, size_t length ) {
 	memset( buf, 0, sizeof( *buf ) );
 	buf->data = data;
 	buf->maxsize = length;
@@ -743,7 +743,7 @@ void SZ_Clear( sizebuf_t *buf ) {
 	buf->overflowed = false;
 }
 
-void *SZ_GetSpace( sizebuf_t *buf, int length ) {
+void *SZ_GetSpace( sizebuf_t *buf, size_t length ) {
 	void *data;
 
 	if( buf->cursize + length > buf->maxsize ) {
@@ -768,7 +768,7 @@ void SZ_Write( sizebuf_t *buf, const void *data, int length ) {
 	memcpy( SZ_GetSpace( buf, length ), data, length );
 }
 
-void SZ_Print( sizebuf_t *buf, char *data ) {
+void SZ_Print( sizebuf_t *buf, const char *data ) {
 	int len;
 
 	len = strlen( data ) + 1;
@@ -805,7 +805,7 @@ int COM_CheckParm( char *parm ) {
 
 int COM_Argc( void ) { return com_argc; }
 
-char *COM_Argv( int arg ) {
+const char *COM_Argv( int arg ) {
 	if( arg < 0 || arg >= com_argc || !com_argv[ arg ] ) return "";
 	return com_argv[ arg ];
 }
@@ -840,7 +840,7 @@ COM_AddParm
 Adds the given string at the end of the current argument list
 ================
 */
-void COM_AddParm( char *parm ) {
+void COM_AddParm( const char *parm ) {
 	if( com_argc == MAX_NUM_ARGVS )
 		Com_Error( ERR_FATAL, "COM_AddParm: MAX_NUM)ARGS" );
 	com_argv[ com_argc++ ] = parm;

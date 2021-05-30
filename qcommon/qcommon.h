@@ -77,16 +77,16 @@ typedef struct sizebuf_s {
 	qboolean allowoverflow;  // if false, do a Com_Error
 	qboolean overflowed;     // set to true if the buffer size failed
 	byte *data;
-	int maxsize;
-	int cursize;
-	int readcount;
+	size_t maxsize;
+	size_t cursize;
+	size_t readcount;
 } sizebuf_t;
 
-void SZ_Init( sizebuf_t *buf, byte *data, int length );
+void SZ_Init( sizebuf_t *buf, byte *data, size_t length );
 void SZ_Clear( sizebuf_t *buf );
-void *SZ_GetSpace( sizebuf_t *buf, int length );
+void *SZ_GetSpace( sizebuf_t *buf, size_t length );
 void SZ_Write( sizebuf_t *buf, const void *data, int length );
-void SZ_Print( sizebuf_t *buf, char *data );  // strcats onto the sizebuf
+void SZ_Print( sizebuf_t *buf, const char *data );  // strcats onto the sizebuf
 
 //============================================================================
 
@@ -145,10 +145,10 @@ extern float LittleFloat( float l );
 //============================================================================
 
 int COM_Argc( void );
-char *COM_Argv( int arg );  // range and null checked
+const char *COM_Argv( int arg );  // range and null checked
 void COM_ClearArgv( int arg );
 int COM_CheckParm( char *parm );
-void COM_AddParm( char *parm );
+void COM_AddParm( const char *parm );
 
 void COM_Init( void );
 void COM_InitArgv( int argc, char **argv );
@@ -415,7 +415,7 @@ const char *Cmd_CompleteCommand( const char *partial );
 // returns NULL if nothing fits
 
 int Cmd_Argc( void );
-char *Cmd_Argv( int arg );
+const char *Cmd_Argv( int arg );
 char *Cmd_Args( void );
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
@@ -473,7 +473,7 @@ cvar_t *Cvar_FullSet( const char *var_name, const char *value, int flags );
 void Cvar_SetValue( const char *var_name, float value );
 // expands value to a string and calls Cvar_Set
 
-float Cvar_VariableValue( char *var_name );
+float Cvar_VariableValue( const char *var_name );
 // returns 0 if not defined or non numeric
 
 char *Cvar_VariableString( const char *var_name );
@@ -554,7 +554,7 @@ qboolean NET_CompareAdr( netadr_t a, netadr_t b );
 qboolean NET_CompareBaseAdr( netadr_t a, netadr_t b );
 qboolean NET_IsLocalAddress( netadr_t adr );
 char *NET_AdrToString( netadr_t a );
-qboolean NET_StringToAdr( char *s, netadr_t *a );
+qboolean NET_StringToAdr( const char *s, netadr_t *a );
 void NET_Sleep( int msec );
 
 //============================================================================
@@ -606,7 +606,7 @@ void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 qboolean Netchan_NeedReliable( netchan_t *chan );
 void Netchan_Transmit( netchan_t *chan, int length, byte *data );
 void Netchan_OutOfBand( int net_socket, netadr_t adr, int length, byte *data );
-void Netchan_OutOfBandPrint( int net_socket, netadr_t adr, char *format, ... );
+void Netchan_OutOfBandPrint( int net_socket, netadr_t adr, const char *format, ... );
 qboolean Netchan_Process( netchan_t *chan, sizebuf_t *msg );
 
 qboolean Netchan_CanReliable( netchan_t *chan );
@@ -689,7 +689,7 @@ FILESYSTEM
 
 void FS_InitFilesystem( void );
 void FS_SetGamedir( const char *dir );
-char *FS_Gamedir( void );
+const char *FS_Gamedir( void );
 char *FS_NextPath( char *prevpath );
 void FS_ExecAutoexec( void );
 
@@ -723,11 +723,11 @@ MISC
 #define PRINT_ALL 0
 #define PRINT_DEVELOPER 1  // only print when "developer 1"
 
-void Com_BeginRedirect( int target, char *buffer, int buffersize, void( *flush ) );
+void Com_BeginRedirect( int target, char *buffer, size_t buffersize, void( *flush )( int, char* ) );
 void Com_EndRedirect( void );
 void Com_Printf( const char *fmt, ... );
-void Com_DPrintf( char *fmt, ... );
-void Com_Error( int code, char *fmt, ... );
+void Com_DPrintf( const char *fmt, ... );
+void Com_Error( int code, const char *fmt, ... );
 void Com_Quit( void );
 
 int Com_ServerState( void );  // this should have just been a cvar...
@@ -807,7 +807,7 @@ void Con_Print( char *text );
 void SCR_BeginLoadingPlaque( void );
 
 void SV_Init( void );
-void SV_Shutdown( char *finalmsg, qboolean reconnect );
+void SV_Shutdown( const char *finalmsg, qboolean reconnect );
 void SV_Frame( int msec );
 
 /**********************************************

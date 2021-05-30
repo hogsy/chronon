@@ -158,7 +158,7 @@ typedef struct
 	struct model_s *(*RegisterModel) (const char *name);
 	struct image_s *(*RegisterSkin) (const char *name);
 	struct image_s *(*RegisterPic) (const char *name);
-	void	(*SetSky) (char *name, float rotate, vec3_t axis);
+	void	(*SetSky) (const char *name, float rotate, vec3_t axis);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);
@@ -195,7 +195,7 @@ typedef struct
 	void	(*Cmd_AddCommand) (const char *name, void(*cmd)(void));
 	void	(*Cmd_RemoveCommand) (const char *name);
 	int		(*Cmd_Argc) (void);
-	char	*(*Cmd_Argv) (int i);
+	const char *(*Cmd_Argv) (int i);
 	void	(*Cmd_ExecuteText) (int exec_when, const char *text);
 
 	void	(*Con_Printf) (int print_level, const char *str, ...);
@@ -210,7 +210,7 @@ typedef struct
 
 	// gamedir will be the current directory that generated
 	// files should be stored to, ie: "f:\quake\id1"
-	char	*(*FS_Gamedir) (void);
+	const char	*(*FS_Gamedir) (void);
 
 	cvar_t	*(*Cvar_Get) (const char *name, const char *value, int flags);
 	cvar_t	*(*Cvar_Set)( const char *name, const char *value );

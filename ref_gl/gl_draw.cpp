@@ -274,7 +274,7 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen( void ) {
+void Draw_FadeScreen() {
 	glEnable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glColor4f( 0, 0, 0, 0.8 );

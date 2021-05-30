@@ -263,7 +263,7 @@ Other commands are added late, after all initialization is complete.
 void Cbuf_AddEarlyCommands (qboolean clear)
 {
 	int		i;
-	char	*s;
+	const char	*s;
 
 	for (i=0 ; i<COM_Argc() ; i++)
 	{
@@ -427,7 +427,7 @@ void Cmd_Alias_f (void)
 	cmdalias_t	*a;
 	char		cmd[1024];
 	int			i, c;
-	char		*s;
+	const char		*s;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -494,7 +494,7 @@ typedef struct cmd_function_s
 
 static	int			cmd_argc;
 static	char		*cmd_argv[MAX_STRING_TOKENS];
-static	char		*cmd_null_string = "";
+static	const char		*cmd_null_string = "";
 static	char		cmd_args[MAX_STRING_CHARS];
 
 static	cmd_function_t	*cmd_functions;		// possible commands to execute
@@ -514,7 +514,7 @@ int		Cmd_Argc (void)
 Cmd_Argv
 ============
 */
-char	*Cmd_Argv (int arg)
+const char *Cmd_Argv (int arg)
 {
 	if ( (unsigned)arg >= cmd_argc )
 		return cmd_null_string;

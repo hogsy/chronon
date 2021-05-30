@@ -430,7 +430,7 @@ byte *SCR_ReadNextFrame (void)
 	int		command;
 	byte	samples[22050/14*4];
 	byte	compressed[0x20000];
-	int		size;
+	unsigned int		size;
 	byte	*pic;
 	cblock_t	in, huf1;
 	int		start, end, count;

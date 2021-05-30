@@ -88,7 +88,7 @@ qboolean SV_SetPlayer( void ) {
 	client_t *cl;
 	int			i;
 	int			idnum;
-	char *s;
+	const char *s;
 
 	if( Cmd_Argc() < 2 )
 		return false;
@@ -143,7 +143,7 @@ SV_WipeSavegame
 Delete save/<XXX>/
 =====================
 */
-void SV_WipeSavegame( char *savename ) {
+void SV_WipeSavegame( const char *savename ) {
 	char	name[ MAX_OSPATH ];
 	char *s;
 
@@ -209,7 +209,7 @@ void CopyFile( char *src, char *dst ) {
 SV_CopySaveGame
 ================
 */
-void SV_CopySaveGame( char *src, char *dst ) {
+void SV_CopySaveGame( const char *src, const char *dst ) {
 	char	name[ MAX_OSPATH ], name2[ MAX_OSPATH ];
 	int		l, len;
 	char *found;
@@ -453,7 +453,7 @@ goes to map jail.bsp.
 ==================
 */
 void SV_GameMap_f( void ) {
-	char *map;
+	const char *map;
 	int			i;
 	client_t *cl;
 	qboolean *savedInuse;
@@ -514,7 +514,7 @@ For development work
 ==================
 */
 void SV_Map_f( void ) {
-	char *map;
+	const char *map;
 	char	expanded[ MAX_QPATH ];
 
 	// if not a pcx, demo, or cinematic, check to make sure the level exists
@@ -550,7 +550,7 @@ SV_Loadgame_f
 void SV_Loadgame_f( void ) {
 	char	name[ MAX_OSPATH ];
 	FILE *f;
-	char *dir;
+	const char *dir;
 
 	if( Cmd_Argc() != 2 ) {
 		Com_Printf( "USAGE: loadgame <directory>\n" );
@@ -591,7 +591,7 @@ SV_Savegame_f
 ==============
 */
 void SV_Savegame_f( void ) {
-	char *dir;
+	const char *dir;
 
 	if( sv.state != ss_game ) {
 		Com_Printf( "You must be in a game to save.\n" );
