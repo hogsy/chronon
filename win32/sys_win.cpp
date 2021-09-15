@@ -307,6 +307,10 @@ void Sys_ConsoleOutput( char *string ) {
 	DWORD dummy;
 	char text[ 256 ];
 
+#if defined( WIN32 )
+	OutputDebugString( string );
+#endif
+
 	if( !dedicated || !dedicated->value ) return;
 
 	if( console_textlen ) {
