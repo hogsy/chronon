@@ -420,9 +420,14 @@ a null buffer will just return the file length without loading
 ============
 */
 int FS_LoadFile( const char *path, void **buffer ) {
+	char upath[ MAX_QPATH ];
+	snprintf( upath, sizeof( upath ), "%s", path );
+
+	FS_CanonicalisePath( upath );
+
 	// look for it in the filesystem or pack files
 	uint32_t length;
-	uint8_t *buf = FS_FOpenFile( path, &length );
+	uint8_t *buf = FS_FOpenFile( upath, &length );
 	if( buf == NULL ) {
 		if( buffer != NULL ) {
 			*buffer = NULL;

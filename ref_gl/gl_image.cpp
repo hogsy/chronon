@@ -993,7 +993,7 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	}
 
 	if( image == nullptr ) {
-		Com_Printf( "WARNING: Failed to find \"%s\"!\n", uname );
+		Com_Printf( "WARNING: Failed to find \"%s\"!\n", name );
 		return nullptr;
 	}
 
