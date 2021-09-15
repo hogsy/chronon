@@ -859,7 +859,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 
 	version = LittleLong( pinmodel->version );
 	if( version != ALIAS_VERSION ) {
-#ifndef _DEBUG
+#if defined( NDEBUG )
 		VID_Error( ERR_DROP, "%s has wrong version number (%i should be %i)",
 			mod->name, version, ALIAS_VERSION );
 #else
@@ -922,8 +922,8 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 		switch( pheader->resolution ) {
 		case 0:
 		{
-			Md2FrameHeader *pinframe = (Md2FrameHeader *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
-			Md2FrameHeader *poutframe = (Md2FrameHeader *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
+			MD2FrameHeader *pinframe = (MD2FrameHeader *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
+			MD2FrameHeader *poutframe = (MD2FrameHeader *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
 			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
 
 			for( unsigned int j = 0; j < 3; j++ ) {
@@ -941,8 +941,8 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 		}
 		case 1:
 		{
-			Md2FrameHeader4 *pinframe = (Md2FrameHeader4 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
-			Md2FrameHeader4 *poutframe = (Md2FrameHeader4 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
+			MD2FrameHeader4 *pinframe = (MD2FrameHeader4 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
+			MD2FrameHeader4 *poutframe = (MD2FrameHeader4 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
 			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
 
 			for( unsigned int j = 0; j < 3; j++ ) {
@@ -958,8 +958,8 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 		}
 		case 2:
 		{
-			Md2FrameHeader6 *pinframe = (Md2FrameHeader6 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
-			Md2FrameHeader6 *poutframe = (Md2FrameHeader6 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
+			MD2FrameHeader6 *pinframe = (MD2FrameHeader6 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
+			MD2FrameHeader6 *poutframe = (MD2FrameHeader6 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
 			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
 
 			for( unsigned int j = 0; j < 3; j++ ) {
@@ -1013,7 +1013,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
 
 	/* Okay, now that that's all out of the way, we need to do the fun new bits... */
 
-//Md2MultipleSurfaceHeader *pInSurfaces = ( int * )
+//MD2MultipleSurfaceHeader *pInSurfaces = ( int * )
 }
 
 /*

@@ -86,19 +86,22 @@ typedef struct {
 #define MAX_MD2SKINS	32
 #define MAX_SKINNAME	64
 
-typedef struct Md2TaggedSurface {
-	char		name[ 8 ];
-	uint32_t	triangleIndex;
-} Md2TaggedSurface;
+struct MD2TaggedSurface
+{
+	char     name[ 8 ];
+	uint32_t triangleIndex;
+};
 
-typedef struct Md2MultipleSurfaceHeader {
+struct MD2MultipleSurfaceHeader
+{
 	int32_t numPrimitives;
 	int32_t primitivesOffset;
-} Md2MultipleSurfaceHeader;
+};
 
-typedef struct Md2LodData {
+struct MD2LodData
+{
 	float scale[ 3 ];
-} Md2LodData;
+};
 
 typedef struct {
 	int16_t s;
@@ -112,41 +115,47 @@ typedef struct {
 
 #pragma pack(push,1)
 
-typedef struct Md2VertexGroup {
-	uint8_t		vertexIndices[ 3 ];
-	uint16_t	normalIndex;
-} Md2VertexGroup;
+struct MD2VertexGroup
+{
+	uint8_t  vertexIndices[ 3 ];
+	uint16_t normalIndex;
+};
 
-typedef struct Md2FrameHeader {
-	float			scale[ 3 ];		// multiply byte verts by this
-	float			translate[ 3 ];	// then add this
-	char			name[ 16 ];		// frame name from grabbing
-	Md2VertexGroup	verts[ 1 ];		// variable sized
-} Md2FrameHeader;
+struct MD2FrameHeader
+{
+	float          scale[ 3 ];    // multiply byte verts by this
+	float          translate[ 3 ];// then add this
+	char           name[ 16 ];    // frame name from grabbing
+	MD2VertexGroup verts[ 1 ];    // variable sized
+};
 
-typedef struct Md2VertexGroup4 {
-	uint32_t	vertexIndices;
-	uint16_t	normalIndex;
-} Md2VertexGroup4;
+struct MD2VertexGroup4
+{
+	uint32_t vertexIndices;
+	uint16_t normalIndex;
+};
 
-typedef struct Md2FrameHeader4 {
-	float			scale[ 3 ];		// multiply byte verts by this
-	float			translate[ 3 ];	// then add this
-	char			name[ 16 ];		// frame name from grabbing
-	Md2VertexGroup4	verts[ 1 ];		// variable sized
-} Md2FrameHeader4;
+struct MD2FrameHeader4
+{
+	float           scale[ 3 ];    // multiply byte verts by this
+	float           translate[ 3 ];// then add this
+	char            name[ 16 ];    // frame name from grabbing
+	MD2VertexGroup4 verts[ 1 ];    // variable sized
+};
 
-typedef struct Md2VertexGroup6 {
-	uint16_t	vertexIndices[ 3 ];
-	uint16_t	normalIndex;
-} Md2VertexGroup6;
+struct MD2VertexGroup6
+{
+	uint16_t vertexIndices[ 3 ];
+	uint16_t normalIndex;
+};
 
-typedef struct Md2FrameHeader6 {
-	float			scale[ 3 ];		// multiply byte verts by this
-	float			translate[ 3 ];	// then add this
-	char			name[ 16 ];		// frame name from grabbing
-	Md2VertexGroup6	verts[ 1 ];		// variable sized
-} Md2FrameHeader6;
+struct MD2FrameHeader6
+{
+	float           scale[ 3 ];    // multiply byte verts by this
+	float           translate[ 3 ];// then add this
+	char            name[ 16 ];    // frame name from grabbing
+	MD2VertexGroup6 verts[ 1 ];    // variable sized
+};
 
 #pragma pack(pop)
 

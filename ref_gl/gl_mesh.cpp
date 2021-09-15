@@ -51,7 +51,7 @@ float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 
 float *shadedots = r_avertexnormal_dots[ 0 ];
 
-void GL_LerpVerts( unsigned int nverts, Md2VertexGroup *v, Md2VertexGroup *ov, Md2VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv ) {
+void GL_LerpVerts( unsigned int nverts, MD2VertexGroup *v, MD2VertexGroup *ov, MD2VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv ) {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 		RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) ) {
@@ -80,8 +80,8 @@ FIXME: batch lerp all vertexes
 */
 void GL_DrawAliasFrameLerp( dmdl_t *paliashdr, float backlerp ) {
 	float l;
-	Md2FrameHeader *frame, *oldframe;
-	Md2VertexGroup *v, *ov, *verts;
+	MD2FrameHeader *frame, *oldframe;
+	MD2VertexGroup *v, *ov, *verts;
 	int *order;
 	int count;
 	float frontlerp;
@@ -92,11 +92,11 @@ void GL_DrawAliasFrameLerp( dmdl_t *paliashdr, float backlerp ) {
 	int index_xyz;
 	float *lerp;
 
-	frame = (Md2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames +
+	frame = (MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames +
 		currententity->frame * paliashdr->framesize );
 	verts = v = frame->verts;
 
-	oldframe = (Md2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames +
+	oldframe = (MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames +
 		currententity->oldframe * paliashdr->framesize );
 	ov = oldframe->verts;
 
@@ -321,7 +321,7 @@ static qboolean R_CullAliasModel( vec3_t bbox[ 8 ], entity_t *e ) {
 	dmdl_t *paliashdr;
 	vec3_t vectors[ 3 ];
 	vec3_t thismins, oldmins, thismaxs, oldmaxs;
-	//Md2FrameHeader *pframe, *poldframe;
+	//MD2FrameHeader *pframe, *poldframe;
 	vec3_t angles;
 
 	paliashdr = (dmdl_t *)currentmodel->extradata;
@@ -337,8 +337,8 @@ static qboolean R_CullAliasModel( vec3_t bbox[ 8 ], entity_t *e ) {
 		e->oldframe = 0;
 	}
 
-	Md2FrameHeader *pframe = (Md2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->frame * paliashdr->framesize );
-	Md2FrameHeader *poldframe = (Md2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->oldframe * paliashdr->framesize );
+	MD2FrameHeader *pframe = (MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->frame * paliashdr->framesize );
+	MD2FrameHeader *poldframe = (MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->oldframe * paliashdr->framesize );
 
 	/*
 	** compute axially aligned mins and maxs
