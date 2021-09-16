@@ -319,8 +319,11 @@ void R_DrawEntitiesOnList( void ) {
 			}
 			switch( currentmodel->type ) {
 			case mod_alias:
-				R_DrawAliasModel( currententity );
-				break;
+				{
+					nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
+					aliasModel->Draw( currententity );
+					break;
+				}
 			case mod_brush:
 				R_DrawBrushModel( currententity );
 				break;
@@ -356,8 +359,11 @@ void R_DrawEntitiesOnList( void ) {
 			}
 			switch( currentmodel->type ) {
 			case mod_alias:
-				R_DrawAliasModel( currententity );
-				break;
+				{
+					nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
+					aliasModel->Draw( currententity );
+					break;
+				}
 			case mod_brush:
 				R_DrawBrushModel( currententity );
 				break;

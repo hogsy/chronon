@@ -80,9 +80,7 @@ typedef struct {
 */
 
 #define IDALIASHEADER (('2' << 24) + ('P' << 16) + ('D' << 8) + 'I')
-#define ALIAS_VERSION 15
 
-#define MAX_VERTS		2048
 #define MAX_MD2SKINS	32
 #define MAX_SKINNAME	64
 
@@ -115,18 +113,17 @@ typedef struct {
 
 #pragma pack(push,1)
 
+struct MD2FrameHeader
+{
+	float scale[ 3 ];            // multiply byte verts by this
+	float translate[ 3 ];        // then add this
+	char name[ 16 ];             // frame name from grabbing
+};
+
 struct MD2VertexGroup
 {
 	uint8_t  vertexIndices[ 3 ];
 	uint16_t normalIndex;
-};
-
-struct MD2FrameHeader
-{
-	float          scale[ 3 ];    // multiply byte verts by this
-	float          translate[ 3 ];// then add this
-	char           name[ 16 ];    // frame name from grabbing
-	MD2VertexGroup verts[ 1 ];    // variable sized
 };
 
 struct MD2VertexGroup4
@@ -135,26 +132,10 @@ struct MD2VertexGroup4
 	uint16_t normalIndex;
 };
 
-struct MD2FrameHeader4
-{
-	float           scale[ 3 ];    // multiply byte verts by this
-	float           translate[ 3 ];// then add this
-	char            name[ 16 ];    // frame name from grabbing
-	MD2VertexGroup4 verts[ 1 ];    // variable sized
-};
-
 struct MD2VertexGroup6
 {
 	uint16_t vertexIndices[ 3 ];
 	uint16_t normalIndex;
-};
-
-struct MD2FrameHeader6
-{
-	float           scale[ 3 ];    // multiply byte verts by this
-	float           translate[ 3 ];// then add this
-	char            name[ 16 ];    // frame name from grabbing
-	MD2VertexGroup6 verts[ 1 ];    // variable sized
 };
 
 #pragma pack(pop)
@@ -190,6 +171,81 @@ typedef struct {
 	int32_t ofs_glcmds;
 	int32_t ofs_end;  // end of file
 } dmdl_t;
+
+// Shove this here for now
+typedef struct entity_s entity_t;
+
+// TODO: move this...
+namespace nox
+{
+	class AliasModel
+	{
+	public:
+		AliasModel();
+		~AliasModel();
+
+		bool LoadFromBuffer( const void *buffer );
+
+	private:
+		void LoadTextureCoords( const dmdl_t *mdl );
+		void LoadTriangles( const dmdl_t *mdl );
+		void LoadCommands( const dmdl_t *mdl );
+		void LoadFrames( const dmdl_t *mdl, int resolution );
+
+	public:
+		struct Triangle
+		{
+			uint vertexIndices[ 3 ];
+			uint stIndices[ 3 ];
+		};
+
+		struct VertexGroup
+		{
+			uint vertexIndices[ 3 ];
+			uint normalIndex;
+		};
+
+		struct Frame
+		{
+			std::string name;
+			float scale[ 3 ];
+			float translate[ 3 ];
+			std::vector< VertexGroup > vertices;
+		};
+
+		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv );
+		
+		void ApplyLighting( const entity_t *e );
+
+		void DrawFrameLerp( entity_t *e );
+		void Draw( entity_t *e );
+
+		bool Cull( vec3_t bbox[ 8 ], entity_t *e );
+
+	private:
+		// Not sure how much these matter anymore, given the models
+		// we're dealing with can support multiple textures
+		int skinWidth_{ 0 };
+		int skinHeight_{ 0 };
+
+		int numSkins_{ 0 };
+		int numVertices_{ 0 };
+		int numST_{ 0 };
+		int numTriangles_{ 0 };
+		int numGLCmds_{ 0 };
+		int numFrames_{ 0 };
+
+		vec3_t shadeVector_{ 0.0f, 0.0f, 0.0f };
+		float  shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
+
+		std::vector< Triangle > triangles_;
+		std::vector< Vector2 > stCoords_;
+		std::vector< int > glCmds_;
+		std::vector< Vector4 > lerpedVertices_;
+
+		std::vector< Frame > frames_;
+	};
+}
 
 /*
 ========================================================================

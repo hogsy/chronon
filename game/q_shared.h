@@ -32,14 +32,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #endif
 
-#include <assert.h>
-#include <math.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <time.h>
+#include <cassert>
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+#include <cstring>
+#include <ctime>
+
+#include <vector>
+#include <string>
 
 #if (defined _M_IX86 || defined __i386__) && !defined C_ONLY && !defined __sun__
 #define id386 1
@@ -53,12 +56,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define idaxp 0
 #endif
 
-typedef unsigned char byte;
+namespace nox
+{
+	typedef unsigned int uint;
+}
+
+typedef unsigned char byte; // todo: move this into our own namespace...
 
 #ifndef __cplusplus
 #   include <stdbool.h>
 #endif
-typedef bool qboolean;
+typedef bool qboolean;// todo: kill
 
 #define Q_unused( ... ) ( void )( __VA_ARGS__ )
 
@@ -130,9 +138,48 @@ MATHLIB
 ==============================================================
 */
 
+namespace nox
+{
+    struct Vector2
+	{
+		float x{ 0.0f };
+		float y{ 0.0f };
+
+		virtual inline float &operator[]( const uint i )
+		{
+			assert( i < 2 );
+			return *( ( &x ) + i );
+		}
+	};
+
+	struct Vector3 : Vector2
+	{
+		float z{ 0.0f };
+
+		virtual inline float &operator[]( const uint i ) override
+		{
+			assert( i < 3 );
+			return *( ( &x ) + i );
+		}
+	};
+
+	struct Vector4 : Vector3
+	{
+		float w{ 0.0f };
+
+		virtual inline float &operator[]( const uint i ) override
+		{
+			assert( i < 4 );
+			return *( ( &x ) + i );
+		}
+	};
+}
+
 typedef float vec_t;
-typedef vec_t vec3_t[3];
-typedef vec_t vec5_t[5];
+typedef vec_t vec2_t[ 2 ];
+typedef vec_t vec3_t[ 3 ];
+typedef vec_t vec4_t[ 4 ];
+typedef vec_t vec5_t[ 5 ];
 
 typedef int fixed4_t;
 typedef int fixed8_t;

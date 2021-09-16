@@ -844,176 +844,24 @@ ALIAS MODELS
 ==============================================================================
 */
 
-/*
-=================
-Mod_LoadAliasModel
-=================
-*/
-void Mod_LoadAliasModel( model_t *mod, void *buffer ) {
-	dstvert_t *pinst, *poutst;
-
-	int *pincmd, *poutcmd;
-	int version;
-
-	dmdl_t *pinmodel = (dmdl_t *)buffer;
-
-	version = LittleLong( pinmodel->version );
-	if( version != ALIAS_VERSION ) {
-#if defined( NDEBUG )
-		VID_Error( ERR_DROP, "%s has wrong version number (%i should be %i)",
-			mod->name, version, ALIAS_VERSION );
-#else
-		Com_Printf( "%s has wrong version number (%i should be %i)\n", mod->name,
-			version, ALIAS_VERSION );
-#endif
-	}
-
-	dmdl_t *pheader = static_cast<dmdl_t *>( Hunk_Alloc( LittleLong( pinmodel->ofs_end ) ) );
-	// byte swap the header fields and sanity check
-	for( unsigned int i = 0; i < sizeof( dmdl_t ) / 4; i++ )
-		( (int *)pheader )[ i ] = LittleLong( ( (int *)buffer )[ i ] );
-
-	if( pheader->skinheight > MAX_LBM_HEIGHT )
-		VID_Error( ERR_DROP, "model %s has a skin taller than %d", mod->name,
-			MAX_LBM_HEIGHT );
-
-	if( pheader->num_xyz <= 0 )
-		VID_Error( ERR_DROP, "model %s has no vertices", mod->name );
-
-	if( pheader->num_st <= 0 )
-		VID_Error( ERR_DROP, "model %s has no st vertices", mod->name );
-
-	if( pheader->num_tris <= 0 )
-		VID_Error( ERR_DROP, "model %s has no triangles", mod->name );
-
-	if( pheader->num_frames <= 0 )
-		VID_Error( ERR_DROP, "model %s has no frames", mod->name );
-
-	if( pheader->resolution < 0 || pheader->resolution > 2 ) {
-		VID_Error( ERR_DROP, "model %s has invalid resolution", mod->name );
-	}
-
-	//
-	// load base s and t vertices (not used in gl version)
-	//
-	pinst = (dstvert_t *)( (byte *)pinmodel + pheader->ofs_st );
-	poutst = (dstvert_t *)( (byte *)pheader + pheader->ofs_st );
-	for( int i = 0; i < pheader->num_st; i++ ) {
-		poutst[ i ].s = LittleShort( pinst[ i ].s );
-		poutst[ i ].t = LittleShort( pinst[ i ].t );
-	}
-
-	//
-	// load triangle lists
-	//
-	dtriangle_t *pintri = (dtriangle_t *)( (byte *)pinmodel + pheader->ofs_tris );
-	dtriangle_t *pouttri = (dtriangle_t *)( (byte *)pheader + pheader->ofs_tris );
-	for( int i = 0; i < pheader->num_tris; i++ ) {
-		for( unsigned int j = 0; j < 3; j++ ) {
-			pouttri[ i ].index_xyz[ j ] = LittleShort( pintri[ i ].index_xyz[ j ] );
-			pouttri[ i ].index_st[ j ] = LittleShort( pintri[ i ].index_st[ j ] );
-		}
-	}
-
-	//
-	// load the frames
-	//
-	for( int i = 0; i < pheader->num_frames; i++ ) {
-		switch( pheader->resolution ) {
-		case 0:
-		{
-			MD2FrameHeader *pinframe = (MD2FrameHeader *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
-			MD2FrameHeader *poutframe = (MD2FrameHeader *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
-			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
-
-			for( unsigned int j = 0; j < 3; j++ ) {
-				poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
-				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
-			}
-
-			for( int j = 0; j < pheader->num_xyz; ++j ) {
-				for( unsigned int k = 0; k < 3; ++k ) {
-					poutframe->verts[ j ].vertexIndices[ k ] = pinframe->verts[ j ].vertexIndices[ k ];
-				}
-				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
-			}
-			break;
-		}
-		case 1:
-		{
-			MD2FrameHeader4 *pinframe = (MD2FrameHeader4 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
-			MD2FrameHeader4 *poutframe = (MD2FrameHeader4 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
-			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
-
-			for( unsigned int j = 0; j < 3; j++ ) {
-				poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
-				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
-			}
-
-			for( int j = 0; j < pheader->num_xyz; ++j ) {
-				poutframe->verts[ j ].vertexIndices = pinframe->verts[ j ].vertexIndices;
-				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
-			}
-			break;
-		}
-		case 2:
-		{
-			MD2FrameHeader6 *pinframe = (MD2FrameHeader6 *)( (byte *)pinmodel + pheader->ofs_frames + i * pheader->framesize );
-			MD2FrameHeader6 *poutframe = (MD2FrameHeader6 *)( (byte *)pheader + pheader->ofs_frames + i * pheader->framesize );
-			memcpy( poutframe->name, pinframe->name, sizeof( poutframe->name ) );
-
-			for( unsigned int j = 0; j < 3; j++ ) {
-				poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
-				poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
-			}
-
-			for( int j = 0; j < pheader->num_xyz; ++j ) {
-				for( unsigned int k = 0; k < 3; ++k ) {
-					poutframe->verts[ j ].vertexIndices[ k ] = pinframe->verts[ j ].vertexIndices[ k ];
-				}
-				poutframe->verts[ j ].normalIndex = LittleShort( pinframe->verts->normalIndex );
-			}
-			break;
-		}
-		default:
-			VID_Error( ERR_DROP, "Unhandled frame resolution %d in %s!\n", pheader->resolution, mod->name );
-		}
+void Mod_LoadAliasModel( model_t *mod, void *buffer ) 
+{
+	// Allocate it in the hunk, so it's part of the awful 'extradata' mechanism
+	nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( Hunk_Alloc( sizeof( nox::AliasModel ) ) );
+	if ( !aliasModel->LoadFromBuffer( buffer ) )
+	{
+		VID_Error( ERR_DROP, "Failed to load model, \"%s\", from buffer!\n", mod->name );
+		return;
 	}
 
 	mod->type = mod_alias;
 
-	//
-	// load the glcmds
-	//
-	pincmd = (int *)( (byte *)pinmodel + pheader->ofs_glcmds );
-	poutcmd = (int *)( (byte *)pheader + pheader->ofs_glcmds );
-	for( int i = 0; i < pheader->num_glcmds; i++ ) poutcmd[ i ] = LittleLong( pincmd[ i ] );
-
-	// register all skins
-	memcpy( (char *)pheader + pheader->ofs_skins,
-		(char *)pinmodel + pheader->ofs_skins,
-		pheader->num_skins * MAX_SKINNAME );
-	for( int i = 0; i < pheader->num_skins; i++ ) {
-		char skin_path[ MAX_QPATH ];
-		snprintf( skin_path, sizeof( skin_path ), "%s", mod->name );
-		strcpy( strrchr( skin_path, '/' ) + 1, (char *)pheader + pheader->ofs_skins + i * MAX_SKINNAME );
-		mod->skins[ i ] = GL_FindImage( skin_path, it_skin );
-
-		// PGM
-		mod->numframes = pheader->num_frames;
-		// PGM
-	}
-
-	mod->mins[ 0 ] = -32;
-	mod->mins[ 1 ] = -32;
-	mod->mins[ 2 ] = -32;
-	mod->maxs[ 0 ] = 32;
-	mod->maxs[ 1 ] = 32;
-	mod->maxs[ 2 ] = 32;
-
-	/* Okay, now that that's all out of the way, we need to do the fun new bits... */
-
-//MD2MultipleSurfaceHeader *pInSurfaces = ( int * )
+	mod->mins[ 0 ] = -32.0f;
+	mod->mins[ 1 ] = -32.0f;
+	mod->mins[ 2 ] = -32.0f;
+	mod->maxs[ 0 ] = 32.0f;
+	mod->maxs[ 1 ] = 32.0f;
+	mod->maxs[ 2 ] = 32.0f;
 }
 
 /*
@@ -1152,4 +1000,541 @@ void Mod_FreeAll( void ) {
 	for( i = 0; i < mod_numknown; i++ ) {
 		if( mod_known[ i ].extradatasize ) Mod_Free( &mod_known[ i ] );
 	}
+}
+
+//=============================================================================
+
+nox::AliasModel::AliasModel()
+{
+}
+
+nox::AliasModel::~AliasModel()
+{
+}
+
+bool nox::AliasModel::LoadFromBuffer( const void *buffer )
+{
+	const dmdl_t *pinmodel = ( dmdl_t * ) buffer;
+	int version = LittleLong( pinmodel->version );
+	if ( version != 14 && version != 15 )
+	{
+		Com_Printf( "Alias model has wrong version number (%i should be 14/15)\n", version );
+		return false;
+	}
+
+	int resolution = LittleLong( pinmodel->resolution );
+	if ( resolution < 0 || resolution > 2 )
+	{
+		Com_Printf( "Invalid resolution, %d (expected 0 to 2)\n", resolution );
+		return false;
+	}
+
+	skinHeight_ = LittleLong( pinmodel->skinheight );
+	skinWidth_ = LittleLong( pinmodel->skinwidth );
+	numSkins_ = LittleLong( pinmodel->num_skins );
+
+	numVertices_ = LittleLong( pinmodel->num_xyz );
+	if ( numVertices_ <= 0 )
+	{
+		Com_Printf( "Model has no vertices\n" );
+		return false;
+	}
+
+	numST_ = LittleLong( pinmodel->num_st );
+	if ( numST_ <= 0 )
+	{
+		Com_Printf( "Model has no st coords\n" );
+		return false;
+	}
+
+	numTriangles_ = LittleLong( pinmodel->num_tris );
+	if ( numTriangles_ <= 0 )
+	{
+		Com_Printf( "Model has no triangles\n" );
+		return false;
+	}
+
+	numFrames_ = LittleLong( pinmodel->num_frames );
+	if ( numFrames_ <= 0 )
+	{
+		Com_Printf( "Model has no frames\n" );
+		return false;
+	}
+
+	numGLCmds_ = LittleLong( pinmodel->num_glcmds );
+	if ( numGLCmds_ <= 0 )
+	{
+		Com_Printf( "Model has empty command list\n" );
+		return false;
+	}
+
+	LoadTextureCoords( pinmodel );
+	LoadTriangles( pinmodel );
+	LoadCommands( pinmodel );
+	LoadFrames( pinmodel, resolution );
+
+	lerpedVertices_.resize( numVertices_ );
+
+	return true;
+}
+
+void nox::AliasModel::LoadTextureCoords( const dmdl_t *mdl )
+{
+	stCoords_.resize( numST_ );
+
+	uint ofs = LittleLong( mdl->ofs_st );
+	const dstvert_t *dst = ( dstvert_t * ) ( ( byte * ) mdl + ofs );
+	for ( int i = 0; i < numST_; ++i )
+	{
+		stCoords_[ i ].x = LittleShort( dst[ i ].s );
+		stCoords_[ i ].y = LittleShort( dst[ i ].t );
+	}
+}
+
+void nox::AliasModel::LoadTriangles( const dmdl_t *mdl )
+{
+	triangles_.resize( numTriangles_ );
+
+	uint ofs = LittleLong( mdl->ofs_tris );
+	const dtriangle_t *dtri = ( dtriangle_t * ) ( ( byte * ) mdl + ofs );
+	for ( int i = 0; i < numTriangles_; ++i )
+	{
+		for ( uint j = 0; j < 3; ++j )
+		{
+			triangles_[ i ].vertexIndices[ j ] = LittleShort( dtri[ i ].index_xyz[ j ] );
+			triangles_[ i ].stIndices[ j ] = LittleShort( dtri[ i ].index_st[ j ] );
+		}
+	}
+}
+
+void nox::AliasModel::LoadCommands( const dmdl_t *mdl )
+{
+	glCmds_.resize( numGLCmds_ );
+
+	uint ofs = LittleLong( mdl->ofs_glcmds );
+	const int *dcmd = ( int * ) ( ( byte * ) mdl + ofs );
+	for ( int i = 0; i < numGLCmds_; ++i )
+		glCmds_[ i ] = LittleLong( dcmd[ i ] );
+}
+
+void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
+{
+	frames_.resize( numFrames_ );
+
+	uint ofs = LittleLong( mdl->ofs_frames );
+	int frameSize = LittleLong( mdl->framesize );
+	for ( int i = 0; i < numFrames_; ++i )
+	{
+		frames_[ i ].vertices.resize( numVertices_ );
+
+		// Get the position in the buffer where our cur frame is located
+		const void *framePtr = ( ( byte * ) mdl + ofs + i * frameSize );
+
+		// The initial body of the frame is always the same, regardless of resolution
+		const MD2FrameHeader *frameHeader = ( MD2FrameHeader * ) framePtr;
+		frames_[ i ].name = frameHeader->name;
+		for ( uint j = 0; j < 3; ++j )
+		{
+			frames_[ i ].scale[ j ] = LittleFloat( frameHeader->scale[ j ] );
+			frames_[ i ].translate[ j ] = LittleFloat( frameHeader->translate[ j ] );
+		}
+
+		// Nox supports three different resolution types, we'll deal with those below and
+		// translate them into our common structure
+		if ( resolution == 1 )
+		{
+			static const int shift[ 3 ] = { 0, 11, 21 };
+			static const int mask[ 3 ] = { 0x000007ff, 0x000003ff, 0x000007ff };
+
+			const MD2VertexGroup4 *groups = ( MD2VertexGroup4 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
+			for ( int j = 0; j < numVertices_; ++j )
+			{
+				int32_t vertexIndices = LittleLong( groups[ j ].vertexIndices );
+				for ( uint k = 0; k < 3; ++k )
+					frames_[ i ].vertices[ j ].vertexIndices[ k ] = ( ( vertexIndices >> shift[ k ] ) & mask[ k ] );
+				
+				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
+			}
+		}
+		else if ( resolution == 2 )
+		{
+			const MD2VertexGroup6 *groups = ( MD2VertexGroup6 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
+			for ( int j = 0; j < numVertices_; ++j )
+			{
+				for ( uint k = 0; k < 3; ++k )
+					frames_[ i ].vertices[ j ].vertexIndices[ k ] = LittleShort( groups[ j ].vertexIndices[ k ] );
+
+				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
+			}
+		}
+		else
+		{
+			const MD2VertexGroup *groups = ( MD2VertexGroup * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
+			for ( int j = 0; j < numVertices_; ++j )
+			{
+				for ( uint k = 0; k < 3; ++k )
+					frames_[ i ].vertices[ j ].vertexIndices[ k ] = groups[ j ].vertexIndices[ k ];
+
+				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
+			}
+		}
+	}
+}
+
+#define NUMVERTEXNORMALS 162
+static float r_avertexnormals[ NUMVERTEXNORMALS ][ 3 ] = {
+#include "anorms.h"
+};
+
+// precalculated dot products for quantized angles
+#define SHADEDOT_QUANT 16
+float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
+#include "anormtab.h"
+};
+
+void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv )
+{
+	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
+	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
+	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+	{
+		for ( unsigned int i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
+		{
+			float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
+			lerp[ 0 ] = move[ 0 ] + ov->vertexIndices[ 0 ] * backv[ 0 ] + v->vertexIndices[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
+			lerp[ 1 ] = move[ 1 ] + ov->vertexIndices[ 1 ] * backv[ 1 ] + v->vertexIndices[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
+			lerp[ 2 ] = move[ 2 ] + ov->vertexIndices[ 2 ] * backv[ 2 ] + v->vertexIndices[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
+		}
+	}
+	else
+	{
+		for ( unsigned int i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
+		{
+			lerp[ 0 ] = move[ 0 ] + ov->vertexIndices[ 0 ] * backv[ 0 ] + v->vertexIndices[ 0 ] * frontv[ 0 ];
+			lerp[ 1 ] = move[ 1 ] + ov->vertexIndices[ 1 ] * backv[ 1 ] + v->vertexIndices[ 1 ] * frontv[ 1 ];
+			lerp[ 2 ] = move[ 2 ] + ov->vertexIndices[ 2 ] * backv[ 2 ] + v->vertexIndices[ 2 ] * frontv[ 2 ];
+		}
+	}
+}
+
+void nox::AliasModel::ApplyLighting( const entity_t *e )
+{
+	if ( e->flags & RF_FULLBRIGHT )
+	{
+		for ( uint i = 0; i < 3; ++i )
+			shadeLight_[ i ] = 1.0f;
+	}
+	else
+	{
+		R_LightPoint( e->origin, shadeLight_ );
+
+		if ( *gl_monolightmap->string != '0' )
+		{
+			float s = shadeLight_[ 0 ];
+			if ( s < shadeLight_[ 1 ] )
+				s = shadeLight_[ 1 ];
+			if ( s < shadeLight_[ 2 ] )
+				s = shadeLight_[ 2 ];
+
+			shadeLight_[ 0 ] = s;
+			shadeLight_[ 1 ] = s;
+			shadeLight_[ 2 ] = s;
+		}
+	}
+
+	if ( e->flags & RF_MINLIGHT )
+	{
+		uint i;
+		for ( i = 0; i < 3; ++i )
+		{
+			if ( shadeLight_[ i ] > 0.1f )
+				break;
+		}
+
+		if ( i == 3 )
+		{
+			shadeLight_[ 0 ] = 0.1f;
+			shadeLight_[ 1 ] = 0.1f;
+			shadeLight_[ 2 ] = 0.1f;
+		}
+	}
+
+	// bonus items will pulse with time
+	if ( e->flags & RF_GLOW )
+	{
+		float scale = 0.1f * std::sin( r_newrefdef.time * 7.0f );
+		for ( unsigned int i = 0; i < 3; ++i )
+		{
+			float min = shadeLight_[ i ] * 0.8f;
+			shadeLight_[ i ] += scale;
+			if ( shadeLight_[ i ] < min )
+				shadeLight_[ i ] = min;
+		}
+	}
+
+	if ( r_newrefdef.rdflags & RDF_IRGOGGLES && e->flags & RF_IR_VISIBLE )
+	{
+		shadeLight_[ 0 ] = 1.0f;
+		shadeLight_[ 1 ] = 0.0f;
+		shadeLight_[ 2 ] = 0.0f;
+	}
+
+	float angle = e->angles[ 1 ] / 180.0f * M_PI;
+	shadeVector_[ 0 ] = std::cos( -angle );
+	shadeVector_[ 1 ] = std::sin( -angle );
+	shadeVector_[ 2 ] = 1.0f;
+	VectorNormalize( shadeVector_ );
+}
+
+void nox::AliasModel::DrawFrameLerp( entity_t *e )
+{
+	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
+
+	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
+	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+	{
+		glDisable( GL_TEXTURE_2D );
+	}
+
+	float frontlerp = 1.0f - e->backlerp;
+
+	// move should be the delta back to the previous frame * backlerp
+	vec3_t delta;
+	VectorSubtract( e->oldorigin, e->origin, delta );
+	vec3_t vectors[ 3 ];
+	AngleVectors( e->angles, vectors[ 0 ], vectors[ 1 ], vectors[ 2 ] );
+
+	vec3_t move;
+	move[ 0 ] = DotProduct( delta, vectors[ 0 ] ); // forward
+	move[ 1 ] = -DotProduct( delta, vectors[ 1 ] );// left
+	move[ 2 ] = DotProduct( delta, vectors[ 2 ] ); // up
+
+	const Frame *frame = &frames_[ e->frame ];
+	const Frame *oldFrame = &frames_[ e->oldframe ];
+
+	VectorAdd( move, oldFrame->translate, move );
+
+	for ( uint i = 0; i < 3; i++ )
+		move[ i ] = e->backlerp * move[ i ] + frontlerp * frame->translate[ i ];
+
+	vec3_t frontv, backv;
+	for ( uint i = 0; i < 3; i++ )
+	{
+		frontv[ i ] = frontlerp * frame->scale[ i ];
+		backv[ i ] = e->backlerp * oldFrame->scale[ i ];
+	}
+
+	const VertexGroup *verts = &frame->vertices[ 0 ];
+	const VertexGroup *oldVerts = &oldFrame->vertices[ 0 ];
+
+	float *lerp = ( float * ) &lerpedVertices_[ 0 ];
+	LerpVertices( verts, oldVerts, &frame->vertices[ 0 ], lerp, move, frontv, backv );
+
+	int *order = &glCmds_[ 0 ];
+	while ( true )
+	{
+		int index_xyz;
+
+		// get the vertex count and primitive type
+		int count = *order++;
+		if ( !count ) break;// done
+		if ( count < 0 )
+		{
+			count = -count;
+			glBegin( GL_TRIANGLE_FAN );
+		}
+		else
+			glBegin( GL_TRIANGLE_STRIP );
+
+		if ( currententity->flags &
+		     ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE ) )
+		{
+			do {
+				index_xyz = order[ 2 ];
+				order += 3;
+
+				glColor4f( shadeLight_[ 0 ], shadeLight_[ 1 ], shadeLight_[ 2 ], alpha );
+				glVertex3f( lerpedVertices_[ index_xyz ].x, lerpedVertices_[ index_xyz ].y, lerpedVertices_[ index_xyz ].z );
+			} while ( --count );
+		}
+		else
+		{
+			do {
+				// texture coordinates come from the draw list
+				glTexCoord2f( ( ( float * ) order )[ 0 ], ( ( float * ) order )[ 1 ] );
+				index_xyz = order[ 2 ];
+				order += 3;
+
+				// normals and vertexes come from the frame list
+				float l = r_avertexnormal_dots[ 0 ][ verts[ index_xyz ].normalIndex ];
+
+				glColor4f( l * shadeLight_[ 0 ], l * shadeLight_[ 1 ], l * shadeLight_[ 2 ], alpha );
+				glVertex3f( lerpedVertices_[ index_xyz ].x, lerpedVertices_[ index_xyz ].y, lerpedVertices_[ index_xyz ].z );
+			} while ( --count );
+		}
+
+		glEnd();
+	}
+
+	// Cleanup
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
+	                  RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+	{
+		glEnable( GL_TEXTURE_2D );
+	}
+	else
+		glDisableClientState( GL_COLOR_ARRAY );
+
+	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+	c_alias_polys += numTriangles_;
+}
+
+void nox::AliasModel::Draw( entity_t *e )
+{
+	if ( e->frame >= numFrames_ || e->frame < 0 )
+	{
+		VID_Printf( PRINT_ALL, "%s: no such frame %d\n", currentmodel->name, e->frame );
+		e->frame = 0;
+	}
+	if ( ( e->oldframe >= numFrames_ ) || ( e->oldframe < 0 ) )
+	{
+		VID_Printf( PRINT_ALL, "%s: no such oldframe %d\n", currentmodel->name, e->oldframe );
+		e->oldframe = 0;
+	}
+
+	if ( !( e->flags & RF_WEAPONMODEL ) )
+	{
+		vec3_t bbox[ 8 ];
+		if ( Cull( bbox, e ) )
+			return;
+	}
+
+	ApplyLighting( e );
+
+	glPushMatrix();
+	e->angles[ PITCH ] = -e->angles[ PITCH ];
+	R_RotateForEntity( e );
+	e->angles[ PITCH ] = -e->angles[ PITCH ];
+
+	// hack the depth range to prevent
+	// view model from poking into walls
+	if ( e->flags & RF_DEPTHHACK ) glDepthRange( gldepthmin, gldepthmin + 0.3 * ( gldepthmax - gldepthmin ) );
+	if ( e->flags & RF_TRANSLUCENT ) glEnable( GL_BLEND );
+
+	if ( !r_lerpmodels->value )
+	{
+		e->backlerp = 0;
+	}
+
+	DrawFrameLerp( e );
+
+	glPopMatrix();
+
+	if ( e->flags & RF_TRANSLUCENT ) glDisable( GL_BLEND );
+	if ( e->flags & RF_DEPTHHACK ) glDepthRange( gldepthmin, gldepthmax );
+}
+
+bool nox::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
+{
+	Frame *frame = &frames_[ e->frame ];
+	Frame *oldFrame = &frames_[ e->oldframe ];
+
+	vec3_t mins, maxs;
+
+	// Compute axially aligned mins and maxs
+	if ( frame == oldFrame )
+	{
+		for ( uint i = 0; i < 3; ++i )
+		{
+			mins[ i ] = frame->translate[ i ];
+			maxs[ i ] = mins[ i ] + frame->scale[ i ] * 255;
+		}
+	}
+	else
+	{
+		vec3_t thismins, thismaxs;
+		vec3_t oldmins, oldmaxs;
+		for ( uint i = 0; i < 3; ++i )
+		{
+			thismins[ i ] = frame->translate[ i ];
+			thismaxs[ i ] = thismins[ i ] + frame->scale[ i ] * 255;
+
+			oldmins[ i ] = oldFrame->translate[ i ];
+			oldmaxs[ i ] = oldmins[ i ] + oldFrame->scale[ i ] * 255;
+
+			if ( thismins[ i ] < oldmins[ i ] )
+				mins[ i ] = thismins[ i ];
+			else
+				mins[ i ] = oldmins[ i ];
+
+			if ( thismaxs[ i ] > oldmaxs[ i ] )
+				maxs[ i ] = thismaxs[ i ];
+			else
+				maxs[ i ] = oldmaxs[ i ];
+		}
+	}
+
+	// Compute a full bounding box
+	for ( uint i = 0; i < 8; ++i )
+	{
+		vec3_t tmp;
+		if ( i & 1 )
+			tmp[ 0 ] = mins[ 0 ];
+		else
+			tmp[ 0 ] = maxs[ 0 ];
+
+		if ( i & 2 )
+			tmp[ 1 ] = mins[ 1 ];
+		else
+			tmp[ 1 ] = maxs[ 1 ];
+
+		if ( i & 4 )
+			tmp[ 2 ] = mins[ 2 ];
+		else
+			tmp[ 2 ] = maxs[ 2 ];
+
+		VectorCopy( tmp, bbox[ i ] );
+	}
+
+	// Rotate the bounding box
+	vec3_t angles;
+	VectorCopy( e->angles, angles );
+	angles[ YAW ] = -angles[ YAW ];
+	vec3_t vectors[ 3 ];
+	AngleVectors( angles, vectors[ 0 ], vectors[ 1 ], vectors[ 2 ] );
+
+	for ( uint i = 0; i < 8; ++i )
+	{
+		vec3_t tmp;
+
+		VectorCopy( bbox[ i ], tmp );
+
+		bbox[ i ][ 0 ] = DotProduct( vectors[ 0 ], tmp );
+		bbox[ i ][ 1 ] = -DotProduct( vectors[ 1 ], tmp );
+		bbox[ i ][ 2 ] = DotProduct( vectors[ 2 ], tmp );
+
+		VectorAdd( e->origin, bbox[ i ], bbox[ i ] );
+	}
+
+	int aggregatemask = ~0;
+	for ( uint p = 0; p < 8; p++ )
+	{
+		int mask = 0;
+
+		for ( uint f = 0; f < 4; f++ )
+		{
+			float dp = DotProduct( frustum[ f ].normal, bbox[ p ] );
+			if ( ( dp - frustum[ f ].dist ) < 0 )
+				mask |= ( 1 << f );
+		}
+
+		aggregatemask &= mask;
+	}
+
+	return ( bool ) aggregatemask;
 }

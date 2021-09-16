@@ -1171,7 +1171,8 @@ void CL_RequestNextDownload (void)
 						continue;
 					}
 					pheader = (dmdl_t *)precache_model;
-					if (LittleLong (pheader->version) != ALIAS_VERSION) {
+					int version = LittleLong( pheader->version );
+					if (version != 14 && version != 15) {
 						precache_check++;
 						precache_model_skin = 0;
 						continue; // couldn't load it
