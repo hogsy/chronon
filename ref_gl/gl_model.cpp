@@ -212,18 +212,19 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 
 	switch( LittleLong( *(unsigned *)buf ) ) {
 	case IDALIASHEADER:
-		loadmodel->extradata = Hunk_Begin( 0x500000 );
 		Mod_LoadAliasModel( mod, buf );
 		break;
 
 	case IDSPRITEHEADER:
 		loadmodel->extradata = Hunk_Begin( 0x10000 );
 		Mod_LoadSpriteModel( mod, buf );
+		loadmodel->extradatasize = Hunk_End();
 		break;
 
 	case IDBSPHEADER:
 		loadmodel->extradata = Hunk_Begin( 0x1000000 );
 		Mod_LoadBrushModel( mod, buf );
+		loadmodel->extradatasize = Hunk_End();
 		break;
 
 	default:
@@ -234,8 +235,6 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 #endif
 		break;
 	}
-
-	loadmodel->extradatasize = Hunk_End();
 
 	FS_FreeFile( buf );
 
@@ -847,10 +846,11 @@ ALIAS MODELS
 void Mod_LoadAliasModel( model_t *mod, void *buffer ) 
 {
 	// Allocate it in the hunk, so it's part of the awful 'extradata' mechanism
-	nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( Hunk_Alloc( sizeof( nox::AliasModel ) ) );
+	nox::AliasModel *aliasModel = new nox::AliasModel(); //static_cast< nox::AliasModel * >( Hunk_Alloc( sizeof( nox::AliasModel ) ) );
 	if ( !aliasModel->LoadFromBuffer( buffer ) )
 	{
-		VID_Error( ERR_DROP, "Failed to load model, \"%s\", from buffer!\n", mod->name );
+		Com_Printf( "Failed to load model, \"%s\", from buffer!\n", mod->name );
+		delete aliasModel;
 		return;
 	}
 
@@ -862,6 +862,24 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer )
 	mod->maxs[ 0 ] = 32.0f;
 	mod->maxs[ 1 ] = 32.0f;
 	mod->maxs[ 2 ] = 32.0f;
+
+	mod->extradata = aliasModel;
+	mod->extradatasize = sizeof( nox::AliasModel );
+
+	mod->numframes = aliasModel->GetNumFrames();
+
+	// Load in all the skins we need
+	const auto &skins = aliasModel->GetSkins();
+	for ( size_t i = 0; i < skins.size(); ++i )
+	{
+		char skinPath[ MAX_QPATH ];
+		snprintf( skinPath, sizeof( skinPath ), "%s", mod->name );
+		strcpy( strrchr( skinPath, '/' ) + 1, skins[ i ].c_str() );
+
+		Com_DPrintf( "%s", skinPath );
+
+		mod->skins[ i ] = GL_FindImage( skinPath, it_skin );
+	}
 }
 
 /*
@@ -985,7 +1003,16 @@ Mod_Free
 ================
 */
 void Mod_Free( model_t *mod ) {
-	Hunk_Free( mod->extradata );
+	if ( mod->type == mod_alias )
+	{
+		nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( mod->extradata );
+		delete aliasModel;
+	}
+	else
+	{
+		Hunk_Free( mod->extradata );
+	}
+
 	memset( mod, 0, sizeof( *mod ) );
 }
 
@@ -995,10 +1022,11 @@ Mod_FreeAll
 ================
 */
 void Mod_FreeAll( void ) {
-	int i;
+	for( int i = 0; i < mod_numknown; i++ ) {
+		if ( mod_known[ i ].extradatasize <= 0 )
+			continue;
 
-	for( i = 0; i < mod_numknown; i++ ) {
-		if( mod_known[ i ].extradatasize ) Mod_Free( &mod_known[ i ] );
+		Mod_Free( &mod_known[ i ] );
 	}
 }
 
@@ -1029,21 +1057,10 @@ bool nox::AliasModel::LoadFromBuffer( const void *buffer )
 		return false;
 	}
 
-	skinHeight_ = LittleLong( pinmodel->skinheight );
-	skinWidth_ = LittleLong( pinmodel->skinwidth );
-	numSkins_ = LittleLong( pinmodel->num_skins );
-
 	numVertices_ = LittleLong( pinmodel->num_xyz );
 	if ( numVertices_ <= 0 )
 	{
 		Com_Printf( "Model has no vertices\n" );
-		return false;
-	}
-
-	numST_ = LittleLong( pinmodel->num_st );
-	if ( numST_ <= 0 )
-	{
-		Com_Printf( "Model has no st coords\n" );
 		return false;
 	}
 
@@ -1068,7 +1085,14 @@ bool nox::AliasModel::LoadFromBuffer( const void *buffer )
 		return false;
 	}
 
-	LoadTextureCoords( pinmodel );
+	int numSkins = LittleLong( pinmodel->num_skins );
+	if ( numSkins <= 0 )
+	{
+		Com_Printf( "Model has no skins\n" );
+		return false;
+	}
+
+	LoadSkins( pinmodel, numSkins );
 	LoadTriangles( pinmodel );
 	LoadCommands( pinmodel );
 	LoadFrames( pinmodel, resolution );
@@ -1078,43 +1102,41 @@ bool nox::AliasModel::LoadFromBuffer( const void *buffer )
 	return true;
 }
 
-void nox::AliasModel::LoadTextureCoords( const dmdl_t *mdl )
+void nox::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 {
-	stCoords_.resize( numST_ );
-
-	uint ofs = LittleLong( mdl->ofs_st );
-	const dstvert_t *dst = ( dstvert_t * ) ( ( byte * ) mdl + ofs );
-	for ( int i = 0; i < numST_; ++i )
+	uint ofs = LittleLong( mdl->ofs_skins );
+	for ( int i = 0; i < numSkins; ++i )
 	{
-		stCoords_[ i ].x = LittleShort( dst[ i ].s );
-		stCoords_[ i ].y = LittleShort( dst[ i ].t );
+		char name[ MAX_QPATH + 1 ];
+		memcpy( name, ( char * ) ( ( byte * ) mdl + ofs + i * MAX_QPATH ), MAX_QPATH );
+		name[ strlen( name ) + 1 ] = '\0';
+		skinNames_.push_back( name );
 	}
 }
 
 void nox::AliasModel::LoadTriangles( const dmdl_t *mdl )
 {
-	triangles_.resize( numTriangles_ );
-
 	uint ofs = LittleLong( mdl->ofs_tris );
 	const dtriangle_t *dtri = ( dtriangle_t * ) ( ( byte * ) mdl + ofs );
 	for ( int i = 0; i < numTriangles_; ++i )
 	{
+		Triangle tri;
 		for ( uint j = 0; j < 3; ++j )
 		{
-			triangles_[ i ].vertexIndices[ j ] = LittleShort( dtri[ i ].index_xyz[ j ] );
-			triangles_[ i ].stIndices[ j ] = LittleShort( dtri[ i ].index_st[ j ] );
+			tri.vertexIndices[ j ] = LittleShort( dtri[ i ].index_xyz[ j ] );
+			tri.stIndices[ j ] = LittleShort( dtri[ i ].index_st[ j ] );
 		}
+
+		triangles_.push_back( tri );
 	}
 }
 
 void nox::AliasModel::LoadCommands( const dmdl_t *mdl )
 {
-	glCmds_.resize( numGLCmds_ );
-
 	uint ofs = LittleLong( mdl->ofs_glcmds );
 	const int *dcmd = ( int * ) ( ( byte * ) mdl + ofs );
 	for ( int i = 0; i < numGLCmds_; ++i )
-		glCmds_[ i ] = LittleLong( dcmd[ i ] );
+		glCmds_.push_back( LittleLong( dcmd[ i ] ) );
 }
 
 void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
@@ -1151,7 +1173,7 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			{
 				int32_t vertexIndices = LittleLong( groups[ j ].vertexIndices );
 				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertexIndices[ k ] = ( ( vertexIndices >> shift[ k ] ) & mask[ k ] );
+					frames_[ i ].vertices[ j ].vertex[ k ] = ( ( vertexIndices >> shift[ k ] ) & mask[ k ] );
 				
 				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
 			}
@@ -1162,7 +1184,7 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			for ( int j = 0; j < numVertices_; ++j )
 			{
 				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertexIndices[ k ] = LittleShort( groups[ j ].vertexIndices[ k ] );
+					frames_[ i ].vertices[ j ].vertex[ k ] = LittleShort( groups[ j ].vertexIndices[ k ] );
 
 				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
 			}
@@ -1173,7 +1195,7 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			for ( int j = 0; j < numVertices_; ++j )
 			{
 				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertexIndices[ k ] = groups[ j ].vertexIndices[ k ];
+					frames_[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertexIndices[ k ];
 
 				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
 			}
@@ -1198,21 +1220,21 @@ void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov,
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 	{
-		for ( unsigned int i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
+		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
 		{
 			float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
-			lerp[ 0 ] = move[ 0 ] + ov->vertexIndices[ 0 ] * backv[ 0 ] + v->vertexIndices[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
-			lerp[ 1 ] = move[ 1 ] + ov->vertexIndices[ 1 ] * backv[ 1 ] + v->vertexIndices[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
-			lerp[ 2 ] = move[ 2 ] + ov->vertexIndices[ 2 ] * backv[ 2 ] + v->vertexIndices[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
+			lerp[ 0 ] = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
+			lerp[ 1 ] = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
+			lerp[ 2 ] = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
 		}
 	}
 	else
 	{
-		for ( unsigned int i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
+		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
 		{
-			lerp[ 0 ] = move[ 0 ] + ov->vertexIndices[ 0 ] * backv[ 0 ] + v->vertexIndices[ 0 ] * frontv[ 0 ];
-			lerp[ 1 ] = move[ 1 ] + ov->vertexIndices[ 1 ] * backv[ 1 ] + v->vertexIndices[ 1 ] * frontv[ 1 ];
-			lerp[ 2 ] = move[ 2 ] + ov->vertexIndices[ 2 ] * backv[ 2 ] + v->vertexIndices[ 2 ] * frontv[ 2 ];
+			lerp[ 0 ] = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ];
+			lerp[ 1 ] = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ];
+			lerp[ 2 ] = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ];
 		}
 	}
 }
@@ -1279,6 +1301,9 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 		shadeLight_[ 2 ] = 0.0f;
 	}
 
+	shadeDots_ = r_avertexnormal_dots[ ( ( int ) ( e->angles[ 1 ] * ( SHADEDOT_QUANT / 360.0f ) ) ) &
+	                                   ( SHADEDOT_QUANT - 1 ) ];
+
 	float angle = e->angles[ 1 ] / 180.0f * M_PI;
 	shadeVector_[ 0 ] = std::cos( -angle );
 	shadeVector_[ 1 ] = std::sin( -angle );
@@ -1288,13 +1313,8 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 
 void nox::AliasModel::DrawFrameLerp( entity_t *e )
 {
-	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
-
-	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
-	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
-	{
+	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 		glDisable( GL_TEXTURE_2D );
-	}
 
 	float frontlerp = 1.0f - e->backlerp;
 
@@ -1330,10 +1350,20 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 	float *lerp = ( float * ) &lerpedVertices_[ 0 ];
 	LerpVertices( verts, oldVerts, &frame->vertices[ 0 ], lerp, move, frontv, backv );
 
+	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
+
+	image_t *texture;
+	if ( e->model->skins[ 0 ] != nullptr )
+		texture = e->model->skins[ 0 ];
+	else
+		texture = r_notexture;
+
+	GL_Bind( texture->texnum );
+
 	int *order = &glCmds_[ 0 ];
 	while ( true )
 	{
-		int index_xyz;
+		int vertIndex;
 
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -1346,15 +1376,14 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 		else
 			glBegin( GL_TRIANGLE_STRIP );
 
-		if ( currententity->flags &
-		     ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE ) )
+		if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE ) )
 		{
 			do {
-				index_xyz = order[ 2 ];
+				vertIndex = order[ 2 ];
 				order += 3;
 
 				glColor4f( shadeLight_[ 0 ], shadeLight_[ 1 ], shadeLight_[ 2 ], alpha );
-				glVertex3f( lerpedVertices_[ index_xyz ].x, lerpedVertices_[ index_xyz ].y, lerpedVertices_[ index_xyz ].z );
+				glVertex3f( lerpedVertices_[ vertIndex ].x, lerpedVertices_[ vertIndex ].y, lerpedVertices_[ vertIndex ].z );
 			} while ( --count );
 		}
 		else
@@ -1362,14 +1391,17 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 			do {
 				// texture coordinates come from the draw list
 				glTexCoord2f( ( ( float * ) order )[ 0 ], ( ( float * ) order )[ 1 ] );
-				index_xyz = order[ 2 ];
+				vertIndex = order[ 2 ];
 				order += 3;
 
 				// normals and vertexes come from the frame list
-				float l = r_avertexnormal_dots[ 0 ][ verts[ index_xyz ].normalIndex ];
+				float l = shadeDots_[ verts[ vertIndex ].normalIndex ];
 
 				glColor4f( l * shadeLight_[ 0 ], l * shadeLight_[ 1 ], l * shadeLight_[ 2 ], alpha );
-				glVertex3f( lerpedVertices_[ index_xyz ].x, lerpedVertices_[ index_xyz ].y, lerpedVertices_[ index_xyz ].z );
+				glVertex3f(
+					frame->vertices[ vertIndex ].vertex[ 0 ] * frame->scale[ 0 ] + frame->translate[ 0 ], 
+					frame->vertices[ vertIndex ].vertex[ 1 ] * frame->scale[ 1 ] + frame->translate[ 1 ], 
+					frame->vertices[ vertIndex ].vertex[ 2 ] * frame->scale[ 2 ] + frame->translate[ 2 ] );
 			} while ( --count );
 		}
 
@@ -1381,11 +1413,8 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
-	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
-	                  RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
-	{
+	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 		glEnable( GL_TEXTURE_2D );
-	}
 	else
 		glDisableClientState( GL_COLOR_ARRAY );
 

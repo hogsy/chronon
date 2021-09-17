@@ -186,57 +186,64 @@ namespace nox
 
 		bool LoadFromBuffer( const void *buffer );
 
+		inline const std::vector< std::string > &GetSkins() const
+		{
+			return skinNames_;
+		}
+
+		inline int GetNumFrames() const
+		{
+			return numFrames_;
+		}
+
 	private:
-		void LoadTextureCoords( const dmdl_t *mdl );
+		void LoadSkins( const dmdl_t *mdl, int numSkins );
 		void LoadTriangles( const dmdl_t *mdl );
 		void LoadCommands( const dmdl_t *mdl );
 		void LoadFrames( const dmdl_t *mdl, int resolution );
 
+		struct VertexGroup
+		{
+			uint vertex[ 3 ];
+			uint normalIndex;
+		};
+
+		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv );
+		void ApplyLighting( const entity_t *e );
+		void DrawFrameLerp( entity_t *e );
+
 	public:
+		void Draw( entity_t *e );
+
+	private:
+		bool Cull( vec3_t bbox[ 8 ], entity_t *e );
+
 		struct Triangle
 		{
 			uint vertexIndices[ 3 ];
 			uint stIndices[ 3 ];
 		};
 
-		struct VertexGroup
-		{
-			uint vertexIndices[ 3 ];
-			uint normalIndex;
-		};
-
 		struct Frame
 		{
 			std::string name;
-			float scale[ 3 ];
-			float translate[ 3 ];
+			vec3_t scale;
+			vec3_t translate;
 			std::vector< VertexGroup > vertices;
 		};
 
-		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv );
-		
-		void ApplyLighting( const entity_t *e );
-
-		void DrawFrameLerp( entity_t *e );
-		void Draw( entity_t *e );
-
-		bool Cull( vec3_t bbox[ 8 ], entity_t *e );
-
-	private:
-		// Not sure how much these matter anymore, given the models
-		// we're dealing with can support multiple textures
-		int skinWidth_{ 0 };
-		int skinHeight_{ 0 };
-
-		int numSkins_{ 0 };
-		int numVertices_{ 0 };
-		int numST_{ 0 };
-		int numTriangles_{ 0 };
 		int numGLCmds_{ 0 };
+
+		int numVertices_{ 0 };
+		int numTriangles_{ 0 };
 		int numFrames_{ 0 };
+		int numSurfaces_{ 0 };
+
+		std::vector< std::string > skinNames_;
 
 		vec3_t shadeVector_{ 0.0f, 0.0f, 0.0f };
 		float  shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
+		float *shadeDots_;
 
 		std::vector< Triangle > triangles_;
 		std::vector< Vector2 > stCoords_;
