@@ -227,9 +227,10 @@ namespace nox
 		struct Frame
 		{
 			std::string name;
-			vec3_t scale;
-			vec3_t translate;
+			vec3_t scale{ 0.0f, 0.0f, 0.0f };
+			vec3_t translate{ 0.0f, 0.0f, 0.0f };
 			std::vector< VertexGroup > vertices;
+			vec3_t bounds[ 2 ];
 		};
 
 		int numGLCmds_{ 0 };

@@ -845,8 +845,7 @@ ALIAS MODELS
 
 void Mod_LoadAliasModel( model_t *mod, void *buffer ) 
 {
-	// Allocate it in the hunk, so it's part of the awful 'extradata' mechanism
-	nox::AliasModel *aliasModel = new nox::AliasModel(); //static_cast< nox::AliasModel * >( Hunk_Alloc( sizeof( nox::AliasModel ) ) );
+	nox::AliasModel *aliasModel = new nox::AliasModel();
 	if ( !aliasModel->LoadFromBuffer( buffer ) )
 	{
 		Com_Printf( "Failed to load model, \"%s\", from buffer!\n", mod->name );
@@ -875,9 +874,6 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer )
 		char skinPath[ MAX_QPATH ];
 		snprintf( skinPath, sizeof( skinPath ), "%s", mod->name );
 		strcpy( strrchr( skinPath, '/' ) + 1, skins[ i ].c_str() );
-
-		Com_DPrintf( "%s", skinPath );
-
 		mod->skins[ i ] = GL_FindImage( skinPath, it_skin );
 	}
 }
@@ -1200,6 +1196,32 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
 			}
 		}
+
+		// Now go ahead and precompute the bounds for the given frame
+
+		vec3_t mins = { frames_[ i ].translate[ 0 ], frames_[ i ].translate[ 1 ], frames_[ i ].translate[ 2 ] };
+		vec3_t maxs = { -FLT_MIN, -FLT_MIN, -FLT_MIN };
+		
+		vec3_t xmins, xmaxs;
+		VectorCopy( mins, xmins );
+		VectorCopy( maxs, xmaxs );
+
+		for ( uint j = 0; j < numVertices_; ++j )
+		{
+			for ( uint k = 0; k < 3; ++k )
+			{
+				xmins[ k ] = frames_[ i ].vertices[ j ].vertex[ k ] * frames_[ i ].scale[ k ];
+				if ( xmins[ k ] < mins[ k ] )
+					mins[ k ] = xmins[ k ];
+
+				xmaxs[ k ] = frames_[ i ].vertices[ j ].vertex[ k ] * frames_[ i ].scale[ k ];
+				if ( xmaxs[ k ] > maxs[ k ] )
+					maxs[ k ] = xmaxs[ k ];
+			}
+		}
+
+		VectorCopy( mins, frames_[ i ].bounds[ 0 ] );
+		VectorCopy( maxs, frames_[ i ].bounds[ 1 ] );
 	}
 }
 
@@ -1313,9 +1335,6 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 
 void nox::AliasModel::DrawFrameLerp( entity_t *e )
 {
-	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
-		glDisable( GL_TEXTURE_2D );
-
 	float frontlerp = 1.0f - e->backlerp;
 
 	// move should be the delta back to the previous frame * backlerp
@@ -1350,15 +1369,20 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 	float *lerp = ( float * ) &lerpedVertices_[ 0 ];
 	LerpVertices( verts, oldVerts, &frame->vertices[ 0 ], lerp, move, frontv, backv );
 
-	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
-
-	image_t *texture;
-	if ( e->model->skins[ 0 ] != nullptr )
-		texture = e->model->skins[ 0 ];
+	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+		glDisable( GL_TEXTURE_2D );
 	else
-		texture = r_notexture;
+	{
+		image_t *texture;
+		if ( e->model->skins[ 0 ] != nullptr )
+			texture = e->model->skins[ 0 ];
+		else
+			texture = r_notexture;
 
-	GL_Bind( texture->texnum );
+		GL_Bind( texture->texnum );
+	}
+
+	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
 
 	int *order = &glCmds_[ 0 ];
 	while ( true )
@@ -1399,9 +1423,9 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 
 				glColor4f( l * shadeLight_[ 0 ], l * shadeLight_[ 1 ], l * shadeLight_[ 2 ], alpha );
 				glVertex3f(
-					frame->vertices[ vertIndex ].vertex[ 0 ] * frame->scale[ 0 ] + frame->translate[ 0 ], 
-					frame->vertices[ vertIndex ].vertex[ 1 ] * frame->scale[ 1 ] + frame->translate[ 1 ], 
-					frame->vertices[ vertIndex ].vertex[ 2 ] * frame->scale[ 2 ] + frame->translate[ 2 ] );
+					verts[ vertIndex ].vertex[ 0 ] * frame->scale[ 0 ] + frame->translate[ 0 ], 
+					verts[ vertIndex ].vertex[ 1 ] * frame->scale[ 1 ] + frame->translate[ 1 ], 
+					verts[ vertIndex ].vertex[ 2 ] * frame->scale[ 2 ] + frame->translate[ 2 ] );
 			} while ( --count );
 		}
 
@@ -1410,13 +1434,8 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 
 	// Cleanup
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
 	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 		glEnable( GL_TEXTURE_2D );
-	else
-		glDisableClientState( GL_COLOR_ARRAY );
 
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -1427,12 +1446,12 @@ void nox::AliasModel::Draw( entity_t *e )
 {
 	if ( e->frame >= numFrames_ || e->frame < 0 )
 	{
-		VID_Printf( PRINT_ALL, "%s: no such frame %d\n", currentmodel->name, e->frame );
+		VID_Printf( PRINT_ALL, "%s: no such frame %d\n", e->model->name, e->frame );
 		e->frame = 0;
 	}
 	if ( ( e->oldframe >= numFrames_ ) || ( e->oldframe < 0 ) )
 	{
-		VID_Printf( PRINT_ALL, "%s: no such oldframe %d\n", currentmodel->name, e->oldframe );
+		VID_Printf( PRINT_ALL, "%s: no such oldframe %d\n", e->model->name, e->oldframe );
 		e->oldframe = 0;
 	}
 
@@ -1441,11 +1460,27 @@ void nox::AliasModel::Draw( entity_t *e )
 		vec3_t bbox[ 8 ];
 		if ( Cull( bbox, e ) )
 			return;
+
+#if 0
+		glDisable( GL_CULL_FACE );
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		glDisable( GL_TEXTURE_2D );
+		glBegin( GL_TRIANGLE_STRIP );
+		for ( uint i = 0; i < 8; i++ )
+		{
+			glVertex3fv( bbox[ i ] );
+		}
+		glEnd();
+		glEnable( GL_TEXTURE_2D );
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		glEnable( GL_CULL_FACE );
+#endif
 	}
 
 	ApplyLighting( e );
 
 	glPushMatrix();
+
 	e->angles[ PITCH ] = -e->angles[ PITCH ];
 	R_RotateForEntity( e );
 	e->angles[ PITCH ] = -e->angles[ PITCH ];
@@ -1474,37 +1509,17 @@ bool nox::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
 	Frame *oldFrame = &frames_[ e->oldframe ];
 
 	vec3_t mins, maxs;
+	VectorCopy( frame->bounds[ 0 ], mins );
+	VectorCopy( frame->bounds[ 1 ], maxs );
 
-	// Compute axially aligned mins and maxs
-	if ( frame == oldFrame )
+	if ( frame != oldFrame )
 	{
 		for ( uint i = 0; i < 3; ++i )
 		{
-			mins[ i ] = frame->translate[ i ];
-			maxs[ i ] = mins[ i ] + frame->scale[ i ] * 255;
-		}
-	}
-	else
-	{
-		vec3_t thismins, thismaxs;
-		vec3_t oldmins, oldmaxs;
-		for ( uint i = 0; i < 3; ++i )
-		{
-			thismins[ i ] = frame->translate[ i ];
-			thismaxs[ i ] = thismins[ i ] + frame->scale[ i ] * 255;
-
-			oldmins[ i ] = oldFrame->translate[ i ];
-			oldmaxs[ i ] = oldmins[ i ] + oldFrame->scale[ i ] * 255;
-
-			if ( thismins[ i ] < oldmins[ i ] )
-				mins[ i ] = thismins[ i ];
-			else
-				mins[ i ] = oldmins[ i ];
-
-			if ( thismaxs[ i ] > oldmaxs[ i ] )
-				maxs[ i ] = thismaxs[ i ];
-			else
-				maxs[ i ] = oldmaxs[ i ];
+			if ( oldFrame->bounds[ 0 ][ i ] < mins[ i ] )
+				mins[ i ] = oldFrame->bounds[ 0 ][ i ];
+			if ( oldFrame->bounds[ 1 ][ i ] > maxs[ i ] )
+				maxs[ i ] = oldFrame->bounds[ 1 ][ i ];
 		}
 	}
 
