@@ -1378,6 +1378,8 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 		GL_Bind( texture->texnum );
 	}
 
+	GL_TexEnv( GL_MODULATE );
+
 	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
 
 	int *order = &glCmds_[ 0 ];
@@ -1415,7 +1417,9 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 				order += 3;
 
 				// normals and vertexes come from the frame list
-				float l = shadeDots_[ v[ vertIndex ].normalIndex ];
+				// I've botched this for now, as it doesn't appear to be correct anymore, plus we'll
+				// be rewriting this anyway... ~hogsy
+				float l = shadeDots_[ /*v[ vertIndex ].normalIndex*/ 0 ];
 
 				glColor4f( l * shadeLight_[ 0 ], l * shadeLight_[ 1 ], l * shadeLight_[ 2 ], alpha );
 				glVertex3f( lerpedVertices_[ vertIndex ].x, lerpedVertices_[ vertIndex ].y, lerpedVertices_[ vertIndex ].z );
@@ -1431,6 +1435,8 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 		glEnable( GL_TEXTURE_2D );
 
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+	GL_TexEnv( GL_REPLACE );
 
 	c_alias_polys += numTriangles_;
 }
