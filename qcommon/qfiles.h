@@ -208,7 +208,7 @@ namespace nox
 			uint normalIndex;
 		};
 
-		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv );
+		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] );
 		void ApplyLighting( const entity_t *e );
 		void DrawFrameLerp( entity_t *e );
 
@@ -243,17 +243,17 @@ namespace nox
 		std::vector< std::string > skinNames_;
 
 		vec3_t shadeVector_{ 0.0f, 0.0f, 0.0f };
-		float  shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
+		float shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
 		float *shadeDots_;
 
 		std::vector< Triangle > triangles_;
 		std::vector< Vector2 > stCoords_;
 		std::vector< int > glCmds_;
-		std::vector< Vector4 > lerpedVertices_;
+		std::vector< Vector3 > lerpedVertices_;
 
 		std::vector< Frame > frames_;
 	};
-}
+}// namespace nox
 
 /*
 ========================================================================

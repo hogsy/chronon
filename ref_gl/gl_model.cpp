@@ -1236,27 +1236,27 @@ float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "anormtab.h"
 };
 
-void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv )
+void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] )
 {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 	{
-		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
+		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
 		{
 			float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
-			lerp[ 0 ] = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
-			lerp[ 1 ] = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
-			lerp[ 2 ] = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
+			lerp->x = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
+			lerp->y = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
+			lerp->z = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
 		}
 	}
 	else
 	{
-		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp += 4 )
+		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
 		{
-			lerp[ 0 ] = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ];
-			lerp[ 1 ] = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ];
-			lerp[ 2 ] = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ];
+			lerp->x = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ];
+			lerp->y = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ];
+			lerp->z = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ];
 		}
 	}
 }
@@ -1335,8 +1335,6 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 
 void nox::AliasModel::DrawFrameLerp( entity_t *e )
 {
-	float frontlerp = 1.0f - e->backlerp;
-
 	// move should be the delta back to the previous frame * backlerp
 	vec3_t delta;
 	VectorSubtract( e->oldorigin, e->origin, delta );
@@ -1353,6 +1351,7 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 
 	VectorAdd( move, oldFrame->translate, move );
 
+	float frontlerp = 1.0f - e->backlerp;
 	for ( uint i = 0; i < 3; i++ )
 		move[ i ] = e->backlerp * move[ i ] + frontlerp * frame->translate[ i ];
 
@@ -1363,11 +1362,8 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 		backv[ i ] = e->backlerp * oldFrame->scale[ i ];
 	}
 
-	const VertexGroup *verts = &frame->vertices[ 0 ];
-	const VertexGroup *oldVerts = &oldFrame->vertices[ 0 ];
-
-	float *lerp = ( float * ) &lerpedVertices_[ 0 ];
-	LerpVertices( verts, oldVerts, &frame->vertices[ 0 ], lerp, move, frontv, backv );
+	const VertexGroup *v = &frame->vertices[ 0 ];
+	LerpVertices( v, oldFrame->vertices.data(), frame->vertices.data(), lerpedVertices_.data(), move, frontv, backv );
 
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 		glDisable( GL_TEXTURE_2D );
@@ -1419,13 +1415,10 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 				order += 3;
 
 				// normals and vertexes come from the frame list
-				float l = shadeDots_[ verts[ vertIndex ].normalIndex ];
+				float l = shadeDots_[ v[ vertIndex ].normalIndex ];
 
 				glColor4f( l * shadeLight_[ 0 ], l * shadeLight_[ 1 ], l * shadeLight_[ 2 ], alpha );
-				glVertex3f(
-					verts[ vertIndex ].vertex[ 0 ] * frame->scale[ 0 ] + frame->translate[ 0 ], 
-					verts[ vertIndex ].vertex[ 1 ] * frame->scale[ 1 ] + frame->translate[ 1 ], 
-					verts[ vertIndex ].vertex[ 2 ] * frame->scale[ 2 ] + frame->translate[ 2 ] );
+				glVertex3f( lerpedVertices_[ vertIndex ].x, lerpedVertices_[ vertIndex ].y, lerpedVertices_[ vertIndex ].z );
 			} while ( --count );
 		}
 
