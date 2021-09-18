@@ -80,9 +80,7 @@ typedef struct {
 */
 
 #define IDALIASHEADER (('2' << 24) + ('P' << 16) + ('D' << 8) + 'I')
-#define ALIAS_VERSION 15
 
-#define MAX_VERTS		2048
 #define MAX_MD2SKINS	32
 #define MAX_SKINNAME	64
 
@@ -115,18 +113,17 @@ typedef struct {
 
 #pragma pack(push,1)
 
+struct MD2FrameHeader
+{
+	float scale[ 3 ];            // multiply byte verts by this
+	float translate[ 3 ];        // then add this
+	char name[ 16 ];             // frame name from grabbing
+};
+
 struct MD2VertexGroup
 {
 	uint8_t  vertexIndices[ 3 ];
 	uint16_t normalIndex;
-};
-
-struct MD2FrameHeader
-{
-	float          scale[ 3 ];    // multiply byte verts by this
-	float          translate[ 3 ];// then add this
-	char           name[ 16 ];    // frame name from grabbing
-	MD2VertexGroup verts[ 1 ];    // variable sized
 };
 
 struct MD2VertexGroup4
@@ -135,26 +132,10 @@ struct MD2VertexGroup4
 	uint16_t normalIndex;
 };
 
-struct MD2FrameHeader4
-{
-	float           scale[ 3 ];    // multiply byte verts by this
-	float           translate[ 3 ];// then add this
-	char            name[ 16 ];    // frame name from grabbing
-	MD2VertexGroup4 verts[ 1 ];    // variable sized
-};
-
 struct MD2VertexGroup6
 {
 	uint16_t vertexIndices[ 3 ];
 	uint16_t normalIndex;
-};
-
-struct MD2FrameHeader6
-{
-	float           scale[ 3 ];    // multiply byte verts by this
-	float           translate[ 3 ];// then add this
-	char            name[ 16 ];    // frame name from grabbing
-	MD2VertexGroup6 verts[ 1 ];    // variable sized
 };
 
 #pragma pack(pop)
@@ -190,6 +171,89 @@ typedef struct {
 	int32_t ofs_glcmds;
 	int32_t ofs_end;  // end of file
 } dmdl_t;
+
+// Shove this here for now
+typedef struct entity_s entity_t;
+
+// TODO: move this...
+namespace nox
+{
+	class AliasModel
+	{
+	public:
+		AliasModel();
+		~AliasModel();
+
+		bool LoadFromBuffer( const void *buffer );
+
+		inline const std::vector< std::string > &GetSkins() const
+		{
+			return skinNames_;
+		}
+
+		inline int GetNumFrames() const
+		{
+			return numFrames_;
+		}
+
+	private:
+		void LoadSkins( const dmdl_t *mdl, int numSkins );
+		void LoadTriangles( const dmdl_t *mdl );
+		void LoadCommands( const dmdl_t *mdl );
+		void LoadFrames( const dmdl_t *mdl, int resolution );
+
+		struct VertexGroup
+		{
+			uint vertex[ 3 ];
+			uint normalIndex;
+		};
+
+		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] );
+		void ApplyLighting( const entity_t *e );
+		void DrawFrameLerp( entity_t *e );
+
+	public:
+		void Draw( entity_t *e );
+
+	private:
+		bool Cull( vec3_t bbox[ 8 ], entity_t *e );
+
+		struct Triangle
+		{
+			uint vertexIndices[ 3 ];
+			uint stIndices[ 3 ];
+		};
+
+		struct Frame
+		{
+			std::string name;
+			vec3_t scale{ 0.0f, 0.0f, 0.0f };
+			vec3_t translate{ 0.0f, 0.0f, 0.0f };
+			std::vector< VertexGroup > vertices;
+			vec3_t bounds[ 2 ];
+		};
+
+		int numGLCmds_{ 0 };
+
+		int numVertices_{ 0 };
+		int numTriangles_{ 0 };
+		int numFrames_{ 0 };
+		int numSurfaces_{ 0 };
+
+		std::vector< std::string > skinNames_;
+
+		vec3_t shadeVector_{ 0.0f, 0.0f, 0.0f };
+		float shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
+		float *shadeDots_;
+
+		std::vector< Triangle > triangles_;
+		std::vector< Vector2 > stCoords_;
+		std::vector< int > glCmds_;
+		std::vector< Vector3 > lerpedVertices_;
+
+		std::vector< Frame > frames_;
+	};
+}// namespace nox
 
 /*
 ========================================================================

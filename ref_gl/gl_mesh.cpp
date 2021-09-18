@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
+#if 0 // obsolete
 /*
 =============================================================
 
@@ -35,10 +36,7 @@ float r_avertexnormals[ NUMVERTEXNORMALS ][ 3 ] = {
 #include "anorms.h"
 };
 
-typedef float vec4_t[ 4 ];
-
 static vec4_t s_lerped[ MAX_VERTS ];
-// static	vec3_t	lerped[MAX_VERTS];
 
 vec3_t shadevector;
 float shadelight[ 3 ];
@@ -51,7 +49,7 @@ float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 
 float *shadedots = r_avertexnormal_dots[ 0 ];
 
-void GL_LerpVerts( unsigned int nverts, MD2VertexGroup *v, MD2VertexGroup *ov, MD2VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv ) {
+static void GL_LerpVerts( unsigned int nverts, MD2VertexGroup *v, MD2VertexGroup *ov, MD2VertexGroup *verts, float *lerp, float *move, float *frontv, float *backv ) {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 		RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) ) {
@@ -78,7 +76,7 @@ interpolates between two frames and origins
 FIXME: batch lerp all vertexes
 =============
 */
-void GL_DrawAliasFrameLerp( dmdl_t *paliashdr, float backlerp ) {
+static void GL_DrawAliasFrameLerp( dmdl_t *paliashdr, float backlerp ) {
 	float l;
 	MD2FrameHeader *frame, *oldframe;
 	MD2VertexGroup *v, *ov, *verts;
@@ -203,12 +201,6 @@ void GL_DrawAliasFrameLerp( dmdl_t *paliashdr, float backlerp ) {
 
 					order += 3;
 
-					// normals and vertexes come from the frame list
-					//					l =
-					//shadedots[verts[index_xyz].lightnormalindex];
-
-					//					qglColor4f (l* shadelight[0], l*shadelight[1],
-					//l*shadelight[2], alpha);
 					glArrayElement( index_xyz );
 
 				} while( --count );
@@ -275,7 +267,7 @@ GL_DrawAliasShadow
 */
 extern vec3_t lightspot;
 
-void GL_DrawAliasShadow( dmdl_t *paliashdr, int posenum ) {
+static void GL_DrawAliasShadow( dmdl_t *paliashdr, int posenum ) {
 	int count;
 	int *order = (int *)( (byte *)paliashdr + paliashdr->ofs_glcmds );
 
@@ -321,7 +313,7 @@ static qboolean R_CullAliasModel( vec3_t bbox[ 8 ], entity_t *e ) {
 	dmdl_t *paliashdr;
 	vec3_t vectors[ 3 ];
 	vec3_t thismins, oldmins, thismaxs, oldmaxs;
-	//MD2FrameHeader *pframe, *poldframe;
+	//IO_MD2FrameHeader *pframe, *poldframe;
 	vec3_t angles;
 
 	paliashdr = (dmdl_t *)currentmodel->extradata;
@@ -337,8 +329,8 @@ static qboolean R_CullAliasModel( vec3_t bbox[ 8 ], entity_t *e ) {
 		e->oldframe = 0;
 	}
 
-	MD2FrameHeader *pframe = (MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->frame * paliashdr->framesize );
-	MD2FrameHeader *poldframe = (MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->oldframe * paliashdr->framesize );
+	IO_MD2FrameHeader *pframe = (IO_MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->frame * paliashdr->framesize );
+	IO_MD2FrameHeader *poldframe = (IO_MD2FrameHeader *)( (byte *)paliashdr + paliashdr->ofs_frames + e->oldframe * paliashdr->framesize );
 
 	/*
 	** compute axially aligned mins and maxs
@@ -412,27 +404,7 @@ static qboolean R_CullAliasModel( vec3_t bbox[ 8 ], entity_t *e ) {
 	}
 
 	{
-		int p, f, aggregatemask = ~0;
-
-		for( p = 0; p < 8; p++ ) {
-			int mask = 0;
-
-			for( f = 0; f < 4; f++ ) {
-				float dp = DotProduct( frustum[ f ].normal, bbox[ p ] );
-
-				if( ( dp - frustum[ f ].dist ) < 0 ) {
-					mask |= ( 1 << f );
-				}
-			}
-
-			aggregatemask &= mask;
-		}
-
-		if( aggregatemask ) {
-			return true;
-		}
-
-		return false;
+		
 	}
 }
 
@@ -482,75 +454,6 @@ void R_DrawAliasModel( entity_t *e ) {
 		if( currententity->flags & RF_SHELL_GREEN ) shadelight[ 1 ] = 1.0;
 		if( currententity->flags & RF_SHELL_BLUE ) shadelight[ 2 ] = 1.0;
 	}
-	/*
-					// PMM -special case for godmode
-					if ( (currententity->flags & RF_SHELL_RED) &&
-							(currententity->flags & RF_SHELL_BLUE) &&
-							(currententity->flags & RF_SHELL_GREEN) )
-					{
-							for (i=0 ; i<3 ; i++)
-									shadelight[i] = 1.0;
-					}
-					else if ( currententity->flags & ( RF_SHELL_RED |
-	   RF_SHELL_BLUE | RF_SHELL_DOUBLE ) )
-					{
-							VectorClear (shadelight);
-
-							if ( currententity->flags & RF_SHELL_RED )
-							{
-									shadelight[0] = 1.0;
-									if (currententity->flags &
-	   (RF_SHELL_BLUE|RF_SHELL_DOUBLE) ) shadelight[2] = 1.0;
-							}
-							else if ( currententity->flags & RF_SHELL_BLUE )
-							{
-									if ( currententity->flags & RF_SHELL_DOUBLE )
-									{
-											shadelight[1] = 1.0;
-											shadelight[2] = 1.0;
-									}
-									else
-									{
-											shadelight[2] = 1.0;
-									}
-							}
-							else if ( currententity->flags & RF_SHELL_DOUBLE )
-							{
-									shadelight[0] = 0.9;
-									shadelight[1] = 0.7;
-							}
-					}
-					else if ( currententity->flags & ( RF_SHELL_HALF_DAM |
-	   RF_SHELL_GREEN ) )
-					{
-							VectorClear (shadelight);
-							// PMM - new colors
-							if ( currententity->flags & RF_SHELL_HALF_DAM )
-							{
-									shadelight[0] = 0.56;
-									shadelight[1] = 0.59;
-									shadelight[2] = 0.45;
-							}
-							if ( currententity->flags & RF_SHELL_GREEN )
-							{
-									shadelight[1] = 1.0;
-							}
-					}
-			}
-							//PMM - ok, now flatten these down to range from 0
-	   to 1.0.
-			//		max_shell_val = max(shadelight[0], max(shadelight[1],
-	   shadelight[2]));
-			//		if (max_shell_val > 0)
-			//		{
-			//			for (i=0; i<3; i++)
-			//			{
-			//				shadelight[i] = shadelight[i] /
-	   max_shell_val;
-			//			}
-			//		}
-			// pmm
-	*/
 	else if( currententity->flags & RF_FULLBRIGHT ) {
 		for( i = 0; i < 3; i++ ) shadelight[ i ] = 1.0;
 	} else {
@@ -750,5 +653,7 @@ void R_DrawAliasModel( entity_t *e ) {
 		glPopMatrix();
 	}
 #endif
+
 	glColor4f( 1, 1, 1, 1 );
 }
+#endif
