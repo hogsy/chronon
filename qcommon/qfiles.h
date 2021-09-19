@@ -84,41 +84,12 @@ typedef struct {
 #define MAX_MD2SKINS	32
 #define MAX_SKINNAME	64
 
-struct MD2TaggedSurface
-{
-	char     name[ 8 ];
-	uint32_t triangleIndex;
-};
-
-struct MD2MultipleSurfaceHeader
-{
-	int32_t numPrimitives;
-	int32_t primitivesOffset;
-};
-
-struct MD2LodData
-{
-	float scale[ 3 ];
-};
-
 typedef struct {
 	int16_t s;
 	int16_t t;
 } dstvert_t;
 
-typedef struct {
-	int16_t index_xyz[ 3 ];
-	int16_t index_st[ 3 ];
-} dtriangle_t;
-
 #pragma pack(push,1)
-
-struct MD2FrameHeader
-{
-	float scale[ 3 ];            // multiply byte verts by this
-	float translate[ 3 ];        // then add this
-	char name[ 16 ];             // frame name from grabbing
-};
 
 struct MD2VertexGroup
 {
@@ -170,6 +141,17 @@ typedef struct {
 	int32_t ofs_frames;  // offset for first frame
 	int32_t ofs_glcmds;
 	int32_t ofs_end;  // end of file
+
+	// Multiple surfaces
+	int32_t numSurfaces;
+	int32_t surfacesOffset;
+
+	// Level of detail
+	vec3_t lodScale;
+
+	// Tagged surfaces
+	int32_t numTaggedTriangles;
+	int32_t taggedTrianglesOffset;
 } dmdl_t;
 
 // Shove this here for now
@@ -199,6 +181,7 @@ namespace nox
 	private:
 		void LoadSkins( const dmdl_t *mdl, int numSkins );
 		void LoadTriangles( const dmdl_t *mdl );
+		void LoadTaggedTriangles( const dmdl_t *mdl );
 		void LoadCommands( const dmdl_t *mdl );
 		void LoadFrames( const dmdl_t *mdl, int resolution );
 
@@ -247,6 +230,8 @@ namespace nox
 		float *shadeDots_;
 
 		std::vector< Triangle > triangles_;
+		std::map< std::string, uint > taggedTriangles_;
+
 		std::vector< Vector2 > stCoords_;
 		std::vector< int > glCmds_;
 		std::vector< Vector3 > lerpedVertices_;
