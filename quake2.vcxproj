@@ -293,7 +293,6 @@
     <ClCompile Include="ref_gl\gl_draw.cpp" />
     <ClCompile Include="ref_gl\gl_image.cpp" />
     <ClCompile Include="ref_gl\gl_light.cpp" />
-    <ClCompile Include="ref_gl\gl_mesh.cpp" />
     <ClCompile Include="ref_gl\gl_model.cpp" />
     <ClCompile Include="ref_gl\gl_rmain.cpp" />
     <ClCompile Include="ref_gl\gl_rmisc.cpp" />

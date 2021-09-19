@@ -186,9 +186,6 @@
     <ClCompile Include="ref_gl\gl_light.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="ref_gl\gl_mesh.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="ref_gl\gl_model.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
