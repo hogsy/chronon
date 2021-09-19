@@ -87,7 +87,6 @@ void GL_SelectTexture( GLenum texture ) {
 
 void GL_TexEnv( GLenum mode ) {
 	static int lastmodes[ 2 ] = { -1, -1 };
-
 	if( mode != lastmodes[ gl_state.currenttmu ] ) {
 		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode );
 		lastmodes[ gl_state.currenttmu ] = mode;
@@ -1097,10 +1096,6 @@ void	GL_InitImages( void ) {
 	gl_state.inverse_intensity = 1 / intensity->value;
 
 	Draw_GetPalette();
-
-	if( gl_config.renderer & GL_RENDERER_VOODOO ) {
-		g = 1.0F;
-	}
 
 	for( i = 0; i < 256; i++ ) {
 		if( g == 1 ) {

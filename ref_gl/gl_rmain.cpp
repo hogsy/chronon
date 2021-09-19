@@ -817,44 +817,6 @@ void R_SetGL2D( void ) {
 	glColor4f( 1, 1, 1, 1 );
 }
 
-#if 0 // Unused
-static void GL_DrawColoredStereoLinePair( float r, float g, float b, float y ) {
-	glColor3f( r, g, b );
-	glVertex2f( 0, y );
-	glVertex2f( vid.width, y );
-	glColor3f( 0, 0, 0 );
-	glVertex2f( 0, y + 1 );
-	glVertex2f( vid.width, y + 1 );
-}
-
-static void GL_DrawStereoPattern( void ) {
-	int i;
-
-	if( !( gl_config.renderer & GL_RENDERER_INTERGRAPH ) ) return;
-
-	if( !gl_state.stereo_enabled ) return;
-
-	R_SetGL2D();
-
-	glDrawBuffer( GL_BACK_LEFT );
-
-	for( i = 0; i < 20; i++ ) {
-		glBegin( GL_LINES );
-		GL_DrawColoredStereoLinePair( 1, 0, 0, 0 );
-		GL_DrawColoredStereoLinePair( 1, 0, 0, 2 );
-		GL_DrawColoredStereoLinePair( 1, 0, 0, 4 );
-		GL_DrawColoredStereoLinePair( 1, 0, 0, 6 );
-		GL_DrawColoredStereoLinePair( 0, 1, 0, 8 );
-		GL_DrawColoredStereoLinePair( 1, 1, 0, 10 );
-		GL_DrawColoredStereoLinePair( 1, 1, 0, 12 );
-		GL_DrawColoredStereoLinePair( 0, 1, 0, 14 );
-		glEnd();
-
-		GLimp_EndFrame();
-	}
-}
-#endif
-
 /*
 ====================
 R_SetLightLevel

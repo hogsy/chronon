@@ -1011,42 +1011,6 @@ void R_RecursiveWorldNode( mnode_t *node ) {
 
 	// recurse down the back side
 	R_RecursiveWorldNode( node->children[ !side ] );
-	/*
-		for ( ; c ; c--, surf++)
-		{
-			if (surf->visframe != r_framecount)
-				continue;
-
-			if ( (surf->flags & SURF_PLANEBACK) != sidebit )
-				continue;		// wrong side
-
-			if (surf->texinfo->flags & SURF_SKY)
-			{	// just adds to visible sky bounds
-				R_AddSkySurface (surf);
-			}
-			else if (surf->texinfo->flags & (SURF_TRANS33|SURF_TRANS66))
-			{	// add to the translucent chain
-	//			surf->texturechain = alpha_surfaces;
-	//			alpha_surfaces = surf;
-			}
-			else
-			{
-				if ( qglMTexCoord2fSGIS && !( surf->flags & SURF_DRAWTURB ) )
-				{
-					GL_RenderLightmappedPoly( surf );
-				}
-				else
-				{
-					// the polygon is visible, so add it to the texture
-					// sorted chain
-					// FIXME: this is a hack for animation
-					image = R_TextureAnimation (surf->texinfo);
-					surf->texturechain = image->texturechain;
-					image->texturechain = surf;
-				}
-			}
-		}
-	*/
 }
 
 
@@ -1088,7 +1052,18 @@ void R_DrawWorld( void ) {
 	if( gl_lightmap->value )
 		GL_TexEnv( GL_REPLACE );
 	else
-		GL_TexEnv( GL_MODULATE );
+	{
+		static cvar_t *overbrights = nullptr;
+		if ( overbrights == nullptr )
+			overbrights = Cvar_Get( "r_overbrights", "1", CVAR_ARCHIVE );
+
+		// Setup lightmap channel for overbrights
+		glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE );
+		glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE );
+		glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS );
+		glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE );
+		glTexEnvf( GL_TEXTURE_ENV, GL_RGB_SCALE, overbrights->value );
+	}
 
 	R_RecursiveWorldNode( r_worldmodel->nodes );
 
@@ -1471,4 +1446,3 @@ void GL_EndBuildingLightmaps( void ) {
 	LM_UploadBlock( false );
 	GL_EnableMultitexture( false );
 }
-
