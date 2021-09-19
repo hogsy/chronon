@@ -697,9 +697,6 @@ void R_SetupGL( void ) {
 	glTranslatef( -r_newrefdef.vieworg[ 0 ], -r_newrefdef.vieworg[ 1 ],
 		-r_newrefdef.vieworg[ 2 ] );
 
-	//	if ( gl_state.camera_separation != 0 && gl_state.stereo_enabled )
-	//		glTranslatef ( gl_state.camera_separation, 0, 0 );
-
 	glGetFloatv( GL_MODELVIEW_MATRIX, r_world_matrix );
 
 	//
@@ -721,32 +718,10 @@ R_Clear
 =============
 */
 void R_Clear( void ) {
-	if( gl_ztrick->value ) {
-		static int trickframe;
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-		if( gl_clear->value ) glClear( GL_COLOR_BUFFER_BIT );
-
-		trickframe++;
-		if( trickframe & 1 ) {
-			gldepthmin = 0;
-			gldepthmax = 0.49999;
-			glDepthFunc( GL_LEQUAL );
-		} else {
-			gldepthmin = 1;
-			gldepthmax = 0.5;
-			glDepthFunc( GL_GEQUAL );
-		}
-	} else {
-		if( gl_clear->value )
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		else
-			glClear( GL_DEPTH_BUFFER_BIT );
-		gldepthmin = 0;
-		gldepthmax = 1;
-		glDepthFunc( GL_LEQUAL );
-	}
-
-	glDepthRange( gldepthmin, gldepthmax );
+	glDepthFunc( GL_LEQUAL );
+	glDepthRange( 0, 1 );
 }
 
 void R_Flash( void ) { R_PolyBlend(); }
@@ -1167,25 +1142,6 @@ void R_BeginFrame( float camera_separation ) {
 
 	if( gl_log->value ) {
 		GLimp_LogNewFrame();
-	}
-
-	/*
-	** update 3Dfx gamma -- it is expected that a user will do a vid_restart
-	** after tweaking this value
-	*/
-	if( vid_gamma->modified ) {
-		vid_gamma->modified = false;
-
-		if( gl_config.renderer & ( GL_RENDERER_VOODOO ) ) {
-			char envbuffer[ 1024 ];
-			float g;
-
-			g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-			Com_sprintf( envbuffer, sizeof( envbuffer ), "SSTV2_GAMMA=%f", g );
-			putenv( envbuffer );
-			Com_sprintf( envbuffer, sizeof( envbuffer ), "SST_GAMMA=%f", g );
-			putenv( envbuffer );
-		}
 	}
 
 	GLimp_BeginFrame( camera_separation );
