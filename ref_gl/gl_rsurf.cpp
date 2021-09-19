@@ -1058,11 +1058,16 @@ void R_DrawWorld( void ) {
 			overbrights = Cvar_Get( "r_overbrights", "1", CVAR_ARCHIVE );
 
 		// Setup lightmap channel for overbrights
-		glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE );
-		glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE );
-		glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS );
-		glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE );
-		glTexEnvf( GL_TEXTURE_ENV, GL_RGB_SCALE, overbrights->value );
+		if ( overbrights->value > 1.0f )
+		{
+			GL_TexEnv( GL_COMBINE );
+			glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE );
+			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS );
+			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE );
+			glTexEnvf( GL_TEXTURE_ENV, GL_RGB_SCALE, overbrights->value );
+		}
+		else
+			GL_TexEnv( GL_MODULATE );
 	}
 
 	R_RecursiveWorldNode( r_worldmodel->nodes );
