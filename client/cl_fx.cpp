@@ -2259,7 +2259,7 @@ void CL_EntityEvent (entity_state_t *ent)
 		break;
 	case EV_FOOTSTEP:
 		if (cl_footsteps->value)
-			S_StartSound (NULL, ent->number, CHAN_BODY, cl_sfx_footsteps[rand()&3], 1, ATTN_NORM, 0);
+			S_StartSound (NULL, ent->number, CHAN_BODY, cl_sfx_footsteps[rand()&2], 1, ATTN_NORM, 0);
 		break;
 	case EV_FALLSHORT:
 		S_StartSound (NULL, ent->number, CHAN_AUTO, S_RegisterSound ("player/land1.wav"), 1, ATTN_NORM, 0);
