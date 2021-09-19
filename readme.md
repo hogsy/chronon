@@ -8,6 +8,10 @@ This is an open-source reimplementation of Anachronox, built on top of the
 Quake 2 engine (which funnily enough is the same engine Anachronox was
 developed upon).
 
+It's important to note that this project is operating to reimplement the game through 
+publicly available documentation and observation, rather than dissassembling the original, 
+which should hopefully be fine from a legal standpoint.
+
 The project has the following goals, somewhat in order of priority.
 
 - Reimplement Anachronox (duh)
@@ -23,6 +27,7 @@ Below is a list of what's been done thus far.
 - Support for the various texture formats Anachronox uses (e.g. PNG, BMP and TGA)
 - Replaced QGL with GLEW
 - Code is compiled as C++, as opposed to C
+- Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it)
 - Fixed a number of potential buffer overflows in the Q2 engine
 
 ## Wow, neat! How can I help?
