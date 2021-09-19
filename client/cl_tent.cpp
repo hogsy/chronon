@@ -141,14 +141,14 @@ void CL_RegisterTEntSounds (void)
 	cl_sfx_watrexp = S_RegisterSound ("weapons/xpld_wat.wav");
 	// RAFAEL
 	// cl_sfx_plasexp = S_RegisterSound ("weapons/plasexpl.wav");
-	S_RegisterSound ("player/land1.wav");
+	//S_RegisterSound ("player/land1.wav");
 
-	S_RegisterSound ("player/fall2.wav");
-	S_RegisterSound ("player/fall1.wav");
+	//S_RegisterSound ("player/fall2.wav");
+	//S_RegisterSound ("player/fall1.wav");
 
-	for (i=0 ; i<4 ; i++)
+	for (i=0 ; i<3 ; i++)
 	{
-		Com_sprintf (name, sizeof(name), "player/step%i.wav", i+1);
+		Com_sprintf (name, sizeof(name), "player/footsteps/wk_carpet_%02d.wav", i+1);
 		cl_sfx_footsteps[i] = S_RegisterSound (name);
 	}
 

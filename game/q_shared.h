@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ctime>
 
 #include <vector>
+#include <map>
 #include <string>
 
 #if (defined _M_IX86 || defined __i386__) && !defined C_ONLY && !defined __sun__

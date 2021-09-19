@@ -1090,6 +1090,7 @@ bool nox::AliasModel::LoadFromBuffer( const void *buffer )
 
 	LoadSkins( pinmodel, numSkins );
 	LoadTriangles( pinmodel );
+	LoadTaggedTriangles( pinmodel );
 	LoadCommands( pinmodel );
 	LoadFrames( pinmodel, resolution );
 
@@ -1112,6 +1113,12 @@ void nox::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 
 void nox::AliasModel::LoadTriangles( const dmdl_t *mdl )
 {
+	struct dtriangle_t
+	{
+		int16_t index_xyz[ 3 ];
+		int16_t index_st[ 3 ];
+	};
+
 	uint ofs = LittleLong( mdl->ofs_tris );
 	const dtriangle_t *dtri = ( dtriangle_t * ) ( ( byte * ) mdl + ofs );
 	for ( int i = 0; i < numTriangles_; ++i )
@@ -1127,6 +1134,21 @@ void nox::AliasModel::LoadTriangles( const dmdl_t *mdl )
 	}
 }
 
+void nox::AliasModel::LoadTaggedTriangles( const dmdl_t *mdl )
+{
+	struct MD2TaggedSurface
+	{
+		char name[ 8 ];
+		uint32_t triangleIndex;
+	};
+
+	int numTaggedTriangles = LittleLong( mdl->numTaggedTriangles );
+	uint ofs = LittleLong( mdl->taggedTrianglesOffset );
+	const MD2TaggedSurface *taggedSurface = ( MD2TaggedSurface * ) ( ( byte * ) mdl + ofs );
+	for ( int i = 0; i < numTaggedTriangles; ++i )
+		taggedTriangles_.emplace( taggedSurface->name, LittleLong( taggedSurface->triangleIndex ) );
+}
+
 void nox::AliasModel::LoadCommands( const dmdl_t *mdl )
 {
 	uint ofs = LittleLong( mdl->ofs_glcmds );
@@ -1138,6 +1160,13 @@ void nox::AliasModel::LoadCommands( const dmdl_t *mdl )
 void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 {
 	frames_.resize( numFrames_ );
+
+	struct MD2FrameHeader
+	{
+		float scale[ 3 ];    // multiply byte verts by this
+		float translate[ 3 ];// then add this
+		char name[ 16 ];     // frame name from grabbing
+	};
 
 	uint ofs = LittleLong( mdl->ofs_frames );
 	int frameSize = LittleLong( mdl->framesize );
