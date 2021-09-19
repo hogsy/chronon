@@ -682,7 +682,7 @@ void R_SetupGL( void ) {
 	//	yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	MYgluPerspective( r_newrefdef.fov_y, screenaspect, 4, 4096 );
+	MYgluPerspective( r_newrefdef.fov_y, screenaspect, 4, 9999 );
 
 	glCullFace( GL_FRONT );
 

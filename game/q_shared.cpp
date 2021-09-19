@@ -834,6 +834,12 @@ const char *Script_SkipComment( const char *data ) {
 	return data;
 }
 
+const char *Script_SkipLine( const char *p )
+{
+	while ( *p && *p != '\n' ) p++;
+	return p;
+}
+
 /*
 ==============
 Script_Parse

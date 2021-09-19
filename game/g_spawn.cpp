@@ -67,7 +67,7 @@ static void ProtoSpawner( edict_t *self, const EntityCustomClassDeclaration &spa
 }
 
 typedef void( *EntityCustomClassSpawnFunction )( edict_t *self, const EntityCustomClassDeclaration &spawnData );
-static std::map< std::string, EntityCustomClassSpawnFunction > entityTypes = {
+static const std::map< std::string, EntityCustomClassSpawnFunction > entityTypes = {
 	{ "char", ProtoSpawner },
 	{ "charfly", ProtoSpawner },
 	{ "charhover", ProtoSpawner },
@@ -91,8 +91,7 @@ static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength ) {
 	EntityCustomClassDeclaration customClass;
 	memset( &customClass, 0, sizeof( EntityCustomClassDeclaration ) );
 
-	unsigned int i;
-	for( i = 0; i < 24; ++i ) {
+	for( nox::uint i = 0; i < 24; ++i ) {
 		const char *token = Script_Parse( &lineDef, "|\n" );
 		if( token == nullptr ) {
 			break;
@@ -419,7 +418,7 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 			case F_LSTRING:
 				*(char **)( b + f->ofs ) = ED_NewString( value );
 				break;
-			case F_VECTOR:
+			case F_VEC3:
 				sscanf( value, "%f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ] );
 				( (float *)( b + f->ofs ) )[ 0 ] = vec[ 0 ];
 				( (float *)( b + f->ofs ) )[ 1 ] = vec[ 1 ];
@@ -456,7 +455,7 @@ ed should be a properly initialized empty edict.
 ====================
 */
 static const char *ED_ParseEdict( const char *data, edict_t *ent ) {
-	qboolean	init;
+	bool init;
 	char		keyname[ 256 ];
 	const char *com_token;
 

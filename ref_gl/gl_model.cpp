@@ -210,30 +210,33 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 
 	// call the apropriate loader
 
-	switch( LittleLong( *(unsigned *)buf ) ) {
-	case IDALIASHEADER:
-		Mod_LoadAliasModel( mod, buf );
-		break;
+	switch ( LittleLong( *( unsigned * ) buf ) )
+	{
+		#if 0
+		case IDMDAHEADER:
+			void Mod_LoadMDAModel( model_t * mod, void *buffer );
+			Mod_LoadMDAModel( mod, buf );
+			break;
+		#endif
+		case IDALIASHEADER:
+			Mod_LoadAliasModel( mod, buf );
+			break;
 
-	case IDSPRITEHEADER:
-		loadmodel->extradata = Hunk_Begin( 0x10000 );
-		Mod_LoadSpriteModel( mod, buf );
-		loadmodel->extradatasize = Hunk_End();
-		break;
+		case IDSPRITEHEADER:
+			loadmodel->extradata = Hunk_Begin( 0x10000 );
+			Mod_LoadSpriteModel( mod, buf );
+			loadmodel->extradatasize = Hunk_End();
+			break;
 
-	case IDBSPHEADER:
-		loadmodel->extradata = Hunk_Begin( 0x1000000 );
-		Mod_LoadBrushModel( mod, buf );
-		loadmodel->extradatasize = Hunk_End();
-		break;
+		case IDBSPHEADER:
+			loadmodel->extradata = Hunk_Begin( 0x1000000 );
+			Mod_LoadBrushModel( mod, buf );
+			loadmodel->extradatasize = Hunk_End();
+			break;
 
-	default:
-#if defined( _DEBUG )
-		VID_Printf( PRINT_ALL, "Mod_NumForName: unknown fileid for %s", mod->name );
-#else
-		VID_Error( ERR_DROP, "Mod_NumForName: unknown fileid for %s", mod->name );
-#endif
-		break;
+		default:
+			VID_Printf( PRINT_ALL, "Mod_NumForName: unknown fileid for %s", mod->name );
+			break;
 	}
 
 	FS_FreeFile( buf );
@@ -842,6 +845,25 @@ ALIAS MODELS
 
 ==============================================================================
 */
+
+/**
+ * Parse in an MDA file, which outlines how the model
+ * should be rendered in the scene along with some
+ * additional data we need.
+ */
+void Mod_LoadMDAModel( model_t *mod, void *buffer )
+{
+	// + 4 as we're skipping the magic id
+	const char *pos = ( const char * ) ( ( byte * ) buffer + 4 );
+	while ( *pos != '\0' )
+	{
+		if ( *pos == '#' )
+		{
+			pos = Script_SkipLine( pos );
+			continue;
+		}
+	}
+}
 
 void Mod_LoadAliasModel( model_t *mod, void *buffer ) 
 {

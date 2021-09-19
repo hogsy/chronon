@@ -28,7 +28,7 @@ MEDIC
 #include "g_local.h"
 #include "m_medic.h"
 
-qboolean visible (edict_t *self, edict_t *other);
+bool visible( edict_t *self, edict_t *other );
 
 
 static int	sound_idle1;
@@ -701,7 +701,7 @@ void medic_attack(edict_t *self)
 		self->monsterinfo.currentmove = &medic_move_attackBlaster;
 }
 
-qboolean medic_checkattack (edict_t *self)
+bool medic_checkattack( edict_t *self )
 {
 	if (self->monsterinfo.aiflags & AI_MEDIC)
 	{

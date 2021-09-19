@@ -29,7 +29,7 @@ Returns true if the inflictor can directly damage the target.  Used for
 explosions and melee attacks.
 ============
 */
-qboolean CanDamage (edict_t *targ, edict_t *inflictor)
+bool CanDamage( edict_t *targ, edict_t *inflictor )
 {
 	vec3_t	dest;
 	trace_t	trace;
@@ -367,7 +367,7 @@ void M_ReactToDamage (edict_t *targ, edict_t *attacker)
 	}
 }
 
-qboolean CheckTeamDamage (edict_t *targ, edict_t *attacker)
+bool CheckTeamDamage( edict_t *targ, edict_t *attacker )
 {
 		//FIXME make the next line real and uncomment this block
 		// if ((ability to damage a teammate == OFF) && (targ's team == attacker's team))

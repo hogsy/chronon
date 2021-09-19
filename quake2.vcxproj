@@ -321,7 +321,6 @@
   <ItemGroup>
     <ClInclude Include="3rdparty\miniz\miniz.h" />
     <ClInclude Include="anoxaux\AuxInterface.h" />
-    <ClInclude Include="anoxgfx\GfxInterface.h" />
     <ClInclude Include="client\anorms.h" />
     <ClInclude Include="client\cdaudio.h" />
     <ClInclude Include="client\client.h" />

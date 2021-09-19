@@ -272,9 +272,6 @@
     <ClInclude Include="anoxaux\AuxInterface.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="anoxgfx\GfxInterface.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="3rdparty\miniz\miniz.h">
       <Filter>Source Files\miniz</Filter>
     </ClInclude>

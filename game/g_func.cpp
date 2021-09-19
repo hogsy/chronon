@@ -849,7 +849,7 @@ NOMONSTER	monsters will not trigger this door
 4)	heavy
 */
 
-void door_use_areaportals (edict_t *self, qboolean open)
+void door_use_areaportals( edict_t *self, bool open )
 {
 	edict_t	*t = NULL;
 
@@ -1530,7 +1530,7 @@ void train_next (edict_t *self)
 {
 	edict_t		*ent;
 	vec3_t		dest;
-	qboolean	first;
+	bool first;
 
 	first = true;
 again:

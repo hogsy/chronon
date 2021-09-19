@@ -168,7 +168,8 @@ void player_pain( edict_t *self, edict_t *other, float kick, int damage ) {
 }
 
 
-qboolean IsFemale( edict_t *ent ) {
+bool IsFemale( edict_t *ent )
+{
 	const char *info;
 
 	if( !ent->client )
@@ -180,7 +181,8 @@ qboolean IsFemale( edict_t *ent ) {
 	return false;
 }
 
-qboolean IsNeutral( edict_t *ent ) {
+bool IsNeutral( edict_t *ent )
+{
 	const char *info;
 
 	if( !ent->client )
@@ -196,7 +198,7 @@ void ClientObituary( edict_t *self, edict_t *inflictor, edict_t *attacker ) {
 	int			mod;
 	const char *message;
 	const char *message2;
-	qboolean	ff;
+	bool ff;
 
 	if( coop->value && attacker->client )
 		meansOfDeath |= MOD_FRIENDLY_FIRE;
@@ -384,7 +386,7 @@ void Touch_Item( edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf
 void TossClientWeapon( edict_t *self ) {
 	gitem_t *item;
 	edict_t *drop;
-	qboolean	quad;
+	bool quad;
 	float		spread;
 
 	if( !deathmatch->value )
@@ -1326,7 +1328,8 @@ Changing levels will NOT cause this to be called again, but
 loadgames will.
 ============
 */
-qboolean ClientConnect( edict_t *ent, char *userinfo ) {
+bool ClientConnect( edict_t *ent, char *userinfo )
+{
 	const char *value;
 
 	// check to see if they are on the banned IP list

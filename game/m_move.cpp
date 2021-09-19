@@ -34,7 +34,7 @@ is not a staircase.
 */
 int c_yes, c_no;
 
-qboolean M_CheckBottom (edict_t *ent)
+bool M_CheckBottom( edict_t *ent )
 {
 	vec3_t	mins, maxs, start, stop;
 	trace_t	trace;
@@ -109,7 +109,7 @@ pr_global_struct->trace_normal is set to the normal of the blocking wall
 */
 //FIXME since we need to test end position contents here, can we avoid doing
 //it again later in catagorize position?
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
+bool SV_movestep( edict_t *ent, vec3_t move, bool relink )
 {
 	float		dz;
 	vec3_t		oldorg, neworg, end;
@@ -350,7 +350,7 @@ facing it.
 
 ======================
 */
-qboolean SV_StepDirection (edict_t *ent, float yaw, float dist)
+bool SV_StepDirection( edict_t *ent, float yaw, float dist )
 {
 	vec3_t		move, oldorigin;
 	float		delta;
@@ -492,7 +492,7 @@ SV_CloseEnough
 
 ======================
 */
-qboolean SV_CloseEnough (edict_t *ent, edict_t *goal, float dist)
+bool SV_CloseEnough( edict_t *ent, edict_t *goal, float dist )
 {
 	int		i;
 	
@@ -539,7 +539,7 @@ void M_MoveToGoal (edict_t *ent, float dist)
 M_walkmove
 ===============
 */
-qboolean M_walkmove (edict_t *ent, float yaw, float dist)
+bool M_walkmove( edict_t *ent, float yaw, float dist )
 {
 	vec3_t	move;
 	

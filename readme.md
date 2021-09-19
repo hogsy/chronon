@@ -9,15 +9,17 @@ Quake 2 engine (which funnily enough is the same engine Anachronox was
 developed upon).
 
 It's important to note that this project is operating to reimplement the game through 
-publicly available documentation and observation, rather than dissassembling the original, 
-which should hopefully be fine from a legal standpoint.
+publicly available documentation and observation, rather than dissassembly, which should 
+hopefully be fine from a legal standpoint.
 
-The project has the following goals, somewhat in order of priority.
+## Project Goals
 
 - Reimplement Anachronox (duh)
 - Support for multiple platforms; linux, android and more
 - Make the game easier to modify (i.e. support for larger texture sizes)
 - Improved visuals
+
+## Features
 
 It's still in a very early stage of development so nothing is playable yet.
 Below is a list of what's been done thus far.

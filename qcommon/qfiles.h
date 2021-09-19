@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // This file must be identical in the quake and utils directories
 //
 
+#define GENERATE_MAGICID( A, B, C, D ) ( ( D << 24 ) + ( C << 16 ) + ( B << 8 ) + A )
+
 /*
 ========================================================================
 
@@ -32,7 +34,7 @@ The .pak files are just a linear collapse of a directory tree
 ========================================================================
 */
 
-#define IDPAKHEADER (('K' << 24) + ('C' << 16) + ('A' << 8) + 'P')
+#define IDPAKHEADER	GENERATE_MAGICID( 'P', 'A', 'C', 'K' )
 
 typedef struct {
 	char name[ 56 ];
@@ -79,7 +81,8 @@ typedef struct {
 ========================================================================
 */
 
-#define IDALIASHEADER (('2' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define IDALIASHEADER	GENERATE_MAGICID( 'I', 'D', 'P', '2' )
+#define IDMDAHEADER		GENERATE_MAGICID( 'M', 'D', 'A', '1' )
 
 #define MAX_MD2SKINS	32
 #define MAX_SKINNAME	64
@@ -248,7 +251,7 @@ namespace nox
 ========================================================================
 */
 
-#define IDSPRITEHEADER (('2' << 24) + ('S' << 16) + ('D' << 8) + 'I')
+#define IDSPRITEHEADER GENERATE_MAGICID( 'I', 'D', 'S', '2' )
 // little-endian "IDS2"
 #define SPRITE_VERSION 2
 
@@ -292,7 +295,7 @@ typedef struct miptex_s {
 ==============================================================================
 */
 
-#define IDBSPHEADER (('P' << 24) + ('S' << 16) + ('B' << 8) + 'I')
+#define IDBSPHEADER	GENERATE_MAGICID( 'I', 'B', 'S', 'P' )
 // little-endian "IBSP"
 
 #define BSPVERSION 38

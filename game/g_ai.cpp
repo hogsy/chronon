@@ -21,13 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
-qboolean FindTarget (edict_t *self);
+bool FindTarget( edict_t *self );
 extern cvar_t	*maxclients;
 
-qboolean ai_checkattack (edict_t *self, float dist);
+bool ai_checkattack( edict_t *self, float dist );
 
-qboolean	enemy_vis;
-qboolean	enemy_infront;
+bool enemy_vis;
+bool enemy_infront;
 int			enemy_range;
 float		enemy_yaw;
 
@@ -284,7 +284,7 @@ visible
 returns 1 if the entity is visible to self, even if not infront ()
 =============
 */
-qboolean visible (edict_t *self, edict_t *other)
+bool visible( edict_t *self, edict_t *other )
 {
 	vec3_t	spot1;
 	vec3_t	spot2;
@@ -309,7 +309,7 @@ infront
 returns 1 if the entity is in front (in sight) of self
 =============
 */
-qboolean infront (edict_t *self, edict_t *other)
+bool infront( edict_t *self, edict_t *other )
 {
 	vec3_t	vec;
 	float	dot;
@@ -404,10 +404,10 @@ checked each frame.  This means multi player games will have slightly
 slower noticing monsters.
 ============
 */
-qboolean FindTarget (edict_t *self)
+bool FindTarget( edict_t *self )
 {
 	edict_t		*client;
-	qboolean	heardit;
+	bool heardit;
 	int			r;
 
 	if (self->monsterinfo.aiflags & AI_GOOD_GUY)
@@ -591,7 +591,7 @@ FacingIdeal
 
 ============
 */
-qboolean FacingIdeal(edict_t *self)
+bool FacingIdeal( edict_t *self )
 {
 	float	delta;
 
@@ -604,7 +604,7 @@ qboolean FacingIdeal(edict_t *self)
 
 //=============================================================================
 
-qboolean M_CheckAttack (edict_t *self)
+bool M_CheckAttack( edict_t *self )
 {
 	vec3_t	spot1, spot2;
 	float	chance;
@@ -768,10 +768,10 @@ Decides if we're going to attack or do something else
 used by ai_run and ai_stand
 =============
 */
-qboolean ai_checkattack (edict_t *self, float dist)
+bool ai_checkattack( edict_t *self, float dist )
 {
 	vec3_t		temp;
-	qboolean	hesDeadJim;
+	bool hesDeadJim;
 
 // this causes monsters to run blindly to the combat point w/o firing
 	if (self->goalentity)
@@ -917,7 +917,7 @@ void ai_run (edict_t *self, float dist)
 	vec3_t		v;
 	edict_t		*tempgoal;
 	edict_t		*save;
-	qboolean	newn;
+	bool newn;
 	edict_t		*marker;
 	float		d1, d2;
 	trace_t		tr;
