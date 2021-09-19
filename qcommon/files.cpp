@@ -306,8 +306,6 @@ uint8_t *FS_FOpenFile( const char *filename, uint32_t *length ) {
 
 		FS_CanonicalisePath( netpath );
 
-		Com_DPrintf( "FindFile: %s\n", netpath );
-
 		/* first, attempt to open it locally */
 		uint32_t fileLength = FS_GetLocalFileLength( netpath );
 		if( fileLength >= 0 ) {

@@ -363,7 +363,7 @@ PCX LOADING
 LoadPCX
 ==============
 */
-void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int *height ) {
+static void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int *height ) {
 	byte *raw;
 	pcx_t *pcx;
 	int		x, y;
@@ -379,7 +379,6 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 	//
 	len = FS_LoadFile( filename, (void **)&raw );
 	if( !raw ) {
-		VID_Printf( PRINT_DEVELOPER, "Bad pcx file %s\n", filename );
 		return;
 	}
 
@@ -405,7 +404,6 @@ void LoadPCX( const char *filename, byte **pic, byte **palette, int *width, int 
 		|| pcx->bits_per_pixel != 8
 		|| pcx->xmax >= 640
 		|| pcx->ymax >= 480 ) {
-		VID_Printf( PRINT_ALL, "Bad pcx file %s\n", filename );
 		return;
 	}
 
@@ -455,7 +453,6 @@ static void LoadImage32( const char *name, byte **pic, int *width, int *height )
 	byte *buffer;
 	int length = FS_LoadFile( name, (void **)&buffer );
 	if( buffer == NULL ) {
-		VID_Printf( PRINT_DEVELOPER, "Bad image file %s\n", name );
 		return;
 	}
 
@@ -954,12 +951,12 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
   // Right, this is kinda gross but Anachronox seems to strip the extension
   // from the filename and then load whatever standard formats it supports
 
-	typedef struct ImageLoader {
+	struct ImageLoader {
 		const char *extension;
 		unsigned int depth;
 		void( *Load8bpp )( const char *filename, byte **pic, byte **palette, int *width, int *height );
 		void( *Load32bpp )( const char *filename, byte **pic, int *width, int *height );
-	} ImageLoader;
+	};
 
 	static ImageLoader loaders[] = {
 		{ "tga", 32, NULL, LoadImage32 },
@@ -983,13 +980,12 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 			loader.Load32bpp( uname, &pic, &width, &height );
 		}
 
-		if( pic == nullptr ) {
-			continue;
+		if( pic != nullptr ) {
+			image = GL_LoadPic( uname, pic, width, height, type, loader.depth );
+			// HACK: store the original name for comparing later!
+			strcpy( image->name, name );
+			break;
 		}
-
-		image = GL_LoadPic( uname, pic, width, height, type, loader.depth );
-		// HACK: store the original name for comparing later!
-		strcpy( image->name, name );
 	}
 
 	if( image == nullptr ) {
