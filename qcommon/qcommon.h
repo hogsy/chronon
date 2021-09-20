@@ -28,47 +28,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define BASEDIRNAME "anoxdata"
 
+#if defined( _M_IX86 )
+#	define CPUSTRING "x86"
+# 	define Q_PLATFORM_X86 1
+#elif defined( _M_AMD64 ) || defined( _M_X64 )
+#	define CPUSTRING "x64"
+# 	define Q_PLATFORM_X64 1
+#elif defined( _M_ALPHA )
+#	define CPUSTRING "AXP"
+#endif
+
 #ifdef WIN32
-
-#ifdef NDEBUG
-#define BUILDSTRING "Win32 RELEASE"
-#else
-#define BUILDSTRING "Win32 DEBUG"
-#endif
-
-#ifdef _M_IX86
-#define CPUSTRING "x86"
-#elif defined _M_ALPHA
-#define CPUSTRING "AXP"
-#endif
-
+#	ifdef NDEBUG
+#		define BUILDSTRING "Win32 RELEASE"
+#	else
+#		define BUILDSTRING "Win32 DEBUG"
+#	endif
 #elif defined __linux__
-
-#define BUILDSTRING "Linux"
-
-#ifdef __i386__
-#define CPUSTRING "i386"
-#elif defined __alpha__
-#define CPUSTRING "axp"
-#else
-#define CPUSTRING "Unknown"
-#endif
-
+#	define BUILDSTRING "Linux"
 #elif defined __sun__
-
-#define BUILDSTRING "Solaris"
-
-#ifdef __i386__
-#define CPUSTRING "i386"
-#else
-#define CPUSTRING "sparc"
-#endif
-
+#	define BUILDSTRING "Solaris"
 #else  // !WIN32
-
-#define BUILDSTRING "NON-WIN32"
-#define CPUSTRING "NON-WIN32"
-
+#	define BUILDSTRING "NON-WIN32"
 #endif
 
 //============================================================================

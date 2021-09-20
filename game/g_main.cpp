@@ -108,7 +108,7 @@ Returns a pointer to the structure with all entry points
 and global variables
 =================
 */
-game_export_t *GetGameAPI (game_import_t *import)
+extern "C" __declspec(dllexport) game_export_t *GetGameAPI (game_import_t *import)
 {
 	gi = *import;
 
@@ -231,7 +231,7 @@ void EndDMLevel (void)
 
 	// see if it's in the map list
 	if (*sv_maplist->string) {
-		s = strdup(sv_maplist->string);
+		s = Q_strdup(sv_maplist->string);
 		f = NULL;
 		t = strtok(s, seps);
 		while (t != NULL) {

@@ -237,32 +237,6 @@ void R_ConcatTransforms( float in1[ 3 ][ 4 ], float in2[ 3 ][ 4 ], float out[ 3 
 
 //============================================================================
 
-
-float Q_fabs( float f ) {
-#if 0
-	if( f >= 0 )
-		return f;
-	return -f;
-#else
-	int tmp = *(int *)&f;
-	tmp &= 0x7FFFFFFF;
-	return *(float *)&tmp;
-#endif
-}
-
-#if defined _M_IX86 && !defined C_ONLY
-#pragma warning (disable:4035)
-__declspec( naked ) long Q_ftol( float f ) {
-	( void ) f;
-	static int tmp;
-	__asm fld dword ptr[ esp + 4 ]
-		__asm fistp tmp
-	__asm mov eax, tmp
-	__asm ret
-}
-#pragma warning (default:4035)
-#endif
-
 /*
 ===============
 LerpAngle

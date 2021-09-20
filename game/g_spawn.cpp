@@ -232,8 +232,6 @@ void SP_info_null( edict_t *self );
 void SP_info_notnull( edict_t *self );
 void SP_path_corner( edict_t *self );
 
-void SP_monster_berserk( edict_t *self );
-
 typedef void( *EntitySpawnFunction )( edict_t *self );
 std::map< std::string, EntitySpawnFunction > entitySpawnClasses = {
 	{"info_player_start", SP_info_player_start},
@@ -310,9 +308,6 @@ std::map< std::string, EntitySpawnFunction > entitySpawnClasses = {
 	// todo: func_ridebox
 
 	// todo: info_party_start
-
-	// tmp
-	{ "npc_alien_rowdy", SP_monster_berserk },
 };
 
 /*

@@ -38,6 +38,8 @@ add_library(game MODULE
         g_utils.cpp
         g_weapon.cpp
         m_actor.cpp
+        m_flash.cpp
+        m_move.cpp
         p_client.cpp
         p_hud.cpp
         p_trail.cpp

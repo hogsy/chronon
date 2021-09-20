@@ -165,8 +165,7 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 {
 	char	entry[1024];
 	char	string[1400];
-	int		stringlength;
-	int		i, j, k;
+	int		i, k;
 	int		sorted[MAX_CLIENTS];
 	int		sortedscores[MAX_CLIENTS];
 	int		score, total;
@@ -183,7 +182,8 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 		if (!cl_ent->inuse || game.clients[i].resp.spectator)
 			continue;
 		score = game.clients[i].resp.score;
-		for (j=0 ; j<total ; j++)
+		int j;
+		for ( j=0 ; j<total ; j++)
 		{
 			if (score > sortedscores[j])
 				break;
@@ -201,12 +201,13 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 	// print level name and exit rules
 	string[0] = 0;
 
-	stringlength = strlen(string);
+	size_t stringlength = strlen(string);
 
 	// add the clients in sorted order
 	if (total > 12)
 		total = 12;
 
+	size_t j;
 	for (i=0 ; i<total ; i++)
 	{
 		cl = &game.clients[sorted[i]];

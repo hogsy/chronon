@@ -637,7 +637,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	nfiles = 0;
 	while( s ) {
 		if( s[ strlen( s ) - 1 ] != '.' ) {
-			list[ nfiles ] = strdup( s );
+			list[ nfiles ] = Q_strdup( s );
 #ifdef _WIN32
 			strlwr( list[ nfiles ] );
 #endif

@@ -230,7 +230,6 @@ void InitGame( void ) {
 
 void WriteField1( FILE *f, field_t *field, byte *base ) {
 	void *p;
-	int			len;
 	int			index;
 
 	if( field->flags & FFL_SPAWNTEMP )
@@ -247,12 +246,15 @@ void WriteField1( FILE *f, field_t *field, byte *base ) {
 
 	case F_LSTRING:
 	case F_GSTRING:
-		if( *(char **)p )
-			len = strlen( *(char **)p ) + 1;
+	{
+		size_t len;
+		if ( *( char ** ) p )
+			len = strlen( *( char ** ) p ) + 1;
 		else
 			len = 0;
-		*(int *)p = len;
+		*( int * ) p = len;
 		break;
+	}
 	case F_EDICT:
 		if( *(edict_t **)p == NULL )
 			index = -1;

@@ -507,7 +507,7 @@ extern	int	meansOfDeath;
 
 extern	edict_t			*g_edicts;
 
-#define STRUCT_OFS( a, b ) (long)&(((a*)0)->b)
+#define STRUCT_OFS( a, b ) ((intptr_t)&(((a*)0)->b))
 
 #define	FOFS(x)     STRUCT_OFS( edict_t, x )
 #define	STOFS(x)    STRUCT_OFS( spawn_temp_t, x )

@@ -19,22 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sys_win.h
 
-#include <conio.h>
 #include <direct.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <float.h>
-#include <io.h>
-#include <stdio.h>
+#include <cstdio>
+
 #include "../qcommon/qcommon.h"
 #include "../win32/conproc.h"
 #include "resource.h"
 #include "winquake.h"
-
-#define MINIMUM_WIN_MEMORY 0x0a00000
-#define MAXIMUM_WIN_MEMORY 0x1000000
-
-//#define DEMO
 
 qboolean s_win95;
 
@@ -72,7 +63,7 @@ void Sys_Error( const char *error, ... ) {
 	vsprintf( text, error, argptr );
 	va_end( argptr );
 
-	MessageBox( NULL, text, "Error", 0 /* MB_OK */ );
+	MessageBox( nullptr, text, "Error", 0 /* MB_OK */ );
 
 	Z_Free( text );
 
@@ -95,12 +86,12 @@ void WinError( void ) {
 	LPTSTR lpMsgBuf;
 
 	FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, GetLastError(),
+		nullptr, GetLastError(),
 		MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),  // Default language
-		lpMsgBuf, 0, NULL );
+		lpMsgBuf, 0, nullptr );
 
 	// Display the string.
-	MessageBox( NULL, lpMsgBuf, "GetLastError", MB_OK | MB_ICONINFORMATION );
+	MessageBox( nullptr, lpMsgBuf, "GetLastError", MB_OK | MB_ICONINFORMATION );
 
 	// Free the buffer.
 	LocalFree( lpMsgBuf );
@@ -150,7 +141,7 @@ char *Sys_ScanForCD( void ) {
 
 	cddir[ 0 ] = 0;
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -207,7 +198,7 @@ char *Sys_ConsoleInput( void ) {
 	int ch;
 	DWORD numread, numevents;
 
-	if( !dedicated || !dedicated->value ) return NULL;
+	if( !dedicated || dedicated->value <= 0 ) return nullptr;
 
 	for( ;;) {
 		if( !GetNumberOfConsoleInputEvents( hinput, &numevents ) )
@@ -226,7 +217,7 @@ char *Sys_ConsoleInput( void ) {
 
 				switch( ch ) {
 				case '\r':
-					WriteFile( houtput, "\r\n", 2, &dummy, NULL );
+					WriteFile( houtput, "\r\n", 2, &dummy, nullptr );
 
 					if( console_textlen ) {
 						console_text[ console_textlen ] = 0;
@@ -238,14 +229,14 @@ char *Sys_ConsoleInput( void ) {
 				case '\b':
 					if( console_textlen ) {
 						console_textlen--;
-						WriteFile( houtput, "\b \b", 3, &dummy, NULL );
+						WriteFile( houtput, "\b \b", 3, &dummy, nullptr );
 					}
 					break;
 
 				default:
 					if( ch >= ' ' ) {
 						if( console_textlen < sizeof( console_text ) - 2 ) {
-							WriteFile( houtput, &ch, 1, &dummy, NULL );
+							WriteFile( houtput, &ch, 1, &dummy, nullptr );
 							console_text[ console_textlen ] = ch;
 							console_textlen++;
 						}
@@ -257,7 +248,7 @@ char *Sys_ConsoleInput( void ) {
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -275,20 +266,20 @@ void Sys_ConsoleOutput( char *string ) {
 	OutputDebugString( string );
 #endif
 
-	if( !dedicated || !dedicated->value ) return;
+	if( !dedicated || dedicated->value <= 0 ) return;
 
 	if( console_textlen ) {
 		text[ 0 ] = '\r';
 		memset( &text[ 1 ], ' ', console_textlen );
 		text[ console_textlen + 1 ] = '\r';
 		text[ console_textlen + 2 ] = 0;
-		WriteFile( houtput, text, console_textlen + 2, &dummy, NULL );
+		WriteFile( houtput, text, console_textlen + 2, &dummy, nullptr );
 	}
 
-	WriteFile( houtput, string, strlen( string ), &dummy, NULL );
+	WriteFile( houtput, string, strlen( string ), &dummy, nullptr );
 
 	if( console_textlen )
-		WriteFile( houtput, console_text, console_textlen, &dummy, NULL );
+		WriteFile( houtput, console_text, console_textlen, &dummy, nullptr );
 }
 
 /*
@@ -298,11 +289,11 @@ Sys_SendKeyEvents
 Send Key_Event calls
 ================
 */
-void Sys_SendKeyEvents( void ) {
+void Sys_SendKeyEvents( ) {
 	MSG msg;
 
-	while( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE ) ) {
-		if( !GetMessage( &msg, NULL, 0, 0 ) ) Sys_Quit();
+	while( PeekMessage( &msg, nullptr, 0, 0, PM_NOREMOVE ) ) {
+		if( !GetMessage( &msg, nullptr, 0, 0 ) ) Sys_Quit();
 		sys_msg_time = msg.time;
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
@@ -318,15 +309,15 @@ Sys_GetClipboardData
 
 ================
 */
-char *Sys_GetClipboardData( void ) {
-	char *data = NULL;
+char *Sys_GetClipboardData( ) {
+	char *data = nullptr;
 	char *cliptext;
 
-	if( OpenClipboard( NULL ) != 0 ) {
+	if( OpenClipboard( nullptr ) != 0 ) {
 		HANDLE hClipboardData;
 
-		if( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
-			if( ( cliptext = static_cast<char*>( GlobalLock( hClipboardData ) ) ) != 0 ) {
+		if( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != nullptr ) {
+			if( ( cliptext = static_cast<char*>( GlobalLock( hClipboardData ) ) ) != nullptr ) {
 				data = static_cast<char*>( malloc( GlobalSize( hClipboardData ) + 1 ) );
 				strcpy( data, cliptext );
 				GlobalUnlock( hClipboardData );
@@ -350,7 +341,7 @@ char *Sys_GetClipboardData( void ) {
 Sys_AppActivate
 =================
 */
-void Sys_AppActivate( void ) {
+void Sys_AppActivate( ) {
 	ShowWindow( cl_hwnd, SW_RESTORE );
 	SetForegroundWindow( cl_hwnd );
 }
@@ -370,10 +361,10 @@ static HINSTANCE game_library;
 Sys_UnloadGame
 =================
 */
-void Sys_UnloadGame( void ) {
+void Sys_UnloadGame( ) {
 	if( !FreeLibrary( game_library ) )
 		Com_Error( ERR_FATAL, "FreeLibrary failed for game library" );
-	game_library = NULL;
+	game_library = nullptr;
 }
 
 /*
@@ -388,31 +379,24 @@ void *Sys_GetGameAPI( void *parms ) {
 	char name[ MAX_OSPATH ];
 	char *path;
 	char cwd[ MAX_OSPATH ];
-#if defined _M_IX86
-	const char *gamename = "gamex86.dll";
 
-#ifdef NDEBUG
-	const char *debugdir = "release";
+#if defined( _WIN32 )
+	const char *gamename = "game.dll";
 #else
+	const char *gamename = "game.so";
+#endif
+
+#if !defined( NDEBUG )
 	const char *debugdir = "debug";
-#endif
-
-#elif defined _M_ALPHA
-	const char *gamename = "gameaxp.dll";
-
-#ifdef NDEBUG
-	const char *debugdir = "releaseaxp";
 #else
-	const char *debugdir = "debugaxp";
-#endif
-
+	const char *debugdir = "release";
 #endif
 
 	if( game_library )
 		Com_Error( ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame" );
 
 	// check the current debug directory first for development purposes
-	if( _getcwd( cwd, sizeof( cwd ) ) == NULL ) {
+	if( _getcwd( cwd, sizeof( cwd ) ) == nullptr ) {
 		Com_Error( ERR_FATAL, "Failed to get current working directory!\n" );
 	}
 	Com_sprintf( name, sizeof( name ), "%s/%s/%s", cwd, debugdir, gamename );
@@ -420,7 +404,7 @@ void *Sys_GetGameAPI( void *parms ) {
 	if( game_library ) {
 		Com_DPrintf( "LoadLibrary (%s)\n", name );
 	} else {
-#ifdef DEBUG
+#if !defined( NDEBUG )
 		// check the current directory for other development purposes
 		Com_sprintf( name, sizeof( name ), "%s/%s", cwd, gamename );
 		game_library = LoadLibrary( name );
@@ -430,10 +414,10 @@ void *Sys_GetGameAPI( void *parms ) {
 #endif
 		{
 			// now run through the search paths
-			path = NULL;
-			while( 1 ) {
+			path = nullptr;
+			while( true ) {
 				path = FS_NextPath( path );
-				if( !path ) return NULL;  // couldn't find one anywhere
+				if( !path ) return nullptr;  // couldn't find one anywhere
 				Com_sprintf( name, sizeof( name ), "%s/%s", path, gamename );
 				game_library = LoadLibrary( name );
 				if( game_library ) {
@@ -447,7 +431,7 @@ void *Sys_GetGameAPI( void *parms ) {
 	GetGameAPI = (void*(*)(void*))GetProcAddress( game_library, "GetGameAPI" );
 	if( !GetGameAPI ) {
 		Sys_UnloadGame();
-		return NULL;
+		return nullptr;
 	}
 
 	return GetGameAPI( parms );
@@ -526,14 +510,14 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	oldtime = Sys_Milliseconds();
 
 	/* main window message loop */
-	while( 1 ) {
+	while( true ) {
 		// if at a full screen console, don't update unless needed
-		if( Minimized || ( dedicated && dedicated->value ) ) {
+		if( Minimized || ( dedicated && ( dedicated->value > 0 ) ) ) {
 			Sleep( 1 );
 		}
 
-		while( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE ) ) {
-			if( !GetMessage( &msg, NULL, 0, 0 ) ) Com_Quit();
+		while( PeekMessage( &msg, nullptr, 0, 0, PM_NOREMOVE ) ) {
+			if( !GetMessage( &msg, nullptr, 0, 0 ) ) Com_Quit();
 			sys_msg_time = msg.time;
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
@@ -546,8 +530,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		//			Con_Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime,
 		//oldtime, time);
 
-		//	_controlfp( ~( _EM_ZERODIVIDE /*| _EM_INVALID*/ ), _MCW_EM );
+#if defined( Q_PLATFORM_X86 )
 		_controlfp( _PC_24, _MCW_PC );
+#endif
 		Qcommon_Frame( time );
 
 		oldtime = newtime;
