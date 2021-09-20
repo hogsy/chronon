@@ -353,9 +353,6 @@ void SV_AreaEdicts_r (areanode_t *node)
 {
 	link_t		*l, *next, *start;
 	edict_t		*check;
-	int			count;
-
-	count = 0;
 
 	// touch linked edicts
 	if (area_type == AREA_SOLID)

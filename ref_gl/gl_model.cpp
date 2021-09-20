@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
+#include <cfloat>
+
 model_t *loadmodel;
 int modfilelen;
 
@@ -1050,13 +1052,8 @@ void Mod_FreeAll( void ) {
 
 //=============================================================================
 
-nox::AliasModel::AliasModel()
-{
-}
-
-nox::AliasModel::~AliasModel()
-{
-}
+nox::AliasModel::AliasModel() = default;
+nox::AliasModel::~AliasModel() = default;
 
 bool nox::AliasModel::LoadFromBuffer( const void *buffer )
 {
@@ -1129,7 +1126,7 @@ void nox::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 		char name[ MAX_QPATH + 1 ];
 		memcpy( name, ( char * ) ( ( byte * ) mdl + ofs + i * MAX_QPATH ), MAX_QPATH );
 		name[ strlen( name ) + 1 ] = '\0';
-		skinNames_.push_back( name );
+		skinNames_.emplace_back( name );
 	}
 }
 
@@ -1257,7 +1254,7 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 		VectorCopy( mins, xmins );
 		VectorCopy( maxs, xmaxs );
 
-		for ( uint j = 0; j < numVertices_; ++j )
+		for ( int j = 0; j < numVertices_; ++j )
 		{
 			for ( uint k = 0; k < 3; ++k )
 			{
@@ -1287,13 +1284,13 @@ float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "anormtab.h"
 };
 
-void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] )
+void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const
 {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 	{
-		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
+		for ( int i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
 		{
 			float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
 			lerp->x = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
@@ -1303,7 +1300,7 @@ void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov,
 	}
 	else
 	{
-		for ( uint i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
+		for ( int i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
 		{
 			lerp->x = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ];
 			lerp->y = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ];
@@ -1377,7 +1374,7 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 	shadeDots_ = r_avertexnormal_dots[ ( ( int ) ( e->angles[ 1 ] * ( SHADEDOT_QUANT / 360.0f ) ) ) &
 	                                   ( SHADEDOT_QUANT - 1 ) ];
 
-	float angle = e->angles[ 1 ] / 180.0f * M_PI;
+	float angle = e->angles[ 1 ] / 180.0f * Q_PI;
 	shadeVector_[ 0 ] = std::cos( -angle );
 	shadeVector_[ 1 ] = std::sin( -angle );
 	shadeVector_[ 2 ] = 1.0f;
@@ -1540,7 +1537,7 @@ void nox::AliasModel::Draw( entity_t *e )
 	if ( e->flags & RF_DEPTHHACK ) glDepthRange( gldepthmin, gldepthmin + 0.3 * ( gldepthmax - gldepthmin ) );
 	if ( e->flags & RF_TRANSLUCENT ) glEnable( GL_BLEND );
 
-	if ( !r_lerpmodels->value )
+	if ( r_lerpmodels->value <= 0.0f )
 	{
 		e->backlerp = 0;
 	}

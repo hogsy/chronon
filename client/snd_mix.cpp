@@ -241,7 +241,7 @@ void S_PaintChannels(int endtime)
 			end = paintedtime + PAINTBUFFER_SIZE;
 
 		// start any playsounds
-		while (1)
+		while (true)
 		{
 			ps = s_pendingplays.next;
 			if (ps == &s_pendingplays)

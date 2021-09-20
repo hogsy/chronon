@@ -78,9 +78,6 @@ void Sys_Error( const char *error, ... ) {
 
 	if( qwclsemaphore ) CloseHandle( qwclsemaphore );
 
-	// shut down QHOST hooks if necessary
-	DeinitConProc();
-
 	exit( EXIT_FAILURE );
 }
 
@@ -90,10 +87,6 @@ void Sys_Quit( void ) {
 	CL_Shutdown();
 	Qcommon_Shutdown();
 	CloseHandle( qwclsemaphore );
-	if( dedicated && dedicated->value ) FreeConsole();
-
-	// shut down QHOST hooks if necessary
-	DeinitConProc();
 
 	exit( 0 );
 }
@@ -198,15 +191,6 @@ void Sys_Init( void ) {
 		Sys_Error( ENGINE_NAME " doesn't run on Win32s" );
 	else if( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
 		s_win95 = true;
-
-	if( dedicated->value ) {
-		if( !AllocConsole() ) Sys_Error( "Couldn't create dedicated server console" );
-		hinput = GetStdHandle( STD_INPUT_HANDLE );
-		houtput = GetStdHandle( STD_OUTPUT_HANDLE );
-
-		// let QHOST hook in
-		InitConProc( argc, argv );
-	}
 }
 
 static char console_text[ 256 ];

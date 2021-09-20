@@ -194,7 +194,7 @@ namespace nox
 			uint normalIndex;
 		};
 
-		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] );
+		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const;
 		void ApplyLighting( const entity_t *e );
 		void DrawFrameLerp( entity_t *e );
 
@@ -206,8 +206,8 @@ namespace nox
 
 		struct Triangle
 		{
-			uint vertexIndices[ 3 ];
-			uint stIndices[ 3 ];
+			uint vertexIndices[ 3 ]{ 0, 0, 0 };
+			uint stIndices[ 3 ]{ 0, 0, 0 };
 		};
 
 		struct Frame
@@ -230,7 +230,7 @@ namespace nox
 
 		vec3_t shadeVector_{ 0.0f, 0.0f, 0.0f };
 		float shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
-		float *shadeDots_;
+		float *shadeDots_{ nullptr };
 
 		std::vector< Triangle > triangles_;
 		std::map< std::string, uint > taggedTriangles_;

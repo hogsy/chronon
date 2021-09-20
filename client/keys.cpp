@@ -504,11 +504,8 @@ const char *Key_KeynumToString (int keynum)
 Key_SetBinding
 ===================
 */
-void Key_SetBinding (int keynum, char *binding)
+void Key_SetBinding (int keynum, const char *binding)
 {
-	char	*newn;
-	int		l;
-			
 	if (keynum == -1)
 		return;
 
@@ -520,8 +517,8 @@ void Key_SetBinding (int keynum, char *binding)
 	}
 			
 // allocate memory for new binding
-	l = strlen (binding);	
-	newn = static_cast<char *>( Z_Malloc (l+1) );
+	size_t l = strlen (binding);
+	char *newn = static_cast<char *>( Z_Malloc (l+1) );
 	strcpy ( newn, binding);
 	newn[l] = 0;
 	keybindings[keynum] = newn;
