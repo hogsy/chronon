@@ -168,28 +168,28 @@ GL_TextureMode
 ===============
 */
 void GL_TextureMode( char *string ) {
-	int		i;
-	image_t *glt;
-
-	for( i = 0; i < NUM_GL_MODES; i++ ) {
-		if( !Q_stricmp( modes[ i ].name, string ) )
+	uint mode;
+	for( mode = 0; mode < NUM_GL_MODES; mode++ ) {
+		if( !Q_stricmp( modes[ mode ].name, string ) )
 			break;
 	}
 
-	if( i == NUM_GL_MODES ) {
+	if( mode == NUM_GL_MODES ) {
 		VID_Printf( PRINT_ALL, "bad filter name\n" );
 		return;
 	}
 
-	gl_filter_min = modes[ i ].minimize;
-	gl_filter_max = modes[ i ].maximize;
+	gl_filter_min = modes[ mode ].minimize;
+	gl_filter_max = modes[ mode ].maximize;
 
 	// change all the existing mipmap texture objects
+	image_t *glt;
+	int i;
 	for( i = 0, glt = gltextures; i < numgltextures; i++, glt++ ) {
 		if( glt->type != it_pic && glt->type != it_sky ) {
 			GL_Bind( glt->texnum );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
 		}
 	}
 }

@@ -32,7 +32,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "glw_win.h"
 
 void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam ) {
-	Q_unused( source, type, id, severity, length, userParam );
+	Q_unused( source );
+	Q_unused( type );
+	Q_unused( id );
+	Q_unused( severity );
+	Q_unused( length );
+	Q_unused( userParam );
 
 	fprintf( glw_state.log_fp, "GL ERROR: %s", message );
 }
@@ -42,7 +47,7 @@ void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum
 **
 ** Unloads the specified DLL then nulls out all the proc pointers.
 */
-void QGL_Shutdown( void ) {
+void QGL_Shutdown() {
 }
 
 /*
@@ -55,7 +60,7 @@ void QGL_Shutdown( void ) {
 ** might be.
 **
 */
-qboolean QGL_Init( void ) {
+qboolean QGL_Init() {
 	glewExperimental = true;
 	GLenum err = glewInit();
 	if( err != GLEW_OK ) {
@@ -64,7 +69,7 @@ qboolean QGL_Init( void ) {
 		return false;
 	}
 
-	glDebugMessageCallback( QGL_ErrorCallback, NULL );
+	glDebugMessageCallback( QGL_ErrorCallback, nullptr );
 
 	gl_config.allow_cds = true;
 
@@ -75,15 +80,15 @@ void GLimp_EnableLogging( qboolean enable ) {
 	if( !enable ) {
 		glDisable( GL_DEBUG_OUTPUT );
 
-		if( glw_state.log_fp != NULL ) {
+		if( glw_state.log_fp != nullptr ) {
 			fclose( glw_state.log_fp );
-			glw_state.log_fp = NULL;
+			glw_state.log_fp = nullptr;
 		}
 
 		return;
 	}
 
-	if( glw_state.log_fp != NULL ) {
+	if( glw_state.log_fp != nullptr ) {
 		// Assume logging has already been enabled
 		return;
 	}
@@ -103,8 +108,8 @@ void GLimp_EnableLogging( qboolean enable ) {
 	fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
 }
 
-void GLimp_LogNewFrame( void ) {
-	if( glw_state.log_fp == NULL && gl_log->value ) {
+void GLimp_LogNewFrame() {
+	if( glw_state.log_fp == nullptr && gl_log->value ) {
 		// Probably lost handle to the log file!
 		GLimp_EnableLogging( gl_log->value );
 	}

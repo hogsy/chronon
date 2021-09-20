@@ -900,23 +900,20 @@ into a more C freindly form.
 */
 void SV_UserinfoChanged (client_t *cl)
 {
-	const char	*val;
-	int		i;
-
 	// call prog code to allow overrides
 	ge->ClientUserinfoChanged (cl->edict, cl->userinfo);
 	
 	// name for C code
 	strncpy (cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name)-1);
 	// mask off high bit
-	for (i=0 ; i<sizeof(cl->name) ; i++)
+	for ( size_t i=0 ; i<sizeof(cl->name) ; i++)
 		cl->name[i] &= 127;
 
 	// rate command
-	val = Info_ValueForKey (cl->userinfo, "rate");
+	const char *val = Info_ValueForKey (cl->userinfo, "rate");
 	if (strlen(val))
 	{
-		i = atoi(val);
+		int i = atoi(val);
 		cl->rate = i;
 		if (cl->rate < 100)
 			cl->rate = 100;

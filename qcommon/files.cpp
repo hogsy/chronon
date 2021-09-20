@@ -493,11 +493,11 @@ static void FS_AddGameDirectory( const char *dir ) {
 	search->packDirectories = LL_CreateLinkedList();
 	for( uint8_t i = 0; i < ARRAY_LENGTH( defaultPacks ); ++i ) {
 		/* check a file in the directory tree, e.g. 'anoxdata/battle.dat' */
-		char packPath[ MAX_OSPATH ];
-		snprintf( packPath, sizeof( packPath ), "%s/%s.dat", search->filename, defaultPacks[ i ] );
+		std::string packPath = search->filename;
+		packPath += "/" + std::string( defaultPacks[ i ] ) + ".dat";
 
-		FILE *filePtr = fopen( packPath, "rb" );
-		if( filePtr == NULL ) {
+		FILE *filePtr = fopen( packPath.c_str(), "rb" );
+		if( filePtr == nullptr ) {
 			continue;
 		}
 
@@ -505,13 +505,13 @@ static void FS_AddGameDirectory( const char *dir ) {
 
 		fclose( filePtr );
 
-		if( package == NULL ) {
+		if( package == nullptr ) {
 			continue;
 		}
 
 		/* if it loaded successfully, add it onto the list */
 		package->nodeIndex = LL_InsertLinkedListNode( search->packDirectories, package );
-		strcpy( package->path, packPath );
+		strcpy( package->path, packPath.c_str() );
 	}
 }
 

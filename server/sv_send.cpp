@@ -62,7 +62,7 @@ SV_ClientPrintf
 Sends text across to be displayed if the level passes
 =================
 */
-void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...)
+void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...)
 {
 	va_list		argptr;
 	char		string[1024];

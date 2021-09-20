@@ -1,38 +1,53 @@
 #[[
-This is free and unencumbered software released into the public domain.
+Copyright (C) 2020-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+See the GNU General Public License for more details.
 
-For more information, please refer to <http://unlicense.org>
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ]]
 
 project(game)
 
-file(GLOB GAME_SOURCE_FILES *.cpp *.h)
-
-add_library(game MODULE ${GAME_SOURCE_FILES})
+add_library(game MODULE
+        g_ai.cpp
+        g_chase.cpp
+        g_cmds.cpp
+        g_combat.cpp
+        g_func.cpp
+        g_items.cpp
+        g_main.cpp
+        g_misc.cpp
+        g_monster.cpp
+        g_phys.cpp
+        g_save.cpp
+        g_spawn.cpp
+        g_svcmds.cpp
+        g_target.cpp
+        g_trigger.cpp
+        g_utils.cpp
+        g_weapon.cpp
+        m_actor.cpp
+        p_client.cpp
+        p_hud.cpp
+        p_trail.cpp
+        p_view.cpp
+        p_weapon.cpp
+        q_shared.cpp
+        )
 
 set_target_properties(game
         PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/anoxdata"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/release/anoxdata"
         PREFIX ""
         )

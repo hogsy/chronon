@@ -1612,6 +1612,8 @@ void CL_AddExplosions (void)
 
 		switch (ex->type)
 		{
+			default:
+				break;
 		case ex_mflash:
 			if (f >= ex->frames-1)
 				ex->type = ex_free;
@@ -1639,7 +1641,7 @@ void CL_AddExplosions (void)
 				break;
 			}
 
-			ent->alpha = (16.0 - (float)f)/16.0;
+			ent->alpha = (16.0f - (float)f)/16.0f;
 
 			if (f < 10)
 			{
@@ -1716,13 +1718,15 @@ void CL_ProcessSustain ()
 	for (i=0, s=cl_sustains; i< MAX_SUSTAINS; i++, s++)
 	{
 		if (s->id)
-			if ((s->endtime >= cl.time) && (cl.time >= s->nextthink))
+		{
+			if ( ( s->endtime >= cl.time ) && ( cl.time >= s->nextthink ) )
 			{
-//				Com_Printf ("think %d %d %d\n", cl.time, s->nextthink, s->thinkinterval);
-				s->think (s);
+				//				Com_Printf ("think %d %d %d\n", cl.time, s->nextthink, s->thinkinterval);
+				s->think( s );
 			}
-			else if (s->endtime < cl.time)
+			else if ( s->endtime < cl.time )
 				s->id = 0;
+		}
 	}
 }
 

@@ -150,7 +150,7 @@ static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength ) {
 		}
 	}
 
-	if( customClass.className == '\0' ) {
+	if( *customClass.className == '\0' ) {
 		gi.error( "Invalid classname for custom entity class in \"models/entity.dat\"!\n" );
 	}
 
