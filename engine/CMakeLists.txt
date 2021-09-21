@@ -27,7 +27,7 @@ file(GLOB ENGINE_SOURCE_FILES
         game/q_shared.cpp
         )
 
-add_executable(engine
+add_executable(engine WIN32
         # Client
         ../client/cl_cin.cpp
         ../client/cl_ents.cpp
@@ -97,5 +97,26 @@ add_executable(engine
 
 set_target_properties(engine PROPERTIES OUTPUT_NAME hosae)
 
-target_include_directories(engine PRIVATE ../ ../3rdparty/)
-target_link_libraries(engine m SDL2)
+target_link_directories(engine PRIVATE
+        ../3rdparty/glew/lib/Release/x64/
+        )
+target_include_directories(engine PRIVATE
+        ../
+        ../3rdparty/
+        ../3rdparty/glew/include/
+        )
+target_link_libraries(engine
+        glew32s
+        )
+
+if( WIN32 )
+    target_link_options(engine PRIVATE
+            /NODEFAULTLIB:libcmt.lib
+            /NODEFAULTLIB:libcmtd.lib
+            )
+    target_link_libraries(engine
+            Opengl32
+            Ws2_32
+            Winmm
+            )
+endif()

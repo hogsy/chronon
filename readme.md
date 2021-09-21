@@ -24,6 +24,7 @@ hopefully be fine from a legal standpoint.
 It's still in a very early stage of development so nothing is playable yet.
 Below is a list of what's been done thus far.
 
+- 64-bit support
 - Support for loading from Anachronox's data packages; engine can initialize itself from the Anachronox game directory
 - Some preliminary work on loading Anachronox's models
 - Support for the various texture formats Anachronox uses (e.g. PNG, BMP and TGA)

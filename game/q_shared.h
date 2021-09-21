@@ -199,14 +199,7 @@ extern vec3_t vec3_origin;
 
 #define IS_NAN(x) (((*(int *)&x) & nanmask) == nanmask)
 
-// microsoft's fabs seems to be ungodly slow...
-// float Q_fabs (float f);
-//#define	fabs(f) Q_fabs(f)
-#if !defined C_ONLY && !defined __linux__ && !defined __sgi
-extern long Q_ftol(float f);
-#else
 #define Q_ftol(f) (long)(f)
-#endif
 
 #define DotProduct(x, y) (x[0] * y[0] + x[1] * y[1] + x[2] * y[2])
 #define VectorSubtract(a, b, c) \
@@ -279,6 +272,12 @@ void Com_sprintf(char *dest, int size, const char *fmt, ...);
 void Com_PageInMemory(byte *buffer, int size);
 
 //=============================================
+
+#if defined( _MSC_VER )
+#	define Q_strdup( A ) _strdup( ( A ) )
+#else
+#	define Q_strdup( A ) strdup( ( A ) )
+#endif
 
 // portable case insensitive compare
 int Q_stricmp(const char *s1, const char *s2);
@@ -537,7 +536,7 @@ typedef struct mapsurface_s  // used internally due to name len probs //ZOID
 } mapsurface_t;
 
 // a trace is returned when a box is swept through the world
-typedef struct {
+struct trace_t {
   qboolean allsolid;    // if true, plane is not valid
   qboolean startsolid;  // if true, the initial point was in a solid area
   float fraction;       // time completed, 1.0 = didn't hit anything
@@ -546,7 +545,7 @@ typedef struct {
   csurface_t *surface;  // surface hit
   int contents;         // contents on other side of surface hit
   struct edict_s *ent;  // not set by CM_*() functions
-} trace_t;
+};
 
 // pmove_state_t is the information necessary for client side movement
 // prediction

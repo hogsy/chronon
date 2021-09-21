@@ -168,7 +168,7 @@ GL_TextureMode
 ===============
 */
 void GL_TextureMode( char *string ) {
-	uint mode;
+	nox::uint mode;
 	for( mode = 0; mode < NUM_GL_MODES; mode++ ) {
 		if( !Q_stricmp( modes[ mode ].name, string ) )
 			break;
