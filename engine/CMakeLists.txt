@@ -94,6 +94,7 @@ add_executable(engine WIN32
         # 3rd Party
         ../3rdparty/miniz/miniz.c
         )
+add_dependencies(engine game)
 
 set_target_properties(engine PROPERTIES OUTPUT_NAME hosae)
 
