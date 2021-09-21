@@ -55,12 +55,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //============================================================================
 
 typedef struct sizebuf_s {
-	qboolean allowoverflow;  // if false, do a Com_Error
-	qboolean overflowed;     // set to true if the buffer size failed
-	byte *data;
-	size_t maxsize;
-	size_t cursize;
-	size_t readcount;
+	qboolean allowoverflow{ false };  // if false, do a Com_Error
+	qboolean overflowed{ false };     // set to true if the buffer size failed
+	byte *data{ nullptr };
+	size_t maxsize{ 0 };
+	size_t cursize{ 0 };
+	size_t readcount{ 0 };
 } sizebuf_t;
 
 void SZ_Init( sizebuf_t *buf, byte *data, size_t length );

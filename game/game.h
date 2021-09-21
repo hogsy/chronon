@@ -235,5 +235,3 @@ typedef struct
 	int			num_edicts;		// current number, <= max_edicts
 	int			max_edicts;
 } game_export_t;
-
-__declspec(dllexport) game_export_t *GetGameApi (game_import_t *import);

@@ -463,7 +463,6 @@ void CL_SendCmd (void)
 	int			i;
 	usercmd_t	*cmd, *oldcmd;
 	usercmd_t	nullcmd;
-	int			checksumIndex;
 
 	// build a command even if not connected
 
@@ -507,12 +506,12 @@ void CL_SendCmd (void)
 	MSG_WriteByte (&buf, clc_move);
 
 	// save the position for a checksum byte
-	checksumIndex = buf.cursize;
+	int checksumIndex = buf.cursize;
 	MSG_WriteByte (&buf, 0);
 
 	// let the server know what the last frame we
 	// got was, so the next message can be delta compressed
-	if (cl_nodelta->value || !cl.frame.valid || cls.demowaiting)
+	if (cl_nodelta->value > 0.0f || !cl.frame.valid || cls.demowaiting)
 		MSG_WriteLong (&buf, -1);	// no compression
 	else
 		MSG_WriteLong (&buf, cl.frame.serverframe);
