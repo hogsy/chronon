@@ -42,8 +42,6 @@ If you have experience with either C/C++, have a passion for programming and fam
 
 Alternatively, feel free to ping me an email at [hogsy@oldtimes-software.com](mailto:hogsy@oldtimes-software.com).
 
-## Why 'HOSAE'?
+## Resources
 
-I couldn't come up with a better name for the project at the time.
-Hosae is pretty much a placeholder name for the time being anyway 
-until the project is a bit further along, and I thought it fit well with the humour of the game.
+- [Anachrodox](https://anachrodox.talonbrave.info/)
