@@ -19,12 +19,10 @@ hopefully be fine from a legal standpoint.
 
 ## Features
 
-<div align="center">
 [![Screenshot](preview/thumb_00.png)](preview/00.png)
 [![Screenshot](preview/thumb_02.png)](preview/02.png)
 [![Screenshot](preview/thumb_04.png)](preview/04.png)
 [![Screenshot](preview/thumb_06.png)](preview/06.png)
-</div>
 
 It's still in a very early stage of development so nothing is playable yet.
 Below is a list of what's been done thus far.
