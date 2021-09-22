@@ -19,7 +19,7 @@ hopefully be fine from a legal standpoint.
 
 ## Features
 
-<div style="text-align:center">
+<div align="center">
 [![Screenshot](preview/thumb_00.png)](preview/00.png)
 [![Screenshot](preview/thumb_02.png)](preview/02.png)
 [![Screenshot](preview/thumb_04.png)](preview/04.png)
