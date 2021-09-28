@@ -316,6 +316,10 @@ void GL_FreeUnusedImages( void );
 void GL_TextureAlphaMode( char *string );
 void GL_TextureSolidMode( char *string );
 
+void Fog_Setup( const vec3_t colour, float density );
+void Fog_Reset();
+void Fog_SetState( bool enable );
+
 /*
 ** GL extension emulation functions
 */
@@ -325,12 +329,8 @@ void GL_DrawParticles( int n, const particle_t particles[],
 /*
 ** GL config stuff
 */
-#define GL_RENDERER_VOODOO     0x00000001
-#define GL_RENDERER_INTERGRAPH 0x00003000
 #define GL_RENDERER_RENDITION  0x001C0000
-#define GL_RENDERER_RE         0x00400000
 #define GL_RENDERER_MCD        0x01000000
-#define GL_RENDERER_OTHER      0x80000000
 
 typedef struct
 {

@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEG2RAD( a ) ( a * M_PI ) / 180.0F
 
 vec3_t vec3_origin = { 0,0,0 };
+vec4_t vec4_origin = { 0,0,0,0 };
 
 //============================================================================
 

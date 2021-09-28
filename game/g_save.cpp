@@ -241,6 +241,7 @@ void WriteField1( FILE *f, field_t *field, byte *base ) {
 	case F_FLOAT:
 	case F_ANGLEHACK:
 	case F_VEC3:
+	case F_VEC4:
 	case F_IGNORE:
 		break;
 
@@ -334,6 +335,7 @@ void ReadField( FILE *f, field_t *field, byte *base ) {
 	case F_FLOAT:
 	case F_ANGLEHACK:
 	case F_VEC3:
+	case F_VEC4:
 	case F_IGNORE:
 		break;
 

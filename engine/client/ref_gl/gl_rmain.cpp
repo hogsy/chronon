@@ -734,21 +734,21 @@ r_newrefdef must be set before the first call
 ================
 */
 void R_RenderView( refdef_t *fd ) {
-	if( r_norefresh->value ) return;
+	if( r_norefresh->value > 0 ) return;
 
 	r_newrefdef = *fd;
 
 	if( !r_worldmodel && !( r_newrefdef.rdflags & RDF_NOWORLDMODEL ) )
 		VID_Error( ERR_DROP, "R_RenderView: NULL worldmodel" );
 
-	if( r_speeds->value ) {
+	if( r_speeds->value > 0 ) {
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
 
 	R_PushDlights();
 
-	if( gl_finish->value ) glFinish();
+	if( gl_finish->value > 0 ) glFinish();
 
 	R_SetupFrame();
 
@@ -758,26 +758,28 @@ void R_RenderView( refdef_t *fd ) {
 
 	R_MarkLeaves();  // done here so we know if we're in water
 
-	R_DrawWorld();
+	Fog_SetState( true );
 
+	R_DrawWorld();
 	R_DrawEntitiesOnList();
 
 	R_RenderDlights();
 
 	R_DrawParticles();
-
 	R_DrawAlphaSurfaces();
+
+	Fog_SetState( false );
 
 	R_Flash();
 
-	if( r_speeds->value ) {
+	if( r_speeds->value > 0 ) {
 		VID_Printf( PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
 			c_brush_polys, c_alias_polys, c_visible_textures,
 			c_visible_lightmaps );
 	}
 }
 
-void R_SetGL2D( void ) {
+void R_SetGL2D() {
 	// set 2D virtual screen size
 	glViewport( 0, 0, vid.width, vid.height );
 	glMatrixMode( GL_PROJECTION );
@@ -1039,15 +1041,10 @@ int R_Init( void *hinstance, void *hWnd ) {
 	strcpy( vendor_buffer, gl_config.vendor_string );
     Q_strtolower( vendor_buffer );
 
-	if( strstr( renderer_buffer, "voodoo" ) ) {
-		if( !strstr( renderer_buffer, "rush" ) )
-			gl_config.renderer = GL_RENDERER_VOODOO;
-	} else if( strstr( renderer_buffer, "gdi" ) )
+	if( strstr( renderer_buffer, "gdi" ) )
 		gl_config.renderer = GL_RENDERER_MCD;
 	else if( strstr( renderer_buffer, "verite" ) )
 		gl_config.renderer = GL_RENDERER_RENDITION;
-	else
-		gl_config.renderer = GL_RENDERER_OTHER;
 
 	if( toupper( gl_monolightmap->string[ 1 ] ) != 'F' ) {
 		Cvar_Set( "gl_monolightmap", "0" );

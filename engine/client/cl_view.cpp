@@ -337,11 +337,18 @@ void CL_PrepRefresh (void)
 	// set sky textures and speed
 	Com_Printf ("sky\r", i); 
 	SCR_UpdateScreen ();
-	rotate = atof (cl.configstrings[CS_SKYROTATE]);
+	rotate = strtof (cl.configstrings[CS_SKYROTATE], nullptr);
 	sscanf (cl.configstrings[CS_SKYAXIS], "%f %f %f", 
 		&axis[0], &axis[1], &axis[2]);
 	R_SetSky (cl.configstrings[CS_SKY], rotate, axis);
 	Com_Printf ("                                     \r");
+
+	// Setup the fog
+	float density;
+	vec3_t fogColour;
+	sscanf( cl.configstrings[ CS_FOG ], "%f %f %f %f",
+	        &density, &fogColour[ 0 ], &fogColour[ 1 ], &fogColour[ 2 ] );
+	Fog_Setup( fogColour, density );
 
 	// the renderer can now free unneeded stuff
 	Mod_EndRegistration ();

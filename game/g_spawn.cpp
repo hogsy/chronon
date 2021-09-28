@@ -400,7 +400,6 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 	field_t *f;
 	byte *b;
 	float	v;
-	vec3_t	vec;
 
 	for( f = fields; f->name; f++ ) {
 		if( !( f->flags & FFL_NOSPAWN ) && !Q_stricmp( f->name, key ) ) {	// found it
@@ -414,11 +413,25 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 				*(char **)( b + f->ofs ) = ED_NewString( value );
 				break;
 			case F_VEC3:
+			{
+				vec3_t vec;
 				sscanf( value, "%f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ] );
-				( (float *)( b + f->ofs ) )[ 0 ] = vec[ 0 ];
-				( (float *)( b + f->ofs ) )[ 1 ] = vec[ 1 ];
-				( (float *)( b + f->ofs ) )[ 2 ] = vec[ 2 ];
+				for ( nox::uint i = 0; i < 3; ++i )
+				{
+					( ( float * ) ( b + f->ofs ) )[ i ] = vec[ i ];
+				}
 				break;
+			}
+			case F_VEC4:
+			{
+				vec4_t vec;
+				sscanf( value, "%f %f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ], &vec[ 3 ] );
+				for ( nox::uint i = 0; i < 4; ++i )
+				{
+					( ( float * ) ( b + f->ofs ) )[ i ] = vec[ i ];
+				}
+				break;
+			}
 			case F_INT:
 				*(int *)( b + f->ofs ) = static_cast<int>( strtol( value, nullptr, 10 ) );
 				break;
@@ -827,9 +840,13 @@ void SP_worldspawn( edict_t *ent ) {
 		gi.configstring( CS_SKY, "unit1_" );
 
 	gi.configstring( CS_SKYROTATE, va( "%f", st.skyrotate ) );
+	gi.configstring( CS_SKYAXIS, va( "%f %f %f", st.skyaxis[ 0 ], st.skyaxis[ 1 ], st.skyaxis[ 2 ] ) );
 
-	gi.configstring( CS_SKYAXIS, va( "%f %f %f",
-		st.skyaxis[ 0 ], st.skyaxis[ 1 ], st.skyaxis[ 2 ] ) );
+	gi.configstring( CS_FOG, va( "%f %f %f %f",
+	                             st.fog[ 0 ],
+	                             st.fog[ 1 ],
+	                             st.fog[ 2 ],
+	                             st.fog[ 3 ] ) );
 
 	gi.configstring( CS_CDTRACK, va( "%i", ent->sounds ) );
 

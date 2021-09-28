@@ -169,13 +169,13 @@ void P_DamageFeedback (edict_t *player)
 	//
 	// calculate view angle kicks
 	//
-	kick = abs(client->damage_knockback);
-	if (kick && player->health > 0)	// kick of 0 means no view adjust at all
+	kick = std::abs((float)client->damage_knockback);
+	if (kick > 0 && player->health > 0)	// kick of 0 means no view adjust at all
 	{
 		kick = kick * 100 / player->health;
 
-		if (kick < count*0.5)
-			kick = count*0.5;
+		if (kick < count*0.5f)
+			kick = count*0.5f;
 		if (kick > 50)
 			kick = 50;
 
@@ -348,15 +348,15 @@ void SV_CalcGunOffset (edict_t *ent)
 	float	delta;
 
 	// gun angles from bobbing
-	ent->client->ps.gunangles[ROLL] = xyspeed * bobfracsin * 0.005;
-	ent->client->ps.gunangles[YAW] = xyspeed * bobfracsin * 0.01;
+	ent->client->ps.gunangles[ROLL] = xyspeed * bobfracsin * 0.005f;
+	ent->client->ps.gunangles[YAW] = xyspeed * bobfracsin * 0.01f;
 	if (bobcycle & 1)
 	{
 		ent->client->ps.gunangles[ROLL] = -ent->client->ps.gunangles[ROLL];
 		ent->client->ps.gunangles[YAW] = -ent->client->ps.gunangles[YAW];
 	}
 
-	ent->client->ps.gunangles[PITCH] = xyspeed * bobfracsin * 0.005;
+	ent->client->ps.gunangles[PITCH] = xyspeed * bobfracsin * 0.005f;
 
 	// gun angles from delta movement
 	for (i=0 ; i<3 ; i++)
@@ -371,8 +371,8 @@ void SV_CalcGunOffset (edict_t *ent)
 		if (delta < -45)
 			delta = -45;
 		if (i == YAW)
-			ent->client->ps.gunangles[ROLL] += 0.1*delta;
-		ent->client->ps.gunangles[i] += 0.2 * delta;
+			ent->client->ps.gunangles[ROLL] += 0.1f*delta;
+		ent->client->ps.gunangles[i] += 0.2f * delta;
 	}
 
 	// gun height
@@ -520,7 +520,7 @@ void P_FallingDamage (edict_t *ent)
 			return;
 		delta = ent->velocity[2] - ent->client->oldvelocity[2];
 	}
-	delta = delta*delta * 0.0001;
+	delta = delta*delta * 0.0001f;
 
 	// never take falling damage if completely underwater
 	if (ent->waterlevel == 3)

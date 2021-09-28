@@ -21,6 +21,61 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
+/*==============================================
+ * FOG
+ ===============================================*/
+
+struct FogState
+{
+	float density{ 0.0f };
+	vec3_t colour{ 0.0f, 0.0f, 0.0f };
+	bool isDirty{ false };
+};
+
+static FogState fogState;
+
+void Fog_Setup( const vec3_t colour, float density )
+{
+	VectorCopy( colour, fogState.colour );
+	fogState.density = density;
+	fogState.isDirty = true;
+}
+
+void Fog_Reset()
+{
+	Fog_Setup( vec4_origin, 1.0f );
+}
+
+void Fog_SetState( bool enable )
+{
+	if ( enable )
+	{
+		if ( fogState.isDirty )
+		{
+			glFogf( GL_FOG_DENSITY, fogState.density );
+			//glFogf( GL_FOG_START, 100.0f );
+			//glFogf( GL_FOG_END, 1.0f );
+			vec4_t colour = {
+			        fogState.colour[ 0 ],
+			        fogState.colour[ 1 ],
+			        fogState.colour[ 2 ],
+			        1.0f };
+			glFogfv( GL_FOG_COLOR, colour );
+			glFogi( GL_FOG_COORD_SRC, GL_FRAGMENT_DEPTH );
+
+			fogState.isDirty = false;
+		}
+
+		glEnable( GL_FOG );
+		return;
+	}
+
+	glDisable( GL_FOG );
+}
+
+/*==============================================
+ ===============================================*/
+
 /*
 ==================
 R_InitParticleTexture
