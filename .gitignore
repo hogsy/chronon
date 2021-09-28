@@ -338,6 +338,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
 /3.21_Changes.txt
 /3.20_Changes.txt
 /3.19_Changes.txt
@@ -345,6 +346,7 @@ healthchecksdb
 /3.17_Changes.txt
 /3.16_Changes.txt
 /3.15_Changes.txt
+
 /quake2.mak
 /quake2.dsw
 /quake2.dsp
@@ -352,11 +354,6 @@ healthchecksdb
 /quake2.bce
 /quake2.001
 /makefile
-/ref_gl/ref_gl.dsp
-/irix
-/game/game.dsp
-/ctf/ctf.dsp
-/solaris
-/ref_gl/DebugAxp
-/game/DebugAxp
-/DebugAxp
+
+**/DebugAxp
+/cmake-build-debug/

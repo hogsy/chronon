@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <ctype.h>
+#include <cctype>
 #ifdef _WIN32
 #include <io.h>
 #endif
 #include "client.h"
 #include "../client/qmenu.h"
 
-#include "../ref_gl/gl_local.h"
+#include "ref_gl/gl_local.h"
 
 static int	m_main_cursor;
 

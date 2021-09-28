@@ -19,36 +19,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 project(engine)
 
-file(GLOB ENGINE_SOURCE_FILES
-        client/*.cpp
-        server/*.cpp
-        qcommon/*.cpp
-        sys/*.cpp
-        game/q_shared.cpp
-        )
-
 add_executable(engine WIN32
         # Client
-        ../client/cl_cin.cpp
-        ../client/cl_ents.cpp
-        ../client/cl_fx.cpp
-        ../client/cl_input.cpp
-        ../client/cl_inv.cpp
-        ../client/cl_main.cpp
-        ../client/cl_newfx.cpp
-        ../client/cl_parse.cpp
-        ../client/cl_pred.cpp
-        ../client/cl_scrn.cpp
-        ../client/cl_tent.cpp
-        ../client/cl_view.cpp
-        ../client/console.cpp
-        ../client/keys.cpp
-        ../client/menu.cpp
-        ../client/qmenu.cpp
-        ../client/snd_dma.cpp
-        ../client/snd_mem.cpp
-        ../client/snd_mix.cpp
-        ../client/x86.cpp
+        client/cl_cin.cpp
+        client/cl_ents.cpp
+        client/cl_fx.cpp
+        client/cl_input.cpp
+        client/cl_inv.cpp
+        client/cl_main.cpp
+        client/cl_newfx.cpp
+        client/cl_parse.cpp
+        client/cl_pred.cpp
+        client/cl_scrn.cpp
+        client/cl_tent.cpp
+        client/cl_view.cpp
+        client/console.cpp
+        client/keys.cpp
+        client/menu.cpp
+        client/qmenu.cpp
+        client/snd_dma.cpp
+        client/snd_mem.cpp
+        client/snd_mix.cpp
+        client/x86.cpp
         ../game/m_flash.cpp
         ../game/q_shared.cpp
         # Common
@@ -63,34 +55,34 @@ add_executable(engine WIN32
         ../qcommon/net_chan.cpp
         ../qcommon/pmove.cpp
         # Renderer
-        ../ref_gl/gl_draw.cpp
-        ../ref_gl/gl_image.cpp
-        ../ref_gl/gl_light.cpp
-        ../ref_gl/gl_model.cpp
-        ../ref_gl/gl_rmain.cpp
-        ../ref_gl/gl_rmisc.cpp
-        ../ref_gl/gl_rsurf.cpp
-        ../ref_gl/gl_warp.cpp
+        client/ref_gl/gl_draw.cpp
+        client/ref_gl/gl_image.cpp
+        client/ref_gl/gl_light.cpp
+        client/ref_gl/gl_model.cpp
+        client/ref_gl/gl_rmain.cpp
+        client/ref_gl/gl_rmisc.cpp
+        client/ref_gl/gl_rsurf.cpp
+        client/ref_gl/gl_warp.cpp
         # Server
-        ../server/sv_ccmds.cpp
-        ../server/sv_ents.cpp
-        ../server/sv_game.cpp
-        ../server/sv_init.cpp
-        ../server/sv_main.cpp
-        ../server/sv_send.cpp
-        ../server/sv_user.cpp
-        ../server/sv_world.cpp
+        server/sv_ccmds.cpp
+        server/sv_ents.cpp
+        server/sv_game.cpp
+        server/sv_init.cpp
+        server/sv_main.cpp
+        server/sv_send.cpp
+        server/sv_user.cpp
+        server/sv_world.cpp
         # Platform
-        ../win32/cd_win.cpp
-        ../win32/glw_imp.cpp
-        ../win32/in_win.cpp
-        ../win32/net_wins.cpp
-        ../win32/qgl_win.cpp
-        ../win32/q_shwin.cpp
-        ../win32/snd_win.cpp
-        ../win32/sys_win.cpp
-        ../win32/vid_dll.cpp
-        ../win32/vid_menu.cpp
+        win32/cd_win.cpp
+        win32/glw_imp.cpp
+        win32/in_win.cpp
+        win32/net_wins.cpp
+        win32/qgl_win.cpp
+        win32/q_shwin.cpp
+        win32/snd_win.cpp
+        win32/sys_win.cpp
+        win32/vid_dll.cpp
+        win32/vid_menu.cpp
         # 3rd Party
         ../3rdparty/miniz/miniz.c
         )

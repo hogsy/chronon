@@ -25,11 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <windows.h>
 #endif
 
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
 
-#include "../client/ref.h"
-#include "../client/vid.h"
+#include "../engine/client/ref.h"
+#include "../engine/client/vid.h"
 
 extern viddef_t vid;
 

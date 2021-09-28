@@ -245,7 +245,7 @@ Handles byte ordering and avoids alignment errors
 */
 
 vec3_t bytedirs[ NUMVERTEXNORMALS ] = {
-#include "../client/anorms.h"
+#include "../engine/client/anorms.h"
 };
 
 //
