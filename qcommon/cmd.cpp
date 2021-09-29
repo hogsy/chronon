@@ -89,10 +89,7 @@ Adds command text at the end of the buffer
 */
 void Cbuf_AddText (const char *text)
 {
-	int		l;
-	
-	l = strlen (text);
-
+	size_t l = strlen (text);
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
 		Com_Printf ("Cbuf_AddText: overflow\n");
@@ -655,17 +652,17 @@ void Cmd_TokenizeString (const char *text, qboolean macroExpand)
 		// set cmd_args to everything after the first arg
 		if (cmd_argc == 1)
 		{
-			int		l;
-
 			strcpy (cmd_args, text);
 
 			// strip off any trailing whitespace
-			l = strlen(cmd_args) - 1;
+			size_t l = strlen(cmd_args) - 1;
 			for ( ; l >= 0 ; l--)
-				if (cmd_args[l] <= ' ')
-					cmd_args[l] = 0;
+			{
+				if ( cmd_args[ l ] <= ' ' )
+					cmd_args[ l ] = 0;
 				else
 					break;
+			}
 		}
 			
 		com_token = COM_Parse (&text);

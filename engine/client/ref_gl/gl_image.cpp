@@ -49,7 +49,7 @@ int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int		gl_filter_max = GL_LINEAR;
 
 void GL_SetTexturePalette( unsigned palette[ 256 ] ) {
-	Q_unused( palette );
+	Q_UNUSED( palette );
 	// TODO: obsolete!
 }
 
@@ -923,15 +923,16 @@ Finds or loads the given image
 */
 image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	image_t *image;
-	int		i, len;
+	int		i;
 	byte *pic, *palette;
 	int		width, height;
 
 	if( !name )
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-	len = strlen( name );
+		return nullptr;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
+
+	size_t len = strlen( name );
 	if( len < 5 )
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
+		return nullptr;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
 
 	// look for it
 	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
@@ -941,7 +942,7 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 		}
 	}
 
-	image = NULL;
+	image = nullptr;
 
 	//
 	// load the pic from disk
@@ -958,10 +959,10 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	};
 
 	static ImageLoader loaders[] = {
-		{ "tga", 32, NULL, LoadImage32 },
-		{ "png", 32, NULL, LoadImage32 },
-		{ "bmp", 32, NULL, LoadImage32 },
-		{ "pcx", 8, LoadPCX, NULL },
+		{ "tga", 32, nullptr, LoadImage32 },
+		{ "png", 32, nullptr, LoadImage32 },
+		{ "bmp", 32, nullptr, LoadImage32 },
+		{ "pcx", 8, LoadPCX, nullptr },
 	};
 
 	char uname[ MAX_QPATH ];
@@ -1075,6 +1076,7 @@ int Draw_GetPalette( void ) {
 	return 0;
 }
 
+static void Image_LoadTextureInfo();
 
 /*
 ===============
@@ -1118,6 +1120,8 @@ void	GL_InitImages( void ) {
 			j = 255;
 		intensitytable[ i ] = j;
 	}
+
+	Image_LoadTextureInfo(); // Load and cache the textureinfo.dat
 }
 
 /*
@@ -1136,4 +1140,131 @@ void	GL_ShutdownImages( void ) {
 		glDeleteTextures( 1, (GLuint *)&image->texnum );
 		memset( image, 0, sizeof( *image ) );
 	}
+}
+
+/*==============================================
+ * Texture Surface Flags
+ * ---------------------------------------------
+ * These are a collection of flags per texture
+ * that determine how each texture should be handled,
+ * either in-terms of rendering or just general game
+ * behaviour.
+ *
+ * These are all indexed via a textureinfo.dat file
+ * provided by the game.
+ ===============================================*/
+
+static std::map< std::string, int > textureSurfaceFlags;
+
+static void Image_LoadTextureInfo()
+{
+	char *script;
+	// Allocate and load it into a buffer to ensure null-termination
+	{
+		char *buf;
+		int length = FS_LoadFile( "textures/textureinfo.dat", ( void ** ) &buf );
+		if ( length == -1 )
+		{
+			VID_Error( ERR_FATAL, "Invalid or missing textureinfo.dat file!\n" );
+			return;
+		}
+
+		script = new char[ length + 1 ];
+		memcpy( script, buf, length );
+		script[ length ] = '\0';
+
+		FS_FreeFile( buf );
+	}
+
+	int surfaceFlag = 0;
+
+	const char *p = script;
+	while ( p != nullptr && *p != '\0' )
+	{
+		const char *token = COM_Parse( &p );
+		if ( *token == '#' )
+		{
+			token++;
+			if ( Q_strcasecmp( "carpet", token ) == 0 )
+				surfaceFlag = SURF_SND_CARPET;
+			else if ( Q_strcasecmp( "grass", token ) == 0 )
+				surfaceFlag = SURF_SND_GRASS;
+			else if ( Q_strcasecmp( "gravel", token ) == 0 )
+				surfaceFlag = SURF_SND_GRAVEL;
+			else if ( Q_strcasecmp( "hollow", token ) == 0 )
+				surfaceFlag = SURF_SND_HOLLOW;
+			else if ( Q_strcasecmp( "ice", token ) == 0 )
+				surfaceFlag = SURF_SND_ICE;
+			else if ( Q_strcasecmp( "leaves", token ) == 0 )
+				surfaceFlag = SURF_SND_LEAVES;
+			else if ( Q_strcasecmp( "metal", token ) == 0 )
+				surfaceFlag = SURF_SND_METAL;
+			else if ( Q_strcasecmp( "puddle", token ) == 0 )
+				surfaceFlag = SURF_SND_PUDDLE;
+			else if ( Q_strcasecmp( "sand", token ) == 0 )
+				surfaceFlag = SURF_SND_SAND;
+			else if ( Q_strcasecmp( "snow", token ) == 0 )
+				surfaceFlag = SURF_SND_SNOW;
+			else if ( Q_strcasecmp( "stone", token ) == 0 )
+				surfaceFlag = SURF_SND_STONE;
+			else if ( Q_strcasecmp( "water", token ) == 0 )
+				surfaceFlag = SURF_SND_WATER;
+			else if ( Q_strcasecmp( "wood", token ) == 0 )
+				surfaceFlag = SURF_SND_WOOD;
+			else if ( Q_strcasecmp( "alphatest", token ) == 0 )
+				surfaceFlag = SURF_ALPHA_TEST;
+			else if ( Q_strcasecmp( "alphabanner", token ) == 0 )
+				surfaceFlag = SURF_ALPHA_BANNER;
+			else
+			{
+				Com_Printf( "WARNING: Unknown surface type \"%s\"!\n", token );
+				surfaceFlag = 0;
+			}
+			continue;
+		}
+
+		if ( surfaceFlag == 0 )
+		{
+			Com_Printf( "WARNING: No valid surface type, ignoring \"%s\"!\n", token );
+			continue;
+		}
+
+		// Copy the string into a temporary buffer without the extension (if there is one)
+		char tmp[ MAX_QPATH ];
+		for ( nox::uint i = 0; i < MAX_QPATH - 1; ++i )
+		{
+			if ( *token == '\0' || *token == '.' )
+			{
+				tmp[ i ] = '\0';
+				break;
+			}
+
+			tmp[ i ] = tolower( *token++ );
+		}
+
+		auto i = textureSurfaceFlags.find( tmp );
+		if ( i == textureSurfaceFlags.end() )
+		{
+			textureSurfaceFlags.emplace( tmp, surfaceFlag );
+			continue;
+		}
+
+		i->second |= surfaceFlag;
+	}
+
+	delete[] script;
+}
+
+/**
+ * Returns the surface flags associated with the given texture.
+ */
+int Image_GetSurfaceFlagsForName( const std::string &path )
+{
+	auto i = textureSurfaceFlags.find( nox::StringToLower( path ) );
+	if ( i == textureSurfaceFlags.end() )
+	{
+		return 0;
+	}
+
+	return i->second;
 }

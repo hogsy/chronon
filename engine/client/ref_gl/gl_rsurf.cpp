@@ -550,82 +550,22 @@ void R_DrawAlphaSurfaces( void ) {
 			glColor4f( intens, intens, intens, 0.66 );
 		else
 			glColor4f( intens, intens, intens, 1 );
+
 		if( s->flags & SURF_DRAWTURB )
+		{
 			EmitWaterPolys( s );
-		else
-			DrawGLPoly( s->polys );
+			continue;
+		}
+
+		DrawGLPoly( s->polys );
 	}
 
 	GL_TexEnv( GL_REPLACE );
 	glColor4f( 1, 1, 1, 1 );
 	glDisable( GL_BLEND );
 
-	r_alpha_surfaces = NULL;
+	r_alpha_surfaces = nullptr;
 }
-
-/*
-================
-DrawTextureChains
-================
-*/
-void DrawTextureChains( void ) {
-	int		i;
-	msurface_t *s;
-	image_t *image;
-
-	c_visible_textures = 0;
-
-	//	GL_TexEnv( GL_REPLACE );
-
-	if( !glSelectTextureSGIS ) {
-		for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
-			if( !image->registration_sequence )
-				continue;
-			s = image->texturechain;
-			if( !s )
-				continue;
-			c_visible_textures++;
-
-			for( ; s; s = s->texturechain )
-				R_RenderBrushPoly( s );
-
-			image->texturechain = NULL;
-		}
-	} else {
-		for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
-			if( !image->registration_sequence )
-				continue;
-			if( !image->texturechain )
-				continue;
-			c_visible_textures++;
-
-			for( s = image->texturechain; s; s = s->texturechain ) {
-				if( !( s->flags & SURF_DRAWTURB ) )
-					R_RenderBrushPoly( s );
-			}
-		}
-
-		GL_EnableMultitexture( false );
-		for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
-			if( !image->registration_sequence )
-				continue;
-			s = image->texturechain;
-			if( !s )
-				continue;
-
-			for( ; s; s = s->texturechain ) {
-				if( s->flags & SURF_DRAWTURB )
-					R_RenderBrushPoly( s );
-			}
-
-			image->texturechain = NULL;
-		}
-		//		GL_EnableMultitexture( true );
-	}
-
-	GL_TexEnv( GL_REPLACE );
-}
-
 
 static void GL_RenderLightmappedPoly( msurface_t *surf ) {
 	int		i, nv = surf->polys->numverts;
@@ -812,18 +752,29 @@ void R_DrawInlineBModel( void ) {
 		dot = DotProduct( modelorg, pplane->normal ) - pplane->dist;
 
 		// draw the polygon
-		if( ( ( psurf->flags & SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
-			( !( psurf->flags & SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			if( psurf->texinfo->flags & ( SURF_TRANS33 | SURF_TRANS66 ) ) {	// add to the translucent chain
+		if ( ( ( psurf->flags & SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
+		     ( !( psurf->flags & SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) )
+		{
+			if ( psurf->texinfo->flags & ( SURF_TRANS33 |
+			                               SURF_TRANS66 |
+			                               SURF_ALPHA_BANNER |
+			                               SURF_ALPHA_TEST ) )
+			{
+				// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
-			} else if( !( psurf->flags & SURF_DRAWTURB ) ) {
-				GL_RenderLightmappedPoly( psurf );
-			} else {
-				GL_EnableMultitexture( false );
-				R_RenderBrushPoly( psurf );
-				GL_EnableMultitexture( true );
+				continue;
 			}
+
+			if ( !( psurf->flags & SURF_DRAWTURB ) )
+			{
+				GL_RenderLightmappedPoly( psurf );
+				continue;
+			}
+
+			GL_EnableMultitexture( false );
+			R_RenderBrushPoly( psurf );
+			GL_EnableMultitexture( true );
 		}
 	}
 
@@ -990,15 +941,28 @@ void R_RecursiveWorldNode( mnode_t *node ) {
 		if( ( surf->flags & SURF_PLANEBACK ) != sidebit )
 			continue;		// wrong side
 
-		if( surf->texinfo->flags & SURF_SKY ) {	// just adds to visible sky bounds
+		if ( surf->texinfo->flags & SURF_SKY )
+		{
+			// just adds to visible sky bounds
 			R_AddSkySurface( surf );
-		} else if( surf->texinfo->flags & ( SURF_TRANS33 | SURF_TRANS66 ) ) {	// add to the translucent chain
+		}
+		else if ( surf->texinfo->flags & ( SURF_TRANS33 |
+		                                   SURF_TRANS66 |
+		                                   SURF_ALPHA_BANNER |
+		                                   SURF_ALPHA_TEST ) )
+		{
+			// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
-		} else {
-			if( !( surf->flags & SURF_DRAWTURB ) ) {
+		}
+		else
+		{
+			if ( !( surf->flags & SURF_DRAWTURB ) )
+			{
 				GL_RenderLightmappedPoly( surf );
-			} else {
+			}
+			else
+			{
 				// the polygon is visible, so add it to the texture
 				// sorted chain
 				// FIXME: this is a hack for animation
@@ -1073,13 +1037,6 @@ void R_DrawWorld( void ) {
 	R_RecursiveWorldNode( r_worldmodel->nodes );
 
 	GL_EnableMultitexture( false );
-
-	/*
-	** theoretically nothing should happen in the next two functions
-	** if multitexture is enabled
-	*/
-	DrawTextureChains();
-	R_BlendLightmaps();
 
 	R_DrawSkyBox();
 
@@ -1364,7 +1321,7 @@ GL_BeginBuildingLightmaps
 ==================
 */
 void GL_BeginBuildingLightmaps( model_t *m ) {
-	Q_unused( m );
+	Q_UNUSED( m );
 
 	static lightstyle_t	lightstyles[ MAX_LIGHTSTYLES ];
 	int				i;

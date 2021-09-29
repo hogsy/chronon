@@ -32,12 +32,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "glw_win.h"
 
 void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam ) {
-	Q_unused( source );
-	Q_unused( type );
-	Q_unused( id );
-	Q_unused( severity );
-	Q_unused( length );
-	Q_unused( userParam );
+	Q_UNUSED( source );
+	Q_UNUSED( type );
+	Q_UNUSED( id );
+	Q_UNUSED( severity );
+	Q_UNUSED( length );
+	Q_UNUSED( userParam );
 
 	fprintf( glw_state.log_fp, "GL ERROR: %s", message );
 }

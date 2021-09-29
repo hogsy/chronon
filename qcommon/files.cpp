@@ -491,7 +491,7 @@ static void FS_AddGameDirectory( const char *dir ) {
 	};
 
 	search->packDirectories = LL_CreateLinkedList();
-	for( uint8_t i = 0; i < ARRAY_LENGTH( defaultPacks ); ++i ) {
+	for( uint8_t i = 0; i < Q_ARRAY_LENGTH( defaultPacks ); ++i ) {
 		/* check a file in the directory tree, e.g. 'anoxdata/battle.dat' */
 		std::string packPath = search->filename;
 		packPath += "/" + std::string( defaultPacks[ i ] ) + ".dat";

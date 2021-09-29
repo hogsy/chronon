@@ -156,7 +156,7 @@ The deathmatch intermission point will be at one of these
 Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.  'pitch yaw roll'
 */
 void SP_info_player_intermission( edict_t *ent ) {
-	Q_unused( ent );
+	Q_UNUSED( ent );
 }
 
 

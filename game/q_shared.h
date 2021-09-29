@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstring>
 #include <ctime>
 
+#include <algorithm>
 #include <vector>
 #include <map>
 #include <string>
@@ -69,12 +70,13 @@ typedef unsigned char byte; // todo: move this into our own namespace...
 #endif
 typedef bool qboolean;// todo: kill
 
-#define Q_unused( ... ) ( void )( __VA_ARGS__ )
+#define Q_UNUSED( ... ) ( void ) ( __VA_ARGS__ )
 
-#define Q_ByteToFloat( a ) ( float )( a / 255.0f )
-#define Q_FloatToByte( a ) ( uint8_t )( a * 255 )
+#define Q_ByteToFloat( a ) ( float ) ( ( a ) / 255.0f )
+#define Q_FloatToByte( a ) ( uint8_t )( ( a ) *255 )
 
-#define ARRAY_LENGTH(a) (sizeof(a) / sizeof(*a))
+#define Q_BITFLAG( NAME, INDEX ) NAME = ( 1 << ( INDEX ) )
+#define Q_ARRAY_LENGTH( a )      ( sizeof( a ) / sizeof( *( a ) ) )
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -141,7 +143,7 @@ MATHLIB
 
 namespace nox
 {
-    struct Vector2
+	struct Vector2
 	{
 		float x{ 0.0f };
 		float y{ 0.0f };
@@ -174,7 +176,7 @@ namespace nox
 			return *( ( &x ) + i );
 		}
 	};
-}
+}// namespace nox
 
 typedef float vec_t;
 typedef vec_t vec2_t[ 2 ];
@@ -279,6 +281,20 @@ void Com_PageInMemory(byte *buffer, int size);
 #else
 #	define Q_strdup( A ) strdup( ( A ) )
 #endif
+
+namespace nox
+{
+	inline std::string StringToLower( const std::string &string )
+	{
+		std::string dst = string;
+		std::transform( dst.begin(), dst.end(), dst.begin(),
+		                []( unsigned char c )
+		                {
+			                return std::tolower( c );
+		                } );
+		return dst;
+	}
+}// namespace nox
 
 // portable case insensitive compare
 int Q_stricmp(const char *s1, const char *s2);
@@ -438,44 +454,47 @@ enum ContentFlag {
   CONTENTS_UNUSED9 = (1 << 31),
 };
 
-enum SurfaceFlag {
-  SURF_LIGHT = (1 << 0),  // value will hold the light strength
-  SURF_SLICK = (1 << 1),  // effects game physics
-  SURF_SKY = (1 << 2),    // don't draw, but add to skybox
-  SURF_WARP = (1 << 3),   // turbulent water warp
-  SURF_TRANS33 = (1 << 4),
-  SURF_TRANS66 = (1 << 5),
-  SURF_FLOWING = (1 << 6),  // scroll towards angle
-  SURF_NODRAW = (1 << 7),   // don't bother referencing the texture
+enum SurfaceFlag
+{
+	SURF_LIGHT = ( 1 << 0 ),// value will hold the light strength
+	SURF_SLICK = ( 1 << 1 ),// effects game physics
+	SURF_SKY = ( 1 << 2 ),  // don't draw, but add to skybox
+	SURF_WARP = ( 1 << 3 ), // turbulent water warp
+	SURF_TRANS33 = ( 1 << 4 ),
+	SURF_TRANS66 = ( 1 << 5 ),
+	SURF_FLOWING = ( 1 << 6 ),// scroll towards angle
+	SURF_NODRAW = ( 1 << 7 ), // don't bother referencing the texture
 
-  SURF_HINT = (1 << 8),
-  SURF_SKIP = (1 << 9),
+	SURF_HINT = ( 1 << 8 ),
+	SURF_SKIP = ( 1 << 9 ),
 
-  SURF_SND_WOOD = (1 << 10),
-  SURF_SND_METAL = (1 << 11),
-  SURF_SND_STONE = (1 << 12),
-  SURF_SND_CARPET = (1 << 13),
-  SURF_SND_ICE = (1 << 14),
-  SURF_SND_SNOW = (1 << 15),
+	SURF_SND_WOOD = ( 1 << 10 ),
+	SURF_SND_METAL = ( 1 << 11 ),
+	SURF_SND_STONE = ( 1 << 12 ),
+	SURF_SND_CARPET = ( 1 << 13 ),
+	SURF_SND_ICE = ( 1 << 14 ),
+	SURF_SND_SNOW = ( 1 << 15 ),
 
-  SURF_ALPHA_BANNER = (1 << 16),
-  SURF_ALPHA_TEST = (1 << 17),
-  SURF_NO_VTURB = (1 << 18),
+	SURF_ALPHA_BANNER = ( 1 << 16 ),
+	SURF_ALPHA_TEST = ( 1 << 17 ),
+	SURF_NO_VTURB = ( 1 << 18 ),
 
-  SURF_SND_HOLLOW = (1 << 19),
-  SURF_SND_PUDDLE = (1 << 20),
-  SURF_SND_SCROLL = (1 << 21),
-  SURF_SND_GRAVEL = (1 << 22),
-  SURF_SND_LEAVES = (1 << 23),
-  SURF_SND_GRASS = (1 << 24),
-  SURF_SND_SAND = (1 << 25),
-  SURF_SND_WATER = (1 << 26),
+	SURF_SND_HOLLOW = ( 1 << 19 ),
+	SURF_SND_PUDDLE = ( 1 << 20 ),
+	SURF_SND_SCROLL = ( 1 << 21 ),
+	SURF_SND_GRAVEL = ( 1 << 22 ),
+	SURF_SND_LEAVES = ( 1 << 23 ),
+	SURF_SND_GRASS = ( 1 << 24 ),
+	SURF_SND_SAND = ( 1 << 25 ),
+	SURF_SND_WATER = ( 1 << 26 ),
 
-  SURF_PARTICLES = (1 << 27),
-  SURF_HALF_SCROLL = (1 << 28),
-  SURF_QUART_SCROLL = (1 << 29),
-  SURF_FOG = (1 << 30),
-  SURF_CURVE = (1 << 31),
+	SURF_PARTICLES = ( 1 << 27 ),
+	SURF_HALF_SCROLL = ( 1 << 28 ),
+	SURF_QUART_SCROLL = ( 1 << 29 ),
+	SURF_FOG = ( 1 << 30 ),
+	SURF_CURVE = ( 1 << 31 ),
+
+	MAX_SURF_FLAGS
 };
 
 // content masks

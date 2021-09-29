@@ -348,13 +348,13 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 
 	glBegin( GL_QUADS );
 	glTexCoord2f( 0, 0 );
-	glVertex2f( x, y );
+	glVertex2i( x, y );
 	glTexCoord2f( 1, 0 );
-	glVertex2f( x + w, y );
+	glVertex2i( x + w, y );
 	glTexCoord2f( 1, t );
-	glVertex2f( x + w, y + h );
+	glVertex2i( x + w, y + h );
 	glTexCoord2f( 0, t );
-	glVertex2f( x, y + h );
+	glVertex2i( x, y + h );
 	glEnd();
 
 	if( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )

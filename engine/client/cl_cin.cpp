@@ -577,7 +577,7 @@ SCR_PlayCinematic
 */
 void SCR_PlayCinematic (char *arg)
 {
-	Q_unused( arg );
+	Q_UNUSED( arg );
 
 #if 0 /* revisit later? */
 	int		width, height;

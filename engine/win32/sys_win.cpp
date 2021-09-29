@@ -477,7 +477,7 @@ HINSTANCE global_hInstance;
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow ) {
-	Q_unused( nCmdShow );
+	Q_UNUSED( nCmdShow );
 
 	MSG msg;
 	int time, oldtime, newtime;

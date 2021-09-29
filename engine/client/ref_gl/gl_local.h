@@ -305,6 +305,7 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height,
 image_t *GL_FindImage( const char *name, imagetype_t type );
 void     GL_TextureMode( char *string );
 void     GL_ImageList_f( void );
+int Image_GetSurfaceFlagsForName( const std::string &path );
 
 void GL_SetTexturePalette( unsigned palette[ 256 ] );
 

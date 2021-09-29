@@ -378,7 +378,7 @@ static void CD_f (void)
 
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	Q_unused( uMsg, hWnd );
+	Q_UNUSED( uMsg, hWnd );
 
 	if (lParam != wDeviceID)
 		return 1;

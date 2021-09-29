@@ -424,7 +424,7 @@ void Mod_LoadTexinfo( lump_t *l ) {
 		if( next > 0 )
 			out->next = loadmodel->texinfo + next;
 		else
-			out->next = NULL;
+			out->next = nullptr;
 
 		Com_sprintf( name, sizeof( name ), "textures/%s.tga", in->texture );
 		out->image = GL_FindImage( name, it_wall );
@@ -432,6 +432,8 @@ void Mod_LoadTexinfo( lump_t *l ) {
 			VID_Printf( PRINT_ALL, "Couldn't load %s\n", name );
 			out->image = r_notexture;
 		}
+
+		out->flags |= Image_GetSurfaceFlagsForName( in->texture );
 	}
 
 	// count animation frames

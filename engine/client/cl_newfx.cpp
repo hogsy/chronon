@@ -245,7 +245,7 @@ void CL_ForceWall(vec3_t start, vec3_t end, int color) {
 }
 
 void CL_FlameEffects(centity_t *ent, vec3_t origin) {
-    Q_unused( ent );
+	Q_UNUSED( ent );
 
   int n, count;
   int j;
@@ -634,7 +634,8 @@ void CL_Heatbeam(vec3_t start, vec3_t end) {
                           free_particles = p->next;
                           p->next = active_particles;
                           active_particles = p;
-                          
+                          
+
                           p->time = cl.time;
                           VectorClear (p->accel);
   //			rot+= fmod(ltime, 12.0)*M_PI;
@@ -642,7 +643,8 @@ void CL_Heatbeam(vec3_t start, vec3_t end) {
   //			s = sin(rot)/2.0;
                           c = cos(rot)/1.5;
                           s = sin(rot)/1.5;
-                          
+                          
+
                           // trim it so it looks like it's starting at the
   origin if (i < 10)
                           {
@@ -654,7 +656,8 @@ void CL_Heatbeam(vec3_t start, vec3_t end) {
                                   VectorScale (right, c, dir);
                                   VectorMA (dir, s, up, dir);
                           }
-                  
+                  
+
                           p->alpha = 0.5;
           //		p->alphavel = -1.0 / (1+frand()*0.2);
                           p->alphavel = -1000.0;
