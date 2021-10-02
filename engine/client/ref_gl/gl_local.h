@@ -385,7 +385,7 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 ====================================================================
 */
 
-void     GLimp_BeginFrame( float camera_separation );
+void GLimp_BeginFrame();
 void     GLimp_EndFrame( void );
 qboolean GLimp_Init( void *hinstance, void *hWnd );
 void     GLimp_Shutdown( void );

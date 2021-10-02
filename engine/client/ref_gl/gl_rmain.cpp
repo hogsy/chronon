@@ -1141,7 +1141,7 @@ void R_BeginFrame( float camera_separation ) {
 		GLimp_LogNewFrame();
 	}
 
-	GLimp_BeginFrame( camera_separation );
+	GLimp_BeginFrame();
 
 	/*
 	** go into 2D mode

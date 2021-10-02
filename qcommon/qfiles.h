@@ -96,19 +96,19 @@ typedef struct {
 
 struct MD2VertexGroup
 {
-	uint8_t  vertexIndices[ 3 ];
+	uint8_t vertices[ 3 ];
 	uint16_t normalIndex;
 };
 
 struct MD2VertexGroup4
 {
-	uint32_t vertexIndices;
+	uint32_t vertices;
 	uint16_t normalIndex;
 };
 
 struct MD2VertexGroup6
 {
-	uint16_t vertexIndices[ 3 ];
+	uint16_t vertices[ 3 ];
 	uint16_t normalIndex;
 };
 

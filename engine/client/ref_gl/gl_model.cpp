@@ -1217,11 +1217,11 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			const MD2VertexGroup4 *groups = ( MD2VertexGroup4 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
 			for ( int j = 0; j < numVertices_; ++j )
 			{
-				int32_t vertexIndices = LittleLong( groups[ j ].vertexIndices );
+				uint32_t vertices = ( uint32_t ) LittleLong( ( int32_t ) groups[ j ].vertices );
 				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertex[ k ] = ( ( vertexIndices >> shift[ k ] ) & mask[ k ] );
+					frames_[ i ].vertices[ j ].vertex[ k ] = ( ( vertices >> shift[ k ] ) & mask[ k ] );
 				
-				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
+				frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
 			}
 		}
 		else if ( resolution == 2 )
@@ -1230,9 +1230,9 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			for ( int j = 0; j < numVertices_; ++j )
 			{
 				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertex[ k ] = LittleShort( groups[ j ].vertexIndices[ k ] );
+					frames_[ i ].vertices[ j ].vertex[ k ] = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].vertices[ k ] );
 
-				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
+				frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
 			}
 		}
 		else
@@ -1241,9 +1241,9 @@ void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			for ( int j = 0; j < numVertices_; ++j )
 			{
 				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertexIndices[ k ];
+					frames_[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertices[ k ];
 
-				frames_[ i ].vertices[ j ].normalIndex = LittleShort( groups[ j ].normalIndex );
+				frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
 			}
 		}
 

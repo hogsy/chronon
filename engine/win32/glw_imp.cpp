@@ -478,22 +478,19 @@ fail:
 /*
 ** GLimp_BeginFrame
 */
-void GLimp_BeginFrame( float camera_separation ) {
-	if( gl_bitdepth->modified ) {
-		if( gl_bitdepth->value != 0 && !glw_state.allowdisplaydepthchange ) {
+void GLimp_BeginFrame()
+{
+	if ( gl_bitdepth->modified )
+	{
+		if ( gl_bitdepth->value != 0 && !glw_state.allowdisplaydepthchange )
+		{
 			Cvar_SetValue( "gl_bitdepth", 0 );
 			VID_Printf( PRINT_ALL, "gl_bitdepth requires Win95 OSR2.x or WinNT 4.x\n" );
 		}
 		gl_bitdepth->modified = false;
 	}
 
-	if( camera_separation < 0 && gl_state.stereo_enabled ) {
-		glDrawBuffer( GL_BACK_LEFT );
-	} else if( camera_separation > 0 && gl_state.stereo_enabled ) {
-		glDrawBuffer( GL_BACK_RIGHT );
-	} else {
-		glDrawBuffer( GL_BACK );
-	}
+	glDrawBuffer( GL_BACK );
 }
 
 /*
