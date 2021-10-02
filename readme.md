@@ -19,8 +19,9 @@ hopefully be fine from a legal standpoint.
 
 ## Features
 
-[![Screenshot](preview/thumb_00.png)](preview/00.png)
+[![Screenshot](preview/thumb_01.png)](preview/01.png)
 [![Screenshot](preview/thumb_02.png)](preview/02.png)
+[![Screenshot](preview/thumb_03.png)](preview/03.png)
 [![Screenshot](preview/thumb_04.png)](preview/04.png)
 [![Screenshot](preview/thumb_06.png)](preview/06.png)
 
