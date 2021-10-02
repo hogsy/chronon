@@ -249,182 +249,6 @@ void R_DrawTriangleOutlines( void ) {
 }
 
 /*
-** DrawGLPolyChain
-*/
-void DrawGLPolyChain( glpoly_t *p, float soffset, float toffset ) {
-	if( soffset == 0 && toffset == 0 ) {
-		for( ; p != 0; p = p->chain ) {
-			float *v;
-			int j;
-
-			glBegin( GL_POLYGON );
-			v = p->verts[ 0 ];
-			for( j = 0; j < p->numverts; j++, v += VERTEXSIZE ) {
-				glTexCoord2f( v[ 5 ], v[ 6 ] );
-				glVertex3fv( v );
-			}
-			glEnd();
-		}
-	} else {
-		for( ; p != 0; p = p->chain ) {
-			float *v;
-			int j;
-
-			glBegin( GL_POLYGON );
-			v = p->verts[ 0 ];
-			for( j = 0; j < p->numverts; j++, v += VERTEXSIZE ) {
-				glTexCoord2f( v[ 5 ] - soffset, v[ 6 ] - toffset );
-				glVertex3fv( v );
-			}
-			glEnd();
-		}
-	}
-}
-
-/*
-** R_BlendLightMaps
-**
-** This routine takes all the given light mapped surfaces in the world and
-** blends them into the framebuffer.
-*/
-void R_BlendLightmaps( void ) {
-	int			i;
-	msurface_t *surf, *newdrawsurf = 0;
-
-	// don't bother if we're set to fullbright
-	if( r_fullbright->value )
-		return;
-	if( !r_worldmodel->lightdata )
-		return;
-
-	// don't bother writing Z
-	glDepthMask( 0 );
-
-	/*
-	** set the appropriate blending mode unless we're only looking at the
-	** lightmaps.
-	*/
-	if( !gl_lightmap->value ) {
-		glEnable( GL_BLEND );
-
-		if( gl_saturatelighting->value ) {
-			glBlendFunc( GL_ONE, GL_ONE );
-		} else {
-			if( gl_monolightmap->string[ 0 ] != '0' ) {
-				switch( toupper( gl_monolightmap->string[ 0 ] ) ) {
-				case 'I':
-					glBlendFunc( GL_ZERO, GL_SRC_COLOR );
-					break;
-				case 'L':
-					glBlendFunc( GL_ZERO, GL_SRC_COLOR );
-					break;
-				case 'A':
-				default:
-					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-					break;
-				}
-			} else {
-				glBlendFunc( GL_ZERO, GL_SRC_COLOR );
-			}
-		}
-	}
-
-	if( currentmodel == r_worldmodel )
-		c_visible_lightmaps = 0;
-
-	/*
-	** render static lightmaps first
-	*/
-	for( i = 1; i < MAX_LIGHTMAPS; i++ ) {
-		if( gl_lms.lightmap_surfaces[ i ] ) {
-			if( currentmodel == r_worldmodel )
-				c_visible_lightmaps++;
-			GL_Bind( gl_state.lightmap_textures + i );
-
-			for( surf = gl_lms.lightmap_surfaces[ i ]; surf != 0; surf = surf->lightmapchain ) {
-				if( surf->polys )
-					DrawGLPolyChain( surf->polys, 0, 0 );
-			}
-		}
-	}
-
-	/*
-	** render dynamic lightmaps
-	*/
-	if( gl_dynamic->value ) {
-		LM_InitBlock();
-
-		GL_Bind( gl_state.lightmap_textures + 0 );
-
-		if( currentmodel == r_worldmodel )
-			c_visible_lightmaps++;
-
-		newdrawsurf = gl_lms.lightmap_surfaces[ 0 ];
-
-		for( surf = gl_lms.lightmap_surfaces[ 0 ]; surf != 0; surf = surf->lightmapchain ) {
-			int		smax, tmax;
-			byte *base;
-
-			smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-			tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-
-			if( LM_AllocBlock( smax, tmax, &surf->dlight_s, &surf->dlight_t ) ) {
-				base = gl_lms.lightmap_buffer;
-				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
-
-				R_BuildLightMap( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
-			} else {
-				msurface_t *drawsurf;
-
-				// upload what we have so far
-				LM_UploadBlock( true );
-
-				// draw all surfaces that use this lightmap
-				for( drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain ) {
-					if( drawsurf->polys )
-						DrawGLPolyChain( drawsurf->polys,
-							( drawsurf->light_s - drawsurf->dlight_s ) * ( 1.0f / 128.0f ),
-							( drawsurf->light_t - drawsurf->dlight_t ) * ( 1.0f / 128.0f ) );
-				}
-
-				newdrawsurf = drawsurf;
-
-				// clear the block
-				LM_InitBlock();
-
-				// try uploading the block now
-				if( !LM_AllocBlock( smax, tmax, &surf->dlight_s, &surf->dlight_t ) ) {
-					VID_Error( ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax );
-				}
-
-				base = gl_lms.lightmap_buffer;
-				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
-
-				R_BuildLightMap( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
-			}
-		}
-
-		/*
-		** draw remainder of dynamic lightmaps that haven't been uploaded yet
-		*/
-		if( newdrawsurf )
-			LM_UploadBlock( true );
-
-		for( surf = newdrawsurf; surf != 0; surf = surf->lightmapchain ) {
-			if( surf->polys )
-				DrawGLPolyChain( surf->polys, ( surf->light_s - surf->dlight_s ) * ( 1.0f / 128.0f ), ( surf->light_t - surf->dlight_t ) * ( 1.0f / 128.0f ) );
-		}
-	}
-
-	/*
-	** restore state
-	*/
-	glDisable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	glDepthMask( 1 );
-}
-
-/*
 ================
 R_RenderBrushPoly
 ================
@@ -515,50 +339,50 @@ void R_RenderBrushPoly( msurface_t *fa ) {
 	}
 }
 
+static void GL_RenderLightmappedPoly( msurface_t *surf );
 
 /*
-================
-R_DrawAlphaSurfaces
-
 Draw water surfaces and windows.
 The BSP tree is waled front to back, so unwinding the chain
 of alpha_surfaces will draw back to front, giving proper ordering.
-================
 */
-void R_DrawAlphaSurfaces( void ) {
-	msurface_t *s;
-	float		intens;
-
-	//
+void R_DrawAlphaSurfaces()
+{
 	// go back to the world matrix
-	//
 	glLoadMatrixf( r_world_matrix );
 
 	glEnable( GL_BLEND );
-	GL_TexEnv( GL_MODULATE );
+
+	GL_EnableMultitexture( true );
 
 	// the textures are prescaled up for a better lighting range,
 	// so scale it back down
-	intens = gl_state.inverse_intensity;
+	float intens = gl_state.inverse_intensity;
 
-	for( s = r_alpha_surfaces; s; s = s->texturechain ) {
-		GL_Bind( s->texinfo->image->texnum );
+	// todo: consider moving water onto their own list?
+
+	for ( msurface_t *s = r_alpha_surfaces; s; s = s->texturechain )
+	{
 		c_brush_polys++;
-		if( s->texinfo->flags & SURF_TRANS33 )
+		if ( s->texinfo->flags & SURF_TRANS33 )
 			glColor4f( intens, intens, intens, 0.33 );
-		else if( s->texinfo->flags & SURF_TRANS66 )
+		else if ( s->texinfo->flags & SURF_TRANS66 )
 			glColor4f( intens, intens, intens, 0.66 );
 		else
 			glColor4f( intens, intens, intens, 1 );
 
-		if( s->flags & SURF_DRAWTURB )
+		if ( s->flags & SURF_DRAWTURB )
 		{
+			GL_EnableMultitexture( false );
 			EmitWaterPolys( s );
+			GL_EnableMultitexture( true );
 			continue;
 		}
 
-		DrawGLPoly( s->polys );
+		GL_RenderLightmappedPoly( s );
 	}
+
+	GL_EnableMultitexture( false );
 
 	GL_TexEnv( GL_REPLACE );
 	glColor4f( 1, 1, 1, 1 );
@@ -758,7 +582,8 @@ void R_DrawInlineBModel( void ) {
 			if ( psurf->texinfo->flags & ( SURF_TRANS33 |
 			                               SURF_TRANS66 |
 			                               SURF_ALPHA_BANNER |
-			                               SURF_ALPHA_TEST ) )
+			                               SURF_ALPHA_TEST ) ||
+			     psurf->texinfo->image->has_alpha )
 			{
 				// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
@@ -949,7 +774,8 @@ void R_RecursiveWorldNode( mnode_t *node ) {
 		else if ( surf->texinfo->flags & ( SURF_TRANS33 |
 		                                   SURF_TRANS66 |
 		                                   SURF_ALPHA_BANNER |
-		                                   SURF_ALPHA_TEST ) )
+		                                   SURF_ALPHA_TEST ) ||
+		          surf->texinfo->image->has_alpha )
 		{
 			// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
@@ -1008,31 +834,6 @@ void R_DrawWorld( void ) {
 	R_ClearSkyBox();
 
 	GL_EnableMultitexture( true );
-
-	GL_SelectTexture( GL_TEXTURE0 );
-	GL_TexEnv( GL_REPLACE );
-	GL_SelectTexture( GL_TEXTURE1 );
-
-	if( gl_lightmap->value )
-		GL_TexEnv( GL_REPLACE );
-	else
-	{
-		static cvar_t *overbrights = nullptr;
-		if ( overbrights == nullptr )
-			overbrights = Cvar_Get( "r_overbrights", "1", CVAR_ARCHIVE );
-
-		// Setup lightmap channel for overbrights
-		if ( overbrights->value > 1.0f )
-		{
-			GL_TexEnv( GL_COMBINE );
-			glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE );
-			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS );
-			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE );
-			glTexEnvf( GL_TEXTURE_ENV, GL_RGB_SCALE, overbrights->value );
-		}
-		else
-			GL_TexEnv( GL_MODULATE );
-	}
 
 	R_RecursiveWorldNode( r_worldmodel->nodes );
 

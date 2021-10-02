@@ -53,18 +53,56 @@ void GL_SetTexturePalette( unsigned palette[ 256 ] ) {
 	// TODO: obsolete!
 }
 
-void GL_EnableMultitexture( qboolean enable ) {
-	if( enable ) {
+void GL_EnableMultitexture( bool enable )
+{
+	static bool state = false;
+	if ( state == enable )
+	{
+		return;
+	}
+
+	if ( enable )
+	{
 		GL_SelectTexture( GL_TEXTURE1 );
 		glEnable( GL_TEXTURE_2D );
-		GL_TexEnv( GL_REPLACE );
-	} else {
+
+		if ( gl_lightmap->value >= 1.0f )
+		{
+			GL_TexEnv( GL_REPLACE );
+		}
+		else
+		{
+			static cvar_t *overbrights = nullptr;
+			if ( overbrights == nullptr )
+			{
+				overbrights = Cvar_Get( "r_overbrights", "1", CVAR_ARCHIVE );
+			}
+
+			// Setup lightmap channel for overbrights
+			if ( overbrights->value > 1.0f )
+			{
+				GL_TexEnv( GL_COMBINE );
+				glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE );
+				glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS );
+				glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE );
+				glTexEnvf( GL_TEXTURE_ENV, GL_RGB_SCALE, overbrights->value );
+			}
+			else
+			{
+				GL_TexEnv( GL_MODULATE );
+			}
+		}
+	}
+	else
+	{
 		GL_SelectTexture( GL_TEXTURE1 );
 		glDisable( GL_TEXTURE_2D );
-		GL_TexEnv( GL_REPLACE );
 	}
+
 	GL_SelectTexture( GL_TEXTURE0 );
 	GL_TexEnv( GL_REPLACE );
+
+	state = enable;
 }
 
 void GL_SelectTexture( GLenum texture ) {
@@ -257,7 +295,7 @@ void	GL_ImageList_f( void ) {
 	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
 		if( image->texnum <= 0 )
 			continue;
-		texels += image->upload_width * image->upload_height;
+		texels += image->width * image->height;
 		switch( image->type ) {
 		case it_skin:
 			VID_Printf( PRINT_ALL, "M" );
@@ -277,7 +315,7 @@ void	GL_ImageList_f( void ) {
 		}
 
 		VID_Printf( PRINT_ALL, " %3i %3i %s: %s\n",
-			image->upload_width, image->upload_height, palstrings[ image->paletted ], image->name );
+			image->width, image->height, palstrings[ image->paletted ], image->name );
 	}
 	VID_Printf( PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels );
 }
@@ -649,50 +687,15 @@ void GL_MipMap( byte *in, int width, int height ) {
 	}
 }
 
-int		upload_width, upload_height;
 qboolean uploaded_paletted;
 
 qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 	int			samples;
-	unsigned	scaled[ 256 * 256 ];
-	int			scaled_width, scaled_height;
 	int			i, c;
 	byte *scan;
 	int comp;
 
 	uploaded_paletted = false;
-
-	for( scaled_width = 1; scaled_width < width; scaled_width <<= 1 )
-		;
-	if( gl_round_down->value && scaled_width > width && mipmap )
-		scaled_width >>= 1;
-	for( scaled_height = 1; scaled_height < height; scaled_height <<= 1 )
-		;
-	if( gl_round_down->value && scaled_height > height && mipmap )
-		scaled_height >>= 1;
-
-	// let people sample down the world textures for speed
-	if( mipmap ) {
-		scaled_width >>= (int)gl_picmip->value;
-		scaled_height >>= (int)gl_picmip->value;
-	}
-
-	// don't ever bother with >256 textures
-	if( scaled_width > 256 )
-		scaled_width = 256;
-	if( scaled_height > 256 )
-		scaled_height = 256;
-
-	if( scaled_width < 1 )
-		scaled_width = 1;
-	if( scaled_height < 1 )
-		scaled_height = 1;
-
-	upload_width = scaled_width;
-	upload_height = scaled_height;
-
-	if( scaled_width * scaled_height > sizeof( scaled ) / 4 )
-		VID_Error( ERR_DROP, "GL_Upload32: too big" );
 
 	// scan the texture for any non-255 alpha
 	c = width * height;
@@ -716,85 +719,24 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 		comp = samples;
 	}
 
-#if 0
-	if( mipmap )
-		gluBuild2DMipmaps( GL_TEXTURE_2D, samples, width, height, GL_RGBA, GL_UNSIGNED_BYTE, trans );
-	else if( scaled_width == width && scaled_height == height )
-		qglTexImage2D( GL_TEXTURE_2D, 0, comp, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans );
-	else {
-		gluScaleImage( GL_RGBA, width, height, GL_UNSIGNED_BYTE, trans,
-			scaled_width, scaled_height, GL_UNSIGNED_BYTE, scaled );
-		qglTexImage2D( GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled );
-	}
-#else
-
-	if( scaled_width == width && scaled_height == height ) {
-		if( !mipmap ) {
-			glTexImage2D( GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-			goto done;
-		}
-		memcpy( scaled, data, width * height * 4 );
-	} else
-		GL_ResampleTexture( data, width, height, scaled, scaled_width, scaled_height );
-
 	//GL_LightScaleTexture( scaled, scaled_width, scaled_height, !mipmap );
 
-	glTexImage2D( GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled );
+	glTexImage2D( GL_TEXTURE_2D, 0, comp, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
-	if( mipmap ) {
-		int		miplevel;
-
-		miplevel = 0;
-		while( scaled_width > 1 || scaled_height > 1 ) {
-			GL_MipMap( (byte *)scaled, scaled_width, scaled_height );
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-			if( scaled_width < 1 )
-				scaled_width = 1;
-			if( scaled_height < 1 )
-				scaled_height = 1;
-			miplevel++;
-			glTexImage2D( GL_TEXTURE_2D, miplevel, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled );
-		}
-	}
-done:;
-#endif
-
-
-	if( mipmap ) {
+	if ( mipmap )
+	{
+		glGenerateMipmap( GL_TEXTURE_2D );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
-	} else {
+	}
+	else
+	{
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
 	}
 
 	return ( samples == gl_alpha_format );
 }
-
-/*
-===============
-GL_Upload8
-
-Returns has_alpha
-===============
-*/
-/*
-static qboolean IsPowerOf2( int value )
-{
-	int i = 1;
-
-
-	while ( 1 )
-	{
-		if ( value == i )
-			return true;
-		if ( i > value )
-			return false;
-		i <<= 1;
-	}
-}
-*/
 
 qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolean is_sky ) {
 	unsigned	trans[ 640 * 256 ];
@@ -889,10 +831,10 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 		image->texnum = TEXNUM_SCRAPS + texnum;
 		image->scrap = true;
 		image->has_alpha = true;
-		image->sl = ( x + 0.01 ) / (float)BLOCK_WIDTH;
-		image->sh = ( x + image->width - 0.01 ) / (float)BLOCK_WIDTH;
-		image->tl = ( y + 0.01 ) / (float)BLOCK_WIDTH;
-		image->th = ( y + image->height - 0.01 ) / (float)BLOCK_WIDTH;
+		image->sl = ( x + 0.01f ) / (float)BLOCK_WIDTH;
+		image->sh = ( x + image->width - 0.01f ) / (float)BLOCK_WIDTH;
+		image->tl = ( y + 0.01f ) / (float)BLOCK_WIDTH;
+		image->th = ( y + image->height - 0.01f ) / (float)BLOCK_WIDTH;
 	} else {
 	nonscrap:
 		image->scrap = false;
@@ -902,8 +844,6 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 			image->has_alpha = GL_Upload8( pic, width, height, ( image->type != it_pic && image->type != it_sky ), image->type == it_sky );
 		else
 			image->has_alpha = GL_Upload32( (unsigned *)pic, width, height, ( image->type != it_pic && image->type != it_sky ) );
-		image->upload_width = upload_width;		// after power of 2 and scales
-		image->upload_height = upload_height;
 		image->paletted = uploaded_paletted;
 		image->sl = 0;
 		image->sh = 1;

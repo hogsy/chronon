@@ -66,7 +66,6 @@ typedef struct image_s
 	char               name[ MAX_QPATH ];// game path, including extension
 	imagetype_t        type;
 	int                width, height;              // source image
-	int                upload_width, upload_height;// after power of two and picmip
 	int                registration_sequence;      // 0 = free
 	struct msurface_s *texturechain;               // for sort-by-texture world drawing
 	int                texnum;                     // gl texture binding
@@ -228,7 +227,7 @@ void R_TranslatePlayerSkin( int playernum );
 void GL_Bind( int texnum );
 void GL_MBind( GLenum target, int texnum );
 void GL_TexEnv( GLenum value );
-void GL_EnableMultitexture( qboolean enable );
+void GL_EnableMultitexture( bool enable );
 void GL_SelectTexture( GLenum );
 
 void R_LightPoint( const vec3_t p, vec3_t color );

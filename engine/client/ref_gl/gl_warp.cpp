@@ -205,6 +205,8 @@ void EmitWaterPolys( msurface_t *fa ) {
 	float		scroll;
 	float		rdt = r_newrefdef.time;
 
+	GL_Bind( fa->texinfo->image->texnum );
+
 	if( fa->texinfo->flags & SURF_FLOWING )
 		scroll = -64 * ( ( r_newrefdef.time * 0.5 ) - (int)( r_newrefdef.time * 0.5 ) );
 	else
