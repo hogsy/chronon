@@ -769,7 +769,7 @@ const char *Script_GetLine( const char *data, char *dest, size_t destSize ) {
 	for( size_t i = 0; i < length; ++i ) {
 		*d++ = *p++;
 		if( d - dest >= destSize ) {
-#if defined( _DEBUG )
+#if !defined( NDEBUG )
 			assert( 0 );
 #endif
 			break;

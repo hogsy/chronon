@@ -26,10 +26,10 @@ project(hosae)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 
-if ( MSVC )
+if (MSVC)
     add_compile_options(/W3)
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-else()
+else ()
     add_compile_options(
             -Wall
             -Wsign-compare
@@ -37,8 +37,8 @@ else()
             -Wno-unused-variable
             -Wno-format-truncation
             -fvisibility=hidden
-            )
-endif()
+    )
+endif ()
 
 # Get the current working branch
 execute_process(
@@ -71,12 +71,12 @@ set(HOSAE_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/release/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${HOSAE_OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${HOSAE_OUTPUT_DIR}")
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
-foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${HOSAE_OUTPUT_DIR})
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${HOSAE_OUTPUT_DIR})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${HOSAE_OUTPUT_DIR})
-endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
+endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
 add_subdirectory(engine/)
 add_subdirectory(game/)
