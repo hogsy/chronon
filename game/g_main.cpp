@@ -108,7 +108,13 @@ Returns a pointer to the structure with all entry points
 and global variables
 =================
 */
-extern "C" __declspec(dllexport) game_export_t *GetGameAPI (game_import_t *import)
+extern "C"
+#if defined( _MSC_VER )
+        __declspec(dllexport)
+#else
+        __attribute__((visibility("default")))
+#endif
+        game_export_t *GetGameAPI (game_import_t *import)
 {
 	gi = *import;
 
