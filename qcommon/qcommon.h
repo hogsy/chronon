@@ -28,29 +28,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define BASEDIRNAME "anoxdata"
 
-#if defined( _M_IX86 )
+#if defined( _M_IX86 ) || defined( __i386__ )
 #	define CPUSTRING "x86"
 # 	define Q_PLATFORM_X86 1
-#elif defined( _M_AMD64 ) || defined( _M_X64 )
+#elif defined( _M_AMD64 ) || defined( _M_X64 ) || defined( __x86_64__ )
 #	define CPUSTRING "x64"
 # 	define Q_PLATFORM_X64 1
-#elif defined( _M_ALPHA )
-#	define CPUSTRING "AXP"
+#else
+#	define CPUSTRING "unknown"
 #endif
 
-#ifdef WIN32
-#	ifdef NDEBUG
-#		define BUILDSTRING "Win32 RELEASE"
-#	else
-#		define BUILDSTRING "Win32 DEBUG"
-#	endif
+#if defined WIN32
+#	define OSSTRING "Win32"
+#	define Q_PLATFORM_WIN32 1
 #elif defined __linux__
-#	define BUILDSTRING "Linux"
-#elif defined __sun__
-#	define BUILDSTRING "Solaris"
-#else  // !WIN32
-#	define BUILDSTRING "NON-WIN32"
+#	define OSSTRING "Linux"
+#	define Q_PLATFORM_LINUX 1
+#else
+#	define OSSTRING "unknown"
 #endif
+
+#if !defined( NDEBUG )
+#	define CONFIGSTRING "debug"
+#else
+#	define CONFIGSTRING "release"
+#endif
+
+#define BUILDSTRING OSSTRING " (" CPUSTRING "/" CONFIGSTRING ")"
 
 //============================================================================
 

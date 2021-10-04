@@ -1210,7 +1210,7 @@ void Qcommon_Init( int argc, char **argv ) {
 	dedicated = Cvar_Get( "dedicated", "0", CVAR_NOSET );
 #endif
 
-	s = va( ENGINE_NAME " %4.2f %s %s %s", ENGINE_VERSION, CPUSTRING, __DATE__, BUILDSTRING );
+	s = va( ENGINE_NAME " %4.2f %s %s", ENGINE_VERSION, __DATE__, BUILDSTRING );
 	Cvar_Get( "version", s, CVAR_SERVERINFO | CVAR_NOSET );
 
 	if( dedicated->value ) Cmd_AddCommand( "quit", Com_Quit );
