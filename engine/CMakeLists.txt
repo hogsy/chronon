@@ -19,6 +19,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 project(engine)
 
+if (WIN32)
+    file(GLOB ENGINE_PLATFORM_SOURCE
+            win32/cd_win.cpp
+            win32/glw_imp.cpp
+            win32/in_win.cpp
+            win32/net_wins.cpp
+            win32/qgl_win.cpp
+            win32/q_shwin.cpp
+            win32/snd_win.cpp
+            win32/sys_win.cpp
+            win32/vid_dll.cpp
+            win32/vid_menu.cpp
+            )
+elseif (UNIX)
+    file(GLOB ENGINE_PLATFORM_SOURCE
+            linux/cd_linux.cpp
+            linux/in_linux.cpp
+            linux/net_udp.cpp
+            linux/sys_linux.cpp
+            #linux/vid_so.cpp
+            )
+endif ()
+
 add_executable(engine WIN32
         # Client
         client/cl_cin.cpp
@@ -73,16 +96,7 @@ add_executable(engine WIN32
         server/sv_user.cpp
         server/sv_world.cpp
         # Platform
-        win32/cd_win.cpp
-        win32/glw_imp.cpp
-        win32/in_win.cpp
-        win32/net_wins.cpp
-        win32/qgl_win.cpp
-        win32/q_shwin.cpp
-        win32/snd_win.cpp
-        win32/sys_win.cpp
-        win32/vid_dll.cpp
-        win32/vid_menu.cpp
+        ${ENGINE_PLATFORM_SOURCE}
         # 3rd Party
         ../3rdparty/miniz/miniz.c
         )
@@ -98,18 +112,22 @@ target_include_directories(engine PRIVATE
         ../3rdparty/
         ../3rdparty/glew/include/
         )
-target_link_libraries(engine
-        glew32s
-        )
 
-if( WIN32 )
+if (WIN32)
     target_link_options(engine PRIVATE
             /NODEFAULTLIB:libcmt.lib
             /NODEFAULTLIB:libcmtd.lib
             )
     target_link_libraries(engine
+            glew32s
             Opengl32
             Ws2_32
             Winmm
             )
-endif()
+elseif (UNIX)
+    target_link_libraries(engine
+            dl
+            GL
+            GLEW
+            )
+endif ()

@@ -18,30 +18,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <sys/time.h>
+#include <csignal>
+#include <cstdlib>
+#include <climits>
+#include <ctime>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <ctype.h>
+#include <cstring>
+#include <cctype>
 #include <sys/wait.h>
 #include <sys/mman.h>
-#include <errno.h>
+#include <cerrno>
 #include <mntent.h>
 
 #include <dlfcn.h>
 
 #include "../qcommon/qcommon.h"
-
-#include "../linux/rw_linux.h"
 
 cvar_t *nostdout;
 
@@ -60,31 +58,6 @@ void Sys_ConsoleOutput (char *string)
 		return;
 
 	fputs(string, stdout);
-}
-
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		text[1024];
-	unsigned char		*p;
-
-	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
-	va_end (argptr);
-
-	if (strlen(text) > sizeof(text))
-		Sys_Error("memory overwrite in Sys_Printf");
-
-    if (nostdout && nostdout->value)
-        return;
-
-	for (p = (unsigned char *)text; *p; p++) {
-		*p &= 0x7f;
-		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
-			printf("[%02x]", *p);
-		else
-			putc(*p, stdout);
-	}
 }
 
 void Sys_Quit (void)
@@ -219,13 +192,7 @@ void *Sys_GetGameAPI (void *parms)
 	char	name[MAX_OSPATH];
 	char	curpath[MAX_OSPATH];
 	char	*path;
-#ifdef __i386__
-	const char *gamename = "gamei386.so";
-#elif defined __alpha__
-	const char *gamename = "gameaxp.so";
-#else
-#error Unknown arch
-#endif
+	const char *gamename = "game.so";
 
 	setreuid(getuid(), getuid());
 	setegid(getgid());
@@ -253,7 +220,7 @@ void *Sys_GetGameAPI (void *parms)
 		}
 	}
 
-	GetGameAPI = (void *)dlsym (game_library, "GetGameAPI");
+	GetGameAPI = (void *(*)(void*))dlsym (game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
 		Sys_UnloadGame ();		
@@ -271,7 +238,7 @@ void Sys_AppActivate (void)
 
 void Sys_SendKeyEvents (void)
 {
-#ifndef DEDICATED_ONLY
+#if 0
 	if (KBD_Update_fp)
 		KBD_Update_fp();
 #endif

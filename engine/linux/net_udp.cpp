@@ -23,13 +23,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <unistd.h>
 #include <sys/socket.h>
-#include <sys/time.h>
+#include <ctime>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/param.h>
 #include <sys/ioctl.h>
 #include <sys/uio.h>
-#include <errno.h>
+#include <cerrno>
 
 #ifdef NeXT
 #include <libc.h>
@@ -125,6 +126,8 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 			return true;
 		return false;
 	}
+
+	return false;
 }
 
 char	*NET_AdrToString (netadr_t a)
@@ -132,15 +135,6 @@ char	*NET_AdrToString (netadr_t a)
 	static	char	s[64];
 	
 	Com_sprintf (s, sizeof(s), "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], ntohs(a.port));
-
-	return s;
-}
-
-char	*NET_BaseAdrToString (netadr_t a)
-{
-	static	char	s[64];
-	
-	Com_sprintf (s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
 
 	return s;
 }
@@ -183,7 +177,7 @@ qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
 	else
 	{
 		if (! (h = gethostbyname(copy)) )
-			return 0;
+			return false;
 		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
 	}
 	
@@ -276,9 +270,7 @@ void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message)
 {
-	int 	ret;
 	struct sockaddr_in	from;
-	int		fromlen;
 	int		net_socket;
 	int		protocol;
 	int		err;
@@ -296,8 +288,8 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 		if (!net_socket)
 			continue;
 
-		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, net_message->data, net_message->maxsize
+		socklen_t fromlen = sizeof(from);
+		ssize_t ret = recvfrom (net_socket, net_message->data, net_message->maxsize
 			, 0, (struct sockaddr *)&from, &fromlen);
 
 		SockadrToNetadr (&from, net_from);
@@ -313,7 +305,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 			continue;
 		}
 
-		if (ret == net_message->maxsize)
+		if (ret == ( ssize_t ) net_message->maxsize)
 		{
 			Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
 			continue;
@@ -467,7 +459,6 @@ NET_Socket
 int NET_Socket (char *net_interface, int port)
 {
 	int newsocket;
-	struct sockaddr_in address;
 	qboolean _true = true;
 	int	i = 1;
 
@@ -491,7 +482,8 @@ int NET_Socket (char *net_interface, int port)
 		return 0;
 	}
 
-	if (!net_interface || !net_interface[0] || !stricmp(net_interface, "localhost"))
+	sockaddr_in address;
+	if (!net_interface || !net_interface[0] || !Q_stricmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
 		NET_StringToSockaddr (net_interface, (struct sockaddr *)&address);
@@ -503,7 +495,7 @@ int NET_Socket (char *net_interface, int port)
 
 	address.sin_family = AF_INET;
 
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
+	if( bind (newsocket, ( const sockaddr * ) &address, sizeof(address)) == -1)
 	{
 		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
 		close (newsocket);

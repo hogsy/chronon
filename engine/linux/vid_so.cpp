@@ -21,18 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // is used for both the software and OpenGL rendering versions of the
 // Quake refresh engine.
 
-#include <assert.h>
+#include <cassert>
 #include <dlfcn.h> // ELF dl loader
 #include <sys/stat.h>
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 
 #include "../client/client.h"
-
-#include "../linux/rw_linux.h"
-
-// Structure containing functions exported from refresh DLL
-refexport_t	re;
 
 // Console variables that we need to access from this module
 cvar_t		*vid_gamma;
@@ -170,31 +165,6 @@ void VID_NewWindow ( int width, int height)
 	viddef.height = height;
 }
 
-void VID_FreeReflib (void)
-{
-	if (reflib_library) {
-		if (KBD_Close_fp)
-			KBD_Close_fp();
-		if (RW_IN_Shutdown_fp)
-			RW_IN_Shutdown_fp();
-		dlclose(reflib_library);
-	}
-
-	KBD_Init_fp = NULL;
-	KBD_Update_fp = NULL;
-	KBD_Close_fp = NULL;
-	RW_IN_Init_fp = NULL;
-	RW_IN_Shutdown_fp = NULL;
-	RW_IN_Activate_fp = NULL;
-	RW_IN_Commands_fp = NULL;
-	RW_IN_Move_fp = NULL;
-	RW_IN_Frame_fp = NULL;
-
-	memset (&re, 0, sizeof(re));
-	reflib_library = NULL;
-	reflib_active  = false;
-}
-
 /*
 ==============
 VID_LoadRefresh
@@ -218,7 +188,6 @@ qboolean VID_LoadRefresh( char *name )
 		KBD_Close_fp = NULL;
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown();
-		VID_FreeReflib ();
 	}
 
 	Com_Printf( "------- Loading %s -------\n", name );
@@ -292,7 +261,6 @@ qboolean VID_LoadRefresh( char *name )
 
 	if (re.api_version != API_VERSION)
 	{
-		VID_FreeReflib ();
 		Com_Error (ERR_FATAL, "%s has incompatible api_version", name);
 	}
 
@@ -302,30 +270,14 @@ qboolean VID_LoadRefresh( char *name )
 	in_state.viewangles = cl.viewangles;
 	in_state.in_strafe_state = &in_strafe.state;
 
-	if ((RW_IN_Init_fp = dlsym(reflib_library, "RW_IN_Init")) == NULL ||
-		(RW_IN_Shutdown_fp = dlsym(reflib_library, "RW_IN_Shutdown")) == NULL ||
-		(RW_IN_Activate_fp = dlsym(reflib_library, "RW_IN_Activate")) == NULL ||
-		(RW_IN_Commands_fp = dlsym(reflib_library, "RW_IN_Commands")) == NULL ||
-		(RW_IN_Move_fp = dlsym(reflib_library, "RW_IN_Move")) == NULL ||
-		(RW_IN_Frame_fp = dlsym(reflib_library, "RW_IN_Frame")) == NULL)
-		Sys_Error("No RW_IN functions in REF.\n");
-
 	Real_IN_Init();
 
 	if ( re.Init( 0, 0 ) == -1 )
 	{
 		re.Shutdown();
-		VID_FreeReflib ();
 		return false;
 	}
 
-	/* Init KBD */
-#if 1
-	if ((KBD_Init_fp = dlsym(reflib_library, "KBD_Init")) == NULL ||
-		(KBD_Update_fp = dlsym(reflib_library, "KBD_Update")) == NULL ||
-		(KBD_Close_fp = dlsym(reflib_library, "KBD_Close")) == NULL)
-		Sys_Error("No KBD functions in REF.\n");
-#else
 	{
 		void KBD_Init(void);
 		void KBD_Update(void);
@@ -335,7 +287,6 @@ qboolean VID_LoadRefresh( char *name )
 		KBD_Update_fp = KBD_Update;
 		KBD_Close_fp = KBD_Close;
 	}
-#endif
 	KBD_Init_fp(Do_Key_Event);
 
 	// give up root now
@@ -415,11 +366,6 @@ VID_Init
 void VID_Init (void)
 {
 	/* Create the video variables so we know how to start the graphics drivers */
-	// if DISPLAY is defined, try X
-	if (getenv("DISPLAY"))
-		vid_ref = Cvar_Get ("vid_ref", "softx", CVAR_ARCHIVE);
-	else
-		vid_ref = Cvar_Get ("vid_ref", "soft", CVAR_ARCHIVE);
 	vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
 	vid_fullscreen = Cvar_Get ("vid_fullscreen", "0", CVAR_ARCHIVE);
@@ -427,9 +373,6 @@ void VID_Init (void)
 
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand ("vid_restart", VID_Restart_f);
-
-	/* Disable the 3Dfx splash screen */
-	putenv("FX_GLIDE_NO_SPLASH=0");
 		
 	/* Start the graphics mode and load refresh DLL */
 	VID_CheckChanges();
@@ -451,7 +394,6 @@ void VID_Shutdown (void)
 		KBD_Close_fp = NULL;
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown ();
-		VID_FreeReflib ();
 	}
 }
 
