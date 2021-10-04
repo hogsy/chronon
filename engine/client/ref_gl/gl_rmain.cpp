@@ -186,7 +186,7 @@ void R_DrawSpriteModel( entity_t *e ) {
 
 #if 0
 	if( e->frame < 0 || e->frame >= psprite->numframes ) {
-		VID_Printf( PRINT_ALL, "no such sprite frame %i\n", e->frame );
+		Com_Printf( "no such sprite frame %i\n", e->frame );
 		e->frame = 0;
 	}
 #endif
@@ -332,7 +332,7 @@ void R_DrawEntitiesOnList( void ) {
 				break;
 			default:
 #if !defined( _DEBUG )
-				VID_Error( ERR_DROP, "Bad modeltype" );
+				Com_Error( ERR_DROP, "Bad modeltype" );
 #else
 				R_DrawNullModel();
 #endif
@@ -372,7 +372,7 @@ void R_DrawEntitiesOnList( void ) {
 				break;
 			default:
 #if !defined( _DEBUG )
-				VID_Error( ERR_DROP, "Bad modeltype" );
+				Com_Error( ERR_DROP, "Bad modeltype" );
 #endif
 				break;
 			}
@@ -739,7 +739,7 @@ void R_RenderView( refdef_t *fd ) {
 	r_newrefdef = *fd;
 
 	if( !r_worldmodel && !( r_newrefdef.rdflags & RDF_NOWORLDMODEL ) )
-		VID_Error( ERR_DROP, "R_RenderView: NULL worldmodel" );
+		Com_Error( ERR_DROP, "R_RenderView: NULL worldmodel" );
 
 	if( r_speeds->value > 0 ) {
 		c_brush_polys = 0;
@@ -773,7 +773,7 @@ void R_RenderView( refdef_t *fd ) {
 	R_Flash();
 
 	if( r_speeds->value > 0 ) {
-		VID_Printf( PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
+		Com_Printf( "%4i wpoly %4i epoly %i tex %i lmaps\n",
 			c_brush_polys, c_alias_polys, c_visible_textures,
 			c_visible_lightmaps );
 	}
@@ -935,8 +935,7 @@ qboolean R_SetMode( void ) {
 	qboolean fullscreen;
 
 	if( vid_fullscreen->modified && !gl_config.allow_cds ) {
-		VID_Printf( PRINT_ALL,
-			"R_SetMode() - CDS not allowed with this driver\n" );
+		Com_Printf( "R_SetMode() - CDS not allowed with this driver\n" );
 		ri.Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
 		vid_fullscreen->modified = false;
 	}
@@ -953,23 +952,20 @@ qboolean R_SetMode( void ) {
 		if( err == rserr_invalid_fullscreen ) {
 			ri.Cvar_SetValue( "vid_fullscreen", 0 );
 			vid_fullscreen->modified = false;
-			VID_Printf(
-				PRINT_ALL,
-				"ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
+			Com_Printf( "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
 			if( ( err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value,
 				false ) ) == rserr_ok )
 				return true;
 		} else if( err == rserr_invalid_mode ) {
 			ri.Cvar_SetValue( "gl_mode", gl_state.prev_mode );
 			gl_mode->modified = false;
-			VID_Printf( PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n" );
+			Com_Printf( "ref_gl::R_SetMode() - invalid mode\n" );
 		}
 
 		// try setting it back to something safe
 		if( ( err = GLimp_SetMode( &vid.width, &vid.height, gl_state.prev_mode,
 			false ) ) != rserr_ok ) {
-			VID_Printf( PRINT_ALL,
-				"ref_gl::R_SetMode() - could not revert to safe mode\n" );
+			Com_Printf( "ref_gl::R_SetMode() - could not revert to safe mode\n" );
 			return false;
 		}
 	}
@@ -1009,14 +1005,14 @@ int R_Init( void *hinstance, void *hWnd ) {
 	// create the window and set up the context
 	if( !R_SetMode() ) {
 		QGL_Shutdown();
-		VID_Printf( PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n" );
+		Com_Printf( "ref_gl::R_Init() - could not R_SetMode()\n" );
 		return -1;
 	}
 
 	// initialize our QGL dynamic bindings
 	if( !QGL_Init() ) {
 		QGL_Shutdown();
-		VID_Printf( PRINT_ALL, "ref_gl::R_Init() - could not load \"%s\"\n",
+		Com_Printf( "ref_gl::R_Init() - could not load \"%s\"\n",
 			gl_driver->string );
 		return -1;
 	}
@@ -1027,13 +1023,13 @@ int R_Init( void *hinstance, void *hWnd ) {
 	** get our various GL strings
 	*/
 	gl_config.vendor_string = ( const char * ) glGetString( GL_VENDOR );
-	VID_Printf( PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
+	Com_DPrintf( "GL_VENDOR: %s\n", gl_config.vendor_string );
 	gl_config.renderer_string = ( const char * ) glGetString( GL_RENDERER );
-	VID_Printf( PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
+	Com_DPrintf( "GL_RENDERER: %s\n", gl_config.renderer_string );
 	gl_config.version_string = ( const char * ) glGetString( GL_VERSION );
-	VID_Printf( PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
+	Com_DPrintf( "GL_VERSION: %s\n", gl_config.version_string );
 	gl_config.extensions_string = ( const char * ) glGetString( GL_EXTENSIONS );
-	VID_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	Com_DPrintf( "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 
 	strcpy( renderer_buffer, gl_config.renderer_string );
 	Q_strtolower( renderer_buffer );
@@ -1062,9 +1058,9 @@ int R_Init( void *hinstance, void *hWnd ) {
 	gl_config.allow_cds = true;
 
 	if( gl_config.allow_cds )
-		VID_Printf( PRINT_ALL, "...allowing CDS\n" );
+		Com_Printf( "...allowing CDS\n" );
 	else
-		VID_Printf( PRINT_ALL, "...disabling CDS\n" );
+		Com_Printf( "...disabling CDS\n" );
 
 	GL_SetDefaultState();
 
@@ -1079,7 +1075,7 @@ int R_Init( void *hinstance, void *hWnd ) {
 
 	err = glGetError();
 	if( err != GL_NO_ERROR )
-		VID_Printf( PRINT_ALL, "glGetError() = 0x%x\n", err );
+		Com_Printf( "glGetError() = 0x%x\n", err );
 
 	return true;
 }

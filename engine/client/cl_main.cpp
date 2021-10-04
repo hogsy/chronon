@@ -433,7 +433,7 @@ void CL_SendConnectPacket (void)
 	if (adr.port == 0)
 		adr.port = BigShort (PORT_SERVER);
 
-	port = Cvar_VariableValue ("qport");
+	port = ( int ) Cvar_VariableValue ("qport");
 	userinfo_modified = false;
 
 	Netchan_OutOfBandPrint (NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",

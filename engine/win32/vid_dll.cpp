@@ -100,40 +100,6 @@ DLL GLUE
 ==========================================================================
 */
 
-#define MAXPRINTMSG 4096
-void VID_Printf( int print_level, const char *fmt, ... ) {
-	va_list argptr;
-	va_start( argptr, fmt );
-	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = static_cast<char*>( Z_Malloc( len ) );
-	vsprintf( msg, fmt, argptr );
-	va_end( argptr );
-
-	if( print_level == PRINT_ALL ) {
-		Com_Printf( "%s", msg );
-	} else if( print_level == PRINT_DEVELOPER ) {
-		Com_DPrintf( "%s", msg );
-	} else if( print_level == PRINT_ALERT ) {
-		MessageBox( 0, msg, "PRINT_ALERT", MB_ICONWARNING );
-		OutputDebugString( msg );
-	}
-
-	Z_Free( msg );
-}
-
-void VID_Error( int err_level, const char *fmt, ... ) {
-	va_list argptr;
-	va_start( argptr, fmt );
-	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = static_cast<char*>( Z_Malloc( len ) );
-	vsprintf( msg, fmt, argptr );
-	va_end( argptr );
-
-	Com_Error( err_level, "%s", msg );
-
-	Z_Free( msg );
-}
-
 //==========================================================================
 
 byte scantokey[ 128 ] = {
@@ -525,25 +491,6 @@ VID_LoadRefresh
 ==============
 */
 qboolean VID_LoadRefresh( char *name ) {
-#if 0
-	ri.Cmd_AddCommand = Cmd_AddCommand;
-	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-	ri.Con_Printf = VID_Printf;
-	ri.Sys_Error = VID_Error;
-	ri.FS_LoadFile = FS_LoadFile;
-	ri.FS_FreeFile = FS_FreeFile;
-	ri.FS_Gamedir = FS_Gamedir;
-	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_SetValue = Cvar_SetValue;
-	ri.Vid_GetModeInfo = VID_GetModeInfo;
-	ri.Vid_MenuInit = VID_MenuInit;
-	ri.Vid_NewWindow = VID_NewWindow;
-#endif
-
 	if( R_Init( global_hInstance, MainWndProc ) == -1 ) {
 		R_Shutdown();
 		return false;

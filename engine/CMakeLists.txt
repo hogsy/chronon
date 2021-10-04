@@ -37,7 +37,8 @@ elseif (UNIX)
             linux/cd_linux.cpp
             linux/in_linux.cpp
             linux/net_udp.cpp
-            linux/sys_linux.cpp
+            linux/q_shlinux.cpp
+            sdl2/sdl2_sys.cpp
             #linux/vid_so.cpp
             )
 endif ()
@@ -129,5 +130,6 @@ elseif (UNIX)
             dl
             GL
             GLEW
+            SDL2
             )
 endif ()

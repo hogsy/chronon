@@ -81,21 +81,6 @@ void Sys_Quit( void ) {
 	exit( 0 );
 }
 
-void WinError( void ) {
-	LPTSTR lpMsgBuf;
-
-	FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		nullptr, GetLastError(),
-		MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),  // Default language
-		lpMsgBuf, 0, nullptr );
-
-	// Display the string.
-	MessageBox( nullptr, lpMsgBuf, "GetLastError", MB_OK | MB_ICONINFORMATION );
-
-	// Free the buffer.
-	LocalFree( lpMsgBuf );
-}
-
 //================================================================
 
 /*
@@ -141,22 +126,6 @@ char *Sys_ScanForCD( void ) {
 	cddir[ 0 ] = 0;
 
 	return nullptr;
-}
-
-/*
-================
-Sys_CopyProtect
-
-================
-*/
-void Sys_CopyProtect( void ) {
-#ifndef DEMO
-	char *cddir;
-
-	cddir = Sys_ScanForCD();
-	if( !cddir[ 0 ] )
-		Com_Error( ERR_FATAL, "You must have the Quake2 CD in the drive to play." );
-#endif
 }
 
 //================================================================

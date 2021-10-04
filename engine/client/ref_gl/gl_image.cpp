@@ -213,7 +213,7 @@ void GL_TextureMode( char *string ) {
 	}
 
 	if( mode == NUM_GL_MODES ) {
-		VID_Printf( PRINT_ALL, "bad filter name\n" );
+		Com_Printf( "bad filter name\n" );
 		return;
 	}
 
@@ -246,7 +246,7 @@ void GL_TextureAlphaMode( char *string ) {
 	}
 
 	if( i == NUM_GL_ALPHA_MODES ) {
-		VID_Printf( PRINT_ALL, "bad alpha texture mode name\n" );
+		Com_Printf( "bad alpha texture mode name\n" );
 		return;
 	}
 
@@ -267,7 +267,7 @@ void GL_TextureSolidMode( char *string ) {
 	}
 
 	if( i == NUM_GL_SOLID_MODES ) {
-		VID_Printf( PRINT_ALL, "bad solid texture mode name\n" );
+		Com_Printf( "bad solid texture mode name\n" );
 		return;
 	}
 
@@ -289,7 +289,7 @@ void	GL_ImageList_f( void ) {
 		"PAL"
 	};
 
-	VID_Printf( PRINT_ALL, "------------------\n" );
+	Com_Printf( "------------------\n" );
 	texels = 0;
 
 	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
@@ -298,26 +298,26 @@ void	GL_ImageList_f( void ) {
 		texels += image->width * image->height;
 		switch( image->type ) {
 		case it_skin:
-			VID_Printf( PRINT_ALL, "M" );
+			Com_Printf( "M" );
 			break;
 		case it_sprite:
-			VID_Printf( PRINT_ALL, "S" );
+			Com_Printf( "S" );
 			break;
 		case it_wall:
-			VID_Printf( PRINT_ALL, "W" );
+			Com_Printf( "W" );
 			break;
 		case it_pic:
-			VID_Printf( PRINT_ALL, "P" );
+			Com_Printf( "P" );
 			break;
 		default:
-			VID_Printf( PRINT_ALL, " " );
+			Com_Printf( " " );
 			break;
 		}
 
-		VID_Printf( PRINT_ALL, " %3i %3i %s: %s\n",
+		Com_Printf( " %3i %3i %s: %s\n",
 			image->width, image->height, palstrings[ image->paletted ], image->name );
 	}
-	VID_Printf( PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels );
+	Com_Printf( "Total texel count (not counting mipmaps): %i\n", texels );
 }
 
 
@@ -476,7 +476,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	}
 
 	if( raw - (byte *)pcx > len ) {
-		VID_Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
+		Com_DPrintf( "PCX file %s was malformed", filename );
 		delete[] *pic;
 		*pic = NULL;
 	}
@@ -496,7 +496,7 @@ static void LoadImage32( const char *name, byte **pic, int *width, int *height )
 	int comp; /* this gets ignored for now */
 	byte *rgbData = stbi_load_from_memory( buffer, length, width, height, &comp, 4 );
 	if( rgbData == NULL ) {
-		VID_Error( ERR_DROP, "Failed to read %s!\n%s\n", name, stbi_failure_reason() );
+		Com_Error( ERR_DROP, "Failed to read %s!\n%s\n", name, stbi_failure_reason() );
 	}
 
 	*pic = rgbData;
@@ -713,7 +713,7 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 	else if( samples == gl_alpha_format )
 		comp = gl_tex_alpha_format;
 	else {
-		VID_Printf( PRINT_ALL,
+		Com_Printf(
 			"Unknown number of texture components %i\n",
 			samples );
 		comp = samples;
@@ -746,7 +746,7 @@ qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolea
 	s = width * height;
 
 	if( s > sizeof( trans ) / 4 )
-		VID_Error( ERR_DROP, "GL_Upload8: too large" );
+		Com_Error( ERR_DROP, "GL_Upload8: too large" );
 
 	for( i = 0; i < s; i++ ) {
 		p = data[ i ];
@@ -794,13 +794,13 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 	}
 	if( i == numgltextures ) {
 		if( numgltextures == MAX_GLTEXTURES )
-			VID_Error( ERR_DROP, "MAX_GLTEXTURES" );
+			Com_Error( ERR_DROP, "MAX_GLTEXTURES" );
 		numgltextures++;
 	}
 	image = &gltextures[ i ];
 
 	if( strlen( name ) >= sizeof( image->name ) )
-		VID_Error( ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name );
+		Com_Error( ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name );
 	strcpy( image->name, name );
 	image->registration_sequence = registration_sequence;
 
@@ -997,7 +997,7 @@ int Draw_GetPalette( void ) {
 
 	LoadPCX( "graphics/colormap.pcx", &pic, &pal, &width, &height );
 	if( !pal )
-		VID_Error( ERR_FATAL, "Couldn't load graphics/colormap.pcx" );
+		Com_Error( ERR_FATAL, "Couldn't load graphics/colormap.pcx" );
 
 	for( i = 0; i < 256; i++ ) {
 		r = pal[ i * 3 + 0 ];
@@ -1105,7 +1105,7 @@ static void Image_LoadTextureInfo()
 		int length = FS_LoadFile( "textures/textureinfo.dat", ( void ** ) &buf );
 		if ( length == -1 )
 		{
-			VID_Error( ERR_FATAL, "Invalid or missing textureinfo.dat file!\n" );
+			Com_Error( ERR_FATAL, "Invalid or missing textureinfo.dat file!\n" );
 			return;
 		}
 

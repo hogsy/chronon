@@ -130,7 +130,7 @@ void Draw_StretchPic( int x, int y, int w, int h, const char *pic ) {
 
 	gl = Draw_FindPic( pic );
 	if( !gl ) {
-		VID_Printf( PRINT_ALL, "Can't find pic: %s\n", pic );
+		Com_Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
 
@@ -167,7 +167,7 @@ void Draw_Pic( int x, int y, const char *pic ) {
 
 	gl = Draw_FindPic( pic );
 	if( !gl ) {
-		VID_Printf( PRINT_ALL, "Can't find pic: %s\n", pic );
+		Com_Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
 	if( scrap_dirty )
@@ -205,7 +205,7 @@ void Draw_TileClear( int x, int y, int w, int h, const char *pic ) {
 
 	image = Draw_FindPic( pic );
 	if( !image ) {
-		VID_Printf( PRINT_ALL, "Can't find pic: %s\n", pic );
+		Com_Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
 
@@ -243,7 +243,7 @@ void Draw_Fill( int x, int y, int w, int h, int c ) {
 	} color;
 
 	if( (unsigned)c > 255 ) {
-		VID_Printf( ERR_FATAL, "Draw_Fill: bad color" );
+		Com_Error( ERR_FATAL, "Draw_Fill: bad color" );
 		return;
 	}
 

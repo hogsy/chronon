@@ -374,9 +374,6 @@ IMPORTED FUNCTIONS
 ====================================================================
 */
 
-void VID_Printf( int print_level, const char *fmt, ... );
-void VID_Error( int err_level, const char *fmt, ... );
-
 /*
 ====================================================================
 

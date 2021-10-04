@@ -760,6 +760,18 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
+namespace nox
+{
+	enum class MessageBoxType
+	{
+		ERROR,
+		WARNING,
+		INFO,
+	};
+
+	void Sys_MessageBox( const char *error, MessageBoxType boxType );
+}
+
 void Sys_Init( void );
 
 void Sys_AppActivate( void );
@@ -774,7 +786,6 @@ void Sys_SendKeyEvents( void );
 void Sys_Error( const char *error, ... );
 void Sys_Quit( void );
 char *Sys_GetClipboardData( void );
-void Sys_CopyProtect( void );
 
 /*
 ==============================================================

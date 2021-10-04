@@ -74,36 +74,6 @@ DLL GLUE
 ==========================================================================
 */
 
-#define	MAXPRINTMSG	4096
-void VID_Printf (int print_level, char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	static qboolean	inupdate;
-	
-	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
-	va_end (argptr);
-
-	if (print_level == PRINT_ALL)
-		Com_Printf ("%s", msg);
-	else
-		Com_DPrintf ("%s", msg);
-}
-
-void VID_Error (int err_level, char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	static qboolean	inupdate;
-	
-	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
-	va_end (argptr);
-
-	Com_Error (err_level,"%s", msg);
-}
-
 //==========================================================================
 
 /*
@@ -236,23 +206,6 @@ qboolean VID_LoadRefresh( char *name )
 	}
 
   Com_Printf( "LoadLibrary(\"%s\")\n", fn );
-
-	ri.Cmd_AddCommand = Cmd_AddCommand;
-	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-	ri.Cmd_Argc = Cmd_Argc;
-	ri.Cmd_Argv = Cmd_Argv;
-	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
-	ri.Con_Printf = VID_Printf;
-	ri.Sys_Error = VID_Error;
-	ri.FS_LoadFile = FS_LoadFile;
-	ri.FS_FreeFile = FS_FreeFile;
-	ri.FS_Gamedir = FS_Gamedir;
-	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_SetValue = Cvar_SetValue;
-	ri.Vid_GetModeInfo = VID_GetModeInfo;
-	ri.Vid_MenuInit = VID_MenuInit;
-	ri.Vid_NewWindow = VID_NewWindow;
 
 	if ( ( GetRefAPI = (void *) dlsym( reflib_library, "GetRefAPI" ) ) == 0 )
 		Com_Error( ERR_FATAL, "dlsym failed on %s", name );

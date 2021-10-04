@@ -53,7 +53,7 @@ mleaf_t *Mod_PointInLeaf( vec3_t p, model_t *model ) {
 	cplane_t *plane;
 
 	if( !model || !model->nodes )
-		VID_Error( ERR_DROP, "Mod_PointInLeaf: bad model" );
+		Com_Error( ERR_DROP, "Mod_PointInLeaf: bad model" );
 
 	node = model->nodes;
 	while( 1 ) {
@@ -132,13 +132,13 @@ void Mod_Modellist_f( void ) {
 	int total;
 
 	total = 0;
-	VID_Printf( PRINT_ALL, "Loaded models:\n" );
+	Com_Printf( "Loaded models:\n" );
 	for( i = 0, mod = mod_known; i < mod_numknown; i++, mod++ ) {
 		if( !mod->name[ 0 ] ) continue;
-		VID_Printf( PRINT_ALL, "%8i : %s\n", mod->extradatasize, mod->name );
+		Com_Printf( "%8i : %s\n", mod->extradatasize, mod->name );
 		total += mod->extradatasize;
 	}
-	VID_Printf( PRINT_ALL, "Total resident: %i\n", total );
+	Com_Printf( "Total resident: %i\n", total );
 }
 
 /*
@@ -160,7 +160,7 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 	unsigned *buf;
 	int i;
 
-	if( !name[ 0 ] ) VID_Error( ERR_DROP, "Mod_ForName: NULL name" );
+	if( !name[ 0 ] ) Com_Error( ERR_DROP, "Mod_ForName: NULL name" );
 
 	//
 	// inline models are grabbed only from worldmodel
@@ -168,7 +168,7 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 	if( name[ 0 ] == '*' ) {
 		i = atoi( name + 1 );
 		if( i < 1 || !r_worldmodel || i >= r_worldmodel->numsubmodels )
-			VID_Error( ERR_DROP, "bad inline model number" );
+			Com_Error( ERR_DROP, "bad inline model number" );
 		return &mod_inline[ i ];
 	}
 
@@ -188,7 +188,7 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 	}
 	if( i == mod_numknown ) {
 		if( mod_numknown == MAX_MOD_KNOWN )
-			VID_Error( ERR_DROP, "mod_numknown == MAX_MOD_KNOWN" );
+			Com_Error( ERR_DROP, "mod_numknown == MAX_MOD_KNOWN" );
 		mod_numknown++;
 	}
 	strcpy( mod->name, name );
@@ -199,7 +199,7 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 	modfilelen = FS_LoadFile( mod->name, (void **)&buf );
 	if( !buf ) {
 		if( crash )
-			VID_Error( ERR_DROP, "Mod_NumForName: %s not found", mod->name );
+			Com_Error( ERR_DROP, "Mod_NumForName: %s not found", mod->name );
 		memset( mod->name, 0, sizeof( mod->name ) );
 		return NULL;
 	}
@@ -237,7 +237,7 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 			break;
 
 		default:
-			VID_Printf( PRINT_ALL, "Mod_NumForName: unknown fileid for %s", mod->name );
+			Com_Printf( "Mod_NumForName: unknown fileid for %s", mod->name );
 			break;
 	}
 
@@ -304,7 +304,7 @@ void Mod_LoadVertexes( lump_t *l ) {
 
 	in = (dvertex_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<mvertex_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -347,7 +347,7 @@ void Mod_LoadSubmodels( lump_t *l ) {
 
 	in = (dmodel_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<mmodel_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -380,7 +380,7 @@ void Mod_LoadEdges( lump_t *l ) {
 
 	in = (dedge_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<medge_t *>( Hunk_Alloc( ( count + 1 ) * sizeof( *out ) ) );
@@ -408,7 +408,7 @@ void Mod_LoadTexinfo( lump_t *l ) {
 
 	in = (texinfo_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<mtexinfo_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -429,7 +429,7 @@ void Mod_LoadTexinfo( lump_t *l ) {
 		Com_sprintf( name, sizeof( name ), "textures/%s.tga", in->texture );
 		out->image = GL_FindImage( name, it_wall );
 		if( !out->image ) {
-			VID_Printf( PRINT_ALL, "Couldn't load %s\n", name );
+			Com_Printf( "Couldn't load %s\n", name );
 			out->image = r_notexture;
 		}
 
@@ -511,7 +511,7 @@ void Mod_LoadFaces( lump_t *l ) {
 
 	in = (dface_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<msurface_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -537,7 +537,7 @@ void Mod_LoadFaces( lump_t *l ) {
 
 		ti = LittleShort( in->texinfo );
 		if( ti < 0 || ti >= loadmodel->numtexinfo )
-			VID_Error( ERR_DROP, "MOD_LoadBmodel: bad texinfo number" );
+			Com_Error( ERR_DROP, "MOD_LoadBmodel: bad texinfo number" );
 		out->texinfo = loadmodel->texinfo + ti;
 
 		CalcSurfaceExtents( out );
@@ -597,7 +597,7 @@ void Mod_LoadNodes( lump_t *l ) {
 
 	in = (dnode_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<mnode_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -643,7 +643,7 @@ void Mod_LoadLeafs( lump_t *l ) {
 
 	in = (dleaf_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<mleaf_t *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -692,7 +692,7 @@ void Mod_LoadMarksurfaces( lump_t *l ) {
 
 	in = (short *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<msurface_t **>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -703,7 +703,7 @@ void Mod_LoadMarksurfaces( lump_t *l ) {
 	for( i = 0; i < count; i++ ) {
 		j = LittleShort( in[ i ] );
 		if( j < 0 || j >= loadmodel->numsurfaces )
-			VID_Error( ERR_DROP, "Mod_ParseMarksurfaces: bad surface number" );
+			Com_Error( ERR_DROP, "Mod_ParseMarksurfaces: bad surface number" );
 		out[ i ] = loadmodel->surfaces + j;
 	}
 }
@@ -719,11 +719,11 @@ void Mod_LoadSurfedges( lump_t *l ) {
 
 	in = (int *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	if( count < 1 || count >= MAX_MAP_SURFEDGES )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: bad surfedges count in %s: %i",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: bad surfedges count in %s: %i",
 			loadmodel->name, count );
 
 	out = static_cast<int *>( Hunk_Alloc( count * sizeof( *out ) ) );
@@ -748,7 +748,7 @@ void Mod_LoadPlanes( lump_t *l ) {
 
 	in = (dplane_t *)( mod_base + l->fileofs );
 	if( l->filelen % sizeof( *in ) )
-		VID_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
+		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 			loadmodel->name );
 	count = l->filelen / sizeof( *in );
 	out = static_cast<cplane_t *>( Hunk_Alloc( count * 2 * sizeof( *out ) ) );
@@ -780,13 +780,13 @@ void Mod_LoadBrushModel( model_t *mod, void *buffer ) {
 
 	loadmodel->type = mod_brush;
 	if( loadmodel != mod_known )
-		VID_Error( ERR_DROP, "Loaded a brush model after the world" );
+		Com_Error( ERR_DROP, "Loaded a brush model after the world" );
 
 	header = (dheader_t *)buffer;
 
 	unsigned int version = LittleLong( header->version );
 	if( version != BSPVERSION )
-		VID_Error(
+		Com_Error(
 			ERR_DROP,
 			"Mod_LoadBrushModel: %s has wrong version number (%i should be %i)",
 			mod->name, version
@@ -830,7 +830,7 @@ void Mod_LoadBrushModel( model_t *mod, void *buffer ) {
 		starmod->nummodelsurfaces = bm->numfaces;
 		starmod->firstnode = bm->headnode;
 		if( starmod->firstnode >= loadmodel->numnodes )
-			VID_Error( ERR_DROP, "Inline model %i has bad firstnode", i );
+			Com_Error( ERR_DROP, "Inline model %i has bad firstnode", i );
 
 		VectorCopy( bm->maxs, starmod->maxs );
 		VectorCopy( bm->mins, starmod->mins );
@@ -929,11 +929,11 @@ void Mod_LoadSpriteModel( model_t *mod, void *buffer ) {
 	sprout->numframes = LittleLong( sprin->numframes );
 
 	if( sprout->version != SPRITE_VERSION )
-		VID_Error( ERR_DROP, "%s has wrong version number (%i should be %i)",
+		Com_Error( ERR_DROP, "%s has wrong version number (%i should be %i)",
 			mod->name, sprout->version, SPRITE_VERSION );
 
 	if( sprout->numframes > MAX_MD2SKINS )
-		VID_Error( ERR_DROP, "%s has too many frames (%i > %i)", mod->name,
+		Com_Error( ERR_DROP, "%s has too many frames (%i > %i)", mod->name,
 			sprout->numframes, MAX_MD2SKINS );
 
 	// byte swap everything
@@ -1495,12 +1495,12 @@ void nox::AliasModel::Draw( entity_t *e )
 {
 	if ( e->frame >= numFrames_ || e->frame < 0 )
 	{
-		VID_Printf( PRINT_ALL, "%s: no such frame %d\n", e->model->name, e->frame );
+		Com_Printf( "%s: no such frame %d\n", e->model->name, e->frame );
 		e->frame = 0;
 	}
 	if ( ( e->oldframe >= numFrames_ ) || ( e->oldframe < 0 ) )
 	{
-		VID_Printf( PRINT_ALL, "%s: no such oldframe %d\n", e->model->name, e->oldframe );
+		Com_Printf( "%s: no such oldframe %d\n", e->model->name, e->oldframe );
 		e->oldframe = 0;
 	}
 

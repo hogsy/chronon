@@ -65,7 +65,7 @@ qboolean QGL_Init() {
 	GLenum err = glewInit();
 	if( err != GLEW_OK ) {
 		const char *msg = (const char *)glewGetErrorString( err );
-		VID_Printf( PRINT_ALL, "Failed to initialize glew, %s\n", msg );
+		Com_Printf( "Failed to initialize glew, %s\n", msg );
 		return false;
 	}
 

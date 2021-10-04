@@ -169,7 +169,7 @@ void GL_ScreenShot_f( void ) {
 		fclose( f );
 	}
 	if( i == 100 ) {
-		VID_Printf( PRINT_ALL, "SCR_ScreenShot_f: Couldn't create a file\n" );
+		Com_Printf( "SCR_ScreenShot_f: Couldn't create a file\n" );
 		return;
 	}
 
@@ -198,17 +198,17 @@ void GL_ScreenShot_f( void ) {
 	fclose( f );
 
 	free( buffer );
-	VID_Printf( PRINT_ALL, "Wrote %s\n", picname );
+	Com_Printf( "Wrote %s\n", picname );
 }
 
 /*
 ** GL_Strings_f
 */
 void GL_Strings_f( void ) {
-	VID_Printf( PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
-	VID_Printf( PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
-	VID_Printf( PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
-	VID_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	Com_DPrintf( "GL_VENDOR: %s\n", gl_config.vendor_string );
+	Com_DPrintf( "GL_RENDERER: %s\n", gl_config.renderer_string );
+	Com_DPrintf( "GL_VERSION: %s\n", gl_config.version_string );
+	Com_DPrintf( "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 }
 
 /*
