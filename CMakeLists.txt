@@ -30,7 +30,14 @@ if ( MSVC )
     add_compile_options(/W3)
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 else()
-    add_compile_options("-Wall -Wsign-compare -Wno-unused-function -Wno-unused-variable -Wno-format-truncation -Wold-style-declaration")
+    add_compile_options(
+            -Wall
+            -Wsign-compare
+            -Wno-unused-function
+            -Wno-unused-variable
+            -Wno-format-truncation
+            -Wold-style-declaration
+            )
 endif()
 
 # Get the current working branch
