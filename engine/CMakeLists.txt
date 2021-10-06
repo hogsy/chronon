@@ -35,11 +35,13 @@ if (WIN32)
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
             linux/cd_linux.cpp
+            linux/glob.cpp
             linux/in_linux.cpp
             linux/net_udp.cpp
             linux/q_shlinux.cpp
+            linux/snd_linux.cpp
             sdl2/sdl2_sys.cpp
-            #linux/vid_so.cpp
+            sdl2/sdl2_vid.cpp
             )
 endif ()
 
@@ -98,6 +100,7 @@ add_executable(engine WIN32
         server/sv_world.cpp
         # Platform
         ${ENGINE_PLATFORM_SOURCE}
+        system.cpp
         # 3rd Party
         ../3rdparty/miniz/miniz.c
         )

@@ -764,9 +764,9 @@ namespace nox
 {
 	enum class MessageBoxType
 	{
-		ERROR,
-		WARNING,
-		INFO,
+		MB_ERROR,
+		MB_WARNING,
+		MB_INFO,
 	};
 
 	void Sys_MessageBox( const char *error, MessageBoxType boxType );

@@ -78,5 +78,7 @@ foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${HOSAE_OUTPUT_DIR})
 endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
+include_directories(qcommon/include/)
+
 add_subdirectory(engine/)
 add_subdirectory(game/)

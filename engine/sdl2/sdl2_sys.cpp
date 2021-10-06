@@ -55,47 +55,18 @@ void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
 	Uint32 flags = 0;
 	switch ( boxType )
 	{
-		case MessageBoxType::ERROR:
+		case MessageBoxType::MB_ERROR:
 			flags |= SDL_MESSAGEBOX_ERROR;
 			break;
-		case MessageBoxType::WARNING:
+		case MessageBoxType::MB_WARNING:
 			flags |= SDL_MESSAGEBOX_WARNING;
 			break;
-		case MessageBoxType::INFO:
+		case MessageBoxType::MB_INFO:
 			flags |= SDL_MESSAGEBOX_INFORMATION;
 			break;
 	}
 
 	SDL_ShowSimpleMessageBox( flags, ENGINE_NAME, error, nullptr );
-}
-
-// todo: move into system.cpp
-void Sys_Error( const char *error, ... )
-{
-	CL_Shutdown();
-	Qcommon_Shutdown();
-
-	va_list argptr;
-	va_start( argptr, error );
-	int len = Q_vscprintf( error, argptr ) + 1;
-	char *text = new char[ len ];
-	vsprintf( text, error, argptr );
-	va_end( argptr );
-
-	Sys_MessageBox( text, nox::MessageBoxType::ERROR );
-
-	delete[] text;
-
-	exit( EXIT_FAILURE );
-}
-
-// todo: move into system.cpp
-void Sys_Quit()
-{
-	CL_Shutdown();
-	Qcommon_Shutdown();
-
-	exit( EXIT_SUCCESS );
 }
 
 void Sys_Init()

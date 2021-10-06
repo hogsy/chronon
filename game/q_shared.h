@@ -141,52 +141,7 @@ MATHLIB
 ==============================================================
 */
 
-namespace nox
-{
-	struct Vector2
-	{
-		float x{ 0.0f };
-		float y{ 0.0f };
-
-		virtual inline float &operator[]( const uint i )
-		{
-			assert( i < 2 );
-			return *( ( &x ) + i );
-		}
-	};
-
-	struct Vector3 : Vector2
-	{
-		float z{ 0.0f };
-
-		virtual inline float &operator[]( const uint i ) override
-		{
-			assert( i < 3 );
-			return *( ( &x ) + i );
-		}
-	};
-
-	struct Vector4 : Vector3
-	{
-		float w{ 0.0f };
-
-		virtual inline float &operator[]( const uint i ) override
-		{
-			assert( i < 4 );
-			return *( ( &x ) + i );
-		}
-	};
-}// namespace nox
-
-typedef float vec_t;
-typedef vec_t vec2_t[ 2 ];
-typedef vec_t vec3_t[ 3 ];
-typedef vec_t vec4_t[ 4 ];
-typedef vec_t vec5_t[ 5 ];
-
-typedef int fixed4_t;
-typedef int fixed8_t;
-typedef int fixed16_t;
+#include "qcommon/math_vector.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846  // matches value in gcc v2 math.h
@@ -195,42 +150,12 @@ typedef int fixed16_t;
 
 struct cplane_s;
 
-extern vec3_t vec3_origin;
-extern vec4_t vec4_origin;
-
 #define nanmask (255 << 23)
 
 #define IS_NAN(x) (((*(int *)&x) & nanmask) == nanmask)
 
 #define Q_ftol(f) (long)(f)
 
-#define DotProduct(x, y) (x[0] * y[0] + x[1] * y[1] + x[2] * y[2])
-#define VectorSubtract(a, b, c) \
-  (c[0] = a[0] - b[0], c[1] = a[1] - b[1], c[2] = a[2] - b[2])
-#define VectorAdd(a, b, c) \
-  (c[0] = a[0] + b[0], c[1] = a[1] + b[1], c[2] = a[2] + b[2])
-#define VectorCopy(a, b) (b[0] = a[0], b[1] = a[1], b[2] = a[2])
-#define VectorClear(a) (a[0] = a[1] = a[2] = 0)
-#define VectorNegate(a, b) (b[0] = -a[0], b[1] = -a[1], b[2] = -a[2])
-#define VectorSet(v, x, y, z) (v[0] = (x), v[1] = (y), v[2] = (z))
-
-void VectorMA(vec3_t veca, float scale, vec3_t vecb, vec3_t vecc);
-
-// just in case you do't want to use the macros
-vec_t _DotProduct(vec3_t v1, vec3_t v2);
-void _VectorSubtract(vec3_t veca, vec3_t vecb, vec3_t out);
-void _VectorAdd(vec3_t veca, vec3_t vecb, vec3_t out);
-void _VectorCopy(vec3_t in, vec3_t out);
-
-void ClearBounds(vec3_t mins, vec3_t maxs);
-void AddPointToBounds(vec3_t v, vec3_t mins, vec3_t maxs);
-int VectorCompare(vec3_t v1, vec3_t v2);
-vec_t VectorLength(vec3_t v);
-void CrossProduct(vec3_t v1, vec3_t v2, vec3_t cross);
-vec_t VectorNormalize(vec3_t v);  // returns vector length
-vec_t VectorNormalize2(vec3_t v, vec3_t out);
-void VectorInverse(vec3_t v);
-void VectorScale(vec3_t in, vec_t scale, vec3_t out);
 int Q_log2(int val);
 
 void R_ConcatRotations(float in1[3][3], float in2[3][3], float out[3][3]);
