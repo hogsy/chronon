@@ -28,12 +28,6 @@ extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_gamma;
 extern cvar_t *scr_viewsize;
 
-static cvar_t *gl_mode;
-static cvar_t *gl_driver;
-static cvar_t *gl_picmip;
-static cvar_t *gl_ext_palettedtexture;
-static cvar_t *gl_finish;
-
 static cvar_t *sw_mode;
 static cvar_t *sw_stipplealpha;
 

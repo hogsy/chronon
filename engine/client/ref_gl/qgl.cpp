@@ -28,10 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ** QGL_Shutdown() - unloads libraries, NULLs function pointers
 */
 
-#include "../client/ref_gl/gl_local.h"
-#include "glw_win.h"
+#include "gl_local.h"
 
-void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam ) {
+static FILE *logFilePtr = nullptr;
+
+void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam )
+{
 	Q_UNUSED( source );
 	Q_UNUSED( type );
 	Q_UNUSED( id );
@@ -39,15 +41,7 @@ void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum
 	Q_UNUSED( length );
 	Q_UNUSED( userParam );
 
-	fprintf( glw_state.log_fp, "GL ERROR: %s", message );
-}
-
-/*
-** QGL_Shutdown
-**
-** Unloads the specified DLL then nulls out all the proc pointers.
-*/
-void QGL_Shutdown() {
+	fprintf( logFilePtr, "GL ERROR: %s", message );
 }
 
 /*
@@ -60,11 +54,13 @@ void QGL_Shutdown() {
 ** might be.
 **
 */
-qboolean QGL_Init() {
+bool QGL_Init()
+{
 	glewExperimental = true;
 	GLenum err = glewInit();
-	if( err != GLEW_OK ) {
-		const char *msg = (const char *)glewGetErrorString( err );
+	if ( err != GLEW_OK )
+	{
+		const char *msg = ( const char * ) glewGetErrorString( err );
 		Com_Printf( "Failed to initialize glew, %s\n", msg );
 		return false;
 	}
@@ -76,43 +72,50 @@ qboolean QGL_Init() {
 	return true;
 }
 
-void GLimp_EnableLogging( qboolean enable ) {
-	if( !enable ) {
+void GLimp_EnableLogging( bool enable )
+{
+	if ( !enable )
+	{
 		glDisable( GL_DEBUG_OUTPUT );
 
-		if( glw_state.log_fp != nullptr ) {
-			fclose( glw_state.log_fp );
-			glw_state.log_fp = nullptr;
+		if ( logFilePtr != nullptr )
+		{
+			fclose( logFilePtr );
+			logFilePtr = nullptr;
 		}
 
 		return;
 	}
 
-	if( glw_state.log_fp != nullptr ) {
+	if ( logFilePtr != nullptr )
+	{
 		// Assume logging has already been enabled
 		return;
 	}
 
 	glEnable( GL_DEBUG_OUTPUT );
 
-	time_t aclock;
-	time( &aclock );
-
-	struct tm *newtime = localtime( &aclock );
-	asctime( newtime );
-
 	char buffer[ 1024 ];
-	Com_sprintf( buffer, sizeof( buffer ), "%s/gl.log", FS_Gamedir() );
-	glw_state.log_fp = fopen( buffer, "wt" );
-
-	fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
-}
-
-void GLimp_LogNewFrame() {
-	if( glw_state.log_fp == nullptr && gl_log->value ) {
-		// Probably lost handle to the log file!
-		GLimp_EnableLogging( gl_log->value );
+	snprintf( buffer, sizeof( buffer ), "%s/gl.log", FS_Gamedir() );
+	logFilePtr = fopen( buffer, "wt" );
+	if ( logFilePtr == nullptr )
+	{
+		Com_Printf( "Failed to open gl.log for writing!\n" );
+		return;
 	}
 
-	fprintf( glw_state.log_fp, "*** R_BeginFrame ***\n" );
+	time_t aclock;
+	time( &aclock );
+	fprintf( logFilePtr, "%s\n", asctime( localtime( &aclock ) ) );
+}
+
+void GLimp_LogNewFrame()
+{
+	if ( logFilePtr == nullptr && gl_log->value > 0.0f )
+	{
+		// Probably lost handle to the log file!
+		GLimp_EnableLogging( gl_log->value > 0.0f );
+	}
+
+	fprintf( logFilePtr, "*** R_BeginFrame ***\n" );
 }

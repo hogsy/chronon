@@ -995,7 +995,6 @@ int R_Init( void *hinstance, void *hWnd ) {
 
 	// initialize OS-specific parts of OpenGL
 	if( !GLimp_Init( hinstance, hWnd ) ) {
-		QGL_Shutdown();
 		return -1;
 	}
 
@@ -1004,14 +1003,12 @@ int R_Init( void *hinstance, void *hWnd ) {
 
 	// create the window and set up the context
 	if( !R_SetMode() ) {
-		QGL_Shutdown();
 		Com_Printf( "ref_gl::R_Init() - could not R_SetMode()\n" );
 		return -1;
 	}
 
 	// initialize our QGL dynamic bindings
 	if( !QGL_Init() ) {
-		QGL_Shutdown();
 		Com_Printf( "ref_gl::R_Init() - could not load \"%s\"\n",
 			gl_driver->string );
 		return -1;
@@ -1102,11 +1099,6 @@ void R_Shutdown( void ) {
 	** shut down OS specific OpenGL stuff like contexts, etc.
 	*/
 	GLimp_Shutdown();
-
-	/*
-	** shutdown our QGL subsystem
-	*/
-	QGL_Shutdown();
 }
 
 /*

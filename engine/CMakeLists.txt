@@ -25,12 +25,10 @@ if (WIN32)
             win32/glw_imp.cpp
             win32/in_win.cpp
             win32/net_wins.cpp
-            win32/qgl_win.cpp
             win32/q_shwin.cpp
             win32/snd_win.cpp
             win32/sys_win.cpp
             win32/vid_dll.cpp
-            win32/vid_menu.cpp
             )
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
@@ -66,6 +64,7 @@ add_executable(engine WIN32
         client/snd_dma.cpp
         client/snd_mem.cpp
         client/snd_mix.cpp
+        client/vid_menu.cpp
         client/x86.cpp
         ../game/m_flash.cpp
         ../game/q_shared.cpp
@@ -89,6 +88,7 @@ add_executable(engine WIN32
         client/ref_gl/gl_rmisc.cpp
         client/ref_gl/gl_rsurf.cpp
         client/ref_gl/gl_warp.cpp
+        client/ref_gl/qgl.cpp
         # Server
         server/sv_ccmds.cpp
         server/sv_ents.cpp
