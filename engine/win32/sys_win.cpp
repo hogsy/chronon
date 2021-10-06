@@ -51,37 +51,24 @@ SYSTEM IO
 ===============================================================================
 */
 
-void Sys_Error( const char *error, ... ) {
-	CL_Shutdown();
-	Qcommon_Shutdown();
+void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
+{
+	unsigned int flags = MB_OK;
+	switch ( boxType )
+	{
+		case MessageBoxType::MB_ERROR:
+			flags |= MB_ICONERROR;
+			break;
+		case MessageBoxType::MB_WARNING:
+			flags |= MB_ICONWARNING;
+			break;
+		case MessageBoxType::MB_INFO:
+			flags |= MB_ICONINFORMATION;
+			break;
+	}
 
-	va_list argptr;
-	va_start( argptr, error );
-	int len = Q_vscprintf( error, argptr ) + 1;
-	char *text = static_cast<char*>( Z_Malloc( len ) );
-	vsprintf( text, error, argptr );
-	va_end( argptr );
-
-	MessageBox( nullptr, text, "Error", 0 /* MB_OK */ );
-
-	Z_Free( text );
-
-	if( qwclsemaphore ) CloseHandle( qwclsemaphore );
-
-	exit( EXIT_FAILURE );
+	MessageBox( nullptr, error, ENGINE_NAME, MB_OK );
 }
-
-void Sys_Quit( void ) {
-	timeEndPeriod( 1 );
-
-	CL_Shutdown();
-	Qcommon_Shutdown();
-	CloseHandle( qwclsemaphore );
-
-	exit( 0 );
-}
-
-//================================================================
 
 /*
 ================
