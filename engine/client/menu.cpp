@@ -2156,7 +2156,7 @@ void StartServer_MenuInit( void )
 	{
 		"deathmatch",
 		"cooperative",
-		0
+		nullptr
 	};
 
 	char *buffer;
@@ -2170,20 +2170,17 @@ void StartServer_MenuInit( void )
 	** load the list of map names
 	*/
 	Com_sprintf( mapsname, sizeof( mapsname ), "%s/maps.lst", FS_Gamedir() );
-	if ( ( fp = fopen( mapsname, "rb" ) ) == 0 )
+	if ( ( fp = fopen( mapsname, "rb" ) ) == nullptr )
 	{
 		if ( ( length = FS_LoadFile( "maps.lst", ( void ** ) &buffer ) ) == -1 )
 			Com_Error( ERR_DROP, "couldn't find maps.lst\n" );
 	}
 	else
 	{
-#ifdef _WIN32
-		length = filelength( fileno( fp  ) );
-#else
 		fseek(fp, 0, SEEK_END);
 		length = ftell(fp);
 		fseek(fp, 0, SEEK_SET);
-#endif
+
 		buffer = static_cast<char*>( malloc( length ) );
 		fread( buffer, length, 1, fp );
 	}

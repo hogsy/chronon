@@ -786,13 +786,6 @@ int GLimp_Init( void *hinstance, void *wndproc )
 }
 
 /*
-** GLimp_BeginFrame
-*/
-void GLimp_BeginFrame( float camera_seperation )
-{
-}
-
-/*
 ** GLimp_EndFrame
 ** 
 ** Responsible for doing a swapbuffers and possibly for other stuff

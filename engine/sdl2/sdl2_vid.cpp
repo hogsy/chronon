@@ -205,10 +205,6 @@ bool GLimp_InitGL()
 	return true;
 }
 
-void GLimp_BeginFrame()
-{
-}
-
 void GLimp_EndFrame()
 {
 	SDL_GL_SwapWindow( sdlWindow );

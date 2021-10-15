@@ -220,7 +220,7 @@ void GL_SetDefaultState( void ) {
 	glEnable( GL_TEXTURE_2D );
 
 	glEnable( GL_ALPHA_TEST );
-	glAlphaFunc( GL_GREATER, 0.666 );
+	glAlphaFunc( GL_GREATER, 0.45f );
 
 	glDisable( GL_DEPTH_TEST );
 	glDisable( GL_CULL_FACE );

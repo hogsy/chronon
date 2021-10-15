@@ -127,7 +127,7 @@ void Sys_UnloadGame()
 
 #define GAME_MODULE_NAME "game"
 #if defined( _WIN32 )
-#	define GAME_MODULE_EXT ".dll";
+#	define GAME_MODULE_EXT ".dll"
 #else
 #	define GAME_MODULE_EXT ".so"
 #endif

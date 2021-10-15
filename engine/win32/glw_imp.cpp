@@ -476,24 +476,6 @@ fail:
 }
 
 /*
-** GLimp_BeginFrame
-*/
-void GLimp_BeginFrame()
-{
-	if ( gl_bitdepth->modified )
-	{
-		if ( gl_bitdepth->value != 0 && !glw_state.allowdisplaydepthchange )
-		{
-			Cvar_SetValue( "gl_bitdepth", 0 );
-			Com_Printf( "gl_bitdepth requires Win95 OSR2.x or WinNT 4.x\n" );
-		}
-		gl_bitdepth->modified = false;
-	}
-
-	glDrawBuffer( GL_BACK );
-}
-
-/*
 ** GLimp_EndFrame
 **
 ** Responsible for doing a swapbuffers and possibly for other stuff
