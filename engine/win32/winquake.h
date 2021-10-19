@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // winquake.h: Win32-specific Quake header file
 
+#if defined( _MSC_VER )
 #pragma warning( disable : 4229 )  // mgraph gets this
+#endif
 
 #include <windows.h>
-
 #include <dsound.h>
 
 #define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE)

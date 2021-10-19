@@ -614,15 +614,15 @@ int entitycmpfnc( const entity_t *a, const entity_t *b )
 	*/
 	if ( a->model == b->model )
 	{
-		return ( long ) a->skin - ( long ) b->skin;
+		return ( intptr_t ) a->skin - ( intptr_t ) b->skin;
 	}
 	else
 	{
-		return ( long ) a->model - ( long ) b->model;
+		return ( intptr_t ) a->model - ( intptr_t ) b->model;
 	}
 }
 
-void SCR_TimeRefresh_f (void)
+void SCR_TimeRefresh_f ()
 {
 	int		i;
 	int		start, stop;

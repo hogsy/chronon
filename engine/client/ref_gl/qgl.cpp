@@ -119,11 +119,3 @@ void GLimp_LogNewFrame()
 
 	fprintf( logFilePtr, "*** R_BeginFrame ***\n" );
 }
-
-/*
-** GLimp_BeginFrame
-*/
-void GLimp_BeginFrame()
-{
-	glDrawBuffer( GL_BACK );
-}

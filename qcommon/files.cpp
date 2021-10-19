@@ -87,7 +87,7 @@ static const PackageIndex *FS_GetPackageFileIndex( const Package *package, const
  * Decompress the given file and carry out validation.
  */
 static bool FS_DecompressFile( const uint8_t *srcBuffer, size_t srcLength, uint8_t *dstBuffer, size_t *dstLength, size_t expectedLength ) {
-	int returnCode = mz_uncompress( dstBuffer, (mz_ulong *)dstLength, srcBuffer, srcLength );
+	int returnCode = mz_uncompress( dstBuffer, (mz_ulong *)dstLength, srcBuffer, (mz_ulong) srcLength );
 	if( returnCode != MZ_OK ) {
 		Com_Printf( "Failed to decompress data, return code \"%d\"!\n", returnCode );
 		return false;
@@ -764,7 +764,7 @@ void FS_InitFilesystem( void ) {
 
 	//
 	// cddir <path>
-	// Logically concatenates the cddir after the basedir for 
+	// Logically concatenates the cddir after the basedir for
 	// allows the game to run from outside the data tree
 	//
 	fs_cddir = Cvar_Get( "cddir", "", CVAR_NOSET );

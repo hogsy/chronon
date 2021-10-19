@@ -308,7 +308,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 
 	case WM_DESTROY:
 		// let sound and input know about this?
-		cl_hwnd = NULL;
+		cl_hwnd = nullptr;
 		return DefWindowProc( hWnd, uMsg, wParam, lParam );
 
 	case WM_ACTIVATE:
@@ -420,9 +420,9 @@ simply by setting the modified flag for the vid_ref variable, which will
 cause the entire video mode and refresh DLL to be reset on the next frame.
 ============
 */
-void VID_Restart_f( void ) { vid_ref->modified = true; }
+void VID_Restart_f() { vid_ref->modified = true; }
 
-void VID_Front_f( void ) {
+void VID_Front_f() {
 	SetWindowLong( cl_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST );
 	SetForegroundWindow( cl_hwnd );
 }
@@ -490,8 +490,9 @@ void VID_NewWindow( int width, int height ) {
 VID_LoadRefresh
 ==============
 */
-qboolean VID_LoadRefresh( char *name ) {
-	if( R_Init( global_hInstance, MainWndProc ) == -1 ) {
+qboolean VID_LoadRefresh()
+{
+	if( R_Init( global_hInstance, ( void * ) MainWndProc ) == -1 ) {
 		R_Shutdown();
 		return false;
 	}
@@ -536,7 +537,7 @@ void VID_CheckChanges( void ) {
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		if( !VID_LoadRefresh( "ref_gl.dll" ) ) {
+		if( !VID_LoadRefresh() ) {
 			Com_Error( ERR_FATAL, "Failed to reload refresh!" );
 		}
 		cls.disable_screen = false;

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // q_shared.h -- included first by ALL program modules
 
-#ifdef _WIN32
+#if defined( _MSC_VER )
 // unknown pragmas are SUPPOSED to be ignored, but....
 #pragma warning(disable : 4244)  // MIPS
 #pragma warning(disable : 4136)  // X86
@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma warning(disable : 4018)  // signed/unsigned mismatch
 #pragma warning(disable : 4305)  // truncation from const double to float
-
 #endif
 
 #include <cassert>

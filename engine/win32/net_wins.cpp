@@ -46,7 +46,7 @@ loopback_t	loopbacks[2];
 int			ip_sockets[2];
 int			ipx_sockets[2];
 
-char *NET_ErrorString (void);
+const char *NET_ErrorString (void);
 
 //=============================================================================
 
@@ -803,7 +803,7 @@ void	NET_Shutdown (void)
 NET_ErrorString
 ====================
 */
-char *NET_ErrorString (void)
+const char *NET_ErrorString ()
 {
 	int		code;
 

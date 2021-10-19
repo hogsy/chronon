@@ -1129,7 +1129,7 @@ void R_BeginFrame( float camera_separation ) {
 		GLimp_LogNewFrame();
 	}
 
-	GLimp_BeginFrame();
+	glDrawBuffer( GL_BACK );
 
 	/*
 	** go into 2D mode

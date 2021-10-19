@@ -29,6 +29,8 @@ if (WIN32)
             win32/snd_win.cpp
             win32/sys_win.cpp
             win32/vid_dll.cpp
+            #sdl2/sdl2_sys.cpp
+            #sdl2/sdl2_vid.cpp
             )
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
@@ -79,6 +81,7 @@ add_executable(engine WIN32
         ../qcommon/md4.cpp
         ../qcommon/net_chan.cpp
         ../qcommon/pmove.cpp
+
         # Renderer
         client/ref_gl/gl_draw.cpp
         client/ref_gl/gl_image.cpp
@@ -87,8 +90,10 @@ add_executable(engine WIN32
         client/ref_gl/gl_rmain.cpp
         client/ref_gl/gl_rmisc.cpp
         client/ref_gl/gl_rsurf.cpp
+        client/ref_gl/gl_shader_manager.cpp
         client/ref_gl/gl_warp.cpp
         client/ref_gl/qgl.cpp
+
         # Server
         server/sv_ccmds.cpp
         server/sv_ents.cpp
@@ -115,14 +120,25 @@ target_include_directories(engine PRIVATE
         ../
         ../3rdparty/
         ../3rdparty/glew/include/
+        ../3rdparty/sdl2/include/
         )
 
 if (WIN32)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        target_link_directories(engine PRIVATE
+                ../3rdparty/sdl2/lib/x64/
+                )
+    else()
+        target_link_directories(engine PRIVATE
+                ../3rdparty/sdl2/lib/x86/
+                )
+    endif()
     target_link_options(engine PRIVATE
             /NODEFAULTLIB:libcmt.lib
             /NODEFAULTLIB:libcmtd.lib
             )
     target_link_libraries(engine
+            SDL2
             glew32s
             Opengl32
             Ws2_32

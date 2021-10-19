@@ -1051,7 +1051,7 @@ void target_string_use (edict_t *self, edict_t *other, edict_t *activator)
 void SP_target_string (edict_t *self)
 {
 	if (!self->message)
-		self->message = "";
+		self->message = ( char * ) "";
 	self->use = target_string_use;
 }
 
