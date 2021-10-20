@@ -3,9 +3,9 @@ BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 #AlignConsecutiveAssignments: AcrossComments
-AlignConsecutiveBitFields: AcrossComments
-AlignConsecutiveMacros: AcrossComments
-#AlignConsecutiveDeclarations: AcrossComments
+AlignConsecutiveBitFields: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveDeclarations: Consecutive
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
