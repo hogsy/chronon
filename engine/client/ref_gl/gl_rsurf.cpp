@@ -26,9 +26,6 @@ static vec3_t	modelorg;		// relative to viewpoint
 
 msurface_t *r_alpha_surfaces;
 
-#define DYNAMIC_LIGHT_WIDTH  128
-#define DYNAMIC_LIGHT_HEIGHT 128
-
 #define LIGHTMAP_BYTES 4
 
 #define	BLOCK_WIDTH		128
@@ -53,13 +50,11 @@ typedef struct {
 	// main memory so texsubimage can update properly
 	byte		lightmap_buffer[ 4 * BLOCK_WIDTH * BLOCK_HEIGHT ];
 } gllightmapstate_t;
-
 static gllightmapstate_t gl_lms;
 
-
-static void		LM_InitBlock( void );
-static void     LM_UploadBlock();
-static qboolean	LM_AllocBlock( int w, int h, int *x, int *y );
+static void LM_InitBlock();
+static void LM_UploadBlock();
+static bool LM_AllocBlock( int w, int h, int *x, int *y );
 
 extern void R_SetCacheState( msurface_t *surf );
 extern void R_BuildLightMap( msurface_t *surf, byte *dest, int stride );
@@ -148,8 +143,6 @@ R_RenderBrushPoly
 ================
 */
 void R_RenderBrushPoly( msurface_t *fa ) {
-	return;
-
 	int			maps;
 	image_t *image;
 	qboolean is_dynamic = false;
@@ -750,10 +743,7 @@ static void LM_InitBlock() {
 
 static void LM_UploadBlock()
 {
-	int texture;
-	int height = 0;
-
-	texture = gl_lms.current_lightmap_texture;
+	int texture = gl_lms.current_lightmap_texture;
 
 	GL_Bind( gl_state.lightmap_textures + texture );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
