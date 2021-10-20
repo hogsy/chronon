@@ -484,18 +484,21 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	FS_FreeFile( pcx );
 }
 
-static void LoadImage32( const char *name, byte **pic, int *width, int *height ) {
-	*pic = NULL;
+static void LoadImage32( const char *name, byte **pic, int *width, int *height )
+{
+	*pic = nullptr;
 
 	byte *buffer;
-	int length = FS_LoadFile( name, (void **)&buffer );
-	if( buffer == NULL ) {
+	int   length = FS_LoadFile( name, ( void   **) &buffer );
+	if ( buffer == nullptr )
+	{
 		return;
 	}
 
-	int comp; /* this gets ignored for now */
+	int   comp; /* this gets ignored for now */
 	byte *rgbData = stbi_load_from_memory( buffer, length, width, height, &comp, 4 );
-	if( rgbData == NULL ) {
+	if ( rgbData == nullptr )
+	{
 		Com_Error( ERR_DROP, "Failed to read %s!\n%s\n", name, stbi_failure_reason() );
 	}
 
@@ -628,47 +631,7 @@ void GL_ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *out,
 }
 
 /*
-================
-GL_LightScaleTexture
-
-Scale up the pixel values in a texture to increase the
-lighting range
-================
-*/
-void GL_LightScaleTexture( unsigned *in, int inwidth, int inheight, qboolean only_gamma ) {
-	if( only_gamma ) {
-		int		i, c;
-		byte *p;
-
-		p = (byte *)in;
-
-		c = inwidth * inheight;
-		for( i = 0; i < c; i++, p += 4 ) {
-			p[ 0 ] = gammatable[ p[ 0 ] ];
-			p[ 1 ] = gammatable[ p[ 1 ] ];
-			p[ 2 ] = gammatable[ p[ 2 ] ];
-		}
-	} else {
-		int		i, c;
-		byte *p;
-
-		p = (byte *)in;
-
-		c = inwidth * inheight;
-		for( i = 0; i < c; i++, p += 4 ) {
-			p[ 0 ] = gammatable[ intensitytable[ p[ 0 ] ] ];
-			p[ 1 ] = gammatable[ intensitytable[ p[ 1 ] ] ];
-			p[ 2 ] = gammatable[ intensitytable[ p[ 2 ] ] ];
-		}
-	}
-}
-
-/*
-================
-GL_MipMap
-
-Operates in place, quartering the size of the texture
-================
+** Operates in place, quartering the size of the texture
 */
 void GL_MipMap( byte *in, int width, int height ) {
 	int		i, j;
@@ -719,20 +682,18 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 		comp = samples;
 	}
 
-	//GL_LightScaleTexture( scaled, scaled_width, scaled_height, !mipmap );
-
 	glTexImage2D( GL_TEXTURE_2D, 0, comp, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
 	if ( mipmap )
 	{
 		glGenerateMipmap( GL_TEXTURE_2D );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
 	}
 	else
 	{
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
 	}
 
 	return ( samples == gl_alpha_format );
@@ -855,28 +816,24 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 }
 
 /*
-===============
-GL_FindImage
-
-Finds or loads the given image
-===============
+** Finds or loads the given image
 */
-image_t *GL_FindImage( const char *name, imagetype_t type ) {
-	image_t *image;
-	int		i;
-	byte *pic, *palette;
-	int		width, height;
-
-	if( !name )
-		return nullptr;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
+image_t *GL_FindImage( const char *name, imagetype_t type )
+{
+	if ( !name )
+		return nullptr;//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
 
 	size_t len = strlen( name );
-	if( len < 5 )
-		return nullptr;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
+	if ( len < 5 )
+		return nullptr;//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
 
 	// look for it
-	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
-		if( !strcmp( name, image->name ) ) {
+	int      i;
+	image_t *image;
+	for ( i = 0, image = gltextures; i < numgltextures; i++, image++ )
+	{
+		if ( !strcmp( name, image->name ) )
+		{
 			image->registration_sequence = registration_sequence;
 			return image;
 		}
@@ -888,39 +845,48 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	// load the pic from disk
 	//
 
-  // Right, this is kinda gross but Anachronox seems to strip the extension
-  // from the filename and then load whatever standard formats it supports
+	// Right, this is kinda gross but Anachronox seems to strip the extension
+	// from the filename and then load whatever standard formats it supports
 
-	struct ImageLoader {
+	struct ImageLoader
+	{
 		const char *extension;
-		unsigned int depth;
-		void( *Load8bpp )( const char *filename, byte **pic, byte **palette, int *width, int *height );
-		void( *Load32bpp )( const char *filename, byte **pic, int *width, int *height );
+		int         depth;
+		void ( *Load8bpp )( const char *filename, byte **pic, byte **palette, int *width, int *height );
+		void ( *Load32bpp )( const char *filename, byte **pic, int *width, int *height );
 	};
 
 	static ImageLoader loaders[] = {
-		{ "tga", 32, nullptr, LoadImage32 },
-		{ "png", 32, nullptr, LoadImage32 },
-		{ "bmp", 32, nullptr, LoadImage32 },
-		{ "pcx", 8, LoadPCX, nullptr },
+			{ "tga", 32, nullptr, LoadImage32 },
+			{ "png", 32, nullptr, LoadImage32 },
+			{ "bmp", 32, nullptr, LoadImage32 },
+			{ "pcx", 8, LoadPCX, nullptr },
 	};
 
 	char uname[ MAX_QPATH ];
 	strcpy( uname, name );
 
-	for( auto &loader : loaders ) {
+	byte *pic, *palette;
+	for ( auto &loader : loaders )
+	{
 		uname[ len - 3 ] = '\0';
 		strcat( uname, loader.extension );
 
+		int width, height;
+
 		pic = nullptr;
 		palette = nullptr;
-		if( loader.depth == 8 ) {
+		if ( loader.depth == 8 )
+		{
 			loader.Load8bpp( uname, &pic, &palette, &width, &height );
-		} else {
+		}
+		else
+		{
 			loader.Load32bpp( uname, &pic, &width, &height );
 		}
 
-		if( pic != nullptr ) {
+		if ( pic != nullptr )
+		{
 			image = GL_LoadPic( uname, pic, width, height, type, loader.depth );
 			// HACK: store the original name for comparing later!
 			strcpy( image->name, name );
@@ -928,7 +894,8 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 		}
 	}
 
-	if( image == nullptr ) {
+	if ( image == nullptr )
+	{
 		Com_Printf( "WARNING: Failed to find \"%s\"!\n", name );
 		return nullptr;
 	}
@@ -939,27 +906,15 @@ image_t *GL_FindImage( const char *name, imagetype_t type ) {
 	return image;
 }
 
-
-
-/*
-===============
-R_RegisterSkin
-===============
-*/
 struct image_s *R_RegisterSkin( const char *name ) {
 	return GL_FindImage( name, it_skin );
 }
 
-
 /*
-================
-GL_FreeUnusedImages
-
-Any image that was not touched on this registration sequence
-will be freed.
-================
+** Any image that was not touched on this registration sequence
+** will be freed.
 */
-void GL_FreeUnusedImages( void ) {
+void GL_FreeUnusedImages() {
 	int		i;
 	image_t *image;
 
@@ -980,13 +935,7 @@ void GL_FreeUnusedImages( void ) {
 	}
 }
 
-
-/*
-===============
-Draw_GetPalette
-===============
-*/
-int Draw_GetPalette( void ) {
+int Draw_GetPalette() {
 	int		i;
 	int		r, g, b;
 	unsigned	v;
@@ -1023,7 +972,7 @@ static void Image_LoadTextureInfo();
 GL_InitImages
 ===============
 */
-void	GL_InitImages( void ) {
+void	GL_InitImages() {
 	int		i, j;
 	float	g = vid_gamma->value;
 
@@ -1179,7 +1128,7 @@ static void Image_LoadTextureInfo()
 				break;
 			}
 
-			tmp[ i ] = tolower( *token++ );
+			tmp[ i ] = ( char ) tolower( *token++ );
 		}
 
 		auto i = textureSurfaceFlags.find( tmp );

@@ -300,6 +300,11 @@ R_DrawEntitiesOnList
 =============
 */
 void R_DrawEntitiesOnList( void ) {
+	if ( gl_showtris->value > 0.0f )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	}
+
 	int i;
 
 	if( !r_drawentities->value ) return;
@@ -320,7 +325,7 @@ void R_DrawEntitiesOnList( void ) {
 			switch( currentmodel->type ) {
 			case mod_alias:
 				{
-					nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
+					auto *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
 					aliasModel->Draw( currententity );
 					break;
 				}
@@ -360,7 +365,7 @@ void R_DrawEntitiesOnList( void ) {
 			switch( currentmodel->type ) {
 			case mod_alias:
 				{
-					nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
+					auto *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
 					aliasModel->Draw( currententity );
 					break;
 				}
@@ -379,12 +384,13 @@ void R_DrawEntitiesOnList( void ) {
 		}
 	}
 	glDepthMask( 1 );  // back to writing
+
+	if ( gl_showtris->value > 0.0f )
+	{
+		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	}
 }
 
-/*
-** GL_DrawParticles
-**
-*/
 void GL_DrawParticles( int num_particles, const particle_t particles[],
 	const unsigned colortable[ 768 ] ) {
 	const particle_t *p;
@@ -1220,7 +1226,7 @@ void R_SetPalette( const unsigned char *palette ) {
 
 	glClearColor( 0, 0, 0, 0 );
 	glClear( GL_COLOR_BUFFER_BIT );
-	glClearColor( 1, 0, 0.5, 0.5 );
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 }
 
 /*

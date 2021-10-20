@@ -215,7 +215,7 @@ void GL_Strings_f( void ) {
 ** GL_SetDefaultState
 */
 void GL_SetDefaultState( void ) {
-	glClearColor( 1, 0, 0.5, 0.5 );
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	glCullFace( GL_FRONT );
 	glEnable( GL_TEXTURE_2D );
 

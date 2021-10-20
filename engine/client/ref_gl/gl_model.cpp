@@ -495,7 +495,7 @@ void CalcSurfaceExtents( msurface_t *s ) {
 void GL_BuildPolygonFromSurface( msurface_t *fa );
 void GL_CreateSurfaceLightmap( msurface_t *surf );
 void GL_EndBuildingLightmaps( void );
-void GL_BeginBuildingLightmaps( model_t *m );
+void GL_BeginBuildingLightmaps();
 
 /*
 =================
@@ -521,7 +521,7 @@ void Mod_LoadFaces( lump_t *l ) {
 
 	currentmodel = loadmodel;
 
-	GL_BeginBuildingLightmaps( loadmodel );
+	GL_BeginBuildingLightmaps();
 
 	for( surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
 		out->firstedge = LittleLong( in->firstedge );
