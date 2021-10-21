@@ -60,7 +60,7 @@ static qboolean VerifyDriver( void ) {
 /*
 ** VID_CreateWindow
 */
-#define	WINDOW_CLASS_NAME	"Quake 2"
+#define	WINDOW_CLASS_NAME "hosae"
 
 qboolean VID_CreateWindow( int width, int height, qboolean fullscreen ) {
 	WNDCLASS		wc;
@@ -76,10 +76,10 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen ) {
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = glw_state.hInstance;
-	wc.hIcon = 0;
-	wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+	wc.hIcon = nullptr;
+	wc.hCursor = LoadCursor( nullptr, IDC_ARROW );
 	wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
-	wc.lpszMenuName = 0;
+	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = WINDOW_CLASS_NAME;
 
 	if( !RegisterClass( &wc ) )
@@ -116,13 +116,13 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen ) {
 	glw_state.hWnd = CreateWindowEx(
 		exstyle,
 		WINDOW_CLASS_NAME,
-		"Quake 2",
+		WINDOW_CLASS_NAME,
 		stylebits,
 		x, y, w, h,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		glw_state.hInstance,
-		NULL );
+		nullptr );
 
 	if( !glw_state.hWnd )
 		Com_Error( ERR_FATAL, "Couldn't create window" );
