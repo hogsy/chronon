@@ -915,11 +915,42 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type )
 	int width, height, depth;
 	std::string loadName = Image_Load( name, &pic, &palette, &width, &height, &depth );
 
+	int originalWidth = width;
+	int originalHeight = height;
+
+	// See if a higher-res variant exists
+	static cvar_t *hdOverride = nullptr;
+	if ( hdOverride == nullptr )
+	{
+		hdOverride = Cvar_Get( "hd_override", "1", CVAR_ARCHIVE );
+	}
+
+	if ( hdOverride->value >= 1.0f )
+	{
+		byte *nPic, *nPal;
+		int nW, nH, nDepth;
+		std::string nLoadName = Image_Load( "hd/" + name, &nPic, &nPal, &nW, &nH, &nDepth );
+		if ( nPic != nullptr )
+		{
+			delete[] pic;
+			delete[] palette;
+			pic = nPic;
+			palette = nPal;
+			width = nW;
+			height = nH;
+			loadName = nLoadName;
+		}
+	}
+
 	if ( pic != nullptr )
 	{
 		image = GL_LoadPic( loadName, pic, width, height, type, depth );
 		// HACK: store the original name for comparing later!
 		image->name = name;
+
+		// If we loaded a higher-res replacement, this ensures we can retain the original tex coords
+		image->originalWidth = originalWidth;
+		image->originalHeight = originalHeight;
 	}
 
 	if ( image == nullptr )
