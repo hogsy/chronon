@@ -749,8 +749,8 @@ image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height, 
 	image->name = name;
 	image->registration_sequence = registration_sequence;
 
-	image->width = width;
-	image->height = height;
+	image->originalWidth = image->width = width;
+	image->originalHeight = image->height = height;
 	image->type = type;
 
 	if ( type == it_skin && bits == 8 )
