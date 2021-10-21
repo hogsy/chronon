@@ -231,7 +231,7 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 			break;
 
 		case IDBSPHEADER:
-			loadmodel->extradata = Hunk_Begin( 0x1000000 );
+			loadmodel->extradata = Hunk_Begin( 0x3D09000 );
 			Mod_LoadBrushModel( mod, buf );
 			loadmodel->extradatasize = Hunk_End();
 			break;
