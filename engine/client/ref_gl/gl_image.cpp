@@ -805,36 +805,73 @@ image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height, 
 ** Attempt to load an image in without an extension.
 ** Returns actual path after successful load, otherwise returns an empty string.
 */
-std::string Image_LoadAbstract( const std::string &name, byte **pic, byte **palette, int *width, int *height, int *depth )
+static std::string Image_Load( const std::string &name, byte **pic, byte **palette, int *width, int *height, int *depth )
 {
 	struct ImageLoader
 	{
-		const char *extension;
-		int         depth;
+		int depth;
 		void ( *Load8bpp )( const char *filename, byte **pic, byte **palette, int *width, int *height );
 		void ( *Load32bpp )( const char *filename, byte **pic, int *width, int *height );
 	};
 
-	static const ImageLoader loaders[] = {
-			{ "tga", 32, nullptr, LoadImage32 },
-			{ "png", 32, nullptr, LoadImage32 },
-			{ "bmp", 32, nullptr, LoadImage32 },
-			{ "pcx", 8, LoadPCX, nullptr },
+	static const std::map< const std::string, const ImageLoader > imageLoaders = {
+			{ "tga", { 32, nullptr, LoadImage32 } },
+			{ "png", { 32, nullptr, LoadImage32 } },
+			{ "bmp", { 32, nullptr, LoadImage32 } },
+			{ "pcx", { 8, LoadPCX, nullptr } },
 	};
 
-	for ( auto &loader : loaders )
+	std::string loadName;
+
+	// First check if there's an extension provided, and try loading that
+	size_t l = name.rfind( '.', name.length() );
+	std::string extension;
+	if ( l != std::string::npos )
 	{
-		std::string nName = name + "." + loader.extension;
+		extension = name.substr( l + 1 );
+		auto loader = imageLoaders.find( extension );
+		if ( loader != imageLoaders.end() )
+		{
+			*pic = nullptr;
+			*palette = nullptr;
+			if ( loader->second.depth == 8 )
+			{
+				loader->second.Load8bpp( name.c_str(), pic, palette, width, height );
+			}
+			else
+			{
+				loader->second.Load32bpp( name.c_str(), pic, width, height );
+			}
+
+			if ( *pic != nullptr )
+			{
+				*depth = loader->second.depth;
+				return name;
+			}
+		}
+
+		loadName = name.substr( 0, l );
+	}
+
+	for ( auto &loader : imageLoaders )
+	{
+		// If we already attempted to load this one, skip it
+		if ( extension == loader.first )
+		{
+			continue;
+		}
+
+		std::string nName = loadName + "." + loader.first;
 
 		*pic = nullptr;
 		*palette = nullptr;
-		if ( loader.depth == 8 )
+		if ( loader.second.depth == 8 )
 		{
-			loader.Load8bpp( nName.c_str(), pic, palette, width, height );
+			loader.second.Load8bpp( nName.c_str(), pic, palette, width, height );
 		}
 		else
 		{
-			loader.Load32bpp( nName.c_str(), pic, width, height );
+			loader.second.Load32bpp( nName.c_str(), pic, width, height );
 		}
 
 		if ( *pic == nullptr )
@@ -842,7 +879,7 @@ std::string Image_LoadAbstract( const std::string &name, byte **pic, byte **pale
 			continue;
 		}
 
-		*depth = loader.depth;
+		*depth = loader.second.depth;
 		return nName;
 	}
 
@@ -876,23 +913,7 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type )
 
 	byte *pic, *palette;
 	int width, height, depth;
-
-	// Right, this is kinda gross but Anachronox seems to strip the extension
-	// from the filename and then load whatever standard formats it supports
-	// todo: rather than stripping here, try with the extension first, if that doesn't work, try everything else?
-
-	std::string loadName;
-	size_t l = name.rfind( '.', name.length() );
-	if ( l != std::string::npos )
-	{
-		loadName = name.substr( 0, l );
-	}
-	else
-	{
-		loadName = name;
-	}
-
-	loadName = Image_LoadAbstract( loadName, &pic, &palette, &width, &height, &depth );
+	std::string loadName = Image_Load( name, &pic, &palette, &width, &height, &depth );
 
 	if ( pic != nullptr )
 	{
