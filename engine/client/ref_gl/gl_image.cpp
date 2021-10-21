@@ -35,8 +35,8 @@ cvar_t *intensity;
 
 unsigned	d_8to24table[ 256 ];
 
-qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolean is_sky );
-qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap );
+static bool GL_Upload8( const byte *data, int width, int height, qboolean mipmap, qboolean is_sky );
+static bool GL_Upload32( unsigned *data, int width, int height, qboolean mipmap );
 
 
 int		gl_solid_format = 3;
@@ -200,19 +200,17 @@ gltmode_t gl_solid_modes[] = {
 
 #define NUM_GL_SOLID_MODES (sizeof(gl_solid_modes) / sizeof (gltmode_t))
 
-/*
-===============
-GL_TextureMode
-===============
-*/
-void GL_TextureMode( char *string ) {
+void GL_TextureMode( char *string )
+{
 	nox::uint mode;
-	for( mode = 0; mode < NUM_GL_MODES; mode++ ) {
-		if( !Q_stricmp( modes[ mode ].name, string ) )
+	for ( mode = 0; mode < NUM_GL_MODES; mode++ )
+	{
+		if ( !Q_stricmp( modes[ mode ].name, string ) )
 			break;
 	}
 
-	if( mode == NUM_GL_MODES ) {
+	if ( mode == NUM_GL_MODES )
+	{
 		Com_Printf( "bad filter name\n" );
 		return;
 	}
@@ -222,9 +220,11 @@ void GL_TextureMode( char *string ) {
 
 	// change all the existing mipmap texture objects
 	image_t *glt;
-	int i;
-	for( i = 0, glt = gltextures; i < numgltextures; i++, glt++ ) {
-		if( glt->type != it_pic && glt->type != it_sky ) {
+	int      i;
+	for ( i = 0, glt = gltextures; i < numgltextures; i++, glt++ )
+	{
+		if ( glt->type != it_pic && glt->type != it_sky )
+		{
 			GL_Bind( glt->texnum );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
@@ -232,20 +232,17 @@ void GL_TextureMode( char *string ) {
 	}
 }
 
-/*
-===============
-GL_TextureAlphaMode
-===============
-*/
-void GL_TextureAlphaMode( char *string ) {
-	unsigned int		i;
-
-	for( i = 0; i < NUM_GL_ALPHA_MODES; i++ ) {
-		if( !Q_stricmp( gl_alpha_modes[ i ].name, string ) )
+void GL_TextureAlphaMode( char *string )
+{
+	unsigned int i;
+	for ( i = 0; i < NUM_GL_ALPHA_MODES; i++ )
+	{
+		if ( !Q_stricmp( gl_alpha_modes[ i ].name, string ) )
 			break;
 	}
 
-	if( i == NUM_GL_ALPHA_MODES ) {
+	if ( i == NUM_GL_ALPHA_MODES )
+	{
 		Com_Printf( "bad alpha texture mode name\n" );
 		return;
 	}
@@ -253,20 +250,17 @@ void GL_TextureAlphaMode( char *string ) {
 	gl_tex_alpha_format = gl_alpha_modes[ i ].mode;
 }
 
-/*
-===============
-GL_TextureSolidMode
-===============
-*/
-void GL_TextureSolidMode( char *string ) {
-	unsigned int		i;
-
-	for( i = 0; i < NUM_GL_SOLID_MODES; i++ ) {
-		if( !Q_stricmp( gl_solid_modes[ i ].name, string ) )
+void GL_TextureSolidMode( const char *string )
+{
+	unsigned int i;
+	for ( i = 0; i < NUM_GL_SOLID_MODES; i++ )
+	{
+		if ( !Q_stricmp( gl_solid_modes[ i ].name, string ) )
 			break;
 	}
 
-	if( i == NUM_GL_SOLID_MODES ) {
+	if ( i == NUM_GL_SOLID_MODES )
+	{
 		Com_Printf( "bad solid texture mode name\n" );
 		return;
 	}
@@ -274,48 +268,45 @@ void GL_TextureSolidMode( char *string ) {
 	gl_tex_solid_format = gl_solid_modes[ i ].mode;
 }
 
-/*
-===============
-GL_ImageList_f
-===============
-*/
-void	GL_ImageList_f( void ) {
-	int		i;
-	image_t *image;
-	int		texels;
+void GL_ImageList_f()
+{
+	int         i;
+	image_t    *image;
+	int         texels;
 	const char *palstrings[ 2 ] =
-	{
-		"RGB",
-		"PAL"
-	};
+			{
+					"RGB",
+					"PAL" };
 
 	Com_Printf( "------------------\n" );
 	texels = 0;
 
-	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
-		if( image->texnum <= 0 )
+	for ( i = 0, image = gltextures; i < numgltextures; i++, image++ )
+	{
+		if ( image->texnum <= 0 )
 			continue;
 		texels += image->width * image->height;
-		switch( image->type ) {
-		case it_skin:
-			Com_Printf( "M" );
-			break;
-		case it_sprite:
-			Com_Printf( "S" );
-			break;
-		case it_wall:
-			Com_Printf( "W" );
-			break;
-		case it_pic:
-			Com_Printf( "P" );
-			break;
-		default:
-			Com_Printf( " " );
-			break;
+		switch ( image->type )
+		{
+			case it_skin:
+				Com_Printf( "M" );
+				break;
+			case it_sprite:
+				Com_Printf( "S" );
+				break;
+			case it_wall:
+				Com_Printf( "W" );
+				break;
+			case it_pic:
+				Com_Printf( "P" );
+				break;
+			default:
+				Com_Printf( " " );
+				break;
 		}
 
 		Com_Printf( " %3i %3i %s: %s\n",
-			image->width, image->height, palstrings[ image->paletted ], image->name );
+		            image->width, image->height, palstrings[ image->paletted ], image->name.c_str() );
 	}
 	Com_Printf( "Total texel count (not counting mipmaps): %i\n", texels );
 }
@@ -408,8 +399,8 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	int		dataByte, runLength;
 	byte *out, *pix;
 
-	*pic = NULL;
-	*palette = NULL;
+	*pic = nullptr;
+	*palette = nullptr;
 
 	//
 	// load the file
@@ -478,7 +469,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	if( raw - (byte *)pcx > len ) {
 		Com_DPrintf( "PCX file %s was malformed", filename );
 		delete[] *pic;
-		*pic = NULL;
+		*pic = nullptr;
 	}
 
 	FS_FreeFile( pcx );
@@ -587,12 +578,6 @@ void R_FloodFillSkin( byte *skin, int skinwidth, int skinheight ) {
 
 //=======================================================
 
-
-/*
-================
-GL_ResampleTexture
-================
-*/
 void GL_ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *out, int outwidth, int outheight ) {
 	int		i, j;
 	unsigned *inrow, *inrow2;
@@ -650,35 +635,35 @@ void GL_MipMap( byte *in, int width, int height ) {
 	}
 }
 
-qboolean uploaded_paletted;
-
-qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
-	int			samples;
-	int			i, c;
+static bool GL_Upload32( unsigned *data, int width, int height, qboolean mipmap )
+{
+	int   samples;
+	int   i, c;
 	byte *scan;
-	int comp;
-
-	uploaded_paletted = false;
+	int   comp;
 
 	// scan the texture for any non-255 alpha
 	c = width * height;
-	scan = ( (byte *)data ) + 3;
+	scan = ( ( byte * ) data ) + 3;
 	samples = gl_solid_format;
-	for( i = 0; i < c; i++, scan += 4 ) {
-		if( *scan != 255 ) {
+	for ( i = 0; i < c; i++, scan += 4 )
+	{
+		if ( *scan != 255 )
+		{
 			samples = gl_alpha_format;
 			break;
 		}
 	}
 
-	if( samples == gl_solid_format )
+	if ( samples == gl_solid_format )
 		comp = gl_tex_solid_format;
-	else if( samples == gl_alpha_format )
+	else if ( samples == gl_alpha_format )
 		comp = gl_tex_alpha_format;
-	else {
+	else
+	{
 		Com_Printf(
-			"Unknown number of texture components %i\n",
-			samples );
+				"Unknown number of texture components %i\n",
+				samples );
 		comp = samples;
 	}
 
@@ -699,113 +684,114 @@ qboolean GL_Upload32( unsigned *data, int width, int height, qboolean mipmap ) {
 	return ( samples == gl_alpha_format );
 }
 
-qboolean GL_Upload8( byte *data, int width, int height, qboolean mipmap, qboolean is_sky ) {
-	unsigned	trans[ 640 * 256 ];
-	int			i, s;
-	int			p;
+static bool GL_Upload8( const byte *data, int width, int height, qboolean mipmap, qboolean is_sky )
+{
+	unsigned trans[ 640 * 256 ];
+	int      i, s;
+	int      p;
 
 	s = width * height;
 
-	if( s > sizeof( trans ) / 4 )
+	if ( s > sizeof( trans ) / 4 )
 		Com_Error( ERR_DROP, "GL_Upload8: too large" );
 
-	for( i = 0; i < s; i++ ) {
+	for ( i = 0; i < s; i++ )
+	{
 		p = data[ i ];
 		trans[ i ] = d_8to24table[ p ];
 
-		if( p == 255 ) {	// transparent, so scan around for another color
+		if ( p == 255 )
+		{// transparent, so scan around for another color
 			// to avoid alpha fringes
 			// FIXME: do a full flood fill so mips work...
-			if( i > width && data[ i - width ] != 255 )
+			if ( i > width && data[ i - width ] != 255 )
 				p = data[ i - width ];
-			else if( i < s - width && data[ i + width ] != 255 )
+			else if ( i < s - width && data[ i + width ] != 255 )
 				p = data[ i + width ];
-			else if( i > 0 && data[ i - 1 ] != 255 )
+			else if ( i > 0 && data[ i - 1 ] != 255 )
 				p = data[ i - 1 ];
-			else if( i < s - 1 && data[ i + 1 ] != 255 )
+			else if ( i < s - 1 && data[ i + 1 ] != 255 )
 				p = data[ i + 1 ];
 			else
 				p = 0;
 			// copy rgb components
-			( (byte *)&trans[ i ] )[ 0 ] = ( (byte *)&d_8to24table[ p ] )[ 0 ];
-			( (byte *)&trans[ i ] )[ 1 ] = ( (byte *)&d_8to24table[ p ] )[ 1 ];
-			( (byte *)&trans[ i ] )[ 2 ] = ( (byte *)&d_8to24table[ p ] )[ 2 ];
+			( ( byte * ) &trans[ i ] )[ 0 ] = ( ( byte * ) &d_8to24table[ p ] )[ 0 ];
+			( ( byte * ) &trans[ i ] )[ 1 ] = ( ( byte * ) &d_8to24table[ p ] )[ 1 ];
+			( ( byte * ) &trans[ i ] )[ 2 ] = ( ( byte * ) &d_8to24table[ p ] )[ 2 ];
 		}
 	}
 
 	return GL_Upload32( trans, width, height, mipmap );
 }
 
-
 /*
-================
-GL_LoadPic
-
-This is also used as an entry point for the generated r_notexture
-================
+** This is also used as an entry point for the generated r_notexture
 */
-image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagetype_t type, int bits ) {
+image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height, imagetype_t type, int bits )
+{
 	image_t *image;
-	int			i;
+	int      i;
 
 	// find a free image_t
-	for( i = 0, image = gltextures; i < numgltextures; i++, image++ ) {
-		if( !image->texnum )
+	for ( i = 0, image = gltextures; i < numgltextures; i++, image++ )
+	{
+		if ( !image->texnum )
 			break;
 	}
-	if( i == numgltextures ) {
-		if( numgltextures == MAX_GLTEXTURES )
+	if ( i == numgltextures )
+	{
+		if ( numgltextures == MAX_GLTEXTURES )
 			Com_Error( ERR_DROP, "MAX_GLTEXTURES" );
 		numgltextures++;
 	}
 	image = &gltextures[ i ];
 
-	if( strlen( name ) >= sizeof( image->name ) )
-		Com_Error( ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name );
-	strcpy( image->name, name );
+	image->name = name;
 	image->registration_sequence = registration_sequence;
 
 	image->width = width;
 	image->height = height;
 	image->type = type;
 
-	if( type == it_skin && bits == 8 )
+	if ( type == it_skin && bits == 8 )
 		R_FloodFillSkin( pic, width, height );
 
 	// load little pics into the scrap
-	if( image->type == it_pic && bits == 8
-		&& image->width < 64 && image->height < 64 ) {
-		int		x, y;
-		int		j, k;
-		int		texnum;
+	if ( image->type == it_pic && bits == 8 && image->width < 64 && image->height < 64 )
+	{
+		int x, y;
+		int j, k;
+		int texnum;
 
 		texnum = Scrap_AllocBlock( image->width, image->height, &x, &y );
-		if( texnum == -1 )
+		if ( texnum == -1 )
 			goto nonscrap;
 		scrap_dirty = true;
 
 		// copy the texels into the scrap block
 		k = 0;
-		for( i = 0; i < image->height; i++ )
-			for( j = 0; j < image->width; j++, k++ )
+		for ( i = 0; i < image->height; i++ )
+			for ( j = 0; j < image->width; j++, k++ )
 				scrap_texels[ texnum ][ ( y + i ) * BLOCK_WIDTH + x + j ] = pic[ k ];
 		image->texnum = TEXNUM_SCRAPS + texnum;
 		image->scrap = true;
 		image->has_alpha = true;
-		image->sl = ( x + 0.01f ) / (float)BLOCK_WIDTH;
-		image->sh = ( x + image->width - 0.01f ) / (float)BLOCK_WIDTH;
-		image->tl = ( y + 0.01f ) / (float)BLOCK_WIDTH;
-		image->th = ( y + image->height - 0.01f ) / (float)BLOCK_WIDTH;
-	} else {
+		image->sl = ( x + 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->sh = ( x + image->width - 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->tl = ( y + 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->th = ( y + image->height - 0.01f ) / ( float ) BLOCK_WIDTH;
+	}
+	else
+	{
 	nonscrap:
 		image->scrap = false;
 		image->texnum = TEXNUM_IMAGES + ( image - gltextures );
 		GL_Bind( image->texnum );
-		if( bits == 8 )
+		if ( bits == 8 )
 			image->has_alpha = GL_Upload8( pic, width, height, ( image->type != it_pic && image->type != it_sky ), image->type == it_sky );
 		else
-			image->has_alpha = GL_Upload32( (unsigned *)pic, width, height, ( image->type != it_pic && image->type != it_sky ) );
-		image->paletted = uploaded_paletted;
+			image->has_alpha = GL_Upload32( ( unsigned * ) pic, width, height, ( image->type != it_pic && image->type != it_sky ) );
+		image->paletted = false;
 		image->sl = 0;
 		image->sh = 1;
 		image->tl = 0;
@@ -816,38 +802,11 @@ image_t *GL_LoadPic( const char *name, byte *pic, int width, int height, imagety
 }
 
 /*
-** Finds or loads the given image
+** Attempt to load an image in without an extension.
+** Returns actual path after successful load, otherwise returns an empty string.
 */
-image_t *GL_FindImage( const char *name, imagetype_t type )
+std::string Image_LoadAbstract( const std::string &name, byte **pic, byte **palette, int *width, int *height, int *depth )
 {
-	if ( !name )
-		return nullptr;//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-
-	size_t len = strlen( name );
-	if ( len < 5 )
-		return nullptr;//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
-
-	// look for it
-	int      i;
-	image_t *image;
-	for ( i = 0, image = gltextures; i < numgltextures; i++, image++ )
-	{
-		if ( !strcmp( name, image->name ) )
-		{
-			image->registration_sequence = registration_sequence;
-			return image;
-		}
-	}
-
-	image = nullptr;
-
-	//
-	// load the pic from disk
-	//
-
-	// Right, this is kinda gross but Anachronox seems to strip the extension
-	// from the filename and then load whatever standard formats it supports
-
 	struct ImageLoader
 	{
 		const char *extension;
@@ -856,47 +815,95 @@ image_t *GL_FindImage( const char *name, imagetype_t type )
 		void ( *Load32bpp )( const char *filename, byte **pic, int *width, int *height );
 	};
 
-	static ImageLoader loaders[] = {
+	static const ImageLoader loaders[] = {
 			{ "tga", 32, nullptr, LoadImage32 },
 			{ "png", 32, nullptr, LoadImage32 },
 			{ "bmp", 32, nullptr, LoadImage32 },
 			{ "pcx", 8, LoadPCX, nullptr },
 	};
 
-	char uname[ MAX_QPATH ];
-	strcpy( uname, name );
-
-	byte *pic, *palette;
 	for ( auto &loader : loaders )
 	{
-		uname[ len - 3 ] = '\0';
-		strcat( uname, loader.extension );
+		std::string nName = name + "." + loader.extension;
 
-		int width, height;
-
-		pic = nullptr;
-		palette = nullptr;
+		*pic = nullptr;
+		*palette = nullptr;
 		if ( loader.depth == 8 )
 		{
-			loader.Load8bpp( uname, &pic, &palette, &width, &height );
+			loader.Load8bpp( nName.c_str(), pic, palette, width, height );
 		}
 		else
 		{
-			loader.Load32bpp( uname, &pic, &width, &height );
+			loader.Load32bpp( nName.c_str(), pic, width, height );
 		}
 
-		if ( pic != nullptr )
+		if ( *pic == nullptr )
 		{
-			image = GL_LoadPic( uname, pic, width, height, type, loader.depth );
-			// HACK: store the original name for comparing later!
-			strcpy( image->name, name );
-			break;
+			continue;
 		}
+
+		*depth = loader.depth;
+		return nName;
+	}
+
+	return "";
+}
+
+/*
+** Finds or loads the given image
+*/
+image_t *GL_FindImage( const std::string &name, imagetype_t type )
+{
+	// look for it
+	int      i;
+	image_t *image;
+	for ( i = 0, image = gltextures; i < numgltextures; i++, image++ )
+	{
+		if ( name != image->name )
+		{
+			continue;
+		}
+
+		image->registration_sequence = registration_sequence;
+		return image;
+	}
+
+	image = nullptr;
+
+	//
+	// load the pic from disk
+	//
+
+	byte *pic, *palette;
+	int width, height, depth;
+
+	// Right, this is kinda gross but Anachronox seems to strip the extension
+	// from the filename and then load whatever standard formats it supports
+	// todo: rather than stripping here, try with the extension first, if that doesn't work, try everything else?
+
+	std::string loadName;
+	size_t l = name.rfind( '.', name.length() );
+	if ( l != std::string::npos )
+	{
+		loadName = name.substr( 0, l );
+	}
+	else
+	{
+		loadName = name;
+	}
+
+	loadName = Image_LoadAbstract( loadName, &pic, &palette, &width, &height, &depth );
+
+	if ( pic != nullptr )
+	{
+		image = GL_LoadPic( loadName, pic, width, height, type, depth );
+		// HACK: store the original name for comparing later!
+		image->name = name;
 	}
 
 	if ( image == nullptr )
 	{
-		Com_Printf( "WARNING: Failed to find \"%s\"!\n", name );
+		Com_Printf( "WARNING: Failed to find \"%s\"!\n", name.c_str() );
 		return nullptr;
 	}
 

@@ -63,13 +63,14 @@ typedef enum
 
 typedef struct image_s
 {
-	char               name[ MAX_QPATH ];// game path, including extension
+	std::string        name;// game path, including extension
 	imagetype_t        type;
-	int                width, height;              // source image
-	int                registration_sequence;      // 0 = free
-	struct msurface_s *texturechain;               // for sort-by-texture world drawing
-	int                texnum;                     // gl texture binding
-	float              sl, tl, sh, th;             // 0,0 - 1,1 unless part of the scrap
+	int                width, height;// source image
+	int                originalWidth, originalHeight;
+	int                registration_sequence;// 0 = free
+	struct msurface_s *texturechain;         // for sort-by-texture world drawing
+	int                texnum;               // gl texture binding
+	float              sl, tl, sh, th;       // 0,0 - 1,1 unless part of the scrap
 	qboolean           scrap;
 	qboolean           has_alpha;
 
@@ -110,8 +111,6 @@ typedef struct
 	float s, t;
 	float r, g, b;
 } glvert_t;
-
-#define MAX_LBM_HEIGHT 480
 
 #define BACKFACE_EPSILON 0.01
 
@@ -299,9 +298,9 @@ void GL_ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *out,
 
 struct image_s *R_RegisterSkin( const char *name );
 
-image_t *GL_LoadPic( const char *name, byte *pic, int width, int height,
+image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height,
                      imagetype_t type, int bits );
-image_t *GL_FindImage( const char *name, imagetype_t type );
+image_t *GL_FindImage( const std::string &name, imagetype_t type );
 void     GL_TextureMode( char *string );
 void     GL_ImageList_f( void );
 int Image_GetSurfaceFlagsForName( const std::string &path );
@@ -314,7 +313,7 @@ void GL_ShutdownImages( void );
 void GL_FreeUnusedImages( void );
 
 void GL_TextureAlphaMode( char *string );
-void GL_TextureSolidMode( char *string );
+void GL_TextureSolidMode( const char *string );
 
 void Fog_Setup( const vec3_t colour, float density );
 void Fog_Reset();
