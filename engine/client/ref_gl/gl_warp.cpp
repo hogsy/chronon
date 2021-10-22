@@ -497,8 +497,8 @@ void MakeSkyVec( float s, float t, int axis ) {
 	}
 
 	// avoid bilerp seam
-	s = ( s + 1 ) * 0.5;
-	t = ( t + 1 ) * 0.5;
+	s = ( s + 1.0f ) * 0.5f;
+	t = ( t + 1.0f ) * 0.5f;
 
 	if( s < sky_min )
 		s = sky_min;
@@ -509,7 +509,7 @@ void MakeSkyVec( float s, float t, int axis ) {
 	else if( t > sky_max )
 		t = sky_max;
 
-	t = 1.0 - t;
+	t = 1.0f - t;
 	glTexCoord2f( s, t );
 	glVertex3fv( v );
 }
@@ -520,15 +520,11 @@ R_DrawSkyBox
 ==============
 */
 int	skytexorder[ 6 ] = { 0,2,1,3,4,5 };
-void R_DrawSkyBox( void ) {
+void R_DrawSkyBox() {
 	int		i;
 
-#if 0
-	qglEnable( GL_BLEND );
-	GL_TexEnv( GL_MODULATE );
-	qglColor4f( 1, 1, 1, 0.5 );
-	qglDisable( GL_DEPTH_TEST );
-#endif
+	glDepthMask( GL_FALSE );
+
 	if( skyrotate ) {	// check for no sky at all
 		for( i = 0; i < 6; i++ )
 			if( skymins[ 0 ][ i ] < skymaxs[ 0 ][ i ]
@@ -564,12 +560,8 @@ void R_DrawSkyBox( void ) {
 		glEnd();
 	}
 	glPopMatrix();
-#if 0
-	glDisable( GL_BLEND );
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-	glColor4f( 1, 1, 1, 0.5 );
-	glEnable( GL_DEPTH_TEST );
-#endif
+
+	glDepthMask( GL_TRUE );
 }
 
 
@@ -599,7 +591,7 @@ void R_SetSky( const char *name, float rotate, vec3_t axis ) {
 		if( !sky_images[ i ] )
 			sky_images[ i ] = r_notexture;
 
-		if( gl_skymip->value || skyrotate ) {	// take less memory
+		if( gl_skymip->value > 0.0f || skyrotate > 0.0f ) {	// take less memory
 			gl_picmip->value--;
 			sky_min = 1.0 / 256;
 			sky_max = 255.0 / 256;
