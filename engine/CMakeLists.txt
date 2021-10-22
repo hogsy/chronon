@@ -106,13 +106,18 @@ add_executable(engine WIN32
         # Platform
         ${ENGINE_PLATFORM_SOURCE}
         system.cpp
+
         # 3rd Party
         ../3rdparty/miniz/miniz.c
+        ../3rdparty/glew/src/glew.c
         )
 add_dependencies(engine game)
 
 set_target_properties(engine PROPERTIES OUTPUT_NAME hosae)
 
+target_compile_definitions(engine PRIVATE
+        GLEW_STATIC
+        )
 target_link_directories(engine PRIVATE
         ../3rdparty/glew/lib/Release/x64/
         )
@@ -124,22 +129,24 @@ target_include_directories(engine PRIVATE
         )
 
 if (WIN32)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         target_link_directories(engine PRIVATE
                 ../3rdparty/sdl2/lib/x64/
                 )
-    else()
+    else ()
         target_link_directories(engine PRIVATE
                 ../3rdparty/sdl2/lib/x86/
                 )
-    endif()
-    target_link_options(engine PRIVATE
-            /NODEFAULTLIB:libcmt.lib
-            /NODEFAULTLIB:libcmtd.lib
-            )
+    endif ()
+
+    if (MSVC)
+        target_link_options(engine PRIVATE
+                /NODEFAULTLIB:libcmt.lib
+                /NODEFAULTLIB:libcmtd.lib
+                )
+    endif ()
     target_link_libraries(engine
             SDL2
-            glew32s
             Opengl32
             Ws2_32
             Winmm
@@ -148,7 +155,6 @@ elseif (UNIX)
     target_link_libraries(engine
             dl
             GL
-            GLEW
             SDL2
             )
 endif ()
