@@ -14,7 +14,7 @@ hopefully be fine from a legal standpoint.
 
 - Reimplement Anachronox (duh)
 - Support for multiple platforms; linux, android and more
-- Make the game easier to modify (i.e. support for larger texture sizes)
+- Make the game easier to modify
 - Improved visuals
 
 ## Features
@@ -28,18 +28,28 @@ hopefully be fine from a legal standpoint.
 It's still in a very early stage of development so nothing is playable yet.
 Below is a list of what's been done thus far.
 
-- 64-bit support
-- Support for loading from Anachronox's data packages; engine can initialize itself from the Anachronox game directory
+- Loading from Anachronox's _DAT_ packages
+- Engine can initialize itself from the Anachronox game directory
 - Some preliminary work on loading Anachronox's models
-- Support for the various texture formats Anachronox uses (e.g. PNG, BMP and TGA)
+- Supports the various texture formats Anachronox uses (e.g. PNG, BMP and TGA)
+- Respects custom texture surface flags, inc. alpha effects for textures
+- Extended limits, which is necessary for some maps to load
+
+### Extras
+
+These are extra features, the original game didn't necessarily feature, that this engine introduces.
+
+- Can target either x86 and x64 architectures
+- Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it)
+- Higher-resolution texture replacements can be loaded in
+    - Replacement textures need to be placed under a `hd` directory located under `anoxdata`
+    - Can be enabled/disabled via `hd_override` cvar
 - Replaced QGL with GLEW
 - Code is compiled as C++, as opposed to C
-- Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it)
-- Fixed a number of potential buffer overflows in the Q2 engine
 
 ## Wow, neat! How can I help?
 
-If you have experience with either C/C++, have a passion for programming and familiarity with the Anachronox game, then feel free to get in touch via our [Discord](https://discord.gg/EdmwgVk) server in the dedicated `#hosae` channel.
+If you have experience with either C/C++, have a passion for programming and familiarity with the Anachronox game, then feel free to get in touch via our [Discord](https://discord.gg/EdmwgVk) server in the `#anachronox` channel.
 
 Alternatively, feel free to ping me an email at [hogsy@oldtimes-software.com](mailto:hogsy@oldtimes-software.com).
 
