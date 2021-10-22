@@ -1441,8 +1441,8 @@ Handles offseting and rotation of the end points for moving and
 rotating entities
 ==================
 */
-#ifdef _WIN32
-#pragma optimize( "", off )
+#if defined( _MSC_VER )
+#	pragma optimize( "", off )
 #endif
 
 
@@ -1506,10 +1506,9 @@ trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 	return trace;
 }
 
-#ifdef _WIN32
-#pragma optimize( "", on )
+#if defined( _MSC_VER )
+#	pragma optimize( "", on )
 #endif
-
 
 
 /*

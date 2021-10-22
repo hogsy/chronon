@@ -59,9 +59,12 @@ typedef struct Package {
 /**
  * Convert back-slashes to forward slashes, to play nice with our packages.
  */
-static void FS_CanonicalisePath( char *path ) {
-	while( *path != '\0' ) {
-		if( *path == '\\' ) {
+void FS_CanonicalisePath( char *path )
+{
+	while ( *path != '\0' )
+	{
+		if ( *path == '\\' )
+		{
 			*path = '/';
 		}
 

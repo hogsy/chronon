@@ -265,8 +265,6 @@ main window procedure
 ====================
 */
 LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
-	LONG lRet = 0;
-
 	if( uMsg == MSH_MOUSEWHEEL ) {
 		if( ( (int)wParam ) > 0 ) {
 			Key_Event( K_MWHEELUP, true, sys_msg_time );
@@ -400,7 +398,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 	{
 		LONG CDAudio_MessageHandler( HWND hWnd, UINT uMsg, WPARAM wParam,
 			LPARAM lParam );
-		lRet = CDAudio_MessageHandler( hWnd, uMsg, wParam, lParam );
+		CDAudio_MessageHandler( hWnd, uMsg, wParam, lParam );
 	} break;
 
 	default:  // pass all unhandled messages to DefWindowProc

@@ -332,7 +332,7 @@ void CL_PrepRefresh (void)
 		Com_Printf ("                                     \r");
 	}
 
-	CL_LoadClientinfo (&cl.baseclientinfo, "unnamed\\male/grunt");
+	CL_LoadClientinfo (&cl.baseclientinfo, ( char * ) "unnamed\\male/grunt");
 
 	// set sky textures and speed
 	Com_Printf ("sky\r", i); 

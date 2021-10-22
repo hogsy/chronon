@@ -689,6 +689,8 @@ void FS_FreeFile( void *buffer );
 
 void FS_CreatePath( char *path );
 
+void FS_CanonicalisePath( char *path );
+
 /*
 ==============================================================
 

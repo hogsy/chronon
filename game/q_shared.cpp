@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <ctype.h>
+
+#include <cctype>
 
 #include "q_shared.h"
 
@@ -28,8 +29,8 @@ vec4_t vec4_origin = { 0,0,0,0 };
 
 //============================================================================
 
-#ifdef _WIN32
-#pragma optimize( "", off )
+#if defined( _MSC_VER )
+#	pragma optimize( "", off )
 #endif
 
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees ) {
@@ -85,13 +86,12 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 	}
 }
 
-#ifdef _WIN32
-#pragma optimize( "", on )
+#if defined( _MSC_VER )
+#	pragma optimize( "", on )
 #endif
 
 
-
-void AngleVectors( vec3_t angles, vec3_t forward, vec3_t right, vec3_t up ) {
+void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up ) {
 	float		angle;
 	static float		sr, sp, sy, cr, cp, cy;
 	// static to help MS compiler fp bugs
@@ -824,10 +824,10 @@ skipwhite:
 
 	// handle quoted strings specially
 	int len = 0;
-	int c = *data;
+	char c = *data;
 	if( c == '\"' ) {
 		data++;
-		while( 1 ) {
+		while( true ) {
 			c = *data++;
 			if( c == '\"' || !c ) {
 				com_token[ len ] = 0;
