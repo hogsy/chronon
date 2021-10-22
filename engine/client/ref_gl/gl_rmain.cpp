@@ -264,7 +264,6 @@ R_DrawNullModel
 */
 void R_DrawNullModel( void ) {
 	vec3_t shadelight;
-	int i;
 
 	if( currententity->flags & RF_FULLBRIGHT )
 		shadelight[ 0 ] = shadelight[ 1 ] = shadelight[ 2 ] = 1.0F;
@@ -279,14 +278,14 @@ void R_DrawNullModel( void ) {
 
 	glBegin( GL_TRIANGLE_FAN );
 	glVertex3f( 0, 0, -16 );
-	for( i = 0; i <= 4; i++ )
-		glVertex3f( 16 * cos( i * M_PI / 2 ), 16 * sin( i * M_PI / 2 ), 0 );
+	for( int i = 0; i <= 4; i++ )
+		glVertex3f( 16.0f * std::cos( ( float ) i * Q_PI / 2.0f ), 16.0f * std::sin( ( float ) i * Q_PI / 2.0f ), 0 );
 	glEnd();
 
 	glBegin( GL_TRIANGLE_FAN );
-	glVertex3f( 0, 0, 16 );
-	for( i = 4; i >= 0; i-- )
-		glVertex3f( 16 * cos( i * M_PI / 2 ), 16 * sin( i * M_PI / 2 ), 0 );
+	glVertex3f( 0, 0, 16.0f );
+	for( int i = 4; i >= 0; i-- )
+		glVertex3f( 16.0f * std::cos( ( float ) i * Q_PI / 2.0f ), 16.0f * std::sin( ( float ) i * Q_PI / 2.0f ), 0 );
 	glEnd();
 
 	glColor3f( 1, 1, 1 );
@@ -299,7 +298,7 @@ void R_DrawNullModel( void ) {
 R_DrawEntitiesOnList
 =============
 */
-void R_DrawEntitiesOnList( void ) {
+void R_DrawEntitiesOnList() {
 	if ( gl_showtris->value > 0.0f )
 	{
 		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -336,11 +335,7 @@ void R_DrawEntitiesOnList( void ) {
 				R_DrawSpriteModel( currententity );
 				break;
 			default:
-#if !defined( _DEBUG )
-				Com_Error( ERR_DROP, "Bad modeltype" );
-#else
 				R_DrawNullModel();
-#endif
 				break;
 			}
 		}

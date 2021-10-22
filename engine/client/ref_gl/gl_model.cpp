@@ -28,6 +28,7 @@ int modfilelen;
 
 void Mod_LoadSpriteModel( model_t *mod, void *buffer );
 void Mod_LoadBrushModel( model_t *mod, void *buffer );
+void Mod_LoadMDAModel( model_t * mod, void *buffer );
 void Mod_LoadAliasModel( model_t *mod, void *buffer );
 model_t *Mod_LoadModel( model_t *mod, qboolean crash );
 
@@ -214,12 +215,10 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 
 	switch ( LittleLong( *( unsigned * ) buf ) )
 	{
-		#if 0
-		case IDMDAHEADER:
-			void Mod_LoadMDAModel( model_t * mod, void *buffer );
-			Mod_LoadMDAModel( mod, buf );
-			break;
-		#endif
+		//case IDMDAHEADER:
+		//	Mod_LoadMDAModel( mod, buf );
+		//	break;
+
 		case IDALIASHEADER:
 			Mod_LoadAliasModel( mod, buf );
 			break;
@@ -861,17 +860,54 @@ void Mod_LoadMDAModel( model_t *mod, void *buffer )
 	const char *pos = ( const char * ) ( ( byte * ) buffer + 4 );
 	while ( *pos != '\0' )
 	{
-		if ( *pos == '#' )
+		const char *token = COM_Parse( &pos );
+		if ( *token == '#' )
 		{
 			pos = Script_SkipLine( pos );
 			continue;
+		}
+
+		if ( strcmp( token, "basemodel" ) == 0 )
+		{
+			token = COM_Parse( &pos );
+
+			char path[ MAX_PATH ];
+			snprintf( path, sizeof( path ), "%s", token );
+			FS_CanonicalisePath( path );
+
+			model_t *baseModel = Mod_ForName( path, false );
+			if ( baseModel == nullptr )
+			{
+				return;
+			}
+
+			mod->extradata = baseModel->extradata;
+			mod->extradatasize = baseModel->extradatasize;
+			mod->numframes = baseModel->numframes;
+
+			for ( unsigned int i = 0; i < MAX_MD2SKINS; ++i )
+			{
+				mod->skins[ i ] = baseModel->skins[ i ];
+			}
+
+			mod->type = mod_alias;
+
+			mod->mins[ 0 ] = -32.0f;
+			mod->mins[ 1 ] = -32.0f;
+			mod->mins[ 2 ] = -32.0f;
+			mod->maxs[ 0 ] = 32.0f;
+			mod->maxs[ 1 ] = 32.0f;
+			mod->maxs[ 2 ] = 32.0f;
+
+			// Only go so far as fetching the basemodel for now...
+			break;
 		}
 	}
 }
 
 void Mod_LoadAliasModel( model_t *mod, void *buffer ) 
 {
-	nox::AliasModel *aliasModel = new nox::AliasModel();
+	auto *aliasModel = new nox::AliasModel();
 	if ( !aliasModel->LoadFromBuffer( buffer ) )
 	{
 		Com_Printf( "Failed to load model, \"%s\", from buffer!\n", mod->name );
