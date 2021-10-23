@@ -118,7 +118,6 @@ cvar_t *gl_finish;
 cvar_t *gl_clear;
 cvar_t *gl_cull;
 cvar_t *gl_polyblend;
-cvar_t *gl_flashblend;
 cvar_t *gl_playermip;
 cvar_t *gl_saturatelighting;
 cvar_t *gl_swapinterval;
@@ -758,8 +757,6 @@ void R_RenderView( refdef_t *fd ) {
 	R_DrawWorld();
 	R_DrawEntitiesOnList();
 
-	R_RenderDlights();
-
 	R_DrawParticles();
 	R_DrawAlphaSurfaces();
 
@@ -872,7 +869,6 @@ void R_Register( void ) {
 	gl_clear = Cvar_Get( "gl_clear", "0", 0 );
 	gl_cull = Cvar_Get( "gl_cull", "1", 0 );
 	gl_polyblend = Cvar_Get( "gl_polyblend", "1", 0 );
-	gl_flashblend = Cvar_Get( "gl_flashblend", "0", 0 );
 	gl_playermip = Cvar_Get( "gl_playermip", "0", 0 );
 	gl_monolightmap = Cvar_Get( "gl_monolightmap", "0", 0 );
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );

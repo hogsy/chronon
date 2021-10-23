@@ -70,39 +70,6 @@ void R_RenderDlight (dlight_t *light)
 }
 
 /*
-=============
-R_RenderDlights
-=============
-*/
-void R_RenderDlights (void)
-{
-	int		i;
-	dlight_t	*l;
-
-	if (!gl_flashblend->value)
-		return;
-
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't
-											//  advanced yet for this frame
-	glDepthMask (0);
-	glDisable (GL_TEXTURE_2D);
-	glShadeModel (GL_SMOOTH);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_ONE, GL_ONE);
-
-	l = r_newrefdef.dlights;
-	for (i=0 ; i<r_newrefdef.num_dlights ; i++, l++)
-		R_RenderDlight (l);
-
-	glColor3f (1,1,1);
-	glDisable (GL_BLEND);
-	glEnable (GL_TEXTURE_2D);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (1);
-}
-
-
-/*
 =============================================================================
 
 DYNAMIC LIGHTS
@@ -110,11 +77,6 @@ DYNAMIC LIGHTS
 =============================================================================
 */
 
-/*
-=============
-R_MarkLights
-=============
-*/
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
 {
 	cplane_t	*splitplane;
@@ -165,9 +127,6 @@ void R_PushDlights (void)
 {
 	int		i;
 	dlight_t	*l;
-
-	if (gl_flashblend->value)
-		return;
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
 											//  advanced yet for this frame

@@ -250,6 +250,8 @@ void R_DrawAlphaSurfaces()
 
 	// todo: consider moving water onto their own list?
 
+	glDepthMask( GL_FALSE );
+
 	for ( msurface_t *s = r_alpha_surfaces; s; s = s->texturechain )
 	{
 		c_brush_polys++;
@@ -270,6 +272,8 @@ void R_DrawAlphaSurfaces()
 
 		GL_RenderLightmappedPoly( s );
 	}
+
+	glDepthMask( GL_TRUE );
 
 	GL_EnableMultitexture( false );
 
@@ -384,11 +388,10 @@ void R_DrawInlineBModel() {
 	dlight_t *lt;
 
 	// calculate dynamic lighting for bmodel
-	if( gl_flashblend->value <= 0.0f ) {
-		lt = r_newrefdef.dlights;
-		for( int k = 0; k < r_newrefdef.num_dlights; k++, lt++ ) {
-			R_MarkLights( lt, 1 << k, currentmodel->nodes + currentmodel->firstnode );
-		}
+	lt = r_newrefdef.dlights;
+	for ( int k = 0; k < r_newrefdef.num_dlights; k++, lt++ )
+	{
+		R_MarkLights( lt, 1 << k, currentmodel->nodes + currentmodel->firstnode );
 	}
 
 	if( currententity->flags & RF_TRANSLUCENT ) {
