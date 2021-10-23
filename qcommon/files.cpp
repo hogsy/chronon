@@ -429,16 +429,16 @@ int FS_LoadFile( const char *path, void **buffer ) {
 	// look for it in the filesystem or pack files
 	uint32_t length;
 	uint8_t *buf = FS_FOpenFile( upath, &length );
-	if( buf == NULL ) {
-		if( buffer != NULL ) {
-			*buffer = NULL;
+	if( buf == nullptr ) {
+		if( buffer != nullptr ) {
+			*buffer = nullptr;
 		}
 
 		return -1;
 	}
 
 	/* retain compat for fetching the length, for now */
-	if( buffer == NULL ) {
+	if( buffer == nullptr ) {
 		Z_Free( buf );
 
 		return length;

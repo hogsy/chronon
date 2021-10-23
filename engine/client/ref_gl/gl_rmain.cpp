@@ -304,12 +304,10 @@ void R_DrawEntitiesOnList() {
 		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	}
 
-	int i;
-
-	if( !r_drawentities->value ) return;
+	if( r_drawentities->value <= 0.0f ) return;
 
 	// draw non-transparent first
-	for( i = 0; i < r_newrefdef.num_entities; i++ ) {
+	for( int i = 0; i < r_newrefdef.num_entities; i++ ) {
 		currententity = &r_newrefdef.entities[ i ];
 		if( currententity->flags & RF_TRANSLUCENT ) continue;  // solid
 
@@ -321,22 +319,20 @@ void R_DrawEntitiesOnList() {
 				R_DrawNullModel();
 				continue;
 			}
-			switch( currentmodel->type ) {
-			case mod_alias:
-				{
-					auto *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
-					aliasModel->Draw( currententity );
+			switch ( currentmodel->type )
+			{
+				case mod_alias:
+					( ( nox::AliasModel * ) currentmodel->extradata )->Draw( currententity );
 					break;
-				}
-			case mod_brush:
-				R_DrawBrushModel( currententity );
-				break;
-			case mod_sprite:
-				R_DrawSpriteModel( currententity );
-				break;
-			default:
-				R_DrawNullModel();
-				break;
+				case mod_brush:
+					R_DrawBrushModel( currententity );
+					break;
+				case mod_sprite:
+					R_DrawSpriteModel( currententity );
+					break;
+				default:
+					R_DrawNullModel();
+					break;
 			}
 		}
 	}
@@ -344,7 +340,7 @@ void R_DrawEntitiesOnList() {
 	// draw transparent entities
 	// we could sort these if it ever becomes a problem...
 	glDepthMask( 0 );  // no z writes
-	for( i = 0; i < r_newrefdef.num_entities; i++ ) {
+	for( int i = 0; i < r_newrefdef.num_entities; i++ ) {
 		currententity = &r_newrefdef.entities[ i ];
 		if( !( currententity->flags & RF_TRANSLUCENT ) ) continue;  // solid
 
@@ -357,24 +353,22 @@ void R_DrawEntitiesOnList() {
 				R_DrawNullModel();
 				continue;
 			}
-			switch( currentmodel->type ) {
-			case mod_alias:
-				{
-					auto *aliasModel = static_cast< nox::AliasModel * >( currentmodel->extradata );
-					aliasModel->Draw( currententity );
+			switch ( currentmodel->type )
+			{
+				case mod_alias:
+					( ( nox::AliasModel * ) currentmodel->extradata )->Draw( currententity );
 					break;
-				}
-			case mod_brush:
-				R_DrawBrushModel( currententity );
-				break;
-			case mod_sprite:
-				R_DrawSpriteModel( currententity );
-				break;
-			default:
+				case mod_brush:
+					R_DrawBrushModel( currententity );
+					break;
+				case mod_sprite:
+					R_DrawSpriteModel( currententity );
+					break;
+				default:
 #if !defined( _DEBUG )
-				Com_Error( ERR_DROP, "Bad modeltype" );
+					Com_Error( ERR_DROP, "Bad modeltype" );
 #endif
-				break;
+					break;
 			}
 		}
 	}

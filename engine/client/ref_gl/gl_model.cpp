@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // models.c -- model loading and caching
 
-#include "gl_local.h"
-
 #include <cfloat>
+
+#include "gl_local.h"
 
 model_t *loadmodel;
 int modfilelen;
@@ -215,9 +215,9 @@ model_t *Mod_ForName( const char *name, qboolean crash ) {
 
 	switch ( LittleLong( *( unsigned * ) buf ) )
 	{
-		//case IDMDAHEADER:
-		//	Mod_LoadMDAModel( mod, buf );
-		//	break;
+		case IDMDAHEADER:
+			Mod_LoadMDAModel( mod, buf );
+			break;
 
 		case IDALIASHEADER:
 			Mod_LoadAliasModel( mod, buf );
@@ -871,33 +871,24 @@ void Mod_LoadMDAModel( model_t *mod, void *buffer )
 		{
 			token = COM_Parse( &pos );
 
-			char path[ MAX_PATH ];
-			snprintf( path, sizeof( path ), "%s", token );
-			FS_CanonicalisePath( path );
-
-			model_t *baseModel = Mod_ForName( path, false );
-			if ( baseModel == nullptr )
+			uint8_t *buf;
+			FS_LoadFile( token, ( void ** ) &buf );
+			if ( !buf )
 			{
+				Com_Printf( "WARNING: %s not found for MDA %s!\n", token, mod->name );
 				return;
 			}
 
-			mod->extradata = baseModel->extradata;
-			mod->extradatasize = baseModel->extradatasize;
-			mod->numframes = baseModel->numframes;
-
-			for ( unsigned int i = 0; i < MAX_MD2SKINS; ++i )
+			// Ensure magic is valid
+			if ( LittleLong( *( int32_t * ) ( buf ) ) != IDALIASHEADER )
 			{
-				mod->skins[ i ] = baseModel->skins[ i ];
+				Com_Printf( "WARNING: %s is not a valid basemodel for MDA %s!\n", token, mod->name );
+				return;
 			}
 
-			mod->type = mod_alias;
+			Mod_LoadAliasModel( mod, buf );
 
-			mod->mins[ 0 ] = -32.0f;
-			mod->mins[ 1 ] = -32.0f;
-			mod->mins[ 2 ] = -32.0f;
-			mod->maxs[ 0 ] = 32.0f;
-			mod->maxs[ 1 ] = 32.0f;
-			mod->maxs[ 2 ] = 32.0f;
+			FS_FreeFile( buf );
 
 			// Only go so far as fetching the basemodel for now...
 			break;
@@ -1055,15 +1046,10 @@ void Mod_EndRegistration( void ) {
 
 //=============================================================================
 
-/*
-================
-Mod_Free
-================
-*/
 void Mod_Free( model_t *mod ) {
 	if ( mod->type == mod_alias )
 	{
-		nox::AliasModel *aliasModel = static_cast< nox::AliasModel * >( mod->extradata );
+		auto *aliasModel = static_cast< nox::AliasModel * >( mod->extradata );
 		delete aliasModel;
 	}
 	else
@@ -1351,8 +1337,8 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 {
 	if ( e->flags & RF_FULLBRIGHT )
 	{
-		for ( uint i = 0; i < 3; ++i )
-			shadeLight_[ i ] = 1.0f;
+		for ( float &i : shadeLight_ )
+			i = 1.0f;
 	}
 	else
 	{
@@ -1393,12 +1379,12 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 	if ( e->flags & RF_GLOW )
 	{
 		float scale = 0.1f * std::sin( r_newrefdef.time * 7.0f );
-		for ( unsigned int i = 0; i < 3; ++i )
+		for ( float &i : shadeLight_ )
 		{
-			float min = shadeLight_[ i ] * 0.8f;
-			shadeLight_[ i ] += scale;
-			if ( shadeLight_[ i ] < min )
-				shadeLight_[ i ] = min;
+			float min = i * 0.8f;
+			i += scale;
+			if ( i < min )
+				i = min;
 		}
 	}
 
