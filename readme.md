@@ -1,5 +1,9 @@
 # HOSAE<br>hogsy's Open-Source Anachronox Engine
 
+[![Build Status](https://github.com/hogsy/hosae/actions/workflows/build-status.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-status.yml)
+
+----
+
 ## What is this?
 
 This is an open-source reimplementation of Anachronox, built on top of the
