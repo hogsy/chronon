@@ -39,6 +39,6 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: hosae-release
-        path: release/hosae.exe release/anoxdata/game.dll
+        path: release/
         retention-days: 30
       
