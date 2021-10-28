@@ -5,13 +5,13 @@ AlignAfterOpenBracket: Align
 #AlignConsecutiveAssignments: AcrossComments
 AlignConsecutiveBitFields: Consecutive
 AlignConsecutiveMacros: Consecutive
-#AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveDeclarations: Consecutive
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
-AllowAllArgumentsOnNextLine: true
-AllowAllConstructorInitializersOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
@@ -65,7 +65,7 @@ SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 0
 SpacesInAngles: true
 SpacesInCStyleCastParentheses: true
-SpacesInContainerLiterals: true
+SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
 TabWidth: 4
