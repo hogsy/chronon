@@ -1557,7 +1557,7 @@ CL_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void CL_WriteConfiguration (void)
+void CL_WriteConfiguration()
 {
 	FILE	*f;
 	char	path[MAX_QPATH];
@@ -1565,7 +1565,7 @@ void CL_WriteConfiguration (void)
 	if (cls.state == ca_uninitialized)
 		return;
 
-	Com_sprintf (path, sizeof(path),"%s/config.cfg",FS_Gamedir());
+	Com_sprintf (path, sizeof(path),"%s/configs/" ENGINE_NAME ".cfg",FS_Gamedir());
 	f = fopen (path, "w");
 	if (!f)
 	{

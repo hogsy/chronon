@@ -1135,9 +1135,8 @@ byte COM_BlockSequenceCRCByte( byte *base, int length, int sequence ) {
 
 //========================================================
 
-float frand( void ) { return ( rand() & 32767 ) * ( 1.0 / 32767 ); }
-
-float crand( void ) { return ( rand() & 32767 ) * ( 2.0 / 32767 ) - 1; }
+float frand() { return ( float ) ( ( rand() & 32767 ) * ( 1.0 / 32767 ) ); }
+float crand() { return ( float ) ( ( rand() & 32767 ) * ( 2.0 / 32767 ) - 1 ); }
 
 void Key_Init( void );
 void SCR_EndLoadingPlaque( void );
@@ -1185,8 +1184,8 @@ void Qcommon_Init( int argc, char **argv ) {
 
 	FS_InitFilesystem();
 
-	Cbuf_AddText( "exec default.cfg\n" );
-	Cbuf_AddText( "exec config.cfg\n" );
+	Cbuf_AddText( "exec configs/default.cfg\n" );
+	Cbuf_AddText( "exec configs/" ENGINE_NAME ".cfg\n" );
 
 	Cbuf_AddEarlyCommands( true );
 	Cbuf_Execute();
