@@ -232,7 +232,9 @@ static void Sys_PollEvents()
 	}
 }
 
-extern "C" [[noreturn]] int main( int argc, char **argv )
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
+extern "C" int main( int argc, char **argv )
 {
 	Qcommon_Init( argc, argv );
 
@@ -253,3 +255,4 @@ extern "C" [[noreturn]] int main( int argc, char **argv )
 		oldTime = newTime;
 	}
 }
+#pragma clang diagnostic pop
