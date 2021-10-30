@@ -76,9 +76,9 @@
 
 #elif defined(__NACL__)
 /* On NACL we use ppapi_simple to set up the application helper code,
-   then wait for the first PSE_INSTANCE_DIDCHANGEVIEW event before 
+   then wait for the first PSE_INSTANCE_DIDCHANGEVIEW event before
    starting the user main function.
-   All user code is run in a separate thread by ppapi_simple, thus 
+   All user code is run in a separate thread by ppapi_simple, thus
    allowing for blocking io to take place via nacl_io
 */
 #define SDL_MAIN_NEEDED
@@ -118,7 +118,7 @@ extern "C" {
  *  The prototype for the application's main() function
  */
 typedef int (*SDL_main_func)(int argc, char *argv[]);
-[[noreturn]] extern SDLMAIN_DECLSPEC int SDL_main(int argc, char *argv[]);
+extern SDLMAIN_DECLSPEC int SDL_main(int argc, char *argv[]);
 
 
 /**
