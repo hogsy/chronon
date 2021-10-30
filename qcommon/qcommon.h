@@ -132,7 +132,7 @@ extern float LittleFloat( float l );
 int COM_Argc( void );
 const char *COM_Argv( int arg );  // range and null checked
 void COM_ClearArgv( int arg );
-int COM_CheckParm( char *parm );
+int COM_CheckParm( const char *parm );
 void COM_AddParm( const char *parm );
 
 void COM_Init( void );

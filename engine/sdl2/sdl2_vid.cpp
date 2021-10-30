@@ -23,14 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/ref_gl/gl_local.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 
 // Disgusting globals...
 viddef_t viddef;
-cvar_t *win_noalttab;
-cvar_t *vid_xpos;// X coordinate of window position
-cvar_t *vid_ypos;// Y coordinate of window position
+cvar_t  *win_noalttab;
+cvar_t  *vid_xpos;// X coordinate of window position
+cvar_t  *vid_ypos;// Y coordinate of window position
 
-static SDL_Window *sdlWindow = nullptr;
+static SDL_Window   *sdlWindow = nullptr;
 static SDL_GLContext glContext = nullptr;
 
 bool VID_GetModeInfo( int *width, int *height, int mode )
@@ -127,6 +128,8 @@ void VID_Shutdown()
 ========================================================================
 */
 
+void *cl_hwnd;
+
 rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bool fullscreen )
 {
 	Com_Printf( "Initializing OpenGL display\n" );
@@ -141,16 +144,29 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 	static const char *win_fs[] = { "W", "FS" };
 	Com_Printf( " %d %d %s\n", width, height, win_fs[ fullscreen ] );
 
-	int winFlags = SDL_WINDOW_OPENGL;
-	if ( fullscreen )
-	{
-		/* todo: does sdl handle internal buffer resize for us, or do
-		 *  we need to do that ourselves? */
-		winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-	}
-
 	if ( sdlWindow == nullptr )
 	{
+		int winFlags = SDL_WINDOW_OPENGL;
+		if ( fullscreen && !COM_CheckParm( "-window" ) )
+		{
+			/* todo: does sdl handle internal buffer resize for us, or do
+		 *  we need to do that ourselves? */
+			winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		}
+
+#if 0
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+#endif
+
+		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
+		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
+		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+
 		sdlWindow = SDL_CreateWindow( ENGINE_NAME,
 		                              SDL_WINDOWPOS_CENTERED,
 		                              SDL_WINDOWPOS_CENTERED,
@@ -175,6 +191,17 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 	SDL_SetWindowSize( sdlWindow, width, height );
 	SDL_SetWindowFullscreen( sdlWindow, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0 );
 	SDL_SetWindowPosition( sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED );
+
+	SDL_SysWMinfo info;
+	SDL_VERSION( &info.version );
+	if ( SDL_GetWindowWMInfo( sdlWindow, &info ) )
+	{
+		cl_hwnd = info.info.win.window;
+	}
+	else
+	{
+		Com_Error( ERR_FATAL, "Failed to get window information: %s\n", SDL_GetError() );
+	}
 
 	return rserr_ok;
 }
@@ -209,22 +236,3 @@ void GLimp_EndFrame()
 {
 	SDL_GL_SwapWindow( sdlWindow );
 }
-
-#if 0
-namespace nox
-{
-	class IDisplayManager
-	{
-	public:
-		virtual bool Initialize() = 0;
-		virtual void Shutdown() = 0;
-
-		virtual void BeginFrame() = 0;
-		virtual void EndFrame() = 0;
-
-		virtual rserr_t SetMode( uint *pwidth, uint *pheight, int mode, bool fullscreen ) = 0;
-
-		virtual void AppActivate() = 0;
-	};
-}// namespace nox
-#endif

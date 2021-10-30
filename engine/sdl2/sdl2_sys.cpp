@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL2/SDL.h>
 
+#include "../client/keys.h"
+
 /*
 ========================================================================
 ========================================================================
@@ -30,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 unsigned int sys_msg_time;
 unsigned int sys_frame_time;
-void Sys_SendKeyEvents()
+void         Sys_SendKeyEvents()
 {
 	SDL_PumpEvents();
 
@@ -172,7 +174,65 @@ void *Sys_GetGameAPI( void *parms )
 ========================================================================
 */
 
-int main( int argc, char **argv )
+static int Sys_MapSDLKey( int key )
+{
+	return key;
+}
+
+bool ActiveApp = true; // todo: murder.
+
+static void Sys_PollEvents()
+{
+	SDL_Event event;
+	while ( SDL_PollEvent( &event ) )
+	{
+		switch ( event.type )
+		{
+			case SDL_MOUSEWHEEL:
+				if ( event.wheel.y > 0 )
+				{
+					Key_Event( K_MWHEELUP, true, sys_msg_time );
+					Key_Event( K_MWHEELUP, false, sys_msg_time );
+				}
+				else
+				{
+					Key_Event( K_MWHEELDOWN, true, sys_msg_time );
+					Key_Event( K_MWHEELDOWN, false, sys_msg_time );
+				}
+				break;
+
+			case SDL_KEYDOWN:
+				Key_Event( Sys_MapSDLKey( event.key.keysym.scancode ), true, sys_msg_time );
+                break;
+			case SDL_KEYUP:
+				Key_Event( Sys_MapSDLKey( event.key.keysym.scancode ), false, sys_msg_time );
+				break;
+
+			case SDL_WINDOWEVENT:
+			{
+				switch ( event.window.event )
+				{
+					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						ActiveApp = true;
+						break;
+					case SDL_WINDOWEVENT_FOCUS_LOST:
+						ActiveApp = false;
+						break;
+					case SDL_WINDOWEVENT_CLOSE:
+						Com_Quit();
+						break;
+				}
+				break;
+			}
+
+			case SDL_QUIT:
+				Com_Quit();
+				break;
+		}
+	}
+}
+
+extern "C" [[noreturn]] int main( int argc, char **argv )
 {
 	Qcommon_Init( argc, argv );
 
@@ -180,6 +240,8 @@ int main( int argc, char **argv )
 	int oldTime = Sys_Milliseconds();
 	while ( true )
 	{
+		Sys_PollEvents();
+
 		do
 		{
 			newTime = Sys_Milliseconds();
@@ -190,6 +252,4 @@ int main( int argc, char **argv )
 
 		oldTime = newTime;
 	}
-
-	return EXIT_SUCCESS;
 }

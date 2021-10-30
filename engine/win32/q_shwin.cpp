@@ -111,6 +111,7 @@ void Hunk_Free (void *base)
 Sys_Milliseconds
 ================
 */
+#if 0
 int	curtime;
 int Sys_Milliseconds (void)
 {
@@ -126,6 +127,7 @@ int Sys_Milliseconds (void)
 
 	return curtime;
 }
+#endif
 
 void Sys_Mkdir (char *path)
 {

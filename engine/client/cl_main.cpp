@@ -1788,15 +1788,10 @@ void CL_Init (void)
 
 	// all archived variables will now be loaded
 
-	Con_Init ();	
-#if defined __linux__ || defined __sgi
-	S_Init ();	
-	VID_Init ();
-#else
+	Con_Init ();
 	VID_Init ();
 	S_Init ();	// sound must be initialized after window is created
-#endif
-	
+
 	V_Init ();
 	
 	net_message.data = net_message_buffer;
@@ -1811,12 +1806,9 @@ void CL_Init (void)
 	CL_InitLocal ();
 	IN_Init ();
 
-//	Cbuf_AddText ("exec autoexec.cfg\n");
 	FS_ExecAutoexec ();
 	Cbuf_Execute ();
-
 }
-
 
 /*
 ===============
@@ -1829,7 +1821,6 @@ to run quit through here before the final handoff to the sys code.
 void CL_Shutdown(void)
 {
 	static qboolean isdown = false;
-	
 	if (isdown)
 	{
 		printf ("recursive shutdown\n");

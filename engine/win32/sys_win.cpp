@@ -429,7 +429,6 @@ WinMain
 
 ==================
 */
-HINSTANCE global_hInstance;
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow ) {
@@ -441,8 +440,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	/* previous instances do not exist in Win32 */
 	if( hPrevInstance ) return 0;
-
-	global_hInstance = hInstance;
 
 	ParseCommandLine( lpCmdLine );
 
