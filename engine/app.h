@@ -31,15 +31,27 @@ namespace nox
 
 		static void Initialize();
 
+		static void SendKeyEvents();
+
 		unsigned int GetNumTicks();
 
 		static char *GetClipboardData();
 
 	private:
-		void PollEvents();
+		static int MapKey( int key );
 
+	public:
+		static void PollEvents();
+
+		inline const char **GetCmdLineArgs( int *num ) const
+		{
+			*num = argc_;
+            return argv_;
+		}
+
+	private:
 		int argc_;
-		char **argv_;
+		const char **argv_;
 
 		unsigned int lastTick_{ 0 };
 	};

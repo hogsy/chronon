@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_view.c -- player rendering positioning
 
+#include "app.h"
 #include "client.h"
 
 #include "ref_gl/gl_local.h"
@@ -289,7 +290,7 @@ void CL_PrepRefresh (void)
 		if (name[0] != '*')
 			Com_Printf ("%s\r", name); 
 		SCR_UpdateScreen ();
-		Sys_SendKeyEvents ();	// pump message loop
+		nox::App::SendKeyEvents();	// pump message loop
 		if (name[0] == '#')
 		{
 			// special player weapon model
@@ -317,7 +318,7 @@ void CL_PrepRefresh (void)
 	for (i=1 ; i<MAX_IMAGES && cl.configstrings[CS_IMAGES+i][0] ; i++)
 	{
 		cl.image_precache[i] = Draw_FindPic (cl.configstrings[CS_IMAGES+i]);
-		Sys_SendKeyEvents ();	// pump message loop
+		nox::App::SendKeyEvents();	// pump message loop
 	}
 	
 	Com_Printf ("                                     \r");
@@ -327,7 +328,7 @@ void CL_PrepRefresh (void)
 			continue;
 		Com_Printf ("client %i\r", i); 
 		SCR_UpdateScreen ();
-		Sys_SendKeyEvents ();	// pump message loop
+		nox::App::SendKeyEvents();	// pump message loop
 		CL_ParseClientinfo (i);
 		Com_Printf ("                                     \r");
 	}

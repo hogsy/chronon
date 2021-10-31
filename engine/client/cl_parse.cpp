@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_parse.c  -- parse a message received from the server
 
+#include "app.h"
 #include "client.h"
 
 #include "ref_gl/gl_local.h"
@@ -186,7 +187,7 @@ void CL_RegisterSounds (void)
 		if (!cl.configstrings[CS_SOUNDS+i][0])
 			break;
 		cl.sound_precache[i] = S_RegisterSound (cl.configstrings[CS_SOUNDS+i]);
-		Sys_SendKeyEvents ();	// pump message loop
+		nox::App::SendKeyEvents();	// pump message loop
 	}
 	S_EndRegistration ();
 }

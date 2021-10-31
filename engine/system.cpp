@@ -28,9 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Sys_Error( const char *error, ... )
 {
-	CL_Shutdown();
-	Qcommon_Shutdown();
-
 	va_list argptr;
 	va_start( argptr, error );
 	int len = Q_vscprintf( error, argptr ) + 1;
@@ -42,7 +39,7 @@ void Sys_Error( const char *error, ... )
 
 	delete[] text;
 
-	exit( EXIT_FAILURE );
+	Sys_Quit();
 }
 
 void Sys_Quit()

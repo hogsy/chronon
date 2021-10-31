@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_main.c  -- client main loop
 
+#include "app.h"
 #include "client.h"
 
 #include "ref_gl/gl_local.h"
@@ -867,7 +868,7 @@ void CL_Skins_f (void)
 			continue;
 		Com_Printf ("client %i: %s\n", i, cl.configstrings[CS_PLAYERSKINS+i]); 
 		SCR_UpdateScreen ();
-		Sys_SendKeyEvents ();	// pump message loop
+		nox::App::SendKeyEvents();	// pump message loop
 		CL_ParseClientinfo (i);
 	}
 }
@@ -1650,10 +1651,10 @@ CL_SendCommand
 
 ==================
 */
-void CL_SendCommand (void)
+void CL_SendCommand()
 {
 	// get new key events
-	Sys_SendKeyEvents ();
+	nox::App::SendKeyEvents();
 
 	// allow mice or other external controllers to add commands
 	IN_Commands ();

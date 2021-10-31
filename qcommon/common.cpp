@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // common.c -- misc functions used in client and server
 #include <setjmp.h>
 #include "qcommon.h"
+#include "app.h"
 
 #define MAXPRINTMSG 4096
 
@@ -1229,8 +1230,6 @@ void Qcommon_Init( int argc, char **argv ) {
 
 	if( dedicated->value ) Cmd_AddCommand( "quit", Com_Quit );
 
-	Sys_Init();
-
 	NET_Init();
 	Netchan_Init();
 
@@ -1299,10 +1298,12 @@ void Qcommon_Frame( int msec ) {
 		c_pointcontents = 0;
 	}
 
+#if 0 // todo: do we still need this ??
 	do {
 		s = Sys_ConsoleInput();
 		if( s ) Cbuf_AddText( va( "%s\n", s ) );
 	} while( s );
+#endif
 	Cbuf_Execute();
 
 	if( host_speeds->value ) time_before = Sys_Milliseconds();

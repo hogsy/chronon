@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <ctype.h>
 
-#include "../app.h"
+#include "app.h"
 #include "client.h"
 
 /*
@@ -933,12 +933,14 @@ void Key_ClearStates (void)
 Key_GetKey
 ===================
 */
-int Key_GetKey (void)
+int Key_GetKey()
 {
 	key_waiting = -1;
 
 	while (key_waiting == -1)
-		Sys_SendKeyEvents ();
+	{
+		nox::App::SendKeyEvents();
+	}
 
 	return key_waiting;
 }
