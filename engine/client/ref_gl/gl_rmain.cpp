@@ -658,10 +658,10 @@ void R_SetupGL( void ) {
 	//
 	// set up viewport
 	//
-	x = floor( r_newrefdef.x * vid.width / vid.width );
-	x2 = ceil( ( r_newrefdef.x + r_newrefdef.width ) * vid.width / vid.width );
-	y = floor( vid.height - r_newrefdef.y * vid.height / vid.height );
-	y2 = ceil( vid.height -
+	x = std::floor( r_newrefdef.x * vid.width / vid.width );
+	x2 = std::ceil( ( r_newrefdef.x + r_newrefdef.width ) * vid.width / vid.width );
+	y = std::floor( vid.height - r_newrefdef.y * vid.height / vid.height );
+	y2 = std::ceil( vid.height -
 		( r_newrefdef.y + r_newrefdef.height ) * vid.height / vid.height );
 
 	w = x2 - x;
@@ -696,7 +696,7 @@ void R_SetupGL( void ) {
 	//
 	// set drawing parms
 	//
-	if( gl_cull->value )
+	if( gl_cull->value > 0.0f )
 		glEnable( GL_CULL_FACE );
 	else
 		glDisable( GL_CULL_FACE );
@@ -718,7 +718,7 @@ void R_Clear( void ) {
 	glDepthRange( 0, 1 );
 }
 
-void R_Flash( void ) { R_PolyBlend(); }
+void R_Flash() { R_PolyBlend(); }
 
 /*
 ================

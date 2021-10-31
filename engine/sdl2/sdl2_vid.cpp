@@ -151,6 +151,9 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 	static const char *win_fs[] = { "W", "FS" };
 	Com_Printf( " %d %d %s\n", width, height, win_fs[ fullscreen ] );
 
+	*pwidth = width;
+	*pheight = height;
+
 	if ( sdlWindow == nullptr )
 	{
 		int winFlags = SDL_WINDOW_OPENGL;
@@ -191,6 +194,9 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 		}
 
 		SDL_GL_MakeCurrent( sdlWindow, glContext );
+
+		// let the sound and input subsystems know about the new window
+		VID_NewWindow( width, height );
 
 		return rserr_ok;
 	}
