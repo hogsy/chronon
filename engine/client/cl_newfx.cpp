@@ -496,10 +496,10 @@ void CL_Heatbeam(vec3_t start, vec3_t forward) {
   //	MakeNormalVectors (vec, right, up);
   VectorCopy(cl.v_right, right);
   VectorCopy(cl.v_up, up);
-  if (vidref_val == VIDREF_GL) {  // GL mode
-    VectorMA(move, -0.5, right, move);
-    VectorMA(move, -0.5, up, move);
-  }
+
+	VectorMA(move, -0.5, right, move);
+	VectorMA(move, -0.5, up, move);
+
   // otherwise assume SOFT
 
   ltime = (float)cl.time / 1000.0;

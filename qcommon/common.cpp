@@ -164,34 +164,49 @@ Both client and server can use this, and it will
 do the apropriate things.
 =============
 */
-void Com_Error( int code, const char *fmt, ... ) {
+void Com_Error( int code, const char *fmt, ... )
+{
+#if !defined( NDEBUG )
+	// Let us catch fails as soon as we reach here
+	if ( code == ERR_FATAL )
+	{
+		raise( SIGABRT );
+	}
+#endif
+
 	static qboolean recursive = false;
-	if( recursive ) Sys_Error( "Recursive error!" );
+	if ( recursive ) Sys_Error( "Recursive error!" );
 	recursive = true;
 
 	va_list argptr;
 	va_start( argptr, fmt );
-	int len = Q_vscprintf( fmt, argptr ) + 1;
-	char *msg = static_cast<char *>( Z_Malloc( len ) );
+	int   len = Q_vscprintf( fmt, argptr ) + 1;
+	char *msg = static_cast< char * >( Z_Malloc( len ) );
 	vsprintf( msg, fmt, argptr );
 	va_end( argptr );
 
-	if( code == ERR_DISCONNECT ) {
+	if ( code == ERR_DISCONNECT )
+	{
 		CL_Drop();
 		recursive = false;
 		longjmp( abortframe, -1 );
-	} else if( code == ERR_DROP ) {
+	}
+	else if ( code == ERR_DROP )
+	{
 		Com_Printf( "********************\nERROR: %s\n********************\n", msg );
 		SV_Shutdown( va( "Server crashed: %s\n", msg ), false );
 		CL_Drop();
 		recursive = false;
 		longjmp( abortframe, -1 );
-	} else {
+	}
+	else
+	{
 		SV_Shutdown( va( "Server fatal crashed: %s\n", msg ), false );
 		CL_Shutdown();
 	}
 
-	if( logfile ) {
+	if ( logfile )
+	{
 		fclose( logfile );
 		logfile = NULL;
 	}

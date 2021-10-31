@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // r_main.c
-#include <ctype.h>
+#include <cctype>
 
 #include "gl_local.h"
 
@@ -916,7 +916,7 @@ R_SetMode
 qboolean R_SetMode( void ) {
 #if 1 // simplified until we get SDL2 implemented
 	rserr_t err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value, false );
-	
+
 	vid_fullscreen->modified = false;
 	gl_mode->modified = false;
 
@@ -969,7 +969,8 @@ qboolean R_SetMode( void ) {
 R_Init
 ===============
 */
-int R_Init( void *hinstance, void *hWnd ) {
+int R_Init()
+{
 	char renderer_buffer[ 1000 ];
 	char vendor_buffer[ 1000 ];
 	int err;
@@ -983,11 +984,6 @@ int R_Init( void *hinstance, void *hWnd ) {
 	Draw_GetPalette();
 
 	R_Register();
-
-	// initialize OS-specific parts of OpenGL
-	if( !GLimp_Init( hinstance, hWnd ) ) {
-		return -1;
-	}
 
 	// set our "safe" modes
 	gl_state.prev_mode = 3;
@@ -1065,7 +1061,7 @@ int R_Init( void *hinstance, void *hWnd ) {
 	if( err != GL_NO_ERROR )
 		Com_Printf( "glGetError() = 0x%x\n", err );
 
-	return true;
+	return rserr_ok;
 }
 
 /*

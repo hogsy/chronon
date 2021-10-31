@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL2/SDL.h>
 
+#if defined( _WIN32 )
+#	include <debugapi.h>
+#endif
+
 #include "../client/keys.h"
 
 /*
@@ -93,6 +97,11 @@ char *Sys_ConsoleInput()
 
 void Sys_ConsoleOutput( char *string )
 {
+#if defined( _WIN32 ) && defined( _MSC_VER )
+	OutputDebugString( string );
+#else
+	printf( "%s", string );
+#endif
 }
 
 char *Sys_GetClipboardData()
@@ -179,7 +188,7 @@ static int Sys_MapSDLKey( int key )
 	return key;
 }
 
-bool ActiveApp = true; // todo: murder.
+bool ActiveApp = true;// todo: murder.
 
 static void Sys_PollEvents()
 {
@@ -203,7 +212,7 @@ static void Sys_PollEvents()
 
 			case SDL_KEYDOWN:
 				Key_Event( Sys_MapSDLKey( event.key.keysym.scancode ), true, sys_msg_time );
-                break;
+				break;
 			case SDL_KEYUP:
 				Key_Event( Sys_MapSDLKey( event.key.keysym.scancode ), false, sys_msg_time );
 				break;
@@ -233,7 +242,8 @@ static void Sys_PollEvents()
 }
 
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
+#pragma ide diagnostic   ignored "EndlessLoop"
+
 extern "C" int main( int argc, char **argv )
 {
 	Qcommon_Init( argc, argv );
@@ -255,4 +265,5 @@ extern "C" int main( int argc, char **argv )
 		oldTime = newTime;
 	}
 }
+
 #pragma clang diagnostic pop

@@ -115,6 +115,13 @@ void VID_Init()
 	vid_xpos = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
 	vid_ypos = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
 	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
+
+	if ( R_Init() != rserr_ok )
+	{
+		Com_Error( ERR_FATAL, "Failed to initialize renderer!\n" );
+	}
+
+	Com_Printf( "------------------------------------\n" );
 }
 
 void VID_Shutdown()
@@ -220,11 +227,6 @@ void GLimp_Shutdown()
 		SDL_DestroyWindow( sdlWindow );
 		sdlWindow = nullptr;
 	}
-}
-
-bool GLimp_Init( void *hinstance, void *wndproc )
-{
-	return true;
 }
 
 bool GLimp_InitGL()

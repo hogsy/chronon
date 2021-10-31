@@ -29,23 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define POWERSUIT_SCALE		4.0F
 
-#define SHELL_RED_COLOR		0xF2
-#define SHELL_GREEN_COLOR	0xD0
-#define SHELL_BLUE_COLOR	0xF3
-
-#define SHELL_RG_COLOR		0xDC
-//#define SHELL_RB_COLOR		0x86
-#define SHELL_RB_COLOR		0x68
-#define SHELL_BG_COLOR		0x78
-
-//ROGUE
-#define SHELL_DOUBLE_COLOR	0xDF // 223
-#define	SHELL_HALF_DAM_COLOR	0x90
-#define SHELL_CYAN_COLOR	0x72
-//ROGUE
-
-#define SHELL_WHITE_COLOR	0xD7
-
 typedef struct entity_s
 {
 	struct model_s *model;// opaque type outside refresh
