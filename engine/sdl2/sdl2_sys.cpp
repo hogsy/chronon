@@ -104,16 +104,6 @@ void Sys_ConsoleOutput( char *string )
 #endif
 }
 
-char *Sys_GetClipboardData()
-{
-	if ( !SDL_HasClipboardText() )
-	{
-		return nullptr;
-	}
-
-	return SDL_GetClipboardText();
-}
-
 void Sys_AppActivate()
 {
 }
@@ -185,7 +175,27 @@ void *Sys_GetGameAPI( void *parms )
 
 static int Sys_MapSDLKey( int key )
 {
-	return key;
+	switch ( key )
+	{
+		case SDLK_UP:
+			return K_UPARROW;
+		case SDLK_DOWN:
+			return K_DOWNARROW;
+		case SDLK_LEFT:
+			return K_LEFTARROW;
+		case SDLK_RIGHT:
+			return K_RIGHTARROW;
+
+		case SDLK_BACKSPACE:
+			return K_BACKSPACE;
+
+		case SDLK_LSHIFT:
+		case SDLK_RSHIFT:
+			return K_SHIFT;
+
+		default:
+			return key;
+	}
 }
 
 bool ActiveApp = true;// todo: murder.
@@ -211,11 +221,32 @@ static void Sys_PollEvents()
 				break;
 
 			case SDL_KEYDOWN:
-				Key_Event( Sys_MapSDLKey( event.key.keysym.scancode ), true, sys_msg_time );
-				break;
 			case SDL_KEYUP:
-				Key_Event( Sys_MapSDLKey( event.key.keysym.scancode ), false, sys_msg_time );
+				Key_Event( Sys_MapSDLKey( event.key.keysym.sym ), ( event.key.state == SDL_PRESSED ), sys_msg_time );
 				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			{
+				void IN_MouseEvent( int mstate );
+				int  button;
+				switch ( event.button.button )
+				{
+					case SDL_BUTTON_LEFT:
+						button = 1;
+						break;
+					case SDL_BUTTON_RIGHT:
+						button = 2;
+						break;
+					case SDL_BUTTON_MIDDLE:
+						button = 4;
+						break;
+					default:
+						button = 0;
+						break;
+				}
+				IN_MouseEvent( button );
+			}
 
 			case SDL_WINDOWEVENT:
 			{
@@ -223,9 +254,11 @@ static void Sys_PollEvents()
 				{
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
 						ActiveApp = true;
+						Key_ClearStates();
 						break;
 					case SDL_WINDOWEVENT_FOCUS_LOST:
 						ActiveApp = false;
+						Key_ClearStates();
 						break;
 					case SDL_WINDOWEVENT_CLOSE:
 						Com_Quit();

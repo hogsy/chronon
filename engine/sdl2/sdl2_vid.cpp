@@ -74,7 +74,7 @@ bool VID_GetModeInfo( int *width, int *height, int mode )
 
 			videoModes.push_back( { displayMode.w, displayMode.h } );
 
-			Com_Printf( "Mode %d: %dx%d\n", i, displayMode.w, displayMode.h );
+			Com_Printf( "Mode %lu: %dx%d\n", videoModes.size(), displayMode.w, displayMode.h );
 
 			ow = displayMode.w;
 			oh = displayMode.h;

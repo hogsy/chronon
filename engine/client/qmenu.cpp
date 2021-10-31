@@ -17,9 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 #include <cstring>
 #include <cctype>
 
+#include "app.h"
 #include "client.h"
 #include "qmenu.h"
 
@@ -193,7 +195,7 @@ qboolean Field_Key( menufield_s *f, int key )
 	{
 		char *cbd;
 		
-		if ( ( cbd = Sys_GetClipboardData() ) != 0 )
+		if ( ( cbd = nox::App::GetClipboardData() ) != nullptr )
 		{
 			strtok( cbd, "\n\r\b" );
 

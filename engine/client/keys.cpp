@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <ctype.h>
 
+#include "../app.h"
 #include "client.h"
 
 /*
@@ -248,7 +249,7 @@ void Key_Console (int key)
 	{
 		char *cbd;
 		
-		if ( ( cbd = Sys_GetClipboardData() ) != 0 )
+		if ( ( cbd = nox::App::GetClipboardData() ) != 0 )
 		{
 			int i;
 

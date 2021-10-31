@@ -46,6 +46,8 @@ elseif (UNIX)
 endif ()
 
 add_executable(engine WIN32
+        app.cpp
+
         # Client
         client/cl_cin.cpp
         client/cl_ents.cpp
@@ -128,6 +130,7 @@ target_link_directories(engine PRIVATE
         ../3rdparty/glew/lib/Release/x64/
         )
 target_include_directories(engine PRIVATE
+        ./
         ../
         ../3rdparty/
         ../3rdparty/glew/include/

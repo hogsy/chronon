@@ -711,7 +711,7 @@ void R_SetupGL( void ) {
 R_Clear
 =============
 */
-void R_Clear( void ) {
+void R_Clear() {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	glDepthFunc( GL_LEQUAL );
