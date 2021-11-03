@@ -26,8 +26,8 @@ namespace nox
 	class App
 	{
 	public:
-		App( int argc, char **argv );
-		~App();
+		App( int argc, char **argv ) : argc_( argc ), argv_( argv ) {}
+		~App() = default;
 
 		static void Initialize();
 
@@ -43,7 +43,7 @@ namespace nox
 	public:
 		static void PollEvents();
 
-		inline const char **GetCmdLineArgs( int *num ) const
+		inline char **GetCmdLineArgs( int *num ) const
 		{
 			*num = argc_;
             return argv_;
@@ -51,7 +51,7 @@ namespace nox
 
 	private:
 		int argc_;
-		const char **argv_;
+		char **argv_;
 
 		unsigned int lastTick_{ 0 };
 	};

@@ -84,13 +84,51 @@ int nox::App::MapKey( int key )
 		case SDLK_BACKSPACE:
 			return K_BACKSPACE;
 
+		case SDLK_PAGEUP:
+			return K_PGUP;
+		case SDLK_PAGEDOWN:
+			return K_PGDN;
+
 		case SDLK_LSHIFT:
 		case SDLK_RSHIFT:
 			return K_SHIFT;
 
+		case SDLK_F1:
+            return K_F1;
+		case SDLK_F2:
+			return K_F2;
+		case SDLK_F3:
+			return K_F3;
+		case SDLK_F4:
+			return K_F4;
+		case SDLK_F5:
+			return K_F5;
+		case SDLK_F6:
+			return K_F6;
+		case SDLK_F7:
+			return K_F7;
+		case SDLK_F8:
+			return K_F8;
+		case SDLK_F9:
+			return K_F9;
+		case SDLK_F10:
+			return K_F10;
+		case SDLK_F11:
+			return K_F11;
+		case SDLK_F12:
+			return K_F12;
+
 		default:
-			return key;
+			break;
 	}
+
+	if ( key >= K_MAX )
+	{
+		assert( 0 );
+		return K_INVALID;
+	}
+
+	return key;
 }
 
 void IN_MouseEvent( int mstate );
@@ -118,8 +156,16 @@ void nox::App::PollEvents()
 
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				Key_Event( MapKey( event.key.keysym.sym ), ( event.key.state == SDL_PRESSED ), sys_msg_time );
+			{
+				int key = MapKey( event.key.keysym.sym );
+				if ( key == K_INVALID )
+				{
+					break;
+				}
+
+				Key_Event( key, ( event.key.state == SDL_PRESSED ), sys_msg_time );
 				break;
+			}
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
@@ -174,7 +220,8 @@ void nox::App::PollEvents()
 
 extern "C" int main( int argc, char **argv )
 {
-	nox::App::Initialize();
+	nox::globalApp = new nox::App( argc, argv );
+	nox::globalApp->Initialize();
 
 	Qcommon_Init( argc, argv );
 
@@ -182,7 +229,7 @@ extern "C" int main( int argc, char **argv )
 	int oldTime = Sys_Milliseconds();
 	while ( true )
 	{
-		nox::App::PollEvents();
+		nox::globalApp->PollEvents();
 
 		do
 		{
