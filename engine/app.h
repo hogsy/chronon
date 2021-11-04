@@ -29,19 +29,23 @@ namespace nox
 		App( int argc, char **argv ) : argc_( argc ), argv_( argv ) {}
 		~App() = default;
 
-		static void Initialize();
+		void Initialize();
 
 		static void SendKeyEvents();
 
 		unsigned int GetNumTicks();
 
-		static char *GetClipboardData();
+		char *GetClipboardData();
+
+		void PushConsoleOutput( const char *text );
+
+		void ShowCursor( bool show );
 
 	private:
 		static int MapKey( int key );
 
 	public:
-		static void PollEvents();
+		void PollEvents();
 
 		inline char **GetCmdLineArgs( int *num ) const
 		{

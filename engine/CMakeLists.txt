@@ -47,6 +47,7 @@ endif ()
 
 add_executable(engine WIN32
         app.cpp
+        hunk.cpp
 
         # Client
         client/cl_cin.cpp

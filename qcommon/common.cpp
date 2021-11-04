@@ -113,7 +113,7 @@ void Com_Printf( const char *fmt, ... ) {
 	Con_Print( msg );
 
 	// also echo to debugging console
-	Sys_ConsoleOutput( msg );
+	nox::globalApp->PushConsoleOutput( msg );
 
 	// logfile
 	if( logfile_active && logfile_active->value ) {

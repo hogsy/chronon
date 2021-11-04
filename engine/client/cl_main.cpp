@@ -868,7 +868,7 @@ void CL_Skins_f (void)
 			continue;
 		Com_Printf ("client %i: %s\n", i, cl.configstrings[CS_PLAYERSKINS+i]); 
 		SCR_UpdateScreen ();
-		nox::App::SendKeyEvents();	// pump message loop
+		nox::globalApp->SendKeyEvents();	// pump message loop
 		CL_ParseClientinfo (i);
 	}
 }
@@ -1127,7 +1127,7 @@ void CL_RequestNextDownload (void)
 	if (cls.state != ca_connected)
 		return;
 
-	if (!allow_download->value && precache_check < ENV_CNT)
+	if (allow_download->value == 0.0f && precache_check < ENV_CNT)
 		precache_check = ENV_CNT;
 
 //ZOID
@@ -1654,7 +1654,7 @@ CL_SendCommand
 void CL_SendCommand()
 {
 	// get new key events
-	nox::App::SendKeyEvents();
+	nox::globalApp->SendKeyEvents();
 
 	// allow mice or other external controllers to add commands
 	IN_Commands ();

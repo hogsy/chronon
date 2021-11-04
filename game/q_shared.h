@@ -273,7 +273,7 @@ void Sys_Mkdir(char *path);
 void *Hunk_Begin( size_t maxsize);
 void *Hunk_Alloc( size_t size);
 void Hunk_Free(void *buf);
-int Hunk_End();
+size_t Hunk_End();
 
 // directory searching
 #define SFF_ARCH 0x01

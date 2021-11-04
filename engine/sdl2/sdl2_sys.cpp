@@ -20,13 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qcommon/qcommon.h"
-#include "app.h"
 
 #include <SDL2/SDL.h>
-
-#if defined( _WIN32 )
-#	include <debugapi.h>
-#endif
 
 #include "../client/keys.h"
 
@@ -65,30 +60,6 @@ void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
 	}
 
 	SDL_ShowSimpleMessageBox( flags, ENGINE_NAME, error, nullptr );
-}
-
-void Sys_Init()
-{
-	int status = SDL_Init(
-			SDL_INIT_VIDEO |
-			SDL_INIT_EVENTS |
-			SDL_INIT_GAMECONTROLLER |
-			SDL_INIT_HAPTIC |
-			SDL_INIT_JOYSTICK |
-			SDL_INIT_TIMER );
-	if ( status != 0 )
-	{
-		Sys_Error( "Failed to initialized SDL2: %s\n", SDL_GetError() );
-	}
-}
-
-void Sys_ConsoleOutput( char *string )
-{
-#if defined( _WIN32 ) && defined( _MSC_VER )
-	OutputDebugString( string );
-#else
-	printf( "%s", string );
-#endif
 }
 
 void Sys_AppActivate()

@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL2/SDL.h>
 
+#if defined( _WIN32 )
+#	include <debugapi.h>
+#endif
+
 #include "qcommon/qcommon.h"
 
 #include "app.h"
@@ -157,6 +161,10 @@ void nox::App::PollEvents()
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 			{
+				//char buf[ 32 ];
+				//snprintf( buf, sizeof( buf ), "KEY: %s\n", ( event.key.state == SDL_PRESSED ) ? "DOWN" : "UP" );
+				//Com_Printf( buf );
+
 				int key = MapKey( event.key.keysym.sym );
 				if ( key == K_INVALID )
 				{
@@ -193,10 +201,12 @@ void nox::App::PollEvents()
 			{
 				switch ( event.window.event )
 				{
+					case SDL_WINDOWEVENT_ENTER:
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
 						ActiveApp = true;
 						Key_ClearStates();
 						break;
+					case SDL_WINDOWEVENT_LEAVE:
 					case SDL_WINDOWEVENT_FOCUS_LOST:
 						ActiveApp = false;
 						Key_ClearStates();
@@ -213,6 +223,24 @@ void nox::App::PollEvents()
 				break;
 		}
 	}
+}
+
+/**
+ * This pushes the given string to the native terminal/console.
+ */
+void nox::App::PushConsoleOutput( const char *text )
+{
+#if defined( _WIN32 ) && defined( _MSC_VER )
+	OutputDebugString( text );
+#else
+	printf( "%s", text );
+#endif
+}
+
+void nox::App::ShowCursor( bool show )
+{
+	SDL_CaptureMouse( ( SDL_bool ) !show );
+	SDL_ShowCursor( show );
 }
 
 #pragma clang diagnostic push

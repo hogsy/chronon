@@ -195,7 +195,7 @@ qboolean Field_Key( menufield_s *f, int key )
 	{
 		char *cbd;
 		
-		if ( ( cbd = nox::App::GetClipboardData() ) != nullptr )
+		if ( ( cbd = nox::globalApp->GetClipboardData() ) != nullptr )
 		{
 			strtok( cbd, "\n\r\b" );
 
