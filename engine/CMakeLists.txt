@@ -154,9 +154,12 @@ if (WIN32)
                 /NODEFAULTLIB:libcmt.lib
                 /NODEFAULTLIB:libcmtd.lib
                 )
+    elseif(MINGW)
+        target_link_libraries(engine
+                mingw32
+                )
     endif ()
     target_link_libraries(engine
-            mingw32
             SDL2main
             SDL2
             Imm32
