@@ -39,7 +39,7 @@ extern unsigned sys_msg_time;
 #define JOY_AXIS_U        4
 #define JOY_AXIS_V        5
 
-enum _ControlList
+enum ControlList
 {
 	AxisNada = 0,
 	AxisForward,
@@ -96,17 +96,19 @@ cvar_t *m_filter;
 
 qboolean mlooking;
 
-void IN_MLookDown( void ) { mlooking = true; }
-void IN_MLookUp( void )
+void IN_MLookDown() { mlooking = true; }
+void IN_MLookUp()
 {
 	mlooking = false;
-	if ( freelook->value == 0.0f && lookspring->value )
+	if ( freelook->value == 0.0f && ( lookspring->value >= 1.0f ) )
+	{
 		IN_CenterView();
+	}
 }
 
 static int mouse_buttons;
 static int mouse_oldbuttonstate;
-int        mouse_x, mouse_y,
+static int mouse_x, mouse_y,
 		old_mouse_x, old_mouse_y,
 		mx_accum, my_accum;
 
@@ -119,7 +121,7 @@ qboolean mouseinitialized;
 int      originalmouseparms[ 3 ], newmouseparms[ 3 ] = { 0, 0, 1 };
 qboolean mouseparmsvalid;
 
-int window_center_x, window_center_y;
+static int window_center_x, window_center_y;
 
 /**
  * Called when the window gains focus or changes in some way.
@@ -144,26 +146,8 @@ void IN_ActivateMouse()
 
 	isMouseActive = true;
 
-#if 0
-	if ( mouseparmsvalid )
-		restore_spi = SystemParametersInfo( SPI_SETMOUSE, 0, newmouseparms, 0 );
-
-	int width = GetSystemMetrics( SM_CXSCREEN );
-	int height = GetSystemMetrics( SM_CYSCREEN );
-
-	GetWindowRect( cl_hwnd, &window_rect );
-	if ( window_rect.left < 0 )
-		window_rect.left = 0;
-	if ( window_rect.top < 0 )
-		window_rect.top = 0;
-	if ( window_rect.right >= width )
-		window_rect.right = width - 1;
-	if ( window_rect.bottom >= height - 1 )
-		window_rect.bottom = height - 1;
-#endif
-
-	window_center_x = viddef.width / 2;
-	window_center_y = viddef.height / 2;
+	window_center_x = ( int ) viddef.width / 2;
+	window_center_y = ( int ) viddef.height / 2;
 
 	old_x = window_center_x;
 	old_y = window_center_y;
@@ -177,7 +161,9 @@ void IN_ActivateMouse()
 void IN_DeactivateMouse()
 {
 	if ( !mouseinitialized || !isMouseActive )
+	{
 		return;
+	}
 
 	isMouseActive = false;
 
@@ -223,7 +209,7 @@ void IN_MouseEvent( int mstate )
 }
 
 extern SDL_Window *VID_GetSDLWindowHandle();
-void IN_MouseMove( usercmd_t *cmd )
+void               IN_MouseMove( usercmd_t *cmd )
 {
 	if ( !isMouseActive )
 	{
