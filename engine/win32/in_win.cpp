@@ -182,32 +182,6 @@ void IN_StartupMouse()
 	mouse_buttons = 3;
 }
 
-void IN_MouseEvent( int mstate )
-{
-	int i;
-
-	if ( !mouseinitialized )
-		return;
-
-	// perform button actions
-	for ( i = 0; i < mouse_buttons; i++ )
-	{
-		if ( ( mstate & ( 1 << i ) ) &&
-		     !( mouse_oldbuttonstate & ( 1 << i ) ) )
-		{
-			Key_Event( K_MOUSE1 + i, true, sys_msg_time );
-		}
-
-		if ( !( mstate & ( 1 << i ) ) &&
-		     ( mouse_oldbuttonstate & ( 1 << i ) ) )
-		{
-			Key_Event( K_MOUSE1 + i, false, sys_msg_time );
-		}
-	}
-
-	mouse_oldbuttonstate = mstate;
-}
-
 extern SDL_Window *VID_GetSDLWindowHandle();
 void               IN_MouseMove( usercmd_t *cmd )
 {

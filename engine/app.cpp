@@ -119,6 +119,10 @@ int nox::App::MapKey( int key )
 		case SDLK_PAGEDOWN:
 			return K_PGDN;
 
+		case SDLK_LALT:
+		case SDLK_RALT:
+			return K_ALT;
+
 		case SDLK_LSHIFT:
 		case SDLK_RSHIFT:
 			return K_SHIFT;
@@ -164,8 +168,6 @@ int nox::App::MapKey( int key )
 	return key;
 }
 
-void IN_MouseEvent( int mstate );
-
 void nox::App::PollEvents()
 {
 	SDL_Event event;
@@ -206,23 +208,30 @@ void nox::App::PollEvents()
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			{
-				int  button;
+				int button;
 				switch ( event.button.button )
 				{
 					case SDL_BUTTON_LEFT:
-						button = 1;
+						button = K_MOUSE1;
 						break;
 					case SDL_BUTTON_RIGHT:
-						button = 2;
+						button = K_MOUSE2;
 						break;
 					case SDL_BUTTON_MIDDLE:
-						button = 4;
+						button = K_MOUSE3;
 						break;
 					default:
 						button = 0;
 						break;
 				}
-				IN_MouseEvent( button );
+
+				if ( button == 0 )
+				{
+					assert( 0 );
+					break;
+				}
+
+				Key_Event( button, ( event.button.state == SDL_PRESSED ), sys_msg_time );
 			}
 
 			case SDL_WINDOWEVENT:
