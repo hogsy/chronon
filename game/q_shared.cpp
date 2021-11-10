@@ -436,11 +436,6 @@ void COM_StripExtension( char *in, char *out ) {
 	*out = 0;
 }
 
-/*
-============
-COM_FileExtension
-============
-*/
 const char *COM_FileExtension( char *in ) {
 	static char exten[ 8 ];
 	int		i;

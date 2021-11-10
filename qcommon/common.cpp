@@ -1180,8 +1180,8 @@ void Qcommon_Init( int argc, char **argv ) {
 
 	FS_InitFilesystem();
 
-	Cbuf_AddText( "exec configs/default.cfg\n" );
-	Cbuf_AddText( "exec configs/" ENGINE_NAME ".cfg\n" );
+	Cbuf_AddText( "exec default.cfg\n" );
+	Cbuf_AddText( "exec " ENGINE_NAME ".cfg\n" );
 
 	Cbuf_AddEarlyCommands( true );
 	Cbuf_Execute();
