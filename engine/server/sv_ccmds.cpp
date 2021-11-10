@@ -170,31 +170,27 @@ void SV_WipeSavegame( const char *savename ) {
 	Sys_FindClose();
 }
 
-
-/*
-================
-CopyFile
-================
-*/
-void CopyFile( char *src, char *dst ) {
+void CopyFile( char *src, char *dst )
+{
 	FILE *f1, *f2;
-	int		l;
-	byte	buffer[ 65536 ];
+	byte  buffer[ 65536 ];
 
 	Com_DPrintf( "CopyFile (%s, %s)\n", src, dst );
 
 	f1 = fopen( src, "rb" );
-	if( !f1 )
+	if ( !f1 )
 		return;
 	f2 = fopen( dst, "wb" );
-	if( !f2 ) {
+	if ( !f2 )
+	{
 		fclose( f1 );
 		return;
 	}
 
-	while( 1 ) {
-		l = fread( buffer, 1, sizeof( buffer ), f1 );
-		if( !l )
+	while ( true )
+	{
+		size_t l = fread( buffer, 1, sizeof( buffer ), f1 );
+		if ( !l )
 			break;
 		fwrite( buffer, 1, l, f2 );
 	}
@@ -203,15 +199,9 @@ void CopyFile( char *src, char *dst ) {
 	fclose( f2 );
 }
 
-
-/*
-================
-SV_CopySaveGame
-================
-*/
-void SV_CopySaveGame( const char *src, const char *dst ) {
-	char	name[ MAX_OSPATH ], name2[ MAX_OSPATH ];
-	int		l, len;
+void SV_CopySaveGame( const char *src, const char *dst )
+{
+	char  name[ MAX_OSPATH ], name2[ MAX_OSPATH ];
 	char *found;
 
 	Com_DPrintf( "SV_CopySaveGame(%s, %s)\n", src, dst );
@@ -229,16 +219,18 @@ void SV_CopySaveGame( const char *src, const char *dst ) {
 	CopyFile( name, name2 );
 
 	Com_sprintf( name, sizeof( name ), "%s/save/%s/", FS_Gamedir(), src );
-	len = strlen( name );
+	size_t len = strlen( name );
 	Com_sprintf( name, sizeof( name ), "%s/save/%s/*.sav", FS_Gamedir(), src );
 	found = Sys_FindFirst( name, 0, 0 );
-	while( found ) {
+	while ( found )
+	{
 		strcpy( name + len, found + len );
 
 		Com_sprintf( name2, sizeof( name2 ), "%s/save/%s/%s", FS_Gamedir(), dst, found + len );
 		CopyFile( name, name2 );
 
 		// change sav to sv2
+		size_t l;
 		l = strlen( name );
 		strcpy( name + l - 3, "sv2" );
 		l = strlen( name2 );
@@ -810,7 +802,7 @@ Begins server demo recording.  Every entity and every message will be
 recorded, but no playerinfo will be stored.  Primarily for demo merging.
 ==============
 */
-void SV_ServerRecord_f( void ) {
+void SV_ServerRecord_f() {
 	char	name[ MAX_OSPATH ];
 	sizebuf_t	buf;
 	int		len;
@@ -878,7 +870,7 @@ void SV_ServerRecord_f( void ) {
 
 	// write it to the demo file
 	Com_DPrintf( "signon message length: %i\n", buf.cursize );
-	len = LittleLong( buf.cursize );
+	len = LittleLong( ( int ) buf.cursize ); // todo: you know the drill...
 	fwrite( &len, 4, 1, svs.demofile );
 	fwrite( buf.data, buf.cursize, 1, svs.demofile );
 

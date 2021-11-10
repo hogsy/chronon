@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "qcommon/qcommon.h"
-
-#include "app.h"
 #include "client/keys.h"
 
 nox::App *nox::globalApp = nullptr;
@@ -46,6 +44,28 @@ void nox::App::Initialize()
 	{
 		Sys_Error( "Failed to initialized SDL2: %s\n", SDL_GetError() );
 	}
+
+	Qcommon_Init( argc_, argv_ );
+}
+
+[[noreturn]] void nox::App::Run()
+{
+	unsigned int time, newTime;
+	unsigned int oldTime = GetNumMilliseconds();
+	while ( true )
+	{
+		nox::globalApp->PollEvents();
+
+		do
+		{
+			newTime = GetNumMilliseconds();
+			time = newTime - oldTime;
+		} while ( time < 1 );
+
+		Qcommon_Frame( time );
+
+		oldTime = newTime;
+	}
 }
 
 unsigned int sys_msg_time = 0;  // todo: kill
@@ -54,13 +74,13 @@ unsigned int sys_frame_time = 0;// todo: kill
 void nox::App::SendKeyEvents()
 {
 	SDL_PumpEvents();
-	sys_msg_time = Sys_Milliseconds();
+	sys_msg_time = GetNumMilliseconds();
 }
 
-unsigned int nox::App::GetNumTicks()
+unsigned int nox::App::GetNumMilliseconds()
 {
-	lastTick_ = SDL_GetTicks();
-	return lastTick_;
+	lastMs_ = SDL_GetTicks();
+	return lastMs_;
 }
 
 char *nox::App::GetClipboardData()
@@ -244,32 +264,12 @@ void nox::App::ShowCursor( bool show )
 	SDL_ShowCursor( show );
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic   ignored "EndlessLoop"
-
 extern "C" int main( int argc, char **argv )
 {
 	nox::globalApp = new nox::App( argc, argv );
 	nox::globalApp->Initialize();
 
-	Qcommon_Init( argc, argv );
+	nox::globalApp->Run();
 
-	int time, newTime;
-	int oldTime = Sys_Milliseconds();
-	while ( true )
-	{
-		nox::globalApp->PollEvents();
-
-		do
-		{
-			newTime = Sys_Milliseconds();
-			time = newTime - oldTime;
-		} while ( time < 1 );
-
-		Qcommon_Frame( time );
-
-		oldTime = newTime;
-	}
+	return EXIT_SUCCESS;
 }
-
-#pragma clang diagnostic pop

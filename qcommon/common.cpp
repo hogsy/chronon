@@ -50,10 +50,10 @@ FILE *logfile;
 int server_state;
 
 // host_speeds times
-int time_before_game;
-int time_after_game;
-int time_before_ref;
-int time_after_ref;
+unsigned int time_before_game;
+unsigned int time_after_game;
+unsigned int time_before_ref;
+unsigned int time_after_ref;
 
 /*
 ============================================================================
@@ -924,74 +924,79 @@ just cleared malloc with counters now...
 ==============================================================================
 */
 
+/**
+ * Allocates; aborts on fail.
+ * Memory allocated is zeroed.
+ */
+void *M_Alloc( size_t size )
+{
+	void *data = calloc( size, 1 );
+	if ( data == nullptr )
+	{
+		Com_Error( ERR_FATAL, "Failed to allocate %u bytes!\n", size );
+	}
+
+	return data;
+}
+
+void M_Free( void *ptr )
+{
+	free( ptr );
+}
+
 #define Z_MAGIC 0x1d1d
 
 typedef struct zhead_s {
 	struct zhead_s *prev, *next;
 	short magic;
 	short tag;  // for group free
-	int size;
+	size_t size;
 } zhead_t;
 
 zhead_t z_chain;
-int z_count, z_bytes;
+int z_count;
+size_t z_bytes;
 
-/*
-========================
-Z_Free
-========================
-*/
-void Z_Free( void *ptr ) {
-	zhead_t *z;
+void Z_Free( void *ptr )
+{
+	zhead_t *z = ( ( zhead_t * ) ptr ) - 1;
 
-	z = ( (zhead_t *)ptr ) - 1;
-
-	if( z->magic != Z_MAGIC ) Com_Error( ERR_FATAL, "Z_Free: bad magic" );
+	if ( z->magic != Z_MAGIC ) Com_Error( ERR_FATAL, "Z_Free: bad magic" );
 
 	z->prev->next = z->next;
 	z->next->prev = z->prev;
 
 	z_count--;
 	z_bytes -= z->size;
-	free( z );
+	M_Free( z );
 }
 
-/*
-========================
-Z_Stats_f
-========================
-*/
-void Z_Stats_f( void ) {
-	Com_Printf( "%i bytes in %i blocks\n", z_bytes, z_count );
+void Z_Stats_f()
+{
+	Com_Printf( "%u bytes in %u blocks\n", z_bytes, z_count );
 }
 
-/*
-========================
-Z_FreeTags
-========================
-*/
-void Z_FreeTags( int tag ) {
+void Z_FreeTags( int tag )
+{
 	zhead_t *z, *next;
-
-	for( z = z_chain.next; z != &z_chain; z = next ) {
+	for ( z = z_chain.next; z != &z_chain; z = next )
+	{
 		next = z->next;
-		if( z->tag == tag ) Z_Free( (void *)( z + 1 ) );
+		if ( z->tag == tag ) Z_Free( ( void * ) ( z + 1 ) );
 	}
 }
 
-/*
-========================
-Z_TagMalloc
-========================
-*/
-void *Z_TagMalloc( int size, int tag ) {
+void *Z_TagMalloc( size_t size, int16_t tag )
+{
 	zhead_t *z;
 
-	size = size + sizeof( zhead_t );
-	z = static_cast<zhead_t *>( malloc( size ) );
-	if( !z )
+	size += sizeof( zhead_t );
+	z = ( zhead_t * ) M_Alloc( size );
+	if ( !z )
+	{
 		Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes", size );
-	memset( z, 0, size );
+	}
+
 	z_count++;
 	z_bytes += size;
 	z->magic = Z_MAGIC;
@@ -1003,33 +1008,10 @@ void *Z_TagMalloc( int size, int tag ) {
 	z_chain.next->prev = z;
 	z_chain.next = z;
 
-	return (void *)( z + 1 );
+	return ( void * ) ( z + 1 );
 }
 
-/*
-========================
-Z_Malloc
-========================
-*/
 void *Z_Malloc( int size ) { return Z_TagMalloc( size, 0 ); }
-
-/**
- * Allocates; aborts on fail.
- */
-void *M_Alloc( size_t size ) {
-	void *data = malloc( size );
-	if( data == NULL ) {
-		Com_Error( ERR_FATAL, "Failed to allocate %u bytes!\n", size );
-	}
-
-	memset( data, 0, size );
-
-	return data;
-}
-
-void M_Free( void *ptr ) {
-	free( ptr );
-}
 
 //============================================================================
 
@@ -1170,11 +1152,6 @@ test error shutdown procedures
 */
 void Com_Error_f( void ) { Com_Error( ERR_FATAL, "%s", Cmd_Argv( 1 ) ); }
 
-/*
-=================
-Qcommon_Init
-=================
-*/
 void Qcommon_Init( int argc, char **argv ) {
 	char *s;
 
@@ -1231,7 +1208,7 @@ void Qcommon_Init( int argc, char **argv ) {
 	s = va( ENGINE_NAME " %4.2f %s %s", ENGINE_VERSION, __DATE__, BUILDSTRING );
 	Cvar_Get( "version", s, CVAR_SERVERINFO | CVAR_NOSET );
 
-	if( dedicated->value ) Cmd_AddCommand( "quit", Com_Quit );
+	if( dedicated->value >= 1.0f ) Cmd_AddCommand( "quit", Com_Quit );
 
 	NET_Init();
 	Netchan_Init();
@@ -1242,7 +1219,7 @@ void Qcommon_Init( int argc, char **argv ) {
 	// add + commands from command line
 	if( !Cbuf_AddLateCommands() ) {  // if the user didn't give any commands, run
 									// default action
-		if( !dedicated->value )
+		if( dedicated->value <= 0.0f )
 			Cbuf_AddText( "d1\n" );
 		else
 			Cbuf_AddText( "dedicated_start\n" );
@@ -1255,43 +1232,44 @@ void Qcommon_Init( int argc, char **argv ) {
 	Com_Printf( "====== " ENGINE_NAME " Initialized ======\n\n" );
 }
 
-/*
-=================
-Qcommon_Frame
-=================
-*/
-void Qcommon_Frame( int msec ) {
-	char *s;
-	int time_before, time_between, time_after;
+void Qcommon_Frame( unsigned int msec )
+{
+	if ( setjmp( abortframe ) ) return;// an ERR_DROP was thrown
 
-	if( setjmp( abortframe ) ) return;  // an ERR_DROP was thrown
-
-	if( log_stats->modified ) {
+	if ( log_stats->modified )
+	{
 		log_stats->modified = false;
-		if( log_stats->value ) {
-			if( log_stats_file ) {
+		if ( log_stats->value )
+		{
+			if ( log_stats_file )
+			{
 				fclose( log_stats_file );
 				log_stats_file = 0;
 			}
 			log_stats_file = fopen( "stats.log", "w" );
-			if( log_stats_file )
+			if ( log_stats_file )
 				fprintf( log_stats_file, "entities,dlights,parts,frame time\n" );
-		} else {
-			if( log_stats_file ) {
+		}
+		else
+		{
+			if ( log_stats_file )
+			{
 				fclose( log_stats_file );
 				log_stats_file = 0;
 			}
 		}
 	}
 
-	if( fixedtime->value )
+	if ( fixedtime->value >= 1.0f )
 		msec = fixedtime->value;
-	else if( timescale->value ) {
+	else if ( timescale->value >= 1.0f )
+	{
 		msec *= timescale->value;
-		if( msec < 1 ) msec = 1;
+		if ( msec < 1 ) msec = 1;
 	}
 
-	if( showtrace->value ) {
+	if ( showtrace->value >= 1.0f )
+	{
 		extern int c_traces, c_brush_traces;
 		extern int c_pointcontents;
 
@@ -1301,26 +1279,22 @@ void Qcommon_Frame( int msec ) {
 		c_pointcontents = 0;
 	}
 
-#if 0 // todo: do we still need this ??
-	do {
-		s = Sys_ConsoleInput();
-		if( s ) Cbuf_AddText( va( "%s\n", s ) );
-	} while( s );
-#endif
 	Cbuf_Execute();
 
-	if( host_speeds->value ) time_before = Sys_Milliseconds();
+	unsigned int time_before;
+	if ( host_speeds->value >= 1.0f ) time_before = nox::globalApp->GetNumMilliseconds();
 
 	SV_Frame( msec );
 
-	if( host_speeds->value ) time_between = Sys_Milliseconds();
+	unsigned int time_between;
+	if ( host_speeds->value >= 1.0f ) time_between = nox::globalApp->GetNumMilliseconds();
 
 	CL_Frame( msec );
 
-	if( host_speeds->value ) time_after = Sys_Milliseconds();
-
-	if( host_speeds->value ) {
-		int all, sv, gm, cl, rf;
+	if ( host_speeds->value >= 1.0f )
+	{
+		unsigned int time_after = nox::globalApp->GetNumMilliseconds();
+		unsigned int all, sv, gm, cl, rf;
 
 		all = time_after - time_before;
 		sv = time_between - time_before;
@@ -1329,13 +1303,8 @@ void Qcommon_Frame( int msec ) {
 		rf = time_after_ref - time_before_ref;
 		sv -= gm;
 		cl -= rf;
-		Com_Printf( "all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n", all, sv, gm, cl, rf );
+		Com_Printf( "all:%3u sv:%3u gm:%3u cl:%3u rf:%3u\n", all, sv, gm, cl, rf );
 	}
 }
 
-/*
-=================
-Qcommon_Shutdown
-=================
-*/
-void Qcommon_Shutdown( void ) {}
+void Qcommon_Shutdown() {}

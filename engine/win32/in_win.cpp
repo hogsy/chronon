@@ -182,7 +182,7 @@ void IN_DeactivateMouse()
 	nox::globalApp->ShowCursor( true );
 }
 
-void IN_StartupMouse( void )
+void IN_StartupMouse()
 {
 	cvar_t *cv = Cvar_Get( "in_initmouse", "1", CVAR_NOSET );
 	if ( cv->value == 0.0f )

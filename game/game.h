@@ -102,77 +102,77 @@ struct edict_s
 typedef struct
 {
 	// special messages
-	void	(*bprintf) (int printlevel, const char *fmt, ...);
-	void	(*dprintf) (const char *fmt, ...);
-	void	(*cprintf) (edict_t *ent, int printlevel, const char *fmt, ...);
-	void	(*centerprintf) (edict_t *ent, const char *fmt, ...);
-	void	(*sound) (edict_t *ent, int channel, int soundindex, float volume, float attenuation, float timeofs);
-	void	(*positioned_sound) (vec3_t origin, edict_t *ent, int channel, int soundinedex, float volume, float attenuation, float timeofs);
+	void ( *bprintf )( int printlevel, const char *fmt, ... );
+	void ( *dprintf )( const char *fmt, ... );
+	void ( *cprintf )( edict_t *ent, int printlevel, const char *fmt, ... );
+	void ( *centerprintf )( edict_t *ent, const char *fmt, ... );
+	void ( *sound )( edict_t *ent, int channel, int soundindex, float volume, float attenuation, float timeofs );
+	void ( *positioned_sound )( vec3_t origin, edict_t *ent, int channel, int soundinedex, float volume, float attenuation, float timeofs );
 
 	// config strings hold all the index strings, the lightstyles,
 	// and misc data like the sky definition and cdtrack.
 	// All of the current configstrings are sent to clients when
 	// they connect, and changes are sent to all connected clients.
-	void	(*configstring) (int num, const char *string);
+	void ( *configstring )( int num, const char *string );
 
-	void	(*error) (const char *fmt, ...);
+	void ( *error )( const char *fmt, ... );
 
 	// the *index functions create configstrings and some internal server state
-	int		(*modelindex) (const char *name);
-	int		(*soundindex) (const char *name);
-	int		(*imageindex) (const char *name);
+	int ( *modelindex )( const char *name );
+	int ( *soundindex )( const char *name );
+	int ( *imageindex )( const char *name );
 
-	void	(*setmodel) (edict_t *ent, const char *name);
+	void ( *setmodel )( edict_t *ent, const char *name );
 
 	// collision detection
-	trace_t	(*trace) (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask);
-	int		(*pointcontents) (vec3_t point);
-	qboolean	(*inPVS) (vec3_t p1, vec3_t p2);
-	qboolean	(*inPHS) (vec3_t p1, vec3_t p2);
-	void		(*SetAreaPortalState) (int portalnum, qboolean open);
-	qboolean	(*AreasConnected) (int area1, int area2);
+	trace_t ( *trace )( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask );
+	int ( *pointcontents )( vec3_t point );
+	qboolean ( *inPVS )( vec3_t p1, vec3_t p2 );
+	qboolean ( *inPHS )( vec3_t p1, vec3_t p2 );
+	void ( *SetAreaPortalState )( int portalnum, qboolean open );
+	qboolean ( *AreasConnected )( int area1, int area2 );
 
 	// an entity will never be sent to a client or used for collision
 	// if it is not passed to linkentity.  If the size, position, or
 	// solidity changes, it must be relinked.
-	void	(*linkentity) (edict_t *ent);
-	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
-	int		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	int maxcount, int areatype);
-	void	(*Pmove) (pmove_t *pmove);		// player movement code common with client prediction
+	void ( *linkentity )( edict_t *ent );
+	void ( *unlinkentity )( edict_t *ent );// call before removing an interactive edict
+	int ( *BoxEdicts )( vec3_t mins, vec3_t maxs, edict_t **list, int maxcount, int areatype );
+	void ( *Pmove )( pmove_t *pmove );// player movement code common with client prediction
 
 	// network messaging
-	void	(*multicast) (vec3_t origin, multicast_t to);
-	void	(*unicast) (edict_t *ent, qboolean reliable);
-	void	(*WriteChar) (int c);
-	void	(*WriteByte) (int c);
-	void	(*WriteShort) (int c);
-	void	(*WriteLong) (int c);
-	void	(*WriteFloat) (float f);
-	void	(*WriteString) (const char *s);
-	void	(*WritePosition) (vec3_t pos);	// some fractional bits
-	void	(*WriteDir) (vec3_t pos);		// single byte encoded, very coarse
-	void	(*WriteAngle) (float f);
+	void ( *multicast )( vec3_t origin, multicast_t to );
+	void ( *unicast )( edict_t *ent, qboolean reliable );
+	void ( *WriteChar )( int c );
+	void ( *WriteByte )( int c );
+	void ( *WriteShort )( int c );
+	void ( *WriteLong )( int c );
+	void ( *WriteFloat )( float f );
+	void ( *WriteString )( const char *s );
+	void ( *WritePosition )( vec3_t pos );// some fractional bits
+	void ( *WriteDir )( vec3_t pos );     // single byte encoded, very coarse
+	void ( *WriteAngle )( float f );
 
 	// managed memory allocation
-	void	*(*TagMalloc) (int size, int tag);
-	void	(*TagFree) (void *block);
-	void	(*FreeTags) (int tag);
+	void *( *TagMalloc )( size_t size, int16_t tag );
+	void ( *TagFree )( void *block );
+	void ( *FreeTags )( int tag );
 
 	// console variable interaction
-	cvar_t	*(*cvar) (const char *var_name, const char *value, int flags);
-	cvar_t	*(*cvar_set) (const char *var_name, const char *value);
-	cvar_t	*(*cvar_forceset) (const char *var_name, const char *value);
+	cvar_t *( *cvar )( const char *var_name, const char *value, int flags );
+	cvar_t *( *cvar_set )( const char *var_name, const char *value );
+	cvar_t *( *cvar_forceset )( const char *var_name, const char *value );
 
 	// ClientCommand and ServerCommand parameter access
-	int		(*argc) ();
-	const char	*(*argv) (int n);
-	char	*(*args) ();	// concatenation of all argv >= 1
+	int ( *argc )();
+	const char *( *argv )( int n );
+	char *( *args )();// concatenation of all argv >= 1
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
-	void	(*AddCommandString) (const char *text);
+	void ( *AddCommandString )( const char *text );
 
-	void	(*DebugGraph) (float value, int color);
+	void ( *DebugGraph )( float value, int color );
 
 	// File System
 	int ( *LoadFile )( const char *path, void **buffer );

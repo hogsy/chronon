@@ -31,9 +31,12 @@ namespace nox
 
 		void Initialize();
 
-		static void SendKeyEvents();
+		[[noreturn]] void Run();
 
-		unsigned int GetNumTicks();
+		void SendKeyEvents();
+
+		unsigned int GetNumMilliseconds();
+		inline unsigned int GetCurrentMillisecond() { return lastMs_; }
 
 		char *GetClipboardData();
 
@@ -57,7 +60,7 @@ namespace nox
 		int argc_;
 		char **argv_;
 
-		unsigned int lastTick_{ 0 };
+		unsigned int lastMs_{ 0 };
 	};
 
 	extern App *globalApp;

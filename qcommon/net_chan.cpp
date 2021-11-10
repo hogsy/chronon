@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qcommon.h"
+#include "app.h"
 
 /*
 
@@ -90,14 +91,12 @@ Netchan_Init
 */
 void Netchan_Init (void)
 {
-	int		port;
-
 	// pick a port value that should be nice and random
-	port = Sys_Milliseconds() & 0xffff;
+	unsigned int port = nox::globalApp->GetNumMilliseconds() & 0xffff;
 
 	showpackets = Cvar_Get ("showpackets", "0", 0);
 	showdrop = Cvar_Get ("showdrop", "0", 0);
-	cv_qport = Cvar_Get ("qport", va("%i", port), CVAR_NOSET);
+	cv_qport = Cvar_Get ("qport", va("%u", port), CVAR_NOSET);
 }
 
 /*
@@ -156,7 +155,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->sock = sock;
 	chan->remote_address = adr;
 	chan->qport = qport;
-	chan->last_received = curtime;
+	chan->last_received = nox::globalApp->GetCurrentMillisecond();
 	chan->incoming_sequence = 0;
 	chan->outgoing_sequence = 1;
 
@@ -244,7 +243,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	w2 = ( chan->incoming_sequence & ~(1<<31) ) | (chan->incoming_reliable_sequence<<31);
 
 	chan->outgoing_sequence++;
-	chan->last_sent = curtime;
+	chan->last_sent = nox::globalApp->GetCurrentMillisecond();
 
 	MSG_WriteLong (&send, w1);
 	MSG_WriteLong (&send, w2);
@@ -379,7 +378,7 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 //
 // the message can now be read from the current message pointer
 //
-	chan->last_received = curtime;
+	chan->last_received = nox::globalApp->GetCurrentMillisecond();
 
 	return true;
 }

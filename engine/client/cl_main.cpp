@@ -105,23 +105,16 @@ extern	cvar_t *allow_download_maps;
 
 //======================================================================
 
-
-/*
-====================
-CL_WriteDemoMessage
-
-Dumps the current net message, prefixed by the length
-====================
-*/
-void CL_WriteDemoMessage (void)
+/**
+ * Dumps the current net message, prefixed by the length.
+ */
+void CL_WriteDemoMessage()
 {
-	int		len, swlen;
-
 	// the first eight bytes are just packet sequencing stuff
-	len = net_message.cursize-8;
-	swlen = LittleLong(len);
-	fwrite (&swlen, 4, 1, cls.demofile);
-	fwrite (net_message.data+8,	len, 1, cls.demofile);
+	int len = ( int ) net_message.cursize - 8;
+	int swlen = LittleLong( len );
+	fwrite( &swlen, 4, 1, cls.demofile );
+	fwrite( net_message.data + 8, len, 1, cls.demofile );
 }
 
 
@@ -151,54 +144,48 @@ void CL_Stop_f (void)
 	Com_Printf ("Stopped demo.\n");
 }
 
-/*
-====================
-CL_Record_f
-
-record <demoname>
-
-Begins recording a demo from the current position
-====================
-*/
-void CL_Record_f (void)
+/**
+ * Begins recording a demo from the current position.
+ */
+void CL_Record_f()
 {
-	char	name[MAX_OSPATH];
-	byte	buf_data[MAX_MSGLEN];
-	sizebuf_t	buf;
-	int		i;
-	int		len;
-	entity_state_t	*ent;
-	entity_state_t	nullstate;
+	char            name[ MAX_OSPATH ];
+	byte            buf_data[ MAX_MSGLEN ];
+	sizebuf_t       buf;
+	int             i;
+	int             len;
+	entity_state_t *ent;
+	entity_state_t  nullstate;
 
-	if (Cmd_Argc() != 2)
+	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf ("record <demoname>\n");
+		Com_Printf( "record <demoname>\n" );
 		return;
 	}
 
-	if (cls.demorecording)
+	if ( cls.demorecording )
 	{
-		Com_Printf ("Already recording.\n");
+		Com_Printf( "Already recording.\n" );
 		return;
 	}
 
-	if (cls.state != ca_active)
+	if ( cls.state != ca_active )
 	{
-		Com_Printf ("You must be in a level to record.\n");
+		Com_Printf( "You must be in a level to record.\n" );
 		return;
 	}
 
 	//
 	// open the demo file
 	//
-	Com_sprintf (name, sizeof(name), "%s/demos/%s.dm2", FS_Gamedir(), Cmd_Argv(1));
+	Com_sprintf( name, sizeof( name ), "%s/demos/%s.dm2", FS_Gamedir(), Cmd_Argv( 1 ) );
 
-	Com_Printf ("recording to %s.\n", name);
-	FS_CreatePath (name);
-	cls.demofile = fopen (name, "wb");
-	if (!cls.demofile)
+	Com_Printf( "recording to %s.\n", name );
+	FS_CreatePath( name );
+	cls.demofile = fopen( name, "wb" );
+	if ( !cls.demofile )
 	{
-		Com_Printf ("ERROR: couldn't open.\n");
+		Com_Printf( "ERROR: couldn't open.\n" );
 		return;
 	}
 	cls.demorecording = true;
@@ -209,66 +196,65 @@ void CL_Record_f (void)
 	//
 	// write out messages to hold the startup information
 	//
-	SZ_Init (&buf, buf_data, sizeof(buf_data));
+	SZ_Init( &buf, buf_data, sizeof( buf_data ) );
 
 	// send the serverdata
-	MSG_WriteByte (&buf, svc_serverdata);
-	MSG_WriteLong (&buf, PROTOCOL_VERSION);
-	MSG_WriteLong (&buf, 0x10000 + cl.servercount);
-	MSG_WriteByte (&buf, 1);	// demos are always attract loops
-	MSG_WriteString (&buf, cl.gamedir);
-	MSG_WriteShort (&buf, cl.playernum);
+	MSG_WriteByte( &buf, svc_serverdata );
+	MSG_WriteLong( &buf, PROTOCOL_VERSION );
+	MSG_WriteLong( &buf, 0x10000 + cl.servercount );
+	MSG_WriteByte( &buf, 1 );// demos are always attract loops
+	MSG_WriteString( &buf, cl.gamedir );
+	MSG_WriteShort( &buf, cl.playernum );
 
-	MSG_WriteString (&buf, cl.configstrings[CS_NAME]);
+	MSG_WriteString( &buf, cl.configstrings[ CS_NAME ] );
 
 	// configstrings
-	for (i=0 ; i<MAX_CONFIGSTRINGS ; i++)
+	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
-		if (cl.configstrings[i][0])
+		if ( cl.configstrings[ i ][ 0 ] )
 		{
-			if (buf.cursize + strlen (cl.configstrings[i]) + 32 > buf.maxsize)
-			{	// write it out
-				len = LittleLong (buf.cursize);
-				fwrite (&len, 4, 1, cls.demofile);
-				fwrite (buf.data, buf.cursize, 1, cls.demofile);
+			if ( buf.cursize + strlen( cl.configstrings[ i ] ) + 32 > buf.maxsize )
+			{// write it out
+				len = LittleLong( buf.cursize );
+				fwrite( &len, 4, 1, cls.demofile );
+				fwrite( buf.data, buf.cursize, 1, cls.demofile );
 				buf.cursize = 0;
 			}
 
-			MSG_WriteByte (&buf, svc_configstring);
-			MSG_WriteShort (&buf, i);
-			MSG_WriteString (&buf, cl.configstrings[i]);
+			MSG_WriteByte( &buf, svc_configstring );
+			MSG_WriteShort( &buf, ( int16_t ) i );// todo: make this pass a long
+			MSG_WriteString( &buf, cl.configstrings[ i ] );
 		}
-
 	}
 
 	// baselines
-	memset (&nullstate, 0, sizeof(nullstate));
-	for (i=0; i<MAX_EDICTS ; i++)
+	memset( &nullstate, 0, sizeof( nullstate ) );
+	for ( i = 0; i < MAX_EDICTS; i++ )
 	{
-		ent = &cl_entities[i].baseline;
-		if (!ent->modelindex)
+		ent = &cl_entities[ i ].baseline;
+		if ( !ent->modelindex )
 			continue;
 
-		if (buf.cursize + 64 > buf.maxsize)
-		{	// write it out
-			len = LittleLong (buf.cursize);
-			fwrite (&len, 4, 1, cls.demofile);
-			fwrite (buf.data, buf.cursize, 1, cls.demofile);
+		if ( buf.cursize + 64 > buf.maxsize )
+		{// write it out
+			len = LittleLong( buf.cursize );
+			fwrite( &len, 4, 1, cls.demofile );
+			fwrite( buf.data, buf.cursize, 1, cls.demofile );
 			buf.cursize = 0;
 		}
 
-		MSG_WriteByte (&buf, svc_spawnbaseline);		
-		MSG_WriteDeltaEntity (&nullstate, &cl_entities[i].baseline, &buf, true, true);
+		MSG_WriteByte( &buf, svc_spawnbaseline );
+		MSG_WriteDeltaEntity( &nullstate, &cl_entities[ i ].baseline, &buf, true, true );
 	}
 
-	MSG_WriteByte (&buf, svc_stufftext);
-	MSG_WriteString (&buf, "precache\n");
+	MSG_WriteByte( &buf, svc_stufftext );
+	MSG_WriteString( &buf, "precache\n" );
 
 	// write it to the demo file
 
-	len = LittleLong (buf.cursize);
-	fwrite (&len, 4, 1, cls.demofile);
-	fwrite (buf.data, buf.cursize, 1, cls.demofile);
+	len = LittleLong( buf.cursize );
+	fwrite( &len, 4, 1, cls.demofile );
+	fwrite( buf.data, buf.cursize, 1, cls.demofile );
 
 	// the rest of the demo file will be individual frames
 }
@@ -615,48 +601,49 @@ Sends a disconnect message to the server
 This is also called on Com_Error, so it shouldn't cause any errors
 =====================
 */
-void CL_Disconnect (void)
+void CL_Disconnect( void )
 {
-	byte	final[32];
+	byte final[ 32 ];
 
-	if (cls.state == ca_disconnected)
+	if ( cls.state == ca_disconnected )
 		return;
 
-	if (cl_timedemo && cl_timedemo->value)
+	if ( cl_timedemo && cl_timedemo->value )
 	{
-		int	time;
-		
-		time = Sys_Milliseconds () - cl.timedemo_start;
-		if (time > 0)
-			Com_Printf ("%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames,
-			time/1000.0, cl.timedemo_frames*1000.0 / time);
+		int time;
+
+		time = nox::globalApp->GetNumMilliseconds() - cl.timedemo_start;
+		if ( time > 0 )
+			Com_Printf( "%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames,
+			            time / 1000.0, cl.timedemo_frames * 1000.0 / time );
 	}
 
-	VectorClear (cl.refdef.blend);
-	R_SetPalette(NULL);
+	VectorClear( cl.refdef.blend );
+	R_SetPalette( nullptr );
 
-	M_ForceMenuOff ();
+	M_ForceMenuOff();
 
 	cls.connect_time = 0;
 
-	SCR_StopCinematic ();
+	SCR_StopCinematic();
 
-	if (cls.demorecording)
-		CL_Stop_f ();
+	if ( cls.demorecording )
+		CL_Stop_f();
 
 	// send a disconnect message to the server
-	final[0] = clc_stringcmd;
-	strcpy ((char *)final+1, "disconnect");
-	Netchan_Transmit (&cls.netchan, strlen((char*)final), final);
-	Netchan_Transmit (&cls.netchan, strlen((char*)final), final);
-	Netchan_Transmit (&cls.netchan, strlen((char*)final), final);
+	final[ 0 ] = clc_stringcmd;
+	strcpy( ( char * ) final + 1, "disconnect" );
+	Netchan_Transmit( &cls.netchan, strlen( ( char * ) final ), final );
+	Netchan_Transmit( &cls.netchan, strlen( ( char * ) final ), final );
+	Netchan_Transmit( &cls.netchan, strlen( ( char * ) final ), final );
 
-	CL_ClearState ();
+	CL_ClearState();
 
 	// stop download
-	if (cls.download) {
-		fclose(cls.download);
-		cls.download = NULL;
+	if ( cls.download )
+	{
+		fclose( cls.download );
+		cls.download = nullptr;
 	}
 
 	cls.state = ca_disconnected;
@@ -927,7 +914,7 @@ void CL_ConnectionlessPacket (void)
 			Com_Printf ("Command packet from remote host.  Ignored.\n");
 			return;
 		}
-		Sys_AppActivate ();
+		//Sys_AppActivate ();
 		s = MSG_ReadString (&net_message);
 		Cbuf_AddText (s);
 		Cbuf_AddText ("\n");
@@ -1411,7 +1398,7 @@ CL_InitLocal
 void CL_InitLocal (void)
 {
 	cls.state = ca_disconnected;
-	cls.realtime = Sys_Milliseconds ();
+	cls.realtime = nox::globalApp->GetNumMilliseconds();
 
 	CL_InitInput ();
 
@@ -1672,83 +1659,76 @@ void CL_SendCommand()
 	CL_CheckForResend ();
 }
 
-
-/*
-==================
-CL_Frame
-
-==================
-*/
-void CL_Frame (int msec)
+void CL_Frame( unsigned int msec )
 {
-	static int	extratime;
-	static int  lasttimecalled;
+	static unsigned int extratime;
+	static unsigned int lasttimecalled;
 
-	if (dedicated->value)
+	if ( dedicated->value )
 		return;
 
 	extratime += msec;
 
-	if (!cl_timedemo->value)
+	if ( !cl_timedemo->value )
 	{
-		if (cls.state == ca_connected && extratime < 100)
-			return;			// don't flood packets out while connecting
-		if (extratime < 1000/cl_maxfps->value)
-			return;			// framerate is too high
+		if ( cls.state == ca_connected && extratime < 100 )
+			return;// don't flood packets out while connecting
+		if ( extratime < 1000 / cl_maxfps->value )
+			return;// framerate is too high
 	}
 
 	// let the mouse activate or deactivate
-	IN_Frame ();
+	IN_Frame();
 
 	// decide the simulation time
-	cls.frametime = extratime/1000.0;
+	cls.frametime = extratime / 1000.0;
 	cl.time += extratime;
-	cls.realtime = curtime;
+	cls.realtime = nox::globalApp->GetCurrentMillisecond();
 
 	extratime = 0;
 #if 0
 	if (cls.frametime > (1.0 / cl_minfps->value))
 		cls.frametime = (1.0 / cl_minfps->value);
 #else
-	if (cls.frametime > (1.0 / 5))
-		cls.frametime = (1.0 / 5);
+	if ( cls.frametime > ( 1.0 / 5 ) )
+		cls.frametime = ( 1.0 / 5 );
 #endif
 
 	// if in the debugger last frame, don't timeout
-	if (msec > 5000)
-		cls.netchan.last_received = Sys_Milliseconds ();
+	if ( msec > 5000 )
+		cls.netchan.last_received = nox::globalApp->GetNumMilliseconds();
 
 	// fetch results from server
-	CL_ReadPackets ();
+	CL_ReadPackets();
 
 	// send a new command message to the server
-	CL_SendCommand ();
+	CL_SendCommand();
 
 	// predict all unacknowledged movements
-	CL_PredictMovement ();
+	CL_PredictMovement();
 
 	// allow rendering DLL change
-	VID_CheckChanges ();
-	if (!cl.refresh_prepped && cls.state == ca_active)
-		CL_PrepRefresh ();
+	VID_CheckChanges();
+	if ( !cl.refresh_prepped && cls.state == ca_active )
+		CL_PrepRefresh();
 
 	// update the screen
-	if (host_speeds->value)
-		time_before_ref = Sys_Milliseconds ();
-	SCR_UpdateScreen ();
-	if (host_speeds->value)
-		time_after_ref = Sys_Milliseconds ();
+	if ( host_speeds->value )
+		time_before_ref = nox::globalApp->GetNumMilliseconds();
+	SCR_UpdateScreen();
+	if ( host_speeds->value )
+		time_after_ref = nox::globalApp->GetNumMilliseconds();
 
 	// update audio
-	S_Update (cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
-	
+	S_Update( cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up );
+
 	CDAudio_Update();
 
 	// advance local effects for next frame
-	CL_RunDLights ();
-	CL_RunLightStyles ();
-	SCR_RunCinematic ();
-	SCR_RunConsole ();
+	CL_RunDLights();
+	CL_RunLightStyles();
+	SCR_RunCinematic();
+	SCR_RunConsole();
 
 	cls.framecount++;
 
@@ -1758,13 +1738,13 @@ void CL_Frame (int msec)
 		{
 			if ( !lasttimecalled )
 			{
-				lasttimecalled = Sys_Milliseconds();
+				lasttimecalled = nox::globalApp->GetNumMilliseconds();
 				if ( log_stats_file )
 					fprintf( log_stats_file, "0\n" );
 			}
 			else
 			{
-				int now = Sys_Milliseconds();
+				unsigned int now = nox::globalApp->GetNumMilliseconds();
 
 				if ( log_stats_file )
 					fprintf( log_stats_file, "%d\n", now - lasttimecalled );

@@ -693,7 +693,7 @@ static void KeyCursorDrawFunc( menuframework_s *menu )
 	if ( bind_grab )
 		Draw_Char( menu->x, menu->y + menu->cursor * 9, '=' );
 	else
-		Draw_Char( menu->x, menu->y + menu->cursor * 9, 12 + ( ( int ) ( Sys_Milliseconds() / 250 ) & 1 ) );
+		Draw_Char( menu->x, menu->y + menu->cursor * 9, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds() / 250 ) & 1 ) );
 }
 
 static void DrawKeyBindingFunc( void *self )

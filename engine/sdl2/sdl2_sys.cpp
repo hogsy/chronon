@@ -30,19 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ========================================================================
 */
 
-int curtime;
-int Sys_Milliseconds()
-{
-	// todo: curtime should be unsigned
-	curtime = ( int ) SDL_GetTicks();
-	return curtime;
-}
-
-/*
-========================================================================
-========================================================================
-*/
-
 void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
 {
 	Uint32 flags = 0;
@@ -60,10 +47,6 @@ void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
 	}
 
 	SDL_ShowSimpleMessageBox( flags, ENGINE_NAME, error, nullptr );
-}
-
-void Sys_AppActivate()
-{
 }
 
 /*
