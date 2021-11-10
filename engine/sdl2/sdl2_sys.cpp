@@ -25,29 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../client/keys.h"
 
-/*
-========================================================================
-========================================================================
-*/
 
-void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
-{
-	Uint32 flags = 0;
-	switch ( boxType )
-	{
-		case MessageBoxType::MB_ERROR:
-			flags |= SDL_MESSAGEBOX_ERROR;
-			break;
-		case MessageBoxType::MB_WARNING:
-			flags |= SDL_MESSAGEBOX_WARNING;
-			break;
-		case MessageBoxType::MB_INFO:
-			flags |= SDL_MESSAGEBOX_INFORMATION;
-			break;
-	}
-
-	SDL_ShowSimpleMessageBox( flags, ENGINE_NAME, error, nullptr );
-}
 
 /*
 ========================================================================

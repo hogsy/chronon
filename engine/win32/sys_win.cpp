@@ -51,25 +51,6 @@ SYSTEM IO
 ===============================================================================
 */
 
-void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
-{
-	unsigned int flags = MB_OK;
-	switch ( boxType )
-	{
-		case MessageBoxType::MB_ERROR:
-			flags |= MB_ICONERROR;
-			break;
-		case MessageBoxType::MB_WARNING:
-			flags |= MB_ICONWARNING;
-			break;
-		case MessageBoxType::MB_INFO:
-			flags |= MB_ICONINFORMATION;
-			break;
-	}
-
-	MessageBox( nullptr, error, ENGINE_NAME, MB_OK );
-}
-
 /*
 ================
 Sys_ScanForCD
@@ -119,143 +100,25 @@ char *Sys_ScanForCD( void ) {
 
 /*
 ================
-Sys_Init
-================
-*/
-void Sys_Init( void ) {
-	OSVERSIONINFO vinfo;
-
-	timeBeginPeriod( 1 );
-
-	vinfo.dwOSVersionInfoSize = sizeof( vinfo );
-
-	if( !GetVersionEx( &vinfo ) ) Sys_Error( "Couldn't get OS info" );
-
-	if( vinfo.dwMajorVersion < 4 )
-		Sys_Error( ENGINE_NAME " requires windows version 4 or greater" );
-	if( vinfo.dwPlatformId == VER_PLATFORM_WIN32s )
-		Sys_Error( ENGINE_NAME " doesn't run on Win32s" );
-	else if( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
-		s_win95 = true;
-}
-
-static char console_text[ 256 ];
-static int console_textlen;
-
-/*
-================
-Sys_ConsoleInput
-================
-*/
-char *Sys_ConsoleInput( void ) {
-	INPUT_RECORD recs[ 1024 ];
-	DWORD dummy;
-	int ch;
-	DWORD numread, numevents;
-
-	if( !dedicated || dedicated->value <= 0 ) return nullptr;
-
-	for( ;;) {
-		if( !GetNumberOfConsoleInputEvents( hinput, &numevents ) )
-			Sys_Error( "Error getting # of console events" );
-
-		if( numevents <= 0 ) break;
-
-		if( !ReadConsoleInput( hinput, recs, 1, &numread ) )
-			Sys_Error( "Error reading console input" );
-
-		if( numread != 1 ) Sys_Error( "Couldn't read console input" );
-
-		if( recs[ 0 ].EventType == KEY_EVENT ) {
-			if( !recs[ 0 ].Event.KeyEvent.bKeyDown ) {
-				ch = recs[ 0 ].Event.KeyEvent.uChar.AsciiChar;
-
-				switch( ch ) {
-				case '\r':
-					WriteFile( houtput, "\r\n", 2, &dummy, nullptr );
-
-					if( console_textlen ) {
-						console_text[ console_textlen ] = 0;
-						console_textlen = 0;
-						return console_text;
-					}
-					break;
-
-				case '\b':
-					if( console_textlen ) {
-						console_textlen--;
-						WriteFile( houtput, "\b \b", 3, &dummy, nullptr );
-					}
-					break;
-
-				default:
-					if( ch >= ' ' ) {
-						if( console_textlen < sizeof( console_text ) - 2 ) {
-							WriteFile( houtput, &ch, 1, &dummy, nullptr );
-							console_text[ console_textlen ] = ch;
-							console_textlen++;
-						}
-					}
-
-					break;
-				}
-			}
-		}
-	}
-
-	return nullptr;
-}
-
-/*
-================
-Sys_ConsoleOutput
-
-Print text to the dedicated console
-================
-*/
-void Sys_ConsoleOutput( char *string ) {
-	DWORD dummy;
-	char text[ 256 ];
-
-#if defined( WIN32 )
-	OutputDebugString( string );
-#endif
-
-	if( !dedicated || dedicated->value <= 0 ) return;
-
-	if( console_textlen ) {
-		text[ 0 ] = '\r';
-		memset( &text[ 1 ], ' ', console_textlen );
-		text[ console_textlen + 1 ] = '\r';
-		text[ console_textlen + 2 ] = 0;
-		WriteFile( houtput, text, console_textlen + 2, &dummy, nullptr );
-	}
-
-	WriteFile( houtput, string, strlen( string ), &dummy, nullptr );
-
-	if( console_textlen )
-		WriteFile( houtput, console_text, console_textlen, &dummy, nullptr );
-}
-
-/*
-================
 Sys_SendKeyEvents
 
 Send Key_Event calls
 ================
 */
-void Sys_SendKeyEvents( ) {
+void Sys_SendKeyEvents()
+{
 	MSG msg;
 
-	while( PeekMessage( &msg, nullptr, 0, 0, PM_NOREMOVE ) ) {
-		if( !GetMessage( &msg, nullptr, 0, 0 ) ) Sys_Quit();
+	while ( PeekMessage( &msg, nullptr, 0, 0, PM_NOREMOVE ) )
+	{
+		if ( !GetMessage( &msg, nullptr, 0, 0 ) ) Sys_Quit();
 		sys_msg_time = msg.time;
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
 	}
 
 	// grab frame time
-	sys_frame_time = timeGetTime();  // FIXME: should this be at start?
+	sys_frame_time = timeGetTime();// FIXME: should this be at start?
 }
 
 /*

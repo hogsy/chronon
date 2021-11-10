@@ -112,41 +112,44 @@ int        mouse_x, mouse_y,
 
 static int old_x, old_y;
 
-static bool mouseactive;// false when not focus app
+static bool isMouseActive;// false when not focus app
 
 qboolean restore_spi;
 qboolean mouseinitialized;
 int      originalmouseparms[ 3 ], newmouseparms[ 3 ] = { 0, 0, 1 };
 qboolean mouseparmsvalid;
 
-int  window_center_x, window_center_y;
+int window_center_x, window_center_y;
 
 /**
  * Called when the window gains focus or changes in some way.
  */
 void IN_ActivateMouse()
 {
-	int width, height;
 	if ( !mouseinitialized )
-		return;
-
-	if ( !in_mouse->value )
 	{
-		mouseactive = false;
 		return;
 	}
 
-	if ( mouseactive )
+	if ( in_mouse->value <= 0.0f )
+	{
+		isMouseActive = false;
 		return;
+	}
 
-	mouseactive = true;
+	if ( isMouseActive )
+	{
+		return;
+	}
+
+	isMouseActive = true;
 
 #if 0
 	if ( mouseparmsvalid )
 		restore_spi = SystemParametersInfo( SPI_SETMOUSE, 0, newmouseparms, 0 );
 
-	width = GetSystemMetrics( SM_CXSCREEN );
-	height = GetSystemMetrics( SM_CYSCREEN );
+	int width = GetSystemMetrics( SM_CXSCREEN );
+	int height = GetSystemMetrics( SM_CYSCREEN );
 
 	GetWindowRect( cl_hwnd, &window_rect );
 	if ( window_rect.left < 0 )
@@ -157,10 +160,10 @@ void IN_ActivateMouse()
 		window_rect.right = width - 1;
 	if ( window_rect.bottom >= height - 1 )
 		window_rect.bottom = height - 1;
-
-	window_center_x = ( window_rect.right + window_rect.left ) / 2;
-	window_center_y = ( window_rect.top + window_rect.bottom ) / 2;
 #endif
+
+	window_center_x = viddef.width / 2;
+	window_center_y = viddef.height / 2;
 
 	old_x = window_center_x;
 	old_y = window_center_y;
@@ -168,16 +171,15 @@ void IN_ActivateMouse()
 	nox::globalApp->ShowCursor( false );
 }
 
-
 /**
  * Called when the window loses focus.
  */
 void IN_DeactivateMouse()
 {
-	if ( !mouseinitialized || !mouseactive )
+	if ( !mouseinitialized || !isMouseActive )
 		return;
 
-	mouseactive = false;
+	isMouseActive = false;
 
 	nox::globalApp->ShowCursor( true );
 }
@@ -185,7 +187,7 @@ void IN_DeactivateMouse()
 void IN_StartupMouse()
 {
 	cvar_t *cv = Cvar_Get( "in_initmouse", "1", CVAR_NOSET );
-	if ( cv->value == 0.0f )
+	if ( cv->value <= 0.0f )
 	{
 		return;
 	}
@@ -220,28 +222,19 @@ void IN_MouseEvent( int mstate )
 	mouse_oldbuttonstate = mstate;
 }
 
-
-/*
-===========
-IN_MouseMove
-===========
-*/
+extern SDL_Window *VID_GetSDLWindowHandle();
 void IN_MouseMove( usercmd_t *cmd )
 {
-	int mx, my;
-
-	if ( !mouseactive )
+	if ( !isMouseActive )
+	{
 		return;
+	}
 
 	// find mouse movement
+	int mx, my;
 	SDL_GetMouseState( &mx, &my );
 	mx -= window_center_x;
 	my -= window_center_y;
-
-#if 0
-	if (!mx && !my)
-		return;
-#endif
 
 	if ( m_filter->value > 0.0f )
 	{
@@ -261,10 +254,14 @@ void IN_MouseMove( usercmd_t *cmd )
 	mouse_y *= sensitivity->value;
 
 	// add mouse X/Y movement to cmd
-	if ( ( in_strafe.state & 1 ) || ( lookstrafe->value && mlooking ) )
+	if ( ( in_strafe.state & 1 ) || ( ( lookstrafe->value >= 1.0f ) && mlooking ) )
+	{
 		cmd->sidemove += m_side->value * mouse_x;
+	}
 	else
+	{
 		cl.viewangles[ YAW ] -= m_yaw->value * mouse_x;
+	}
 
 	if ( ( mlooking || freelook->value > 0.0f ) && !( in_strafe.state & 1 ) )
 	{
@@ -274,6 +271,8 @@ void IN_MouseMove( usercmd_t *cmd )
 	{
 		cmd->forwardmove -= m_forward->value * mouse_y;
 	}
+
+	SDL_WarpMouseInWindow( VID_GetSDLWindowHandle(), window_center_x, window_center_y );
 }
 
 
@@ -346,8 +345,10 @@ void IN_Shutdown()
  */
 void IN_Activate( qboolean active )
 {
+	Key_ClearStates();
+
 	in_appactive = active;
-	mouseactive = !active;// force a new window check or turn off
+	isMouseActive = !active;// force a new window check or turn off
 }
 
 /**
@@ -356,7 +357,9 @@ void IN_Activate( qboolean active )
 void IN_Frame()
 {
 	if ( !mouseinitialized )
+	{
 		return;
+	}
 
 	if ( !in_mouse || !in_appactive )
 	{
@@ -399,7 +402,7 @@ JOYSTICK
 =========================================================================
 */
 
-void IN_StartupJoystick( void )
+void IN_StartupJoystick()
 {
 #if 0
 	int      numdevs;
@@ -466,7 +469,7 @@ void IN_StartupJoystick( void )
 #endif
 }
 
-void Joy_AdvancedUpdate_f( void )
+void Joy_AdvancedUpdate_f()
 {
 #if 0
 	// called once by IN_ReadJoystick and by user whenever an update is needed
@@ -533,7 +536,7 @@ void Joy_AdvancedUpdate_f( void )
 #endif
 }
 
-void IN_Commands( void )
+void IN_Commands()
 {
 #if 0
 	int   i, key_index;
@@ -599,7 +602,7 @@ void IN_Commands( void )
 #endif
 }
 
-qboolean IN_ReadJoystick( void )
+bool IN_ReadJoystick()
 {
 #if 0
 	memset( &ji, 0, sizeof( ji ) );

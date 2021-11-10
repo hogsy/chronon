@@ -132,8 +132,6 @@ static void ApplyChanges(void *unused) {
   Cvar_SetValue("sw_mode", s_mode_list[SOFTWARE_MENU].curvalue);
   Cvar_SetValue("gl_mode", s_mode_list[OPENGL_MENU].curvalue);
 
-  Cvar_Set("gl_driver", "opengl32");
-
   /*
   ** update appropriate stuff if we're running OpenGL and gamma
   ** has been modified
@@ -141,8 +139,6 @@ static void ApplyChanges(void *unused) {
   if (vid_gamma->modified) {
     vid_ref->modified = true;
   }
-
-  if (gl_driver->modified) vid_ref->modified = true;
 
   M_ForceMenuOff();
 }
@@ -170,7 +166,6 @@ void VID_MenuInit(void) {
   static const char *yesno_names[] = {"no", "yes", 0};
   int i;
 
-  if (!gl_driver) gl_driver = Cvar_Get("gl_driver", "opengl32", 0);
   if (!gl_picmip) gl_picmip = Cvar_Get("gl_picmip", "0", 0);
   if (!gl_mode) gl_mode = Cvar_Get("gl_mode", "3", 0);
   if (!sw_mode) sw_mode = Cvar_Get("sw_mode", "0", 0);

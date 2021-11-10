@@ -27,7 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "qcommon/qcommon.h"
+
 #include "client/keys.h"
+#include "client/input.h"
 
 nox::App *nox::globalApp = nullptr;
 
@@ -74,6 +76,9 @@ unsigned int sys_frame_time = 0;// todo: kill
 void nox::App::SendKeyEvents()
 {
 	SDL_PumpEvents();
+
+	PollEvents();
+
 	sys_msg_time = GetNumMilliseconds();
 }
 
@@ -118,6 +123,9 @@ int nox::App::MapKey( int key )
 		case SDLK_RSHIFT:
 			return K_SHIFT;
 
+		case SDLK_SPACE:
+			return K_SPACE;
+
 		case SDLK_F1:
             return K_F1;
 		case SDLK_F2:
@@ -158,7 +166,6 @@ int nox::App::MapKey( int key )
 
 void IN_MouseEvent( int mstate );
 
-bool ActiveApp = true;// todo: murder.
 void nox::App::PollEvents()
 {
 	SDL_Event event;
@@ -224,13 +231,11 @@ void nox::App::PollEvents()
 				{
 					case SDL_WINDOWEVENT_ENTER:
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
-						ActiveApp = true;
-						Key_ClearStates();
+						IN_Activate( true );
 						break;
 					case SDL_WINDOWEVENT_LEAVE:
 					case SDL_WINDOWEVENT_FOCUS_LOST:
-						ActiveApp = false;
-						Key_ClearStates();
+						IN_Activate( false );
 						break;
 					case SDL_WINDOWEVENT_CLOSE:
 						Com_Quit();
@@ -260,7 +265,6 @@ void nox::App::PushConsoleOutput( const char *text )
 
 void nox::App::ShowCursor( bool show )
 {
-	SDL_CaptureMouse( ( SDL_bool ) !show );
 	SDL_ShowCursor( show );
 }
 

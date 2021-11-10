@@ -31,7 +31,13 @@ cvar_t  *win_noalttab;
 cvar_t  *vid_xpos;// X coordinate of window position
 cvar_t  *vid_ypos;// Y coordinate of window position
 
-static SDL_Window   *sdlWindow = nullptr;
+static SDL_Window *sdlWindow = nullptr;
+
+SDL_Window *VID_GetSDLWindowHandle()
+{
+	return sdlWindow;
+}
+
 static SDL_GLContext glContext = nullptr;
 
 bool VID_GetModeInfo( int *width, int *height, int mode )
@@ -164,11 +170,9 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 			winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 
-#if 0
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-#endif
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY /*SDL_GL_CONTEXT_PROFILE_CORE*/ );
 
 		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
 		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );

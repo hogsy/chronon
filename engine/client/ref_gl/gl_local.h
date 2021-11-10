@@ -197,7 +197,6 @@ extern cvar_t *gl_modulate;
 extern cvar_t *gl_playermip;
 extern cvar_t *gl_drawbuffer;
 extern cvar_t *gl_3dlabs_broken;
-extern cvar_t *gl_driver;
 extern cvar_t *gl_swapinterval;
 extern cvar_t *gl_texturemode;
 extern cvar_t *gl_texturealphamode;

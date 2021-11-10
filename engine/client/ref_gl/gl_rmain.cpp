@@ -101,7 +101,6 @@ cvar_t *gl_ext_compiled_vertex_array;
 cvar_t *gl_log;
 cvar_t *gl_bitdepth;
 cvar_t *gl_drawbuffer;
-cvar_t *gl_driver;
 cvar_t *gl_lightmap;
 cvar_t *gl_shadows;
 cvar_t *gl_mode;
@@ -871,7 +870,6 @@ void R_Register( void ) {
 	gl_polyblend = Cvar_Get( "gl_polyblend", "1", 0 );
 	gl_playermip = Cvar_Get( "gl_playermip", "0", 0 );
 	gl_monolightmap = Cvar_Get( "gl_monolightmap", "0", 0 );
-	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_texturemode =
 		Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_texturealphamode =
@@ -996,8 +994,7 @@ int R_Init()
 
 	// initialize our QGL dynamic bindings
 	if( !QGL_Init() ) {
-		Com_Printf( "ref_gl::R_Init() - could not load \"%s\"\n",
-			gl_driver->string );
+		Com_Printf( "Failed to initialize GL interface!\n" );
 		return -1;
 	}
 
