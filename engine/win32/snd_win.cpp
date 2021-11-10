@@ -113,7 +113,7 @@ static qboolean DS_CreateBuffers( void ) {
 	Com_Printf( "Creating DS buffers\n" );
 
 	Com_DPrintf( "...setting EXCLUSIVE coop level: " );
-	if( DS_OK != pDS->SetCooperativeLevel( cl_hwnd, DSSCL_EXCLUSIVE ) ) {
+	if( DS_OK != pDS->SetCooperativeLevel( ( HWND ) cl_hwnd, DSSCL_EXCLUSIVE ) ) {
 		Com_Printf( "failed\n" );
 		FreeSound();
 		return false;
@@ -183,7 +183,7 @@ static qboolean DS_CreateBuffers( void ) {
 		Com_Printf( "...using primary buffer\n" );
 
 		Com_DPrintf( "...setting WRITEPRIMARY coop level: " );
-		if( DS_OK != pDS->SetCooperativeLevel( cl_hwnd, DSSCL_WRITEPRIMARY ) ) {
+		if( DS_OK != pDS->SetCooperativeLevel( ( HWND ) cl_hwnd, DSSCL_WRITEPRIMARY ) ) {
 			Com_Printf( "failed\n" );
 			FreeSound();
 			return false;
@@ -228,11 +228,11 @@ static qboolean DS_CreateBuffers( void ) {
 /*
 ** DS_DestroyBuffers
 */
-static void DS_DestroyBuffers( void ) {
+static void DS_DestroyBuffers() {
 	Com_DPrintf( "Destroying DS buffers\n" );
 	if( pDS ) {
 		Com_DPrintf( "...setting NORMAL coop level\n" );
-		pDS->SetCooperativeLevel( cl_hwnd, DSSCL_NORMAL );
+		pDS->SetCooperativeLevel( ( HWND ) cl_hwnd, DSSCL_NORMAL );
 	}
 
 	if( pDSBuf ) {
@@ -246,10 +246,10 @@ static void DS_DestroyBuffers( void ) {
 		Com_DPrintf( "...releasing primary buffer\n" );
 		pDSPBuf->Release();
 	}
-	pDSBuf = NULL;
-	pDSPBuf = NULL;
+	pDSBuf = nullptr;
+	pDSPBuf = nullptr;
 
-	dma.buffer = NULL;
+	dma.buffer = nullptr;
 }
 
 /*
