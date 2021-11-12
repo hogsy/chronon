@@ -638,8 +638,8 @@ void MYgluPerspective( GLdouble fovy, GLdouble aspect, GLdouble zNear,
 	xmin = ymin * aspect;
 	xmax = ymax * aspect;
 
-	xmin += -( 2 * gl_state.camera_separation ) / zNear;
-	xmax += -( 2 * gl_state.camera_separation ) / zNear;
+	xmin += -2 / zNear;
+	xmax += -2 / zNear;
 
 	glFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
 }
@@ -1085,14 +1085,7 @@ void R_Shutdown( void ) {
 	GLimp_Shutdown();
 }
 
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_BeginFrame
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_BeginFrame( float camera_separation ) {
-	gl_state.camera_separation = camera_separation;
-
+void R_BeginFrame() {
 	/*
 	** change modes if necessary
 	*/
@@ -1135,13 +1128,10 @@ void R_BeginFrame( float camera_separation ) {
 	*/
 	if( gl_drawbuffer->modified ) {
 		gl_drawbuffer->modified = false;
-
-		if( gl_state.camera_separation == 0 || !gl_state.stereo_enabled ) {
-			if( Q_stricmp( gl_drawbuffer->string, "GL_FRONT" ) == 0 )
-				glDrawBuffer( GL_FRONT );
-			else
-				glDrawBuffer( GL_BACK );
-		}
+		if ( Q_stricmp( gl_drawbuffer->string, "GL_FRONT" ) == 0 )
+			glDrawBuffer( GL_FRONT );
+		else
+			glDrawBuffer( GL_BACK );
 	}
 
 	/*

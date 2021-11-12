@@ -261,17 +261,17 @@ void GL_SetDefaultState( void ) {
 	GL_UpdateSwapInterval();
 }
 
-void GL_UpdateSwapInterval( void ) {
-	if( gl_swapinterval->modified ) {
+void GL_UpdateSwapInterval( void )
+{
+	if ( gl_swapinterval->modified )
+	{
 		gl_swapinterval->modified = false;
 
-		if( !gl_state.stereo_enabled ) {
-#if 0 // TODO: replace this!
-#ifdef _WIN32
-			if( qwglSwapIntervalEXT )
-				qwglSwapIntervalEXT( (int)gl_swapinterval->value );
+#if 0// TODO: replace this!
+#	ifdef _WIN32
+		if( qwglSwapIntervalEXT )
+			qwglSwapIntervalEXT( (int)gl_swapinterval->value );
+#	endif
 #endif
-#endif
-		}
 	}
 }
