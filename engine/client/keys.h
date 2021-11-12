@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#define K_INVALID -1
+
 //
 // these are the key numbers that should be passed to Key_Event
 //
@@ -129,8 +131,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define K_MWHEELDOWN	239
 #define K_MWHEELUP		240
 
-extern char		*keybindings[256];
-extern	int		key_repeats[256];
+#define K_MAX 256
+
+extern char		*keybindings[K_MAX];
+extern	int		key_repeats[K_MAX];
 
 extern	int	anykeydown;
 extern char chat_buffer[];
@@ -142,5 +146,4 @@ void Key_Init (void);
 void Key_WriteBindings (FILE *f);
 void Key_SetBinding (int keynum, const char *binding);
 void Key_ClearStates (void);
-int Key_GetKey (void);
 

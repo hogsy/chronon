@@ -359,40 +359,45 @@ qboolean Cbuf_AddLateCommands (void)
 ==============================================================================
 */
 
-
-/*
-===============
-Cmd_Exec_f
-===============
-*/
-void Cmd_Exec_f (void)
+void Cmd_Exec_f()
 {
-	char	*f, *f2;
-	int		len;
+	char *f, *f2;
+	int   len;
 
-	if (Cmd_Argc () != 2)
+	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf ("exec <filename> : execute a script file\n");
+		Com_Printf( "exec <filename> : execute a script file\n" );
 		return;
 	}
 
-	len = FS_LoadFile (Cmd_Argv(1), (void **)&f);
-	if (!f)
+	// nox prefixes path to point to configs
+	char mappedPath[ MAX_OSPATH ];
+	snprintf( mappedPath, sizeof( mappedPath ), "configs/%s", Cmd_Argv( 1 ) );
+
+	// and if extension isn't there, it fills that in
+	if ( *COM_FileExtension( mappedPath ) == '\0' )
 	{
-		Com_Printf ("couldn't exec %s\n",Cmd_Argv(1));
+		size_t l = strlen( mappedPath );
+		snprintf( mappedPath + l, sizeof( mappedPath ) - l, ".cfg" );
+	}
+
+	len = FS_LoadFile( mappedPath, ( void ** ) &f );
+	if ( !f )
+	{
+		Com_Printf( "couldn't exec %s\n", mappedPath );
 		return;
 	}
-	Com_Printf ("execing %s\n",Cmd_Argv(1));
-	
+	Com_Printf( "execing %s\n", mappedPath );
+
 	// the file doesn't have a trailing 0, so we need to copy it off
-	f2 = static_cast<char*>( Z_Malloc(len+1) );
-	memcpy (f2, f, len);
-	f2[len] = 0;
+	f2 = static_cast< char * >( Z_Malloc( len + 1 ) );
+	memcpy( f2, f, len );
+	f2[ len ] = 0;
 
-	Cbuf_InsertText (f2);
+	Cbuf_InsertText( f2 );
 
-	Z_Free (f2);
-	FS_FreeFile (f);
+	Z_Free( f2 );
+	FS_FreeFile( f );
 }
 
 

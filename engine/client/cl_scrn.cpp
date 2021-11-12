@@ -577,7 +577,7 @@ void SCR_BeginLoadingPlaque (void)
 	else
 		scr_draw_loading = 1;
 	SCR_UpdateScreen ();
-	cls.disable_screen = Sys_Milliseconds ();
+	cls.disable_screen = nox::globalApp->GetNumMilliseconds ();
 	cls.disable_servercount = cl.servercount;
 }
 
@@ -622,42 +622,43 @@ int entitycmpfnc( const entity_t *a, const entity_t *b )
 	}
 }
 
-void SCR_TimeRefresh_f ()
+void SCR_TimeRefresh_f()
 {
-	int		i;
-	int		start, stop;
-	float	time;
+	unsigned int start, stop;
+	double       time;
 
 	if ( cls.state != ca_active )
+	{
 		return;
+	}
 
-	start = Sys_Milliseconds ();
+	start = nox::globalApp->GetNumMilliseconds();
 
-	if (Cmd_Argc() == 2)
-	{	// run without page flipping
+	if ( Cmd_Argc() == 2 )
+	{// run without page flipping
 		R_BeginFrame( 0 );
-		for (i=0 ; i<128 ; i++)
+		for ( unsigned int i = 0; i < 128; i++ )
 		{
-			cl.refdef.viewangles[1] = i/128.0*360.0;
-			R_RenderFrame (&cl.refdef);
+			cl.refdef.viewangles[ 1 ] = i / 128.0 * 360.0;
+			R_RenderFrame( &cl.refdef );
 		}
 		GLimp_EndFrame();
 	}
 	else
 	{
-		for (i=0 ; i<128 ; i++)
+		for ( unsigned int i = 0; i < 128; i++ )
 		{
-			cl.refdef.viewangles[1] = i/128.0*360.0;
+			cl.refdef.viewangles[ 1 ] = i / 128.0 * 360.0;
 
 			R_BeginFrame( 0 );
-			R_RenderFrame (&cl.refdef);
+			R_RenderFrame( &cl.refdef );
 			GLimp_EndFrame();
 		}
 	}
 
-	stop = Sys_Milliseconds ();
-	time = (stop-start)/1000.0;
-	Com_Printf ("%f seconds (%f fps)\n", time, 128/time);
+	stop = nox::globalApp->GetNumMilliseconds();
+	time = ( stop - start ) / 1000.0;
+	Com_Printf( "%lf seconds (%lf fps)\n", time, 128 / time );
 }
 
 /*
@@ -863,43 +864,43 @@ static void DrawHUDString (const char *string, int x, int y, int centerwidth, in
 	}
 }
 
-
-/*
-==============
-SCR_DrawField
-==============
-*/
-void SCR_DrawField (int x, int y, int color, int width, int value)
+void SCR_DrawField( int x, int y, int color, int width, int value )
 {
-	char	num[16], *ptr;
-	int		l;
-	int		frame;
+	char num[ 16 ], *ptr;
+	int  frame;
 
-	if (width < 1)
+	if ( width < 1 )
 		return;
 
 	// draw number string
-	if (width > 5)
+	if ( width > 5 )
 		width = 5;
 
-	SCR_AddDirtyPoint (x, y);
-	SCR_AddDirtyPoint (x+width*CHAR_WIDTH+2, y+23);
+	SCR_AddDirtyPoint( x, y );
+	SCR_AddDirtyPoint( x + width * CHAR_WIDTH + 2, y + 23 );
 
-	Com_sprintf (num, sizeof(num), "%i", value);
-	l = strlen(num);
-	if (l > width)
+	Com_sprintf( num, sizeof( num ), "%i", value );
+	size_t l = strlen( num );
+	if ( l > width )
+	{
 		l = width;
-	x += 2 + CHAR_WIDTH*(width - l);
+	}
+
+	x += 2 + CHAR_WIDTH * ( width - ( int ) l );
 
 	ptr = num;
-	while (*ptr && l)
+	while ( *ptr && l )
 	{
-		if (*ptr == '-')
+		if ( *ptr == '-' )
+		{
 			frame = STAT_MINUS;
+		}
 		else
-			frame = *ptr -'0';
+		{
+			frame = *ptr - '0';
+		}
 
-		Draw_Pic (x,y,sb_nums[color][frame]);
+		Draw_Pic( x, y, sb_nums[ color ][ frame ] );
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
@@ -1268,26 +1269,26 @@ This is called every frame, and can also be called explicitly to flush
 text to the screen.
 ==================
 */
-void SCR_UpdateScreen (void)
+void SCR_UpdateScreen( void )
 {
-	int numframes;
-	int i;
-	float separation[2] = { 0, 0 };
+	int   numframes;
+	int   i;
+	float separation[ 2 ] = { 0, 0 };
 
 	// if the screen is disabled (loading plaque is up, or vid mode changing)
 	// do nothing at all
-	if (cls.disable_screen)
+	if ( cls.disable_screen )
 	{
-		if (Sys_Milliseconds() - cls.disable_screen > 120000)
+		if ( nox::globalApp->GetNumMilliseconds() - cls.disable_screen > 120000 )
 		{
 			cls.disable_screen = 0;
-			Com_Printf ("Loading plaque timed out.\n");
+			Com_Printf( "Loading plaque timed out.\n" );
 		}
 		return;
 	}
 
-	if (!scr_initialized || !con.initialized)
-		return;				// not initialized yet
+	if ( !scr_initialized || !con.initialized )
+		return;// not initialized yet
 
 	/*
 	** range check cl_camera_separation so we don't inadvertently fry someone's
@@ -1301,104 +1302,104 @@ void SCR_UpdateScreen (void)
 	if ( cl_stereo->value )
 	{
 		numframes = 2;
-		separation[0] = -cl_stereo_separation->value / 2;
-		separation[1] =  cl_stereo_separation->value / 2;
-	}		
+		separation[ 0 ] = -cl_stereo_separation->value / 2;
+		separation[ 1 ] = cl_stereo_separation->value / 2;
+	}
 	else
 	{
-		separation[0] = 0;
-		separation[1] = 0;
+		separation[ 0 ] = 0;
+		separation[ 1 ] = 0;
 		numframes = 1;
 	}
 
 	for ( i = 0; i < numframes; i++ )
 	{
-		R_BeginFrame( separation[i] );
+		R_BeginFrame( separation[ i ] );
 
-		if (scr_draw_loading == 2)
-		{	//  loading plaque over black screen
-			int		w, h;
+		if ( scr_draw_loading == 2 )
+		{//  loading plaque over black screen
+			int w, h;
 
-			R_SetPalette(NULL);
+			R_SetPalette( NULL );
 			scr_draw_loading = false;
-			Draw_GetPicSize (&w, &h, "loading");
-			Draw_Pic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
-//			re.EndFrame();
-//			return;
-		} 
+			Draw_GetPicSize( &w, &h, "loading" );
+			Draw_Pic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
+			//			re.EndFrame();
+			//			return;
+		}
 		// if a cinematic is supposed to be running, handle menus
 		// and console specially
-		else if (cl.cinematictime > 0)
+		else if ( cl.cinematictime > 0 )
 		{
-			if (cls.key_dest == key_menu)
+			if ( cls.key_dest == key_menu )
 			{
-				if (cl.cinematicpalette_active)
+				if ( cl.cinematicpalette_active )
 				{
-					R_SetPalette(NULL);
+					R_SetPalette( NULL );
 					cl.cinematicpalette_active = false;
 				}
-				M_Draw ();
-//				re.EndFrame();
-//				return;
+				M_Draw();
+				//				re.EndFrame();
+				//				return;
 			}
-			else if (cls.key_dest == key_console)
+			else if ( cls.key_dest == key_console )
 			{
-				if (cl.cinematicpalette_active)
+				if ( cl.cinematicpalette_active )
 				{
-					R_SetPalette(NULL);
+					R_SetPalette( NULL );
 					cl.cinematicpalette_active = false;
 				}
-				SCR_DrawConsole ();
-//				re.EndFrame();
-//				return;
+				SCR_DrawConsole();
+				//				re.EndFrame();
+				//				return;
 			}
 			else
 			{
 				SCR_DrawCinematic();
-//				re.EndFrame();
-//				return;
+				//				re.EndFrame();
+				//				return;
 			}
 		}
-		else 
+		else
 		{
 
 			// make sure the game palette is active
-			if (cl.cinematicpalette_active)
+			if ( cl.cinematicpalette_active )
 			{
-				R_SetPalette(NULL);
+				R_SetPalette( NULL );
 				cl.cinematicpalette_active = false;
 			}
 
 			// do 3D refresh drawing, and then update the screen
-			SCR_CalcVrect ();
+			SCR_CalcVrect();
 
 			// clear any dirty part of the background
-			SCR_TileClear ();
+			SCR_TileClear();
 
-			V_RenderView ( separation[i] );
+			V_RenderView( separation[ i ] );
 
-			SCR_DrawStats ();
-			if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 1)
-				SCR_DrawLayout ();
-			if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 2)
-				CL_DrawInventory ();
+			SCR_DrawStats();
+			if ( cl.frame.playerstate.stats[ STAT_LAYOUTS ] & 1 )
+				SCR_DrawLayout();
+			if ( cl.frame.playerstate.stats[ STAT_LAYOUTS ] & 2 )
+				CL_DrawInventory();
 
-			SCR_DrawNet ();
-			SCR_CheckDrawCenterString ();
+			SCR_DrawNet();
+			SCR_CheckDrawCenterString();
 
-			if (scr_timegraph->value)
-				SCR_DebugGraph (cls.frametime*300, 0);
+			if ( scr_timegraph->value )
+				SCR_DebugGraph( cls.frametime * 300, 0 );
 
-			if (scr_debuggraph->value || scr_timegraph->value || scr_netgraph->value)
-				SCR_DrawDebugGraph ();
+			if ( scr_debuggraph->value || scr_timegraph->value || scr_netgraph->value )
+				SCR_DrawDebugGraph();
 
-			SCR_DrawPause ();
+			SCR_DrawPause();
 
-			SCR_DrawConsole ();
+			SCR_DrawConsole();
 
-			M_Draw ();
+			M_Draw();
 
-			SCR_DrawLoading ();
+			SCR_DrawLoading();
 		}
 	}
 	GLimp_EndFrame();

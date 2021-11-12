@@ -56,6 +56,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define BUILDSTRING OSSTRING " (" CPUSTRING "/" CONFIGSTRING ")"
 
+#include "app.h"
+
 //============================================================================
 
 typedef struct sizebuf_s {
@@ -132,7 +134,7 @@ extern float LittleFloat( float l );
 int COM_Argc( void );
 const char *COM_Argv( int arg );  // range and null checked
 void COM_ClearArgv( int arg );
-int COM_CheckParm( char *parm );
+int COM_CheckParm( const char *parm );
 void COM_AddParm( const char *parm );
 
 void COM_Init( void );
@@ -548,44 +550,45 @@ void NET_Sleep( int msec );
 
 #define MAX_LATENT 32
 
-typedef struct {
-	qboolean fatal_error;
+typedef struct
+{
+	bool fatal_error;
 
 	netsrc_t sock;
 
-	int dropped;  // between last packet and previous
+	int dropped;// between last packet and previous
 
-	int last_received;  // for timeouts
-	int last_sent;      // for retransmits
+	unsigned int last_received;// for timeouts
+	unsigned int last_sent;    // for retransmits
 
 	netadr_t remote_address;
-	int qport;  // qport value to write when transmitting
+	int      qport;// qport value to write when transmitting
 
 	// sequencing variables
 	int incoming_sequence;
 	int incoming_acknowledged;
-	int incoming_reliable_acknowledged;  // single bit
+	int incoming_reliable_acknowledged;// single bit
 
-	int incoming_reliable_sequence;  // single bit, maintained local
+	int incoming_reliable_sequence;// single bit, maintained local
 
 	int outgoing_sequence;
-	int reliable_sequence;       // single bit
-	int last_reliable_sequence;  // sequence number of last send
+	int reliable_sequence;     // single bit
+	int last_reliable_sequence;// sequence number of last send
 
 	// reliable staging and holding areas
-	sizebuf_t message;                  // writing buffer to send to server
-	byte message_buf[ MAX_MSGLEN - 16 ];  // leave space for header
+	sizebuf_t message;                       // writing buffer to send to server
+	byte      message_buf[ MAX_MSGLEN - 16 ];// leave space for header
 
 	// message is copied to this buffer when it is first transfered
-	int reliable_length;
-	byte reliable_buf[ MAX_MSGLEN - 16 ];  // unacked reliable message
+	int  reliable_length;
+	byte reliable_buf[ MAX_MSGLEN - 16 ];// unacked reliable message
 } netchan_t;
 
 extern netadr_t net_from;
 extern sizebuf_t net_message;
 extern byte net_message_buffer[ MAX_MSGLEN ];
 
-void Netchan_Init( void );
+void Netchan_Init();
 void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 
 qboolean Netchan_NeedReliable( netchan_t *chan );
@@ -734,18 +737,18 @@ extern cvar_t *log_stats;
 extern FILE *log_stats_file;
 
 // host_speeds times
-extern int time_before_game;
-extern int time_after_game;
-extern int time_before_ref;
-extern int time_after_ref;
+extern unsigned int time_before_game;
+extern unsigned int time_after_game;
+extern unsigned int time_before_ref;
+extern unsigned int time_after_ref;
 
 void Z_Free( void *ptr );
 void *Z_Malloc( int size );  // returns 0 filled memory
-void *Z_TagMalloc( int size, int tag );
+void *Z_TagMalloc( size_t size, int16_t tag );
 void Z_FreeTags( int tag );
 
 void Qcommon_Init( int argc, char **argv );
-void Qcommon_Frame( int msec );
+void Qcommon_Frame( unsigned int msec );
 void Qcommon_Shutdown( void );
 
 #define NUMVERTEXNORMALS 162
@@ -774,20 +777,12 @@ namespace nox
 	void Sys_MessageBox( const char *error, MessageBoxType boxType );
 }
 
-void Sys_Init( void );
-
-void Sys_AppActivate( void );
-
 void Sys_UnloadGame( void );
 void *Sys_GetGameAPI( void *parms );
 // loads the game dll and calls the api init function
 
-char *Sys_ConsoleInput( void );
-void Sys_ConsoleOutput( char *string );
-void Sys_SendKeyEvents( void );
 void Sys_Error( const char *error, ... );
 void Sys_Quit( void );
-char *Sys_GetClipboardData( void );
 
 /*
 ==============================================================
@@ -800,13 +795,13 @@ CLIENT / SERVER SYSTEMS
 void CL_Init( void );
 void CL_Drop( void );
 void CL_Shutdown( void );
-void CL_Frame( int msec );
+void CL_Frame( unsigned int msec );
 void Con_Print( char *text );
 void SCR_BeginLoadingPlaque( void );
 
 void SV_Init( void );
 void SV_Shutdown( const char *finalmsg, qboolean reconnect );
-void SV_Frame( int msec );
+void SV_Frame( unsigned int msec );
 
 /**********************************************
 	Linked Lists

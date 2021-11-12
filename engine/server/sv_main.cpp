@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "server.h"
+#include "app.h"
 
 netadr_t	master_adr[MAX_MASTERS];	// address of group servers
 
@@ -249,7 +250,7 @@ void SVC_GetChallenge (void)
 		// overwrite the oldest
 		svs.challenges[oldest].challenge = rand() & 0x7fff;
 		svs.challenges[oldest].adr = net_from;
-		svs.challenges[oldest].time = curtime;
+		svs.challenges[oldest].time = nox::globalApp->GetCurrentMillisecond();
 		i = oldest;
 	}
 
@@ -714,41 +715,34 @@ void SV_PrepWorldFrame (void)
 
 }
 
-
-/*
-=================
-SV_RunGameFrame
-=================
-*/
-void SV_RunGameFrame (void)
+void SV_RunGameFrame( void )
 {
-	if (host_speeds->value)
-		time_before_game = Sys_Milliseconds ();
+	if ( host_speeds->value )
+		time_before_game = nox::globalApp->GetNumMilliseconds();
 
 	// we always need to bump framenum, even if we
 	// don't run the world, otherwise the delta
 	// compression can get confused when a client
 	// has the "current" frame
 	sv.framenum++;
-	sv.time = sv.framenum*100;
+	sv.time = sv.framenum * 100;
 
 	// don't run if paused
-	if (!sv_paused->value || maxclients->value > 1)
+	if ( !sv_paused->value || maxclients->value > 1 )
 	{
-		ge->RunFrame ();
+		ge->RunFrame();
 
 		// never get more than one tic behind
-		if (sv.time < svs.realtime)
+		if ( sv.time < svs.realtime )
 		{
-			if (sv_showclamp->value)
-				Com_Printf ("sv highclamp\n");
+			if ( sv_showclamp->value )
+				Com_Printf( "sv highclamp\n" );
 			svs.realtime = sv.time;
 		}
 	}
 
-	if (host_speeds->value)
-		time_after_game = Sys_Milliseconds ();
-
+	if ( host_speeds->value )
+		time_after_game = nox::globalApp->GetNumMilliseconds();
 }
 
 /*
@@ -757,7 +751,7 @@ SV_Frame
 
 ==================
 */
-void SV_Frame (int msec)
+void SV_Frame ( unsigned int msec)
 {
 	time_before_game = time_after_game = 0;
 

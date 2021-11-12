@@ -197,7 +197,6 @@ extern cvar_t *gl_modulate;
 extern cvar_t *gl_playermip;
 extern cvar_t *gl_drawbuffer;
 extern cvar_t *gl_3dlabs_broken;
-extern cvar_t *gl_driver;
 extern cvar_t *gl_swapinterval;
 extern cvar_t *gl_texturemode;
 extern cvar_t *gl_texturealphamode;
@@ -243,7 +242,7 @@ void V_AddBlend( float r, float g, float b, float a, float *v_blend );
 
 void R_RenderFrame( refdef_t *fd );
 
-int  R_Init( void *hinstance, void *hWnd );
+int  R_Init();
 void R_Shutdown( void );
 
 void     R_RenderView( refdef_t *fd );
@@ -380,7 +379,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 */
 
 void     GLimp_EndFrame( void );
-qboolean GLimp_Init( void *hinstance, void *hWnd );
 void     GLimp_Shutdown( void );
 rserr_t  GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, qboolean fullscreen );
 void     GLimp_AppActivate( qboolean active );

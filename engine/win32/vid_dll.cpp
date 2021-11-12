@@ -490,7 +490,7 @@ VID_LoadRefresh
 */
 qboolean VID_LoadRefresh()
 {
-	if( R_Init( global_hInstance, ( void * ) MainWndProc ) == -1 ) {
+	if( R_Init( nullptr, ( void * ) MainWndProc ) == -1 ) {
 		R_Shutdown();
 		return false;
 	}

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_parse.c  -- parse a message received from the server
 
+#include "app.h"
 #include "client.h"
 
 #include "ref_gl/gl_local.h"
@@ -81,6 +82,14 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 
 	if (FS_LoadFile (filename, NULL) != -1)
 	{	// it exists, no need to download
+		return true;
+	}
+
+	// I'm sure there's a better way, but we shouldn't download crap on local
+	cvar_t *ip = Cvar_Get( "ip", "localhost", CVAR_NOSET );
+	if ( ip != nullptr && std::string( ip->string ) == "localhost" )
+	{
+		Com_Printf( "WARNING: %s was not found!\n", filename );
 		return true;
 	}
 
@@ -186,7 +195,7 @@ void CL_RegisterSounds (void)
 		if (!cl.configstrings[CS_SOUNDS+i][0])
 			break;
 		cl.sound_precache[i] = S_RegisterSound (cl.configstrings[CS_SOUNDS+i]);
-		Sys_SendKeyEvents ();	// pump message loop
+		nox::globalApp->SendKeyEvents();	// pump message loop
 	}
 	S_EndRegistration ();
 }

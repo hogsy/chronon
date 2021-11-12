@@ -22,15 +22,11 @@ project(engine)
 if (WIN32)
     file(GLOB ENGINE_PLATFORM_SOURCE
             win32/cd_win.cpp
-            win32/glw_imp.cpp
-            win32/in_win.cpp
             win32/net_wins.cpp
             win32/q_shwin.cpp
             win32/snd_win.cpp
-            win32/sys_win.cpp
-            win32/vid_dll.cpp
-            #sdl2/sdl2_sys.cpp
-            #sdl2/sdl2_vid.cpp
+            sdl2/sdl2_sys.cpp
+            sdl2/sdl2_vid.cpp
             )
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
@@ -46,6 +42,11 @@ elseif (UNIX)
 endif ()
 
 add_executable(engine WIN32
+        app.cpp
+        hunk.cpp
+        input.cpp
+        system.cpp
+
         # Client
         client/cl_cin.cpp
         client/cl_ents.cpp
@@ -83,6 +84,7 @@ add_executable(engine WIN32
         ../qcommon/pmove.cpp
 
         # Renderer
+        # -- gl
         client/ref_gl/gl_draw.cpp
         client/ref_gl/gl_image.cpp
         client/ref_gl/gl_light.cpp
@@ -93,6 +95,8 @@ add_executable(engine WIN32
         client/ref_gl/gl_shader_manager.cpp
         client/ref_gl/gl_warp.cpp
         client/ref_gl/qgl.cpp
+        # -- generic
+        client/renderer/material.cpp
 
         # Server
         server/sv_ccmds.cpp
@@ -105,7 +109,9 @@ add_executable(engine WIN32
         server/sv_world.cpp
         # Platform
         ${ENGINE_PLATFORM_SOURCE}
-        system.cpp
+
+        # APE Virtual Machine
+        ape/ape.cpp
 
         # 3rd Party
         ../3rdparty/miniz/miniz.c
@@ -122,6 +128,7 @@ target_link_directories(engine PRIVATE
         ../3rdparty/glew/lib/Release/x64/
         )
 target_include_directories(engine PRIVATE
+        ./
         ../
         ../3rdparty/
         ../3rdparty/glew/include/
@@ -144,9 +151,17 @@ if (WIN32)
                 /NODEFAULTLIB:libcmt.lib
                 /NODEFAULTLIB:libcmtd.lib
                 )
+    elseif(MINGW)
+        target_link_libraries(engine
+                mingw32
+                )
     endif ()
     target_link_libraries(engine
+            SDL2main
             SDL2
+            Imm32
+            Setupapi
+            Version
             Opengl32
             Ws2_32
             Winmm

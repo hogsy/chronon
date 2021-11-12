@@ -82,7 +82,7 @@ char *Cvar_VariableString (const char *var_name)
 	
 	var = Cvar_FindVar (var_name);
 	if (!var)
-		return "";
+		return ( char * ) "";
 	return var->string;
 }
 

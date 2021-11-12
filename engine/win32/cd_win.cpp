@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <windows.h>
 #include "../client/client.h"
 
-extern	HWND	cl_hwnd;
+extern	void *cl_hwnd;
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -376,10 +376,8 @@ static void CD_f (void)
 }
 
 
-LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LONG CDAudio_MessageHandler(HWND, UINT, WPARAM wParam, LPARAM lParam)
 {
-	Q_UNUSED( uMsg, hWnd );
-
 	if (lParam != wDeviceID)
 		return 1;
 

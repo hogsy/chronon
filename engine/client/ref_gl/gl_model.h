@@ -79,7 +79,7 @@ typedef struct mtexinfo_s
 	int                flags;
 	int                numframes;
 	struct mtexinfo_s *next;// animation chain
-	image_t *          image;
+	image_t           *image;
 } mtexinfo_t;
 
 #define VERTEXSIZE 7
@@ -109,7 +109,7 @@ typedef struct msurface_s
 	int light_s, light_t;  // gl lightmap coordinates
 	int dlight_s, dlight_t;// gl lightmap coordinates for dynamic lightmaps
 
-	glpoly_t *         polys;// multiple if warped
+	glpoly_t          *polys;// multiple if warped
 	struct msurface_s *texturechain;
 	struct msurface_s *lightmapchain;
 
@@ -136,7 +136,7 @@ typedef struct mnode_s
 	struct mnode_s *parent;
 
 	// node specific
-	cplane_t *      plane;
+	cplane_t       *plane;
 	struct mnode_s *children[ 2 ];
 
 	unsigned short firstsurface;
@@ -244,8 +244,8 @@ typedef struct model_s
 	// for alias models and skins
 	image_t *skins[ MAX_MD2SKINS ];
 
-	int   extradatasize;
-	void *extradata;
+	size_t extradatasize;
+	void  *extradata;
 } model_t;
 
 //============================================================================
@@ -254,14 +254,14 @@ void     Mod_Init( void );
 void     Mod_ClearAll( void );
 model_t *Mod_ForName( const char *name, qboolean crash );
 mleaf_t *Mod_PointInLeaf( float *p, model_t *model );
-byte *   Mod_ClusterPVS( int cluster, model_t *model );
+byte    *Mod_ClusterPVS( int cluster, model_t *model );
 
 void Mod_Modellist_f( void );
 
-void *Hunk_Begin( size_t maxsize );
-void *Hunk_Alloc( size_t size );
-int   Hunk_End( void );
-void  Hunk_Free( void *base );
+void  *Hunk_Begin( size_t maxsize );
+void  *Hunk_Alloc( size_t size );
+size_t Hunk_End( void );
+void   Hunk_Free( void *base );
 
 void Mod_FreeAll( void );
 void Mod_Free( model_t *mod );

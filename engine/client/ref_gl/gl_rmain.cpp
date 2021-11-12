@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // r_main.c
-#include <ctype.h>
+#include <cctype>
 
 #include "gl_local.h"
 
@@ -101,7 +101,6 @@ cvar_t *gl_ext_compiled_vertex_array;
 cvar_t *gl_log;
 cvar_t *gl_bitdepth;
 cvar_t *gl_drawbuffer;
-cvar_t *gl_driver;
 cvar_t *gl_lightmap;
 cvar_t *gl_shadows;
 cvar_t *gl_mode;
@@ -658,10 +657,10 @@ void R_SetupGL( void ) {
 	//
 	// set up viewport
 	//
-	x = floor( r_newrefdef.x * vid.width / vid.width );
-	x2 = ceil( ( r_newrefdef.x + r_newrefdef.width ) * vid.width / vid.width );
-	y = floor( vid.height - r_newrefdef.y * vid.height / vid.height );
-	y2 = ceil( vid.height -
+	x = std::floor( r_newrefdef.x * vid.width / vid.width );
+	x2 = std::ceil( ( r_newrefdef.x + r_newrefdef.width ) * vid.width / vid.width );
+	y = std::floor( vid.height - r_newrefdef.y * vid.height / vid.height );
+	y2 = std::ceil( vid.height -
 		( r_newrefdef.y + r_newrefdef.height ) * vid.height / vid.height );
 
 	w = x2 - x;
@@ -696,7 +695,7 @@ void R_SetupGL( void ) {
 	//
 	// set drawing parms
 	//
-	if( gl_cull->value )
+	if( gl_cull->value > 0.0f )
 		glEnable( GL_CULL_FACE );
 	else
 		glDisable( GL_CULL_FACE );
@@ -711,14 +710,14 @@ void R_SetupGL( void ) {
 R_Clear
 =============
 */
-void R_Clear( void ) {
+void R_Clear() {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	glDepthFunc( GL_LEQUAL );
 	glDepthRange( 0, 1 );
 }
 
-void R_Flash( void ) { R_PolyBlend(); }
+void R_Flash() { R_PolyBlend(); }
 
 /*
 ================
@@ -871,7 +870,6 @@ void R_Register( void ) {
 	gl_polyblend = Cvar_Get( "gl_polyblend", "1", 0 );
 	gl_playermip = Cvar_Get( "gl_playermip", "0", 0 );
 	gl_monolightmap = Cvar_Get( "gl_monolightmap", "0", 0 );
-	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_texturemode =
 		Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_texturealphamode =
@@ -916,7 +914,7 @@ R_SetMode
 qboolean R_SetMode( void ) {
 #if 1 // simplified until we get SDL2 implemented
 	rserr_t err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value, false );
-	
+
 	vid_fullscreen->modified = false;
 	gl_mode->modified = false;
 
@@ -969,7 +967,8 @@ qboolean R_SetMode( void ) {
 R_Init
 ===============
 */
-int R_Init( void *hinstance, void *hWnd ) {
+int R_Init()
+{
 	char renderer_buffer[ 1000 ];
 	char vendor_buffer[ 1000 ];
 	int err;
@@ -984,11 +983,6 @@ int R_Init( void *hinstance, void *hWnd ) {
 
 	R_Register();
 
-	// initialize OS-specific parts of OpenGL
-	if( !GLimp_Init( hinstance, hWnd ) ) {
-		return -1;
-	}
-
 	// set our "safe" modes
 	gl_state.prev_mode = 3;
 
@@ -1000,8 +994,7 @@ int R_Init( void *hinstance, void *hWnd ) {
 
 	// initialize our QGL dynamic bindings
 	if( !QGL_Init() ) {
-		Com_Printf( "ref_gl::R_Init() - could not load \"%s\"\n",
-			gl_driver->string );
+		Com_Printf( "Failed to initialize GL interface!\n" );
 		return -1;
 	}
 
@@ -1065,7 +1058,7 @@ int R_Init( void *hinstance, void *hWnd ) {
 	if( err != GL_NO_ERROR )
 		Com_Printf( "glGetError() = 0x%x\n", err );
 
-	return true;
+	return rserr_ok;
 }
 
 /*

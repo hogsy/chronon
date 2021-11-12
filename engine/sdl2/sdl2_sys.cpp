@@ -23,89 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL2/SDL.h>
 
-/*
-========================================================================
-========================================================================
-*/
+#include "../client/keys.h"
 
-unsigned int sys_msg_time;
-unsigned int sys_frame_time;
-void Sys_SendKeyEvents()
-{
-	SDL_PumpEvents();
 
-	sys_msg_time = Sys_Milliseconds();
-}
-
-int curtime;
-int Sys_Milliseconds()
-{
-	// todo: curtime should be unsigned
-	curtime = ( int ) SDL_GetTicks();
-	return curtime;
-}
-
-/*
-========================================================================
-========================================================================
-*/
-
-void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
-{
-	Uint32 flags = 0;
-	switch ( boxType )
-	{
-		case MessageBoxType::MB_ERROR:
-			flags |= SDL_MESSAGEBOX_ERROR;
-			break;
-		case MessageBoxType::MB_WARNING:
-			flags |= SDL_MESSAGEBOX_WARNING;
-			break;
-		case MessageBoxType::MB_INFO:
-			flags |= SDL_MESSAGEBOX_INFORMATION;
-			break;
-	}
-
-	SDL_ShowSimpleMessageBox( flags, ENGINE_NAME, error, nullptr );
-}
-
-void Sys_Init()
-{
-	int status = SDL_Init(
-			SDL_INIT_VIDEO |
-			SDL_INIT_EVENTS |
-			SDL_INIT_GAMECONTROLLER |
-			SDL_INIT_HAPTIC |
-			SDL_INIT_JOYSTICK |
-			SDL_INIT_TIMER );
-	if ( status != 0 )
-	{
-		Sys_Error( "Failed to initialized SDL2: %s\n", SDL_GetError() );
-	}
-}
-
-char *Sys_ConsoleInput()
-{
-	return nullptr;
-}
-
-void Sys_ConsoleOutput( char *string )
-{
-}
-
-char *Sys_GetClipboardData()
-{
-	if ( !SDL_HasClipboardText() )
-	{
-		return nullptr;
-	}
-
-	return SDL_GetClipboardText();
-}
-
-void Sys_AppActivate()
-{
-}
 
 /*
 ========================================================================
@@ -165,31 +85,4 @@ void *Sys_GetGameAPI( void *parms )
 	}
 
 	return gameApi( parms );
-}
-
-/*
-========================================================================
-========================================================================
-*/
-
-int main( int argc, char **argv )
-{
-	Qcommon_Init( argc, argv );
-
-	int time, newTime;
-	int oldTime = Sys_Milliseconds();
-	while ( true )
-	{
-		do
-		{
-			newTime = Sys_Milliseconds();
-			time = newTime - oldTime;
-		} while ( time < 1 );
-
-		Qcommon_Frame( time );
-
-		oldTime = newTime;
-	}
-
-	return EXIT_SUCCESS;
 }

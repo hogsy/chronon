@@ -17,9 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 #include <cstring>
 #include <cctype>
 
+#include "app.h"
 #include "client.h"
 #include "qmenu.h"
 
@@ -110,7 +112,7 @@ void Field_Draw( menufield_s *f )
 		else
 			offset = f->cursor;
 
-		if ( ( ( int ) ( Sys_Milliseconds() / 250 ) ) & 1 )
+		if ( ( ( int ) ( nox::globalApp->GetNumMilliseconds() / 250 ) ) & 1 )
 		{
 			Draw_Char( f->generic.x + f->generic.parent->x + ( offset + 2 ) * 8 + 8,
 					   f->generic.y + f->generic.parent->y,
@@ -193,7 +195,7 @@ qboolean Field_Key( menufield_s *f, int key )
 	{
 		char *cbd;
 		
-		if ( ( cbd = Sys_GetClipboardData() ) != 0 )
+		if ( ( cbd = nox::globalApp->GetClipboardData() ) != nullptr )
 		{
 			strtok( cbd, "\n\r\b" );
 
@@ -383,11 +385,11 @@ void Menu_Draw( menuframework_s *menu )
 	{
 		if ( item->flags & QMF_LEFT_JUSTIFY )
 		{
-			Draw_Char( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( Sys_Milliseconds()/250 ) & 1 ) );
+			Draw_Char( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds()/250 ) & 1 ) );
 		}
 		else
 		{
-			Draw_Char( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( Sys_Milliseconds()/250 ) & 1 ) );
+			Draw_Char( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds()/250 ) & 1 ) );
 		}
 	}
 
