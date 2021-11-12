@@ -22,13 +22,9 @@ project(engine)
 if (WIN32)
     file(GLOB ENGINE_PLATFORM_SOURCE
             win32/cd_win.cpp
-            #win32/glw_imp.cpp
-            win32/in_win.cpp
             win32/net_wins.cpp
             win32/q_shwin.cpp
             win32/snd_win.cpp
-            #win32/sys_win.cpp
-            #win32/vid_dll.cpp
             sdl2/sdl2_sys.cpp
             sdl2/sdl2_vid.cpp
             )
@@ -48,6 +44,8 @@ endif ()
 add_executable(engine WIN32
         app.cpp
         hunk.cpp
+        input.cpp
+        system.cpp
 
         # Client
         client/cl_cin.cpp
@@ -111,7 +109,6 @@ add_executable(engine WIN32
         server/sv_world.cpp
         # Platform
         ${ENGINE_PLATFORM_SOURCE}
-        system.cpp
 
         # APE Virtual Machine
         ape/ape.cpp

@@ -887,7 +887,7 @@ void Key_ClearStates()
 {
 	anykeydown = false;
 
-	for ( int i = 0; i < 256; i++ )
+	for ( int i = 0; i < K_MAX; i++ )
 	{
 		if ( keydown[ i ] || key_repeats[ i ] )
 			Key_Event( i, false, 0 );

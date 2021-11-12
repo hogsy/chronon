@@ -78,8 +78,6 @@ void nox::App::SendKeyEvents()
 	SDL_PumpEvents();
 
 	PollEvents();
-
-	sys_msg_time = GetNumMilliseconds();
 }
 
 unsigned int nox::App::GetNumMilliseconds()
@@ -98,142 +96,19 @@ char *nox::App::GetClipboardData()
 	return SDL_GetClipboardText();
 }
 
-int nox::App::MapKey( int key )
-{
-	switch ( key )
-	{
-		case SDLK_UP:
-			return K_UPARROW;
-		case SDLK_DOWN:
-			return K_DOWNARROW;
-		case SDLK_LEFT:
-			return K_LEFTARROW;
-		case SDLK_RIGHT:
-			return K_RIGHTARROW;
-
-		case SDLK_BACKSPACE:
-			return K_BACKSPACE;
-
-		case SDLK_PAGEUP:
-			return K_PGUP;
-		case SDLK_PAGEDOWN:
-			return K_PGDN;
-
-		case SDLK_LALT:
-		case SDLK_RALT:
-			return K_ALT;
-
-		case SDLK_LSHIFT:
-		case SDLK_RSHIFT:
-			return K_SHIFT;
-
-		case SDLK_SPACE:
-			return K_SPACE;
-
-		case SDLK_F1:
-            return K_F1;
-		case SDLK_F2:
-			return K_F2;
-		case SDLK_F3:
-			return K_F3;
-		case SDLK_F4:
-			return K_F4;
-		case SDLK_F5:
-			return K_F5;
-		case SDLK_F6:
-			return K_F6;
-		case SDLK_F7:
-			return K_F7;
-		case SDLK_F8:
-			return K_F8;
-		case SDLK_F9:
-			return K_F9;
-		case SDLK_F10:
-			return K_F10;
-		case SDLK_F11:
-			return K_F11;
-		case SDLK_F12:
-			return K_F12;
-
-		default:
-			break;
-	}
-
-	if ( key >= K_MAX )
-	{
-		assert( 0 );
-		return K_INVALID;
-	}
-
-	return key;
-}
-
+bool IN_HandleEvent( const SDL_Event &event );
 void nox::App::PollEvents()
 {
 	SDL_Event event;
 	while ( SDL_PollEvent( &event ) )
 	{
+		if ( IN_HandleEvent( event ) )
+		{
+			continue;
+		}
+
 		switch ( event.type )
 		{
-			case SDL_MOUSEWHEEL:
-				if ( event.wheel.y > 0 )
-				{
-					Key_Event( K_MWHEELUP, true, sys_msg_time );
-					Key_Event( K_MWHEELUP, false, sys_msg_time );
-				}
-				else
-				{
-					Key_Event( K_MWHEELDOWN, true, sys_msg_time );
-					Key_Event( K_MWHEELDOWN, false, sys_msg_time );
-				}
-				break;
-
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-			{
-				//char buf[ 32 ];
-				//snprintf( buf, sizeof( buf ), "KEY: %s\n", ( event.key.state == SDL_PRESSED ) ? "DOWN" : "UP" );
-				//Com_Printf( buf );
-
-				int key = MapKey( event.key.keysym.sym );
-				if ( key == K_INVALID )
-				{
-					break;
-				}
-
-				Key_Event( key, ( event.key.state == SDL_PRESSED ), sys_msg_time );
-				break;
-			}
-
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-			{
-				int button;
-				switch ( event.button.button )
-				{
-					case SDL_BUTTON_LEFT:
-						button = K_MOUSE1;
-						break;
-					case SDL_BUTTON_RIGHT:
-						button = K_MOUSE2;
-						break;
-					case SDL_BUTTON_MIDDLE:
-						button = K_MOUSE3;
-						break;
-					default:
-						button = 0;
-						break;
-				}
-
-				if ( button == 0 )
-				{
-					assert( 0 );
-					break;
-				}
-
-				Key_Event( button, ( event.button.state == SDL_PRESSED ), sys_msg_time );
-			}
-
 			case SDL_WINDOWEVENT:
 			{
 				switch ( event.window.event )

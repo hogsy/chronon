@@ -44,9 +44,6 @@ namespace nox
 
 		void ShowCursor( bool show );
 
-	private:
-		static int MapKey( int key );
-
 	public:
 		void PollEvents();
 
