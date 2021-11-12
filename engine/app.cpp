@@ -64,13 +64,15 @@ void nox::App::Initialize()
 			time = newTime - oldTime;
 		} while ( time < 1 );
 
+#if defined( Q_PLATFORM_X86 )
+		_controlfp( _PC_24, _MCW_PC );
+#endif
 		Qcommon_Frame( time );
 
 		oldTime = newTime;
 	}
 }
 
-unsigned int sys_msg_time = 0;  // todo: kill
 unsigned int sys_frame_time = 0;// todo: kill
 
 void nox::App::SendKeyEvents()
@@ -78,6 +80,8 @@ void nox::App::SendKeyEvents()
 	SDL_PumpEvents();
 
 	PollEvents();
+
+	sys_frame_time = GetNumMilliseconds(); // FIXME: should this be at start?
 }
 
 unsigned int nox::App::GetNumMilliseconds()
@@ -155,9 +159,8 @@ void nox::App::ShowCursor( bool show )
 extern "C" int main( int argc, char **argv )
 {
 	nox::globalApp = new nox::App( argc, argv );
+
+	// todo: consider combining these??
 	nox::globalApp->Initialize();
-
 	nox::globalApp->Run();
-
-	return EXIT_SUCCESS;
 }

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client/client.h"
 #include "app.h"
 
-extern unsigned sys_msg_time;
+static unsigned sys_msg_time;
 
 // joystick defines and variables
 // where should defines be moved?
@@ -195,6 +195,8 @@ static int MapKey( int key )
 
 bool IN_HandleEvent( const SDL_Event &event )
 {
+	sys_msg_time = nox::globalApp->GetNumMilliseconds();
+
 	switch( event.type )
 	{
 		case SDL_MOUSEWHEEL:
