@@ -638,9 +638,6 @@ void MYgluPerspective( GLdouble fovy, GLdouble aspect, GLdouble zNear,
 	xmin = ymin * aspect;
 	xmax = ymax * aspect;
 
-	xmin += -2 / zNear;
-	xmax += -2 / zNear;
-
 	glFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
 }
 
