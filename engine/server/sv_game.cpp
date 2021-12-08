@@ -301,13 +301,13 @@ Called when either the entire server is being killed, or
 it is changing to a different game directory.
 ===============
 */
-void SV_ShutdownGameProgs( void )
+void SV_ShutdownGameProgs()
 {
 	if ( !ge )
 		return;
 	ge->Shutdown();
 	Sys_UnloadGame();
-	ge = NULL;
+	ge = nullptr;
 }
 
 /*

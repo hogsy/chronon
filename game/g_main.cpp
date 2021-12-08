@@ -84,14 +84,14 @@ void WriteGame( char *filename, bool autosave );
 void ReadGame (char *filename);
 void WriteLevel (char *filename);
 void ReadLevel (char *filename);
-void InitGame (void);
-void G_RunFrame (void);
+void InitGame();
+void G_RunFrame();
 
 
 //===================================================================
 
 
-void ShutdownGame (void)
+void ShutdownGame()
 {
 	gi.dprintf ("==== ShutdownGame ====\n");
 

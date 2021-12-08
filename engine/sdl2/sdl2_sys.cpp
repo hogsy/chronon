@@ -19,12 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "qcommon/qcommon.h"
-
 #include <SDL2/SDL.h>
 
-#include "../client/keys.h"
-
+#include "qcommon/qcommon.h"
 
 /*
 ========================================================================
@@ -42,6 +39,7 @@ void Sys_UnloadGame()
 	}
 
 	SDL_UnloadObject( gameDll );
+	gameDll = nullptr;
 }
 
 #define GAME_MODULE_NAME "game"

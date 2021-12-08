@@ -17,13 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// in_win.c -- windows 95 mouse and joystick code
-// 02/21/97 JCB Added extended DirectInput code to support external controllers.
 
 #include <SDL2/SDL.h>
 
 #include "client/client.h"
-#include "app.h"
 
 static unsigned sys_msg_time;
 
@@ -111,8 +108,6 @@ static int mouse_oldbuttonstate;
 static int mouse_x, mouse_y,
 		old_mouse_x, old_mouse_y,
 		mx_accum, my_accum;
-
-static int old_x, old_y;
 
 static bool isMouseActive;// false when not focus app
 
@@ -287,9 +282,6 @@ void IN_ActivateMouse()
 	window_center_x = ( int ) viddef.width / 2;
 	window_center_y = ( int ) viddef.height / 2;
 
-	old_x = window_center_x;
-	old_y = window_center_y;
-
 	nox::globalApp->ShowCursor( false );
 }
 
@@ -321,7 +313,8 @@ void IN_StartupMouse()
 }
 
 extern SDL_Window *VID_GetSDLWindowHandle();
-void               IN_MouseMove( usercmd_t *cmd )
+
+void IN_MouseMove( usercmd_t *cmd )
 {
 	if ( !isMouseActive )
 	{
