@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /* Like glob_match, but match PATTERN against any final segment of TEXT.  */
 static int glob_match_after_star( char *pattern, char *text )
 {
-	register char *p = pattern, *t = text;
-	register char  c, c1;
+	char *p = pattern, *t = text;
+	char  c, c1;
 
 	while ( ( c = *p++ ) == '?' || c == '*' )
 		if ( c == '?' && *t++ == '\0' )
@@ -51,8 +51,8 @@ static int glob_match_after_star( char *pattern, char *text )
 /* Return nonzero if PATTERN has any special globbing chars in it.  */
 static int glob_pattern_p( char *pattern )
 {
-	register char *p = pattern;
-	register char  c;
+	char *p = pattern;
+	char  c;
 	int            open = 0;
 
 	while ( ( c = *p++ ) != '\0' )
@@ -98,8 +98,8 @@ static int glob_pattern_p( char *pattern )
 
 int glob_match( char *pattern, char *text )
 {
-	register char *p = pattern, *t = text;
-	register char  c;
+	char *p = pattern, *t = text;
+	char  c;
 
 	while ( ( c = *p++ ) != '\0' )
 		switch ( c )
@@ -121,7 +121,7 @@ int glob_match( char *pattern, char *text )
 
 			case '[':
 			{
-				register char c1 = *t++;
+				char c1 = *t++;
 				int           invert;
 
 				if ( !c1 )
@@ -134,7 +134,7 @@ int glob_match( char *pattern, char *text )
 				c = *p++;
 				while ( 1 )
 				{
-					register char cstart = c, cend = c;
+					char cstart = c, cend = c;
 
 					if ( c == '\\' )
 					{
