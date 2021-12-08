@@ -197,7 +197,7 @@ bool IN_HandleEvent( const SDL_Event &event )
 {
 	sys_msg_time = nox::globalApp->GetNumMilliseconds();
 
-	switch( event.type )
+	switch ( event.type )
 	{
 		case SDL_MOUSEWHEEL:
 		{

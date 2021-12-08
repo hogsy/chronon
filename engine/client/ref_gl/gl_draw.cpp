@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 image_t *draw_chars;
 
-extern	qboolean	scrap_dirty;
-void Scrap_Upload( void );
+extern qboolean scrap_dirty;
+void            Scrap_Upload( void );
 
 
 /*
@@ -33,14 +33,14 @@ void Scrap_Upload( void );
 Draw_InitLocal
 ===============
 */
-void Draw_InitLocal( void ) {
+void Draw_InitLocal( void )
+{
 	// load console characters (don't bilerp characters)
 	draw_chars = GL_FindImage( "graphics/fonts/conchars.pcx", it_pic );
 	GL_Bind( draw_chars->texnum );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 }
-
 
 
 /*
@@ -52,17 +52,18 @@ It can be clipped to the top of the screen to allow the console to be
 smoothly scrolled off.
 ================
 */
-void Draw_Char( int x, int y, int num ) {
-	int				row, col;
-	float			frow, fcol, size;
+void Draw_Char( int x, int y, int num )
+{
+	int   row, col;
+	float frow, fcol, size;
 
 	num &= 255;
 
-	if( ( num & 127 ) == 32 )
-		return;		// space
+	if ( ( num & 127 ) == 32 )
+		return;// space
 
-	if( y <= -8 )
-		return;			// totally off screen
+	if ( y <= -8 )
+		return;// totally off screen
 
 	row = num >> 4;
 	col = num & 15;
@@ -90,14 +91,17 @@ void Draw_Char( int x, int y, int num ) {
 Draw_FindPic
 =============
 */
-image_t *Draw_FindPic( const char *name ) {
+image_t *Draw_FindPic( const char *name )
+{
 	image_t *gl;
-	char	fullname[ MAX_QPATH ];
+	char     fullname[ MAX_QPATH ];
 
-	if( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
+	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' )
+	{
 		Com_sprintf( fullname, sizeof( fullname ), "graphics/%s.pcx", name );
 		gl = GL_FindImage( fullname, it_pic );
-	} else
+	}
+	else
 		gl = GL_FindImage( name + 1, it_pic );
 
 	return gl;
@@ -108,11 +112,13 @@ image_t *Draw_FindPic( const char *name ) {
 Draw_GetPicSize
 =============
 */
-void Draw_GetPicSize( int *w, int *h, const char *pic ) {
+void Draw_GetPicSize( int *w, int *h, const char *pic )
+{
 	image_t *gl;
 
 	gl = Draw_FindPic( pic );
-	if( !gl ) {
+	if ( !gl )
+	{
 		*w = *h = -1;
 		return;
 	}
@@ -125,19 +131,21 @@ void Draw_GetPicSize( int *w, int *h, const char *pic ) {
 Draw_StretchPic
 =============
 */
-void Draw_StretchPic( int x, int y, int w, int h, const char *pic ) {
+void Draw_StretchPic( int x, int y, int w, int h, const char *pic )
+{
 	image_t *gl;
 
 	gl = Draw_FindPic( pic );
-	if( !gl ) {
+	if ( !gl )
+	{
 		Com_Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
 
-	if( scrap_dirty )
+	if ( scrap_dirty )
 		Scrap_Upload();
 
-	if( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
+	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
 		glDisable( GL_ALPHA_TEST );
 
 	GL_Bind( gl->texnum );
@@ -152,7 +160,7 @@ void Draw_StretchPic( int x, int y, int w, int h, const char *pic ) {
 	glVertex2f( x, y + h );
 	glEnd();
 
-	if( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
+	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
 		glEnable( GL_ALPHA_TEST );
 }
 
@@ -162,18 +170,20 @@ void Draw_StretchPic( int x, int y, int w, int h, const char *pic ) {
 Draw_Pic
 =============
 */
-void Draw_Pic( int x, int y, const char *pic ) {
+void Draw_Pic( int x, int y, const char *pic )
+{
 	image_t *gl;
 
 	gl = Draw_FindPic( pic );
-	if( !gl ) {
+	if ( !gl )
+	{
 		Com_Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
-	if( scrap_dirty )
+	if ( scrap_dirty )
 		Scrap_Upload();
 
-	if( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
+	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
 		glDisable( GL_ALPHA_TEST );
 
 	GL_Bind( gl->texnum );
@@ -188,7 +198,7 @@ void Draw_Pic( int x, int y, const char *pic ) {
 	glVertex2f( x, y + gl->height );
 	glEnd();
 
-	if( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
+	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !gl->has_alpha )
 		glEnable( GL_ALPHA_TEST );
 }
 
@@ -200,16 +210,18 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 =============
 */
-void Draw_TileClear( int x, int y, int w, int h, const char *pic ) {
+void Draw_TileClear( int x, int y, int w, int h, const char *pic )
+{
 	image_t *image;
 
 	image = Draw_FindPic( pic );
-	if( !image ) {
+	if ( !image )
+	{
 		Com_Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
 
-	if( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !image->has_alpha )
+	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !image->has_alpha )
 		glDisable( GL_ALPHA_TEST );
 
 	GL_Bind( image->texnum );
@@ -224,7 +236,7 @@ void Draw_TileClear( int x, int y, int w, int h, const char *pic ) {
 	glVertex2f( x, y + h );
 	glEnd();
 
-	if( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !image->has_alpha )
+	if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) ) && !image->has_alpha )
 		glEnable( GL_ALPHA_TEST );
 }
 
@@ -236,13 +248,16 @@ Draw_Fill
 Fills a box of pixels with a single color
 =============
 */
-void Draw_Fill( int x, int y, int w, int h, int c ) {
-	union {
-		unsigned	c{ 0 };
-		byte		v[ 4 ];
+void Draw_Fill( int x, int y, int w, int h, int c )
+{
+	union
+	{
+		unsigned c{ 0 };
+		byte     v[ 4 ];
 	} color;
 
-	if( (unsigned)c > 255 ) {
+	if ( ( unsigned ) c > 255 )
+	{
 		Com_Error( ERR_FATAL, "Draw_Fill: bad color" );
 		return;
 	}
@@ -251,8 +266,8 @@ void Draw_Fill( int x, int y, int w, int h, int c ) {
 
 	color.c = d_8to24table[ c ];
 	glColor3f( color.v[ 0 ] / 255.0,
-		color.v[ 1 ] / 255.0,
-		color.v[ 2 ] / 255.0 );
+	           color.v[ 1 ] / 255.0,
+	           color.v[ 2 ] / 255.0 );
 
 	glBegin( GL_QUADS );
 
@@ -274,7 +289,8 @@ Draw_FadeScreen
 
 ================
 */
-void Draw_FadeScreen() {
+void Draw_FadeScreen()
+{
 	glEnable( GL_BLEND );
 	glDisable( GL_TEXTURE_2D );
 	glColor4f( 0, 0, 0, 0.8 );
@@ -300,22 +316,26 @@ void Draw_FadeScreen() {
 Draw_StretchRaw
 =============
 */
-extern unsigned	r_rawpalette[ 256 ];
+extern unsigned r_rawpalette[ 256 ];
 
-void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data ) {
-	int			i, j, trows;
+void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data )
+{
+	int   i, j, trows;
 	byte *source;
-	int			frac, fracstep;
-	float		hscale;
-	int			row;
-	float		t;
+	int   frac, fracstep;
+	float hscale;
+	int   row;
+	float t;
 
 	GL_Bind( 0 );
 
-	if( rows <= 256 ) {
+	if ( rows <= 256 )
+	{
 		hscale = 1;
 		trows = rows;
-	} else {
+	}
+	else
+	{
 		hscale = rows / 256.0;
 		trows = 256;
 	}
@@ -323,17 +343,19 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 
 	unsigned *dest;
 
-	unsigned int *image32 = static_cast< unsigned int *>( malloc( 256 * 256 ) );
+	unsigned int *image32 = static_cast< unsigned int * >( malloc( 256 * 256 ) );
 
-	for( i = 0; i < trows; i++ ) {
-		row = (int)( i * hscale );
-		if( row > rows )
+	for ( i = 0; i < trows; i++ )
+	{
+		row = ( int ) ( i * hscale );
+		if ( row > rows )
 			break;
 		source = data + cols * row;
 		dest = &image32[ i * 256 ];
 		fracstep = cols * 0x10000 / 256;
 		frac = fracstep >> 1;
-		for( j = 0; j < 256; j++ ) {
+		for ( j = 0; j < 256; j++ )
+		{
 			dest[ j ] = r_rawpalette[ source[ frac >> 16 ] ];
 			frac += fracstep;
 		}
@@ -343,7 +365,7 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-	if( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )
+	if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )
 		glDisable( GL_ALPHA_TEST );
 
 	glBegin( GL_QUADS );
@@ -357,9 +379,8 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 	glVertex2i( x, y + h );
 	glEnd();
 
-	if( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )
+	if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( gl_config.renderer & GL_RENDERER_RENDITION ) )
 		glEnable( GL_ALPHA_TEST );
 
 	free( image32 );
 }
-

@@ -28,12 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 CL_ParseInventory
 ================
 */
-void CL_ParseInventory (void)
+void CL_ParseInventory( void )
 {
-	int		i;
+	int i;
 
-	for (i=0 ; i<MAX_ITEMS ; i++)
-		cl.inventory[i] = MSG_ReadShort (&net_message);
+	for ( i = 0; i < MAX_ITEMS; i++ )
+		cl.inventory[ i ] = MSG_ReadShort( &net_message );
 }
 
 
@@ -42,19 +42,19 @@ void CL_ParseInventory (void)
 Inv_DrawString
 ================
 */
-void Inv_DrawString (int x, int y, const char *string)
+void Inv_DrawString( int x, int y, const char *string )
 {
-	while (*string)
+	while ( *string )
 	{
-		Draw_Char (x, y, *string);
-		x+=8;
+		Draw_Char( x, y, *string );
+		x += 8;
 		string++;
 	}
 }
 
-void SetStringHighBit (char *s)
+void SetStringHighBit( char *s )
 {
-	while (*s)
+	while ( *s )
 		*s++ |= 128;
 }
 
@@ -63,82 +63,78 @@ void SetStringHighBit (char *s)
 CL_DrawInventory
 ================
 */
-#define	DISPLAY_ITEMS	17
+#define DISPLAY_ITEMS 17
 
-void CL_DrawInventory (void)
+void CL_DrawInventory( void )
 {
-	int		i, j;
-	int		num, selected_num, item;
-	int		index[MAX_ITEMS];
-	char	string[1024];
-	int		x, y;
-	char	binding[1024];
-	const char	*bind;
-	int		selected;
-	int		top;
+	int         i, j;
+	int         num, selected_num, item;
+	int         index[ MAX_ITEMS ];
+	char        string[ 1024 ];
+	int         x, y;
+	char        binding[ 1024 ];
+	const char *bind;
+	int         selected;
+	int         top;
 
-	selected = cl.frame.playerstate.stats[STAT_SELECTED_ITEM];
+	selected = cl.frame.playerstate.stats[ STAT_SELECTED_ITEM ];
 
 	num = 0;
 	selected_num = 0;
-	for (i=0 ; i<MAX_ITEMS ; i++)
+	for ( i = 0; i < MAX_ITEMS; i++ )
 	{
-		if (i==selected)
+		if ( i == selected )
 			selected_num = num;
-		if (cl.inventory[i])
+		if ( cl.inventory[ i ] )
 		{
-			index[num] = i;
+			index[ num ] = i;
 			num++;
 		}
 	}
 
 	// determine scroll point
-	top = selected_num - DISPLAY_ITEMS/2;
-	if (num - top < DISPLAY_ITEMS)
+	top = selected_num - DISPLAY_ITEMS / 2;
+	if ( num - top < DISPLAY_ITEMS )
 		top = num - DISPLAY_ITEMS;
-	if (top < 0)
+	if ( top < 0 )
 		top = 0;
 
-	x = (viddef.width-256)/2;
-	y = (viddef.height-240)/2;
+	x = ( viddef.width - 256 ) / 2;
+	y = ( viddef.height - 240 ) / 2;
 
 	// repaint everything next frame
-	SCR_DirtyScreen ();
+	SCR_DirtyScreen();
 
-	Draw_Pic (x, y+8, "inventory");
+	Draw_Pic( x, y + 8, "inventory" );
 
 	y += 24;
 	x += 24;
-	Inv_DrawString (x, y, "hotkey ### item");
-	Inv_DrawString (x, y+8, "------ --- ----");
+	Inv_DrawString( x, y, "hotkey ### item" );
+	Inv_DrawString( x, y + 8, "------ --- ----" );
 	y += 16;
-	for (i=top ; i<num && i < top+DISPLAY_ITEMS ; i++)
+	for ( i = top; i < num && i < top + DISPLAY_ITEMS; i++ )
 	{
-		item = index[i];
+		item = index[ i ];
 		// search for a binding
-		Com_sprintf (binding, sizeof(binding), "use %s", cl.configstrings[CS_ITEMS+item]);
+		Com_sprintf( binding, sizeof( binding ), "use %s", cl.configstrings[ CS_ITEMS + item ] );
 		bind = "";
-		for (j=0 ; j<256 ; j++)
-			if (keybindings[j] && !Q_stricmp (keybindings[j], binding))
+		for ( j = 0; j < 256; j++ )
+			if ( keybindings[ j ] && !Q_stricmp( keybindings[ j ], binding ) )
 			{
-				bind = Key_KeynumToString(j);
+				bind = Key_KeynumToString( j );
 				break;
 			}
 
-		Com_sprintf (string, sizeof(string), "%6s %3i %s", bind, cl.inventory[item],
-			cl.configstrings[CS_ITEMS+item] );
-		if (item != selected)
-			SetStringHighBit (string);
-		else	// draw a blinky cursor by the selected item
+		Com_sprintf( string, sizeof( string ), "%6s %3i %s", bind, cl.inventory[ item ],
+		             cl.configstrings[ CS_ITEMS + item ] );
+		if ( item != selected )
+			SetStringHighBit( string );
+		else// draw a blinky cursor by the selected item
 		{
-			if ( (int)(cls.realtime*10) & 1)
-				Draw_Char (x-8, y, 15);
+			if ( ( int ) ( cls.realtime * 10 ) & 1 )
+				Draw_Char( x - 8, y, 15 );
 		}
-		Inv_DrawString (x, y, string);
+		Inv_DrawString( x, y, string );
 		y += 8;
 	}
-
-
 }
-
-

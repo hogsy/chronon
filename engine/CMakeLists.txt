@@ -151,7 +151,7 @@ if (WIN32)
                 /NODEFAULTLIB:libcmt.lib
                 /NODEFAULTLIB:libcmtd.lib
                 )
-    elseif(MINGW)
+    elseif (MINGW)
         target_link_libraries(engine
                 mingw32
                 )

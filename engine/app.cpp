@@ -81,7 +81,7 @@ void nox::App::SendKeyEvents()
 
 	PollEvents();
 
-	sys_frame_time = GetNumMilliseconds(); // FIXME: should this be at start?
+	sys_frame_time = GetNumMilliseconds();// FIXME: should this be at start?
 }
 
 unsigned int nox::App::GetNumMilliseconds()

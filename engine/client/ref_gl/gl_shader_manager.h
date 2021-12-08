@@ -42,4 +42,4 @@ namespace nox
 	private:
 		std::map< std::string, GLShaderProgram > programs_;
 	};
-}
+}// namespace nox

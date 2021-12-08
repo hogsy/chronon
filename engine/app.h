@@ -35,7 +35,7 @@ namespace nox
 
 		void SendKeyEvents();
 
-		unsigned int GetNumMilliseconds();
+		unsigned int        GetNumMilliseconds();
 		inline unsigned int GetCurrentMillisecond() { return lastMs_; }
 
 		char *GetClipboardData();
@@ -50,11 +50,11 @@ namespace nox
 		inline char **GetCmdLineArgs( int *num ) const
 		{
 			*num = argc_;
-            return argv_;
+			return argv_;
 		}
 
 	private:
-		int argc_;
+		int    argc_;
 		char **argv_;
 
 		unsigned int lastMs_{ 0 };

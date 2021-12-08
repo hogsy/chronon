@@ -52,7 +52,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 glwstate_t glw_state;
 
 static qboolean GLimp_SwitchFullscreen( int width, int height );
-qboolean GLimp_InitGL (void);
+qboolean        GLimp_InitGL( void );
 
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_ref;
@@ -61,59 +61,59 @@ static fxMesaContext fc = NULL;
 
 #define NUM_RESOLUTIONS 16
 
-static resolutions[NUM_RESOLUTIONS][3]={ 
-	{ 320,200,  GR_RESOLUTION_320x200 },
-	{ 320,240,  GR_RESOLUTION_320x240 },
-	{ 400,256,  GR_RESOLUTION_400x256 },
-	{ 400,300,  GR_RESOLUTION_400x300 },
-	{ 512,384,  GR_RESOLUTION_512x384 },
-	{ 640,200,  GR_RESOLUTION_640x200 },
-	{ 640,350,  GR_RESOLUTION_640x350 },
-	{ 640,400,  GR_RESOLUTION_640x400 },
-	{ 640,480,  GR_RESOLUTION_640x480 },
-	{ 800,600,  GR_RESOLUTION_800x600 },
-	{ 960,720,  GR_RESOLUTION_960x720 },
-	{ 856,480,  GR_RESOLUTION_856x480 },
-	{ 512,256,  GR_RESOLUTION_512x256 },
-	{ 1024,768, GR_RESOLUTION_1024x768 },
-	{ 1280,1024,GR_RESOLUTION_1280x1024 },
-	{ 1600,1200,GR_RESOLUTION_1600x1200 }
-};
+static resolutions[ NUM_RESOLUTIONS ][ 3 ] = {
+		{ 320, 200, GR_RESOLUTION_320x200 },
+		{ 320, 240, GR_RESOLUTION_320x240 },
+		{ 400, 256, GR_RESOLUTION_400x256 },
+		{ 400, 300, GR_RESOLUTION_400x300 },
+		{ 512, 384, GR_RESOLUTION_512x384 },
+		{ 640, 200, GR_RESOLUTION_640x200 },
+		{ 640, 350, GR_RESOLUTION_640x350 },
+		{ 640, 400, GR_RESOLUTION_640x400 },
+		{ 640, 480, GR_RESOLUTION_640x480 },
+		{ 800, 600, GR_RESOLUTION_800x600 },
+		{ 960, 720, GR_RESOLUTION_960x720 },
+		{ 856, 480, GR_RESOLUTION_856x480 },
+		{ 512, 256, GR_RESOLUTION_512x256 },
+		{ 1024, 768, GR_RESOLUTION_1024x768 },
+		{ 1280, 1024, GR_RESOLUTION_1280x1024 },
+		{ 1600, 1200, GR_RESOLUTION_1600x1200 } };
 
-static int findres(int *width, int *height)
+static int findres( int *width, int *height )
 {
 	int i;
 
-	for(i=0;i<NUM_RESOLUTIONS;i++)
-		if((*width<=resolutions[i][0]) && (*height<=resolutions[i][1])) {
-			*width = resolutions[i][0];
-			*height = resolutions[i][1];
-			return resolutions[i][2];
+	for ( i = 0; i < NUM_RESOLUTIONS; i++ )
+		if ( ( *width <= resolutions[ i ][ 0 ] ) && ( *height <= resolutions[ i ][ 1 ] ) )
+		{
+			*width = resolutions[ i ][ 0 ];
+			*height = resolutions[ i ][ 1 ];
+			return resolutions[ i ][ 2 ];
 		}
-        
+
 	*width = 640;
 	*height = 480;
 	return GR_RESOLUTION_640x480;
 }
 
-static void signal_handler(int sig)
+static void signal_handler( int sig )
 {
-	printf("Received signal %d, exiting...\n", sig);
+	printf( "Received signal %d, exiting...\n", sig );
 	GLimp_Shutdown();
-	_exit(0);
+	_exit( 0 );
 }
 
-static void InitSig(void)
+static void InitSig( void )
 {
-	signal(SIGHUP, signal_handler);
-	signal(SIGQUIT, signal_handler);
-	signal(SIGILL, signal_handler);
-	signal(SIGTRAP, signal_handler);
-	signal(SIGIOT, signal_handler);
-	signal(SIGBUS, signal_handler);
-	signal(SIGFPE, signal_handler);
-	signal(SIGSEGV, signal_handler);
-	signal(SIGTERM, signal_handler);
+	signal( SIGHUP, signal_handler );
+	signal( SIGQUIT, signal_handler );
+	signal( SIGILL, signal_handler );
+	signal( SIGTRAP, signal_handler );
+	signal( SIGIOT, signal_handler );
+	signal( SIGBUS, signal_handler );
+	signal( SIGFPE, signal_handler );
+	signal( SIGSEGV, signal_handler );
+	signal( SIGTERM, signal_handler );
 }
 
 /*
@@ -121,12 +121,12 @@ static void InitSig(void)
 */
 int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 {
-	int width, height;
-	GLint attribs[32];
+	int   width, height;
+	GLint attribs[ 32 ];
 
-	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
+	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n" );
 
-	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
+	ri.Con_Printf( PRINT_ALL, "...setting mode %d:", mode );
 
 	if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
 	{
@@ -137,28 +137,28 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 	ri.Con_Printf( PRINT_ALL, " %d %d\n", width, height );
 
 	// destroy the existing window
-	GLimp_Shutdown ();
+	GLimp_Shutdown();
 
 	// set fx attribs
-	attribs[0] = FXMESA_DOUBLEBUFFER;
-	attribs[1] = FXMESA_ALPHA_SIZE;
-	attribs[2] = 1;
-	attribs[3] = FXMESA_DEPTH_SIZE;
-	attribs[4] = 1;
-	attribs[5] = FXMESA_NONE;
+	attribs[ 0 ] = FXMESA_DOUBLEBUFFER;
+	attribs[ 1 ] = FXMESA_ALPHA_SIZE;
+	attribs[ 2 ] = 1;
+	attribs[ 3 ] = FXMESA_DEPTH_SIZE;
+	attribs[ 4 ] = 1;
+	attribs[ 5 ] = FXMESA_NONE;
 
-	fc = qfxMesaCreateContext(0, findres(&width, &height), GR_REFRESH_75Hz, 
-		attribs);
-	if (!fc)
+	fc = qfxMesaCreateContext( 0, findres( &width, &height ), GR_REFRESH_75Hz,
+	                           attribs );
+	if ( !fc )
 		return rserr_invalid_mode;
 
 	*pwidth = width;
 	*pheight = height;
 
 	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (width, height);
+	ri.Vid_NewWindow( width, height );
 
-	qfxMesaMakeCurrent(fc);
+	qfxMesaMakeCurrent( fc );
 
 	return rserr_ok;
 }
@@ -174,8 +174,9 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 */
 void GLimp_Shutdown( void )
 {
-	if (fc) {
-		qfxMesaDestroyContext(fc);
+	if ( fc )
+	{
+		qfxMesaDestroyContext( fc );
 		fc = NULL;
 	}
 }
@@ -200,7 +201,7 @@ int GLimp_Init( void *hinstance, void *wndproc )
 ** as yet to be determined.  Probably better not to make this a GLimp
 ** function and instead do a call to GLimp_SwapBuffers.
 */
-void GLimp_EndFrame (void)
+void GLimp_EndFrame( void )
 {
 	qglFlush();
 	qfxMesaSwapBuffers();
@@ -214,20 +215,20 @@ void GLimp_AppActivate( qboolean active )
 }
 
 void Fake_glColorTableEXT( GLenum target, GLenum internalformat,
-                             GLsizei width, GLenum format, GLenum type,
-                             const GLvoid *table )
+                           GLsizei width, GLenum format, GLenum type,
+                           const GLvoid *table )
 {
-	byte temptable[256][4];
+	byte  temptable[ 256 ][ 4 ];
 	byte *intbl;
-	int i;
+	int   i;
 
-	for (intbl = (byte *)table, i = 0; i < 256; i++) {
-		temptable[i][2] = *intbl++;
-		temptable[i][1] = *intbl++;
-		temptable[i][0] = *intbl++;
-		temptable[i][3] = 255;
+	for ( intbl = ( byte * ) table, i = 0; i < 256; i++ )
+	{
+		temptable[ i ][ 2 ] = *intbl++;
+		temptable[ i ][ 1 ] = *intbl++;
+		temptable[ i ][ 0 ] = *intbl++;
+		temptable[ i ][ 3 ] = 255;
 	}
 	qglEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
-	qgl3DfxSetPaletteEXT((GLuint *)temptable);
+	qgl3DfxSetPaletteEXT( ( GLuint * ) temptable );
 }
-

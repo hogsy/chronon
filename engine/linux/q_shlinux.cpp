@@ -33,8 +33,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //===============================================================================
 
 byte *membase;
-int maxhunksize;
-int curhunksize;
+int   maxhunksize;
+int   curhunksize;
 
 void *Hunk_Begin( unsigned long maxsize )
 {
@@ -115,7 +115,7 @@ static qboolean CompareAttributes( char *path, char *name,
                                    unsigned musthave, unsigned canthave )
 {
 	struct stat st;
-	char fn[ MAX_OSPATH ];
+	char        fn[ MAX_OSPATH ];
 
 	// . and .. never match
 	if ( strcmp( name, "." ) == 0 || strcmp( name, ".." ) == 0 )
@@ -138,7 +138,7 @@ static qboolean CompareAttributes( char *path, char *name,
 char *Sys_FindFirst( char *path, unsigned musthave, unsigned canhave )
 {
 	struct dirent *d;
-	char *p;
+	char          *p;
 
 	if ( fdir )
 		Sys_Error( "Sys_BeginFind without close" );

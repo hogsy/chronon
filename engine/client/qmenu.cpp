@@ -27,20 +27,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ref_gl/gl_local.h"
 
-static void	 Action_DoEnter( menuaction_s *a );
-static void	 Action_Draw( menuaction_s *a );
-static void  Menu_DrawStatusBar( const char *string );
-static void	 MenuList_Draw( menulist_s *l );
-static void	 Separator_Draw( menuseparator_s *s );
-static void	 Slider_DoSlide( menuslider_s *s, int dir );
-static void	 Slider_Draw( menuslider_s *s );
-static void	 SpinControl_Draw( menulist_s *s );
-static void	 SpinControl_DoSlide( menulist_s *s, int dir );
+static void Action_DoEnter( menuaction_s *a );
+static void Action_Draw( menuaction_s *a );
+static void Menu_DrawStatusBar( const char *string );
+static void MenuList_Draw( menulist_s *l );
+static void Separator_Draw( menuseparator_s *s );
+static void Slider_DoSlide( menuslider_s *s, int dir );
+static void Slider_Draw( menuslider_s *s );
+static void SpinControl_Draw( menulist_s *s );
+static void SpinControl_DoSlide( menulist_s *s, int dir );
 
-#define RCOLUMN_OFFSET  16
+#define RCOLUMN_OFFSET 16
 #define LCOLUMN_OFFSET -16
 
-#define VID_WIDTH viddef.width
+#define VID_WIDTH  viddef.width
 #define VID_HEIGHT viddef.height
 
 void Action_DoEnter( menuaction_s *a )
@@ -81,8 +81,8 @@ qboolean Field_DoEnter( menufield_s *f )
 
 void Field_Draw( menufield_s *f )
 {
-	int i;
-	char tempbuffer[128]="";
+	int  i;
+	char tempbuffer[ 128 ] = "";
 
 	if ( f->generic.name )
 		Menu_DrawStringR2LDark( f->generic.x + f->generic.parent->x + LCOLUMN_OFFSET, f->generic.y + f->generic.parent->y, f->generic.name );
@@ -115,14 +115,14 @@ void Field_Draw( menufield_s *f )
 		if ( ( ( int ) ( nox::globalApp->GetNumMilliseconds() / 250 ) ) & 1 )
 		{
 			Draw_Char( f->generic.x + f->generic.parent->x + ( offset + 2 ) * 8 + 8,
-					   f->generic.y + f->generic.parent->y,
-					   11 );
+			           f->generic.y + f->generic.parent->y,
+			           11 );
 		}
 		else
 		{
 			Draw_Char( f->generic.x + f->generic.parent->x + ( offset + 2 ) * 8 + 8,
-					   f->generic.y + f->generic.parent->y,
-					   ' ' );
+			           f->generic.y + f->generic.parent->y,
+			           ' ' );
 		}
 	}
 }
@@ -133,68 +133,68 @@ qboolean Field_Key( menufield_s *f, int key )
 
 	switch ( key )
 	{
-	case K_KP_SLASH:
-		key = '/';
-		break;
-	case K_KP_MINUS:
-		key = '-';
-		break;
-	case K_KP_PLUS:
-		key = '+';
-		break;
-	case K_KP_HOME:
-		key = '7';
-		break;
-	case K_KP_UPARROW:
-		key = '8';
-		break;
-	case K_KP_PGUP:
-		key = '9';
-		break;
-	case K_KP_LEFTARROW:
-		key = '4';
-		break;
-	case K_KP_5:
-		key = '5';
-		break;
-	case K_KP_RIGHTARROW:
-		key = '6';
-		break;
-	case K_KP_END:
-		key = '1';
-		break;
-	case K_KP_DOWNARROW:
-		key = '2';
-		break;
-	case K_KP_PGDN:
-		key = '3';
-		break;
-	case K_KP_INS:
-		key = '0';
-		break;
-	case K_KP_DEL:
-		key = '.';
-		break;
+		case K_KP_SLASH:
+			key = '/';
+			break;
+		case K_KP_MINUS:
+			key = '-';
+			break;
+		case K_KP_PLUS:
+			key = '+';
+			break;
+		case K_KP_HOME:
+			key = '7';
+			break;
+		case K_KP_UPARROW:
+			key = '8';
+			break;
+		case K_KP_PGUP:
+			key = '9';
+			break;
+		case K_KP_LEFTARROW:
+			key = '4';
+			break;
+		case K_KP_5:
+			key = '5';
+			break;
+		case K_KP_RIGHTARROW:
+			key = '6';
+			break;
+		case K_KP_END:
+			key = '1';
+			break;
+		case K_KP_DOWNARROW:
+			key = '2';
+			break;
+		case K_KP_PGDN:
+			key = '3';
+			break;
+		case K_KP_INS:
+			key = '0';
+			break;
+		case K_KP_DEL:
+			key = '.';
+			break;
 	}
 
 	if ( key > 127 )
 	{
 		switch ( key )
 		{
-		case K_DEL:
-		default:
-			return false;
+			case K_DEL:
+			default:
+				return false;
 		}
 	}
 
 	/*
 	** support pasting from the clipboard
 	*/
-	if ( ( toupper( key ) == 'V' && keydown[K_CTRL] ) ||
-		 ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[K_SHIFT] ) )
+	if ( ( toupper( key ) == 'V' && keydown[ K_CTRL ] ) ||
+	     ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[ K_SHIFT ] ) )
 	{
 		char *cbd;
-		
+
 		if ( ( cbd = nox::globalApp->GetClipboardData() ) != nullptr )
 		{
 			strtok( cbd, "\n\r\b" );
@@ -212,47 +212,47 @@ qboolean Field_Key( menufield_s *f, int key )
 
 	switch ( key )
 	{
-	case K_KP_LEFTARROW:
-	case K_LEFTARROW:
-	case K_BACKSPACE:
-		if ( f->cursor > 0 )
-		{
-			memmove( &f->buffer[f->cursor-1], &f->buffer[f->cursor], strlen( &f->buffer[f->cursor] ) + 1 );
-			f->cursor--;
-
-			if ( f->visible_offset )
+		case K_KP_LEFTARROW:
+		case K_LEFTARROW:
+		case K_BACKSPACE:
+			if ( f->cursor > 0 )
 			{
-				f->visible_offset--;
+				memmove( &f->buffer[ f->cursor - 1 ], &f->buffer[ f->cursor ], strlen( &f->buffer[ f->cursor ] ) + 1 );
+				f->cursor--;
+
+				if ( f->visible_offset )
+				{
+					f->visible_offset--;
+				}
 			}
-		}
-		break;
+			break;
 
-	case K_KP_DEL:
-	case K_DEL:
-		memmove( &f->buffer[f->cursor], &f->buffer[f->cursor+1], strlen( &f->buffer[f->cursor+1] ) + 1 );
-		break;
+		case K_KP_DEL:
+		case K_DEL:
+			memmove( &f->buffer[ f->cursor ], &f->buffer[ f->cursor + 1 ], strlen( &f->buffer[ f->cursor + 1 ] ) + 1 );
+			break;
 
-	case K_KP_ENTER:
-	case K_ENTER:
-	case K_ESCAPE:
-	case K_TAB:
-		return false;
-
-	case K_SPACE:
-	default:
-		if ( !isdigit( key ) && ( f->generic.flags & QMF_NUMBERSONLY ) )
+		case K_KP_ENTER:
+		case K_ENTER:
+		case K_ESCAPE:
+		case K_TAB:
 			return false;
 
-		if ( f->cursor < f->length )
-		{
-			f->buffer[f->cursor++] = key;
-			f->buffer[f->cursor] = 0;
+		case K_SPACE:
+		default:
+			if ( !isdigit( key ) && ( f->generic.flags & QMF_NUMBERSONLY ) )
+				return false;
 
-			if ( f->cursor > f->visible_length )
+			if ( f->cursor < f->length )
 			{
-				f->visible_offset++;
+				f->buffer[ f->cursor++ ] = key;
+				f->buffer[ f->cursor ] = 0;
+
+				if ( f->cursor > f->visible_length )
+				{
+					f->visible_offset++;
+				}
 			}
-		}
 	}
 
 	return true;
@@ -265,8 +265,8 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 
 	if ( menu->nitems < MAXMENUITEMS )
 	{
-		menu->items[menu->nitems] = item;
-		( ( menucommon_s * ) menu->items[menu->nitems] )->parent = menu;
+		menu->items[ menu->nitems ] = item;
+		( ( menucommon_s * ) menu->items[ menu->nitems ] )->parent = menu;
 		menu->nitems++;
 	}
 
@@ -289,7 +289,7 @@ void Menu_AdjustCursor( menuframework_s *m, int dir )
 	*/
 	if ( m->cursor >= 0 && m->cursor < m->nitems )
 	{
-		if ( ( citem = static_cast<menucommon_s*>( Menu_ItemAtCursor( m ) ) ) != 0 )
+		if ( ( citem = static_cast< menucommon_s * >( Menu_ItemAtCursor( m ) ) ) != 0 )
 		{
 			if ( citem->type != MTYPE_SEPARATOR )
 				return;
@@ -304,7 +304,7 @@ void Menu_AdjustCursor( menuframework_s *m, int dir )
 	{
 		while ( 1 )
 		{
-			citem = static_cast<menucommon_s*>( Menu_ItemAtCursor( m ) );
+			citem = static_cast< menucommon_s * >( Menu_ItemAtCursor( m ) );
 			if ( citem )
 				if ( citem->type != MTYPE_SEPARATOR )
 					break;
@@ -317,7 +317,7 @@ void Menu_AdjustCursor( menuframework_s *m, int dir )
 	{
 		while ( 1 )
 		{
-			citem = static_cast<menucommon_s*>( Menu_ItemAtCursor( m ) );
+			citem = static_cast< menucommon_s * >( Menu_ItemAtCursor( m ) );
 			if ( citem )
 				if ( citem->type != MTYPE_SEPARATOR )
 					break;
@@ -332,7 +332,7 @@ void Menu_Center( menuframework_s *menu )
 {
 	int height;
 
-	height = ( ( menucommon_s * ) menu->items[menu->nitems-1])->y;
+	height = ( ( menucommon_s * ) menu->items[ menu->nitems - 1 ] )->y;
 	height += 10;
 
 	menu->y = ( VID_HEIGHT - height ) / 2;
@@ -340,7 +340,7 @@ void Menu_Center( menuframework_s *menu )
 
 void Menu_Draw( menuframework_s *menu )
 {
-	int i;
+	int           i;
 	menucommon_s *item;
 
 	/*
@@ -348,30 +348,30 @@ void Menu_Draw( menuframework_s *menu )
 	*/
 	for ( i = 0; i < menu->nitems; i++ )
 	{
-		switch ( ( ( menucommon_s * ) menu->items[i] )->type )
+		switch ( ( ( menucommon_s * ) menu->items[ i ] )->type )
 		{
-		case MTYPE_FIELD:
-			Field_Draw( ( menufield_s * ) menu->items[i] );
-			break;
-		case MTYPE_SLIDER:
-			Slider_Draw( ( menuslider_s * ) menu->items[i] );
-			break;
-		case MTYPE_LIST:
-			MenuList_Draw( ( menulist_s * ) menu->items[i] );
-			break;
-		case MTYPE_SPINCONTROL:
-			SpinControl_Draw( ( menulist_s * ) menu->items[i] );
-			break;
-		case MTYPE_ACTION:
-			Action_Draw( ( menuaction_s * ) menu->items[i] );
-			break;
-		case MTYPE_SEPARATOR:
-			Separator_Draw( ( menuseparator_s * ) menu->items[i] );
-			break;
+			case MTYPE_FIELD:
+				Field_Draw( ( menufield_s * ) menu->items[ i ] );
+				break;
+			case MTYPE_SLIDER:
+				Slider_Draw( ( menuslider_s * ) menu->items[ i ] );
+				break;
+			case MTYPE_LIST:
+				MenuList_Draw( ( menulist_s * ) menu->items[ i ] );
+				break;
+			case MTYPE_SPINCONTROL:
+				SpinControl_Draw( ( menulist_s * ) menu->items[ i ] );
+				break;
+			case MTYPE_ACTION:
+				Action_Draw( ( menuaction_s * ) menu->items[ i ] );
+				break;
+			case MTYPE_SEPARATOR:
+				Separator_Draw( ( menuseparator_s * ) menu->items[ i ] );
+				break;
 		}
 	}
 
-	item = static_cast<menucommon_s*>( Menu_ItemAtCursor( menu ) );
+	item = static_cast< menucommon_s * >( Menu_ItemAtCursor( menu ) );
 
 	if ( item && item->cursordraw )
 	{
@@ -385,11 +385,11 @@ void Menu_Draw( menuframework_s *menu )
 	{
 		if ( item->flags & QMF_LEFT_JUSTIFY )
 		{
-			Draw_Char( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds()/250 ) & 1 ) );
+			Draw_Char( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds() / 250 ) & 1 ) );
 		}
 		else
 		{
-			Draw_Char( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds()/250 ) & 1 ) );
+			Draw_Char( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( nox::globalApp->GetNumMilliseconds() / 250 ) & 1 ) );
 		}
 	}
 
@@ -401,7 +401,6 @@ void Menu_Draw( menuframework_s *menu )
 			Menu_DrawStatusBar( item->statusbar );
 		else
 			Menu_DrawStatusBar( menu->statusbar );
-
 	}
 	else
 	{
@@ -418,12 +417,12 @@ void Menu_DrawStatusBar( const char *string )
 		int maxcol = VID_WIDTH / 8;
 		int col = maxcol / 2 - l / 2;
 
-		Draw_Fill( 0, VID_HEIGHT-8, VID_WIDTH, 8, 4 );
-		Menu_DrawString( col*8, VID_HEIGHT - 8, string );
+		Draw_Fill( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 4 );
+		Menu_DrawString( col * 8, VID_HEIGHT - 8, string );
 	}
 	else
 	{
-		Draw_Fill( 0, VID_HEIGHT-8, VID_WIDTH, 8, 0 );
+		Draw_Fill( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
 	}
 }
 
@@ -433,7 +432,7 @@ void Menu_DrawString( int x, int y, const char *string )
 
 	for ( i = 0; i < strlen( string ); i++ )
 	{
-		Draw_Char( ( x + i*8 ), y, string[i] );
+		Draw_Char( ( x + i * 8 ), y, string[ i ] );
 	}
 }
 
@@ -443,7 +442,7 @@ void Menu_DrawStringDark( int x, int y, const char *string )
 
 	for ( i = 0; i < strlen( string ); i++ )
 	{
-		Draw_Char( ( x + i*8 ), y, string[i] + 128 );
+		Draw_Char( ( x + i * 8 ), y, string[ i ] + 128 );
 	}
 }
 
@@ -453,7 +452,7 @@ void Menu_DrawStringR2L( int x, int y, const char *string )
 
 	for ( i = 0; i < strlen( string ); i++ )
 	{
-		Draw_Char( ( x - i*8 ), y, string[strlen(string)-i-1] );
+		Draw_Char( ( x - i * 8 ), y, string[ strlen( string ) - i - 1 ] );
 	}
 }
 
@@ -463,7 +462,7 @@ void Menu_DrawStringR2LDark( int x, int y, const char *string )
 
 	for ( i = 0; i < strlen( string ); i++ )
 	{
-		Draw_Char( ( x - i*8 ), y, string[strlen(string)-i-1]+128 );
+		Draw_Char( ( x - i * 8 ), y, string[ strlen( string ) - i - 1 ] + 128 );
 	}
 }
 
@@ -472,7 +471,7 @@ void *Menu_ItemAtCursor( menuframework_s *m )
 	if ( m->cursor < 0 || m->cursor >= m->nitems )
 		return 0;
 
-	return m->items[m->cursor];
+	return m->items[ m->cursor ];
 }
 
 qboolean Menu_SelectItem( menuframework_s *s )
@@ -483,17 +482,17 @@ qboolean Menu_SelectItem( menuframework_s *s )
 	{
 		switch ( item->type )
 		{
-		case MTYPE_FIELD:
-			return Field_DoEnter( ( menufield_s * ) item ) ;
-		case MTYPE_ACTION:
-			Action_DoEnter( ( menuaction_s * ) item );
-			return true;
-		case MTYPE_LIST:
-//			Menulist_DoEnter( ( menulist_s * ) item );
-			return false;
-		case MTYPE_SPINCONTROL:
-//			SpinControl_DoEnter( ( menulist_s * ) item );
-			return false;
+			case MTYPE_FIELD:
+				return Field_DoEnter( ( menufield_s * ) item );
+			case MTYPE_ACTION:
+				Action_DoEnter( ( menuaction_s * ) item );
+				return true;
+			case MTYPE_LIST:
+				//			Menulist_DoEnter( ( menulist_s * ) item );
+				return false;
+			case MTYPE_SPINCONTROL:
+				//			SpinControl_DoEnter( ( menulist_s * ) item );
+				return false;
 		}
 	}
 	return false;
@@ -512,12 +511,12 @@ void Menu_SlideItem( menuframework_s *s, int dir )
 	{
 		switch ( item->type )
 		{
-		case MTYPE_SLIDER:
-			Slider_DoSlide( ( menuslider_s * ) item, dir );
-			break;
-		case MTYPE_SPINCONTROL:
-			SpinControl_DoSlide( ( menulist_s * ) item, dir );
-			break;
+			case MTYPE_SLIDER:
+				Slider_DoSlide( ( menuslider_s * ) item, dir );
+				break;
+			case MTYPE_SPINCONTROL:
+				SpinControl_DoSlide( ( menulist_s * ) item, dir );
+				break;
 		}
 	}
 }
@@ -529,12 +528,12 @@ int Menu_TallySlots( menuframework_s *menu )
 
 	for ( i = 0; i < menu->nitems; i++ )
 	{
-		if ( ( ( menucommon_s * ) menu->items[i] )->type == MTYPE_LIST )
+		if ( ( ( menucommon_s * ) menu->items[ i ] )->type == MTYPE_LIST )
 		{
-			int nitems = 0;
-			const char **n = ( ( menulist_s * ) menu->items[i] )->itemnames;
+			int          nitems = 0;
+			const char **n = ( ( menulist_s * ) menu->items[ i ] )->itemnames;
 
-			while (*n)
+			while ( *n )
 				nitems++, n++;
 
 			total += nitems;
@@ -551,13 +550,13 @@ int Menu_TallySlots( menuframework_s *menu )
 void MenuList_Draw( menulist_s *l )
 {
 	const char **n;
-	int y = 0;
+	int          y = 0;
 
 	Menu_DrawStringR2LDark( l->generic.x + l->generic.parent->x + LCOLUMN_OFFSET, l->generic.y + l->generic.parent->y, l->generic.name );
 
 	n = l->itemnames;
 
-  	Draw_Fill( l->generic.x - 112 + l->generic.parent->x, l->generic.parent->y + l->generic.y + l->curvalue*10 + 10, 128, 10, 16 );
+	Draw_Fill( l->generic.x - 112 + l->generic.parent->x, l->generic.parent->y + l->generic.y + l->curvalue * 10 + 10, 128, 10, 16 );
 	while ( *n )
 	{
 		Menu_DrawStringR2LDark( l->generic.x + l->generic.parent->x + LCOLUMN_OFFSET, l->generic.y + l->generic.parent->y + y + 10, *n );
@@ -590,23 +589,23 @@ void Slider_DoSlide( menuslider_s *s, int dir )
 
 void Slider_Draw( menuslider_s *s )
 {
-	int	i;
+	int i;
 
 	Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x + LCOLUMN_OFFSET,
-		                s->generic.y + s->generic.parent->y, 
-						s->generic.name );
+	                        s->generic.y + s->generic.parent->y,
+	                        s->generic.name );
 
 	s->range = ( s->curvalue - s->minvalue ) / ( float ) ( s->maxvalue - s->minvalue );
 
-	if ( s->range < 0)
+	if ( s->range < 0 )
 		s->range = 0;
-	if ( s->range > 1)
+	if ( s->range > 1 )
 		s->range = 1;
-	Draw_Char( s->generic.x + s->generic.parent->x + RCOLUMN_OFFSET, s->generic.y + s->generic.parent->y, 128);
+	Draw_Char( s->generic.x + s->generic.parent->x + RCOLUMN_OFFSET, s->generic.y + s->generic.parent->y, 128 );
 	for ( i = 0; i < SLIDER_RANGE; i++ )
-		Draw_Char( RCOLUMN_OFFSET + s->generic.x + i*8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 129);
-	Draw_Char( RCOLUMN_OFFSET + s->generic.x + i*8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 130);
-	Draw_Char( ( int ) ( 8 + RCOLUMN_OFFSET + s->generic.parent->x + s->generic.x + (SLIDER_RANGE-1)*8 * s->range ), s->generic.y + s->generic.parent->y, 131);
+		Draw_Char( RCOLUMN_OFFSET + s->generic.x + i * 8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 129 );
+	Draw_Char( RCOLUMN_OFFSET + s->generic.x + i * 8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 130 );
+	Draw_Char( ( int ) ( 8 + RCOLUMN_OFFSET + s->generic.parent->x + s->generic.x + ( SLIDER_RANGE - 1 ) * 8 * s->range ), s->generic.y + s->generic.parent->y, 131 );
 }
 
 void SpinControl_DoSlide( menulist_s *s, int dir )
@@ -615,7 +614,7 @@ void SpinControl_DoSlide( menulist_s *s, int dir )
 
 	if ( s->curvalue < 0 )
 		s->curvalue = 0;
-	else if ( s->itemnames[s->curvalue] == 0 )
+	else if ( s->itemnames[ s->curvalue ] == 0 )
 		s->curvalue--;
 
 	if ( s->generic.callback )
@@ -624,25 +623,24 @@ void SpinControl_DoSlide( menulist_s *s, int dir )
 
 void SpinControl_Draw( menulist_s *s )
 {
-	char buffer[100];
+	char buffer[ 100 ];
 
 	if ( s->generic.name )
 	{
-		Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x + LCOLUMN_OFFSET, 
-							s->generic.y + s->generic.parent->y, 
-							s->generic.name );
+		Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x + LCOLUMN_OFFSET,
+		                        s->generic.y + s->generic.parent->y,
+		                        s->generic.name );
 	}
-	if ( !strchr( s->itemnames[s->curvalue], '\n' ) )
+	if ( !strchr( s->itemnames[ s->curvalue ], '\n' ) )
 	{
-		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[s->curvalue] );
+		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[ s->curvalue ] );
 	}
 	else
 	{
-		strcpy( buffer, s->itemnames[s->curvalue] );
+		strcpy( buffer, s->itemnames[ s->curvalue ] );
 		*strchr( buffer, '\n' ) = 0;
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer );
-		strcpy( buffer, strchr( s->itemnames[s->curvalue], '\n' ) + 1 );
+		strcpy( buffer, strchr( s->itemnames[ s->curvalue ], '\n' ) + 1 );
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
 	}
 }
-

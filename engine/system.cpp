@@ -51,7 +51,7 @@ void Sys_Error( const char *error, ... )
 {
 	va_list argptr;
 	va_start( argptr, error );
-	int len = Q_vscprintf( error, argptr ) + 1;
+	int   len = Q_vscprintf( error, argptr ) + 1;
 	char *text = new char[ len ];
 	vsprintf( text, error, argptr );
 	va_end( argptr );

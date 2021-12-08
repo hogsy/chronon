@@ -50,16 +50,16 @@ int Sys_Milliseconds (void)
 }
 #endif
 
-void Sys_Mkdir (char *path)
+void Sys_Mkdir( char *path )
 {
-	_mkdir (path);
+	_mkdir( path );
 }
 
 //============================================
 
-char	findbase[MAX_OSPATH];
-char	findpath[MAX_OSPATH];
-int		findhandle;
+char findbase[ MAX_OSPATH ];
+char findpath[ MAX_OSPATH ];
+int  findhandle;
 
 static qboolean CompareAttributes( unsigned found, unsigned musthave, unsigned canthave )
 {
@@ -88,46 +88,45 @@ static qboolean CompareAttributes( unsigned found, unsigned musthave, unsigned c
 	return true;
 }
 
-char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
+char *Sys_FindFirst( char *path, unsigned musthave, unsigned canthave )
 {
 	struct _finddata_t findinfo;
 
-	if (findhandle)
-		Sys_Error ("Sys_BeginFind without close");
+	if ( findhandle )
+		Sys_Error( "Sys_BeginFind without close" );
 	findhandle = 0;
 
-	COM_FilePath (path, findbase);
-	findhandle = _findfirst (path, &findinfo);
-	if (findhandle == -1)
+	COM_FilePath( path, findbase );
+	findhandle = _findfirst( path, &findinfo );
+	if ( findhandle == -1 )
 		return NULL;
 	if ( !CompareAttributes( findinfo.attrib, musthave, canthave ) )
 		return NULL;
-	Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	Com_sprintf( findpath, sizeof( findpath ), "%s/%s", findbase, findinfo.name );
 	return findpath;
 }
 
-char *Sys_FindNext ( unsigned musthave, unsigned canthave )
+char *Sys_FindNext( unsigned musthave, unsigned canthave )
 {
 	struct _finddata_t findinfo;
 
-	if (findhandle == -1)
+	if ( findhandle == -1 )
 		return NULL;
-	if (_findnext (findhandle, &findinfo) == -1)
+	if ( _findnext( findhandle, &findinfo ) == -1 )
 		return NULL;
 	if ( !CompareAttributes( findinfo.attrib, musthave, canthave ) )
 		return NULL;
 
-	Com_sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	Com_sprintf( findpath, sizeof( findpath ), "%s/%s", findbase, findinfo.name );
 	return findpath;
 }
 
-void Sys_FindClose (void)
+void Sys_FindClose( void )
 {
-	if (findhandle != -1)
-		_findclose (findhandle);
+	if ( findhandle != -1 )
+		_findclose( findhandle );
 	findhandle = 0;
 }
 
 
 //============================================
-

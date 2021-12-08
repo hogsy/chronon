@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #ifdef _WIN32
-#include <windows.h>
+#	include <windows.h>
 #endif
 
 #include <cstdio>
@@ -119,10 +119,10 @@ typedef struct
 extern image_t gltextures[ MAX_GLTEXTURES ];
 extern int     numgltextures;
 
-extern image_t * r_notexture;
-extern image_t * r_particletexture;
+extern image_t  *r_notexture;
+extern image_t  *r_particletexture;
 extern entity_t *currententity;
-extern model_t * currentmodel;
+extern model_t  *currentmodel;
 extern int       r_visframecount;
 extern int       r_framecount;
 extern cplane_t  frustum[ 4 ];
@@ -155,7 +155,7 @@ extern cvar_t *r_nocull;
 extern cvar_t *r_lerpmodels;
 
 extern cvar_t *
-        r_lightlevel;// FIXME: This is a HACK to get the client's light level
+		r_lightlevel;// FIXME: This is a HACK to get the client's light level
 
 extern cvar_t *gl_vertex_arrays;
 
@@ -300,7 +300,7 @@ image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height,
 image_t *GL_FindImage( const std::string &name, imagetype_t type );
 void     GL_TextureMode( char *string );
 void     GL_ImageList_f( void );
-int Image_GetSurfaceFlagsForName( const std::string &path );
+int      Image_GetSurfaceFlagsForName( const std::string &path );
 
 void GL_SetTexturePalette( unsigned palette[ 256 ] );
 
@@ -325,8 +325,8 @@ void GL_DrawParticles( int n, const particle_t particles[],
 /*
 ** GL config stuff
 */
-#define GL_RENDERER_RENDITION  0x001C0000
-#define GL_RENDERER_MCD        0x01000000
+#define GL_RENDERER_RENDITION 0x001C0000
+#define GL_RENDERER_MCD       0x01000000
 
 typedef struct
 {
@@ -375,9 +375,9 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 ====================================================================
 */
 
-void     GLimp_EndFrame( void );
-void     GLimp_Shutdown( void );
-rserr_t  GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, qboolean fullscreen );
-void     GLimp_AppActivate( qboolean active );
-void     GLimp_EnableLogging( qboolean enable );
-void     GLimp_LogNewFrame( void );
+void    GLimp_EndFrame( void );
+void    GLimp_Shutdown( void );
+rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, qboolean fullscreen );
+void    GLimp_AppActivate( qboolean active );
+void    GLimp_EnableLogging( qboolean enable );
+void    GLimp_LogNewFrame( void );
