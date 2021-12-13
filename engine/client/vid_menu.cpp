@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "../client/client.h"
 #include "../client/qmenu.h"
-#include "../client/ref_gl/gl_local.h"
+#include "../client/renderer/ref_gl/gl_local.h"
 
 #define REF_OPENGL 1
 

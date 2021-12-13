@@ -21,15 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
+// todo: kill this
 #ifdef _WIN32
 #	include <windows.h>
 #endif
 
-#include <cstdio>
-#include <cmath>
-
-#include "../engine/client/ref.h"
-#include "../engine/client/vid.h"
+#include "../renderer.h"
 
 extern viddef_t vid;
 
@@ -38,52 +35,6 @@ extern viddef_t vid;
 #define PITCH 0// up / down
 #define YAW   1// left / right
 #define ROLL  2// fall over
-
-/*
-
-  skins will be outline flood filled and mip mapped
-  pics and sprites with alpha will be outline flood filled
-  pic won't be mip mapped
-
-  model skin
-  sprite frame
-  wall texture
-  pic
-
-*/
-
-typedef enum
-{
-	it_skin,
-	it_sprite,
-	it_wall,
-	it_pic,
-	it_sky
-} imagetype_t;
-
-typedef struct image_s
-{
-	std::string        name;// game path, including extension
-	imagetype_t        type;
-	int                width, height;// source image
-	int                originalWidth, originalHeight;
-	int                registration_sequence;// 0 = free
-	struct msurface_s *texturechain;         // for sort-by-texture world drawing
-	int                texnum;               // gl texture binding
-	float              sl, tl, sh, th;       // 0,0 - 1,1 unless part of the scrap
-	qboolean           scrap;
-	qboolean           has_alpha;
-
-	qboolean paletted;
-} image_t;
-
-#define TEXNUM_LIGHTMAPS 1024
-#define TEXNUM_SCRAPS    1152
-#define TEXNUM_IMAGES    1153
-
-#define MAX_GLTEXTURES 1024
-
-//===================================================================
 
 typedef enum
 {
@@ -95,7 +46,7 @@ typedef enum
 	rserr_unknown
 } rserr_t;
 
-#include "gl_model.h"
+#include "../model.h"
 
 void GL_BeginRendering( int *x, int *y, int *width, int *height );
 void GL_EndRendering( void );
@@ -119,43 +70,7 @@ typedef struct
 extern image_t gltextures[ MAX_GLTEXTURES ];
 extern int     numgltextures;
 
-extern image_t  *r_notexture;
-extern image_t  *r_particletexture;
-extern entity_t *currententity;
-extern model_t  *currentmodel;
-extern int       r_visframecount;
-extern int       r_framecount;
-extern cplane_t  frustum[ 4 ];
-extern int       c_brush_polys, c_alias_polys;
-
 extern int gl_filter_min, gl_filter_max;
-
-//
-// view origin
-//
-extern vec3_t vup;
-extern vec3_t vpn;
-extern vec3_t vright;
-extern vec3_t r_origin;
-
-//
-// screen size info
-//
-extern refdef_t r_newrefdef;
-extern int      r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
-
-extern cvar_t *r_norefresh;
-extern cvar_t *r_lefthand;
-extern cvar_t *r_drawentities;
-extern cvar_t *r_drawworld;
-extern cvar_t *r_speeds;
-extern cvar_t *r_fullbright;
-extern cvar_t *r_novis;
-extern cvar_t *r_nocull;
-extern cvar_t *r_lerpmodels;
-
-extern cvar_t *
-		r_lightlevel;// FIXME: This is a HACK to get the client's light level
 
 extern cvar_t *gl_vertex_arrays;
 
@@ -179,7 +94,6 @@ extern cvar_t *gl_log;
 extern cvar_t *gl_lightmap;
 extern cvar_t *gl_shadows;
 extern cvar_t *gl_dynamic;
-extern cvar_t *gl_monolightmap;
 extern cvar_t *gl_nobind;
 extern cvar_t *gl_round_down;
 extern cvar_t *gl_picmip;
@@ -193,7 +107,6 @@ extern cvar_t *gl_poly;
 extern cvar_t *gl_texsort;
 extern cvar_t *gl_polyblend;
 extern cvar_t *gl_lightmaptype;
-extern cvar_t *gl_modulate;
 extern cvar_t *gl_playermip;
 extern cvar_t *gl_drawbuffer;
 extern cvar_t *gl_3dlabs_broken;
@@ -203,11 +116,6 @@ extern cvar_t *gl_texturealphamode;
 extern cvar_t *gl_texturesolidmode;
 extern cvar_t *gl_saturatelighting;
 extern cvar_t *gl_lockpvs;
-
-extern cvar_t *vid_fullscreen;
-extern cvar_t *vid_gamma;
-
-extern cvar_t *intensity;
 
 extern int gl_lightmap_format;
 extern int gl_solid_format;
@@ -228,15 +136,7 @@ void GL_EnableMultitexture( bool enable );
 void GL_SelectTexture( GLenum );
 
 void R_LightPoint( const vec3_t p, vec3_t color );
-void R_PushDlights( void );
-
-//====================================================================
-
-extern model_t *r_worldmodel;
-
-extern unsigned d_8to24table[ 256 ];
-
-extern int registration_sequence;
+void R_PushDlights();
 
 void V_AddBlend( float r, float g, float b, float a, float *v_blend );
 

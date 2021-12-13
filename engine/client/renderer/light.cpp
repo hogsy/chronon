@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2020-2021 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -8,7 +9,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -17,64 +18,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// r_light.c
 
-#include "gl_local.h"
+#include "renderer.h"
 
-int r_dlightframecount;
+static int r_dlightframecount;
 
 #define DLIGHT_CUTOFF 64
-
-/*
-=============================================================================
-
-DYNAMIC LIGHTS BLEND RENDERING
-
-=============================================================================
-*/
-
-void R_RenderDlight( dlight_t *light )
-{
-	int    i, j;
-	float  a;
-	vec3_t v;
-	float  rad;
-
-	rad = light->intensity * 0.35;
-
-	VectorSubtract( light->origin, r_origin, v );
-#if 0
-	// FIXME?
-	if (VectorLength (v) < rad)
-	{	// view is inside the dlight
-		V_AddBlend (light->color[0], light->color[1], light->color[2], light->intensity * 0.0003, v_blend);
-		return;
-	}
-#endif
-
-	glBegin( GL_TRIANGLE_FAN );
-	glColor3f( light->color[ 0 ] * 0.2, light->color[ 1 ] * 0.2, light->color[ 2 ] * 0.2 );
-	for ( i = 0; i < 3; i++ )
-		v[ i ] = light->origin[ i ] - vpn[ i ] * rad;
-	glVertex3fv( v );
-	glColor3f( 0, 0, 0 );
-	for ( i = 16; i >= 0; i-- )
-	{
-		a = i / 16.0 * M_PI * 2;
-		for ( j = 0; j < 3; j++ )
-			v[ j ] = light->origin[ j ] + vright[ j ] * cos( a ) * rad + vup[ j ] * sin( a ) * rad;
-		glVertex3fv( v );
-	}
-	glEnd();
-}
-
-/*
-=============================================================================
-
-DYNAMIC LIGHTS
-
-=============================================================================
-*/
 
 void R_MarkLights( dlight_t *light, int bit, mnode_t *node )
 {
@@ -116,13 +65,7 @@ void R_MarkLights( dlight_t *light, int bit, mnode_t *node )
 	R_MarkLights( light, bit, node->children[ 1 ] );
 }
 
-
-/*
-=============
-R_PushDlights
-=============
-*/
-void R_PushDlights( void )
+void R_PushDlights()
 {
 	int       i;
 	dlight_t *l;
@@ -131,21 +74,15 @@ void R_PushDlights( void )
 										  //  advanced yet for this frame
 	l = r_newrefdef.dlights;
 	for ( i = 0; i < r_newrefdef.num_dlights; i++, l++ )
+	{
 		R_MarkLights( l, 1 << i, r_worldmodel->nodes );
+	}
 }
 
 
-/*
-=============================================================================
-
-LIGHT SAMPLING
-
-=============================================================================
-*/
-
-vec3_t    pointcolor;
-cplane_t *lightplane;// used as shadow plane
-vec3_t    lightspot;
+static vec3_t    pointcolor;
+static cplane_t *lightplane;// used as shadow plane
+static vec3_t    lightspot;
 
 static int RecursiveLightPoint( mnode_t *node, const vec3_t start, vec3_t end )
 {
@@ -249,11 +186,6 @@ static int RecursiveLightPoint( mnode_t *node, const vec3_t start, vec3_t end )
 	return RecursiveLightPoint( node->children[ !side ], mid, end );
 }
 
-/*
-===============
-R_LightPoint
-===============
-*/
 void R_LightPoint( const vec3_t p, vec3_t color )
 {
 	vec3_t    end;
@@ -569,7 +501,7 @@ store:
 
 				/*
 				** alpha is ONLY used for the mono lightmap case.  For this reason
-				** we set it to the brightest of the color components so that 
+				** we set it to the brightest of the color components so that
 				** things don't get too dim.
 				*/
 				a = max;
@@ -629,7 +561,7 @@ store:
 
 				/*
 				** alpha is ONLY used for the mono lightmap case.  For this reason
-				** we set it to the brightest of the color components so that 
+				** we set it to the brightest of the color components so that
 				** things don't get too dim.
 				*/
 				a = max;

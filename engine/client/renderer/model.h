@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#pragma once
+
 /*
 
 d*_t structures are on-disk representations
@@ -34,6 +36,7 @@ BRUSH MODELS
 ==============================================================================
 */
 
+typedef struct image_s image_t;
 
 //
 // in memory representation
@@ -79,7 +82,7 @@ typedef struct mtexinfo_s
 	int                flags;
 	int                numframes;
 	struct mtexinfo_s *next;// animation chain
-	image_t           *image;
+	struct image_s    *image;
 } mtexinfo_t;
 
 #define VERTEXSIZE 7

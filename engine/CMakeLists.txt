@@ -85,17 +85,17 @@ add_executable(engine WIN32
 
         # Renderer
         # -- gl
-        client/ref_gl/gl_draw.cpp
-        client/ref_gl/gl_image.cpp
-        client/ref_gl/gl_light.cpp
-        client/ref_gl/gl_model.cpp
-        client/ref_gl/gl_rmain.cpp
-        client/ref_gl/gl_rmisc.cpp
-        client/ref_gl/gl_rsurf.cpp
-        client/ref_gl/gl_shader_manager.cpp
-        client/ref_gl/gl_warp.cpp
-        client/ref_gl/qgl.cpp
+        client/renderer/ref_gl/gl_draw.cpp
+        client/renderer/ref_gl/gl_image.cpp
+        client/renderer/ref_gl/gl_model.cpp
+        client/renderer/ref_gl/gl_rmain.cpp
+        client/renderer/ref_gl/gl_rmisc.cpp
+        client/renderer/ref_gl/gl_rsurf.cpp
+        client/renderer/ref_gl/gl_shader_manager.cpp
+        client/renderer/ref_gl/gl_warp.cpp
+        client/renderer/ref_gl/qgl.cpp
         # -- generic
+        client/renderer/light.cpp
         client/renderer/material.cpp
 
         # Server

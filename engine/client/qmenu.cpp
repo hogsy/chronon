@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "qmenu.h"
 
-#include "ref_gl/gl_local.h"
+#include "renderer/ref_gl/gl_local.h"
 
 static void Action_DoEnter( menuaction_s *a );
 static void Action_Draw( menuaction_s *a );
