@@ -23,17 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern model_t *loadmodel;
 
-char     skyname[ MAX_QPATH ];
-float    skyrotate;
-vec3_t   skyaxis;
-image_t *sky_images[ 6 ];
+static char     skyname[ MAX_QPATH ];
+static float    skyrotate;
+static vec3_t   skyaxis;
+static image_t *sky_images[ 6 ];
 
-msurface_t *warpface;
+static msurface_t *warpface;
 
 #define SUBDIVIDE_SIZE 64
 //#define	SUBDIVIDE_SIZE	1024
 
-void BoundPoly( int numverts, float *verts, vec3_t mins, vec3_t maxs )
+static void BoundPoly( int numverts, float *verts, vec3_t mins, vec3_t maxs )
 {
 	int    i, j;
 	float *v;
@@ -51,7 +51,7 @@ void BoundPoly( int numverts, float *verts, vec3_t mins, vec3_t maxs )
 		}
 }
 
-void SubdividePolygon( int numverts, float *verts )
+static void SubdividePolygon( int numverts, float *verts )
 {
 	int       i, j, k;
 	vec3_t    mins, maxs;
@@ -284,7 +284,7 @@ int st_to_vec[ 6 ][ 3 ] =
 };
 
 // s = [0]/[2], t = [1]/[2]
-int vec_to_st[ 6 ][ 3 ] =
+static int vec_to_st[ 6 ][ 3 ] =
 		{
 				{ -2, 3, 1 },
 				{ 2, 3, -1 },
@@ -299,8 +299,8 @@ int vec_to_st[ 6 ][ 3 ] =
 				//	{1,2,-3}
 };
 
-float skymins[ 2 ][ 6 ], skymaxs[ 2 ][ 6 ];
-float sky_min, sky_max;
+static float skymins[ 2 ][ 6 ], skymaxs[ 2 ][ 6 ];
+static float sky_min, sky_max;
 
 void DrawSkyPolygon( int nump, vec3_t vecs )
 {
@@ -385,7 +385,7 @@ void DrawSkyPolygon( int nump, vec3_t vecs )
 
 #define ON_EPSILON     0.1// point on plane side epsilon
 #define MAX_CLIP_VERTS 64
-void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
+static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 {
 	float   *norm;
 	float   *v;
@@ -516,7 +516,7 @@ void R_ClearSkyBox( void )
 }
 
 
-void MakeSkyVec( float s, float t, int axis )
+static void MakeSkyVec( float s, float t, int axis )
 {
 	vec3_t v, b;
 	int    j, k;
@@ -552,12 +552,6 @@ void MakeSkyVec( float s, float t, int axis )
 	glVertex3fv( v );
 }
 
-/*
-==============
-R_DrawSkyBox
-==============
-*/
-int  skytexorder[ 6 ] = { 0, 2, 1, 3, 4, 5 };
 void R_DrawSkyBox()
 {
 	int i;
@@ -590,6 +584,7 @@ void R_DrawSkyBox()
 		if ( skymins[ 0 ][ i ] >= skymaxs[ 0 ][ i ] || skymins[ 1 ][ i ] >= skymaxs[ 1 ][ i ] )
 			continue;
 
+		static constexpr int skytexorder[ 6 ] = { 0, 2, 1, 3, 4, 5 };
 		GL_Bind( sky_images[ skytexorder[ i ] ]->texnum );
 
 		glBegin( GL_QUADS );
@@ -610,9 +605,7 @@ void R_DrawSkyBox()
 R_SetSky
 ============
 */
-// 3dstudio environment map names
-const char *suf[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
-void        R_SetSky( const char *name, float rotate, vec3_t axis )
+void R_SetSky( const char *name, float rotate, vec3_t axis )
 {
 	int  i;
 	char pathname[ MAX_QPATH ];
@@ -624,8 +617,13 @@ void        R_SetSky( const char *name, float rotate, vec3_t axis )
 	for ( i = 0; i < 6; i++ )
 	{
 		// chop down rotating skies for less memory
-		if ( gl_skymip->value || skyrotate )
+		if ( gl_skymip->value > 0.0f || skyrotate > 0.0f )
+		{
 			gl_picmip->value++;
+		}
+
+		// 3dstudio environment map names
+		static constexpr char const *suf[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
 
 		Com_sprintf( pathname, sizeof( pathname ), "graphics/sky/%s%s.tga", skyname, suf[ i ] );
 
