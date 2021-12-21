@@ -130,26 +130,23 @@ static int MapKey( int key )
 			return K_LEFTARROW;
 		case SDLK_RIGHT:
 			return K_RIGHTARROW;
-
 		case SDLK_BACKSPACE:
 			return K_BACKSPACE;
-
 		case SDLK_PAGEUP:
 			return K_PGUP;
 		case SDLK_PAGEDOWN:
 			return K_PGDN;
-
 		case SDLK_LALT:
 		case SDLK_RALT:
 			return K_ALT;
-
 		case SDLK_LSHIFT:
 		case SDLK_RSHIFT:
 			return K_SHIFT;
-
+		case SDLK_LCTRL:
+		case SDLK_RCTRL:
+			return K_CTRL;
 		case SDLK_SPACE:
 			return K_SPACE;
-
 		case SDLK_F1:
 			return K_F1;
 		case SDLK_F2:
@@ -174,7 +171,6 @@ static int MapKey( int key )
 			return K_F11;
 		case SDLK_F12:
 			return K_F12;
-
 		default:
 			break;
 	}
