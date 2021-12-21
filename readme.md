@@ -1,6 +1,7 @@
 # HOSAE<br>hogsy's Open-Source Anachronox Engine
 
-[![Build Status](https://github.com/hogsy/hosae/actions/workflows/build-status.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-status.yml)
+[![Build (Windows GCC x64)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml)
+[![Build (Linux GCC x64)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml)
 
 ## What is this?
 
