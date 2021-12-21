@@ -25,19 +25,14 @@ if (WIN32)
             win32/net_wins.cpp
             win32/q_shwin.cpp
             win32/snd_win.cpp
-            sdl2/sdl2_sys.cpp
-            sdl2/sdl2_vid.cpp
             )
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
             linux/cd_linux.cpp
             linux/glob.cpp
-            linux/in_linux.cpp
             linux/net_udp.cpp
             linux/q_shlinux.cpp
             linux/snd_linux.cpp
-            sdl2/sdl2_sys.cpp
-            sdl2/sdl2_vid.cpp
             )
 endif ()
 
@@ -107,7 +102,10 @@ add_executable(engine WIN32
         server/sv_send.cpp
         server/sv_user.cpp
         server/sv_world.cpp
+
         # Platform
+        sdl2/sdl2_sys.cpp
+        sdl2/sdl2_vid.cpp
         ${ENGINE_PLATFORM_SOURCE}
 
         # APE Virtual Machine
@@ -124,18 +122,18 @@ set_target_properties(engine PROPERTIES OUTPUT_NAME hosae)
 target_compile_definitions(engine PRIVATE
         GLEW_STATIC
         )
-target_link_directories(engine PRIVATE
-        ../3rdparty/glew/lib/Release/x64/
-        )
 target_include_directories(engine PRIVATE
         ./
         ../
         ../3rdparty/
         ../3rdparty/glew/include/
-        ../3rdparty/sdl2/include/
         )
 
 if (WIN32)
+    target_include_directories(engine PRIVATE
+            ../3rdparty/sdl2/include/
+            )
+
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         target_link_directories(engine PRIVATE
                 ../3rdparty/sdl2/lib/x64/

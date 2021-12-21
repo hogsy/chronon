@@ -376,11 +376,12 @@ void CDAudio_Update( void )
 	}
 }
 
+uid_t saved_euid;
+
 int CDAudio_Init( void )
 {
 	int          i;
 	cvar_t      *cv;
-	extern uid_t saved_euid;
 
 	cv = Cvar_Get( "nocdaudio", "0", CVAR_NOSET );
 	if ( cv->value )

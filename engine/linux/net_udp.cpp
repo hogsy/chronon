@@ -531,17 +531,18 @@ void NET_Sleep( int msec )
 {
 	struct timeval  timeout;
 	fd_set          fdset;
-	extern cvar_t  *dedicated;
-	extern qboolean stdin_active;
 
-	if ( !ip_sockets[ NS_SERVER ] || ( dedicated && !dedicated->value ) )
+	if ( !ip_sockets[ NS_SERVER ] || ( dedicated && ( dedicated->value <= 0.0f ) ) )
 		return;// we're not a server, just run full speed
 
 	FD_ZERO( &fdset );
+#if 0
 	if ( stdin_active )
 		FD_SET( 0, &fdset );                  // stdin is processed too
+#endif
+
 	FD_SET( ip_sockets[ NS_SERVER ], &fdset );// network socket
 	timeout.tv_sec = msec / 1000;
 	timeout.tv_usec = ( msec % 1000 ) * 1000;
-	select( ip_sockets[ NS_SERVER ] + 1, &fdset, NULL, NULL, &timeout );
+	select( ip_sockets[ NS_SERVER ] + 1, &fdset, nullptr, nullptr, &timeout );
 }

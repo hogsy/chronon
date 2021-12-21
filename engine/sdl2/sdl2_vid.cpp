@@ -213,7 +213,19 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 	SDL_VERSION( &info.version );
 	if ( SDL_GetWindowWMInfo( sdlWindow, &info ) )
 	{
+#if defined( _WIN32 )
 		cl_hwnd = info.info.win.window;
+#elif defined( __linux__ ) || defined( __linux )
+		// There's gotta be a better way...
+		if ( info.info.wl.display != nullptr )
+		{
+			cl_hwnd = ( void * ) info.info.wl.display;
+		}
+		else
+		{
+			cl_hwnd = ( void * ) info.info.x11.window;
+		}
+#endif
 	}
 	else
 	{

@@ -37,7 +37,7 @@ cvar_t *snddevice;
 
 static int tryrates[] = { 11025, 22051, 44100, 8000 };
 
-qboolean SNDDMA_Init( void )
+qboolean SNDDMA_Init(  )
 {
 
 	int                   rc;
@@ -74,7 +74,7 @@ qboolean SNDDMA_Init( void )
 		{
 			perror( snddevice->string );
 			Com_Printf( "Could not open %s\n", snddevice->string );
-			return 0;
+			return false;
 		}
 	}
 
@@ -84,7 +84,7 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "Could not reset %s\n", snddevice->string );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	if ( ioctl( audio_fd, SNDCTL_DSP_GETCAPS, &caps ) == -1 )
@@ -92,14 +92,14 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "Sound driver too old\n" );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	if ( !( caps & DSP_CAP_TRIGGER ) || !( caps & DSP_CAP_MMAP ) )
 	{
 		Com_Printf( "Sorry but your soundcard can't do this\n" );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	if ( ioctl( audio_fd, SNDCTL_DSP_GETOSPACE, &info ) == -1 )
@@ -107,7 +107,7 @@ qboolean SNDDMA_Init( void )
 		perror( "GETOSPACE" );
 		Com_Printf( "Um, can't do GETOSPACE?\n" );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	// set sample bits & speed
@@ -139,13 +139,13 @@ qboolean SNDDMA_Init( void )
 	// memory map the dma buffer
 
 	if ( !dma.buffer )
-		dma.buffer = ( unsigned char * ) mmap( NULL, info.fragstotal * info.fragsize, PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0 );
+		dma.buffer = ( unsigned char * ) mmap( nullptr, info.fragstotal * info.fragsize, PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0 );
 	if ( !dma.buffer )
 	{
 		perror( snddevice->string );
 		Com_Printf( "Could not mmap %s\n", snddevice->string );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	tmp = 0;
@@ -157,7 +157,7 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "Could not set %s to stereo=%d", snddevice->string, dma.channels );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 	if ( tmp )
 		dma.channels = 2;
@@ -170,7 +170,7 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "Could not set %s speed to %d", snddevice->string, dma.speed );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	if ( dma.samplebits == 16 )
@@ -182,7 +182,7 @@ qboolean SNDDMA_Init( void )
 			perror( snddevice->string );
 			Com_Printf( "Could not support 16-bit data.  Try 8-bit.\n" );
 			close( audio_fd );
-			return 0;
+			return false;
 		}
 	}
 	else if ( dma.samplebits == 8 )
@@ -194,7 +194,7 @@ qboolean SNDDMA_Init( void )
 			perror( snddevice->string );
 			Com_Printf( "Could not support 8-bit data.\n" );
 			close( audio_fd );
-			return 0;
+			return false;
 		}
 	}
 	else
@@ -202,7 +202,7 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "%d-bit sound not supported.", dma.samplebits );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	// toggle the trigger & start her up
@@ -214,7 +214,7 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "Could not toggle.\n" );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 	tmp = PCM_ENABLE_OUTPUT;
 	rc = ioctl( audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp );
@@ -223,16 +223,16 @@ qboolean SNDDMA_Init( void )
 		perror( snddevice->string );
 		Com_Printf( "Could not toggle.\n" );
 		close( audio_fd );
-		return 0;
+		return false;
 	}
 
 	dma.samplepos = 0;
 
 	snd_inited = 1;
-	return 1;
+	return true;
 }
 
-int SNDDMA_GetDMAPos( void )
+int SNDDMA_GetDMAPos(  )
 {
 
 	struct count_info count;
@@ -254,7 +254,7 @@ int SNDDMA_GetDMAPos( void )
 	return dma.samplepos;
 }
 
-void SNDDMA_Shutdown( void )
+void SNDDMA_Shutdown(  )
 {
 #if 0
 	if (snd_inited)
@@ -272,10 +272,10 @@ SNDDMA_Submit
 Send sound to device if buffer isn't really the dma buffer
 ===============
 */
-void SNDDMA_Submit( void )
+void SNDDMA_Submit(  )
 {
 }
 
-void SNDDMA_BeginPainting( void )
+void SNDDMA_BeginPainting(  )
 {
 }
