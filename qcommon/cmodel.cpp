@@ -545,13 +545,13 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-cmodel_t *CM_LoadMap ( const char *name, bool clientload, unsigned *checksum)
+cmodel_t *CM_LoadMap ( const char *name, bool clientload, uint32_t *checksum)
 {
 	unsigned		*buf;
 	int				i;
 	dheader_t		header;
 	int				length;
-	static unsigned	last_checksum;
+	static uint32_t	last_checksum;
 
 	map_noareas = Cvar_Get ("map_noareas", "0", 0);
 
@@ -592,7 +592,7 @@ cmodel_t *CM_LoadMap ( const char *name, bool clientload, unsigned *checksum)
 	if (!buf)
 		Com_Error (ERR_DROP, "Couldn't load %s", name);
 
-	last_checksum = LittleLong (Com_BlockChecksum (buf, length));
+	last_checksum = ( uint32_t ) LittleLong( ( int32_t ) Com_BlockChecksum( buf, length ) );
 	*checksum = last_checksum;
 
 	header = *(dheader_t *)buf;

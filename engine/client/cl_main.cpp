@@ -1109,7 +1109,6 @@ static const char *env_suf[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
 
 void CL_RequestNextDownload( void )
 {
-	unsigned map_checksum;// for detecting cheater maps
 	char     fn[ MAX_OSPATH ];
 	dmdl_t  *pheader;
 
@@ -1337,12 +1336,14 @@ void CL_RequestNextDownload( void )
 	{
 		precache_check = ENV_CNT + 1;
 
+		uint32_t map_checksum;// for detecting cheater maps
 		CM_LoadMap( cl.configstrings[ CS_MODELS + 1 ], true, &map_checksum );
 
-		if ( map_checksum != strtoul( cl.configstrings[ CS_MAPCHECKSUM ], nullptr, 10 ) )
+		uint32_t cl_checksum = strtoul( cl.configstrings[ CS_MAPCHECKSUM ], nullptr, 10 );
+		if ( map_checksum != cl_checksum )
 		{
-			Com_Error( ERR_DROP, "Local map version differs from server: %i != '%s'\n",
-			           map_checksum, cl.configstrings[ CS_MAPCHECKSUM ] );
+			Com_Error( ERR_DROP, "Local map version differs from server: %u != %u\n",
+			           map_checksum, cl_checksum );
 			return;
 		}
 	}
@@ -1417,7 +1418,7 @@ void CL_Precache_f( void )
 	//the old precache sequence
 	if ( Cmd_Argc() < 2 )
 	{
-		unsigned map_checksum;// for detecting cheater maps
+		uint32_t map_checksum;// for detecting cheater maps
 
 		CM_LoadMap( cl.configstrings[ CS_MODELS + 1 ], true, &map_checksum );
 		CL_RegisterSounds();

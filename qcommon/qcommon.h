@@ -609,7 +609,7 @@ CMODEL
 
 #include "../qcommon/qfiles.h"
 
-cmodel_t *CM_LoadMap( const char *name, bool clientload, unsigned *checksum );
+cmodel_t *CM_LoadMap( const char *name, bool clientload, uint32_t *checksum );
 cmodel_t *CM_InlineModel( const char *name );  // *1, *2, etc
 
 int CM_NumClusters( void );
@@ -723,7 +723,7 @@ void Com_Quit( void );
 int Com_ServerState( void );  // this should have just been a cvar...
 void Com_SetServerState( int state );
 
-unsigned Com_BlockChecksum( void *buffer, int length );
+unsigned int Com_BlockChecksum( void *buffer, int length );
 byte COM_BlockSequenceCRCByte( byte *base, int length, int sequence );
 
 float frand( void );  // 0 ti 1

@@ -536,10 +536,6 @@ void NET_Sleep( int msec )
 		return;// we're not a server, just run full speed
 
 	FD_ZERO( &fdset );
-#if 0
-	if ( stdin_active )
-		FD_SET( 0, &fdset );                  // stdin is processed too
-#endif
 
 	FD_SET( ip_sockets[ NS_SERVER ], &fdset );// network socket
 	timeout.tv_sec = msec / 1000;

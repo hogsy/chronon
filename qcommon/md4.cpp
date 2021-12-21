@@ -15,7 +15,7 @@ typedef unsigned int UINT4;
 typedef unsigned long int UINT4;
 #endif
 
-  
+
 /* MD4.H - header file for MD4C.C */
 
 /* Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. 
@@ -38,9 +38,9 @@ typedef struct {
 void MD4Init (MD4_CTX *);
 void MD4Update (MD4_CTX *, unsigned char *, unsigned int);
 void MD4Final (unsigned char [16], MD4_CTX *);
-  
 
-  
+
+
 /* MD4C.C - RSA Data Security, Inc., MD4 message-digest algorithm */
 /* Copyright (C) 1990-2, RSA Data Security, Inc. All rights reserved.
   
@@ -157,7 +157,7 @@ void MD4Final (unsigned char digest[16], MD4_CTX *context)
 
 	/* Append length (before padding) */
 	MD4Update (context, bits, 8);
-	
+
 	/* Store state in digest */
 	Encode (digest, context->state, 16);
 
@@ -262,17 +262,17 @@ for (i = 0, j = 0; j < len; i++, j += 4)
 
 //===================================================================
 
-unsigned Com_BlockChecksum (void *buffer, int length)
+unsigned int Com_BlockChecksum( void *buffer, int length )
 {
-	int			digest[4];
-	unsigned	val;
-	MD4_CTX		ctx;
+	int          digest[ 4 ];
+	unsigned int val;
+	MD4_CTX      ctx;
 
-	MD4Init (&ctx);
-	MD4Update (&ctx, (unsigned char *)buffer, length);
-	MD4Final ( (unsigned char *)digest, &ctx);
-	
-	val = digest[0] ^ digest[1] ^ digest[2] ^ digest[3];
+	MD4Init( &ctx );
+	MD4Update( &ctx, ( unsigned char * ) buffer, length );
+	MD4Final( ( unsigned char * ) digest, &ctx );
+
+	val = digest[ 0 ] ^ digest[ 1 ] ^ digest[ 2 ] ^ digest[ 3 ];
 
 	return val;
 }
