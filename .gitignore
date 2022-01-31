@@ -355,5 +355,9 @@ healthchecksdb
 /quake2.001
 /makefile
 
+# Generated directories
+/vcpkg
+/build
+
 **/DebugAxp
 /cmake-build-debug/

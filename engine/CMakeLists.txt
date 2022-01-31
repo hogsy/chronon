@@ -129,21 +129,9 @@ target_include_directories(engine PRIVATE
         ../3rdparty/glew/include/
         )
 
+find_package(SDL2 CONFIG REQUIRED)
+
 if (WIN32)
-    target_include_directories(engine PRIVATE
-            ../3rdparty/sdl2/include/
-            )
-
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-        target_link_directories(engine PRIVATE
-                ../3rdparty/sdl2/lib/x64/
-                )
-    else ()
-        target_link_directories(engine PRIVATE
-                ../3rdparty/sdl2/lib/x86/
-                )
-    endif ()
-
     if (MSVC)
         target_link_options(engine PRIVATE
                 /NODEFAULTLIB:libcmt.lib
@@ -155,8 +143,8 @@ if (WIN32)
                 )
     endif ()
     target_link_libraries(engine
-            SDL2main
-            SDL2
+            SDL2::SDL2main
+            SDL2::SDL2
             Imm32
             Setupapi
             Version
