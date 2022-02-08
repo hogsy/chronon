@@ -43,6 +43,7 @@ Below is a list of what's been done thus far.
 These are extra features, the original game didn't necessarily feature, that this engine introduces.
 
 - Can target either x86 and x64 architectures
+- Support for both Windows and Linux
 - Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it)
 - Higher-resolution texture replacements can be loaded in
     - Replacement textures need to be placed under a `hd` directory located under `anoxdata`
