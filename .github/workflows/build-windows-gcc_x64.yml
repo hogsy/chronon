@@ -13,6 +13,9 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
     - uses: actions/checkout@v2.4.0
     
@@ -20,12 +23,12 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
-        install: mingw-w64-x86_64-SDL2
+        install: mingw-w64-x86_64-SDL2 mingw-w64-x86_64-cmake
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       # Build your program with the given configuration
