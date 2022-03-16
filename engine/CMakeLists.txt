@@ -143,6 +143,7 @@ else ()
     target_link_libraries(engine SDL2::SDL2-static)
 endif ()
 
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 target_link_libraries(engine ${OPENGL_LIBRARIES})
 
@@ -165,5 +166,5 @@ if (WIN32)
             Winmm
             )
 elseif (UNIX AND NOT APPLE)
-    target_link_libraries(engine dl)
+    target_link_libraries(engine X11 Xext dl)
 endif ()
