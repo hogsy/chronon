@@ -1263,8 +1263,6 @@ text to the screen.
 */
 void SCR_UpdateScreen()
 {
-	int i;
-
 	// if the screen is disabled (loading plaque is up, or vid mode changing)
 	// do nothing at all
 	if ( cls.disable_screen )

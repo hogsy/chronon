@@ -137,9 +137,14 @@ target_include_directories(engine PRIVATE
         )
 
 find_package(SDL2 CONFIG REQUIRED)
-target_link_libraries(engine SDL2::SDL2-static)
+if (WIN32)
+    target_link_libraries(engine SDL2::SDL2 SDL2::SDL2main)
+else ()
+    target_link_libraries(engine SDL2::SDL2-static)
+endif ()
 
 find_package(OpenGL REQUIRED)
+target_link_libraries(engine ${OPENGL_LIBRARIES})
 
 if (WIN32)
     if (MSVC)
@@ -156,17 +161,9 @@ if (WIN32)
             Imm32
             Setupapi
             Version
-            Opengl32
             Ws2_32
             Winmm
             )
-elseif(APPLE)
-    target_link_libraries(engine
-            ${OPENGL_LIBRARIES}
-            )
 elseif (UNIX AND NOT APPLE)
-    target_link_libraries(engine
-            dl
-            GL
-            )
+    target_link_libraries(engine dl)
 endif ()
