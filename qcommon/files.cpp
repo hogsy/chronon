@@ -641,9 +641,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	while( s ) {
 		if( s[ strlen( s ) - 1 ] != '.' ) {
 			list[ nfiles ] = Q_strdup( s );
-#ifdef _WIN32
-			strlwr( list[ nfiles ] );
-#endif
+			Q_strtolower( list[ nfiles ] );
 			nfiles++;
 		}
 		s = Sys_FindNext( musthave, canthave );
