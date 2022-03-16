@@ -71,7 +71,6 @@ add_executable(engine WIN32
         client/snd_mem.cpp
         client/snd_mix.cpp
         client/vid_menu.cpp
-        client/x86.cpp
         ../game/m_flash.cpp
         ../game/q_shared.cpp
         # Common
