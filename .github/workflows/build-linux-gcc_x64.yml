@@ -16,8 +16,7 @@ jobs:
     steps:    
     - uses: actions/checkout@v2.4.0
     
-    - name: Install compilers
-      run: sudo apt install gcc g++
+    - run: sudo apt install gcc g++ make
     
     - name: Setup Dependencies
       run: ./vcpkg_setup_linux.sh
