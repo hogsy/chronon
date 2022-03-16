@@ -65,7 +65,8 @@ bool QGL_Init()
 		return false;
 	}
 
-	glDebugMessageCallback( QGL_ErrorCallback, nullptr );
+	if ( glDebugMessageCallback != nullptr )
+		glDebugMessageCallback( QGL_ErrorCallback, nullptr );
 
 	gl_config.allow_cds = true;
 
