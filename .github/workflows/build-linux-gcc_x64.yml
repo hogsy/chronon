@@ -13,11 +13,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
+    steps:    
+    - uses: actions/checkout@v2.4.0
+    
     - name: Setup Dependencies
       run: ./vcpkg_setup_linux.sh
     
-    - uses: actions/checkout@v2.4.0
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=vcpkg\scripts\buildsystems\vcpkg.cmake
 
