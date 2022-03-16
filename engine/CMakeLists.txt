@@ -26,6 +26,14 @@ if (WIN32)
             win32/q_shwin.cpp
             win32/snd_win.cpp
             )
+elseif (APPLE)
+    file(GLOB ENGINE_PLATFORM_SOURCE
+            null/cd_null.cpp
+            null/snd_null.cpp
+            linux/glob.cpp
+            linux/net_udp.cpp
+            linux/q_shlinux.cpp
+            )
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
             linux/cd_linux.cpp
@@ -130,6 +138,9 @@ target_include_directories(engine PRIVATE
         )
 
 find_package(SDL2 CONFIG REQUIRED)
+target_link_libraries(engine SDL2::SDL2-static)
+
+find_package(OpenGL REQUIRED)
 
 if (WIN32)
     if (MSVC)
@@ -143,8 +154,6 @@ if (WIN32)
                 )
     endif ()
     target_link_libraries(engine
-            SDL2::SDL2main
-            SDL2::SDL2
             Imm32
             Setupapi
             Version
@@ -152,10 +161,13 @@ if (WIN32)
             Ws2_32
             Winmm
             )
-elseif (UNIX)
+elseif(APPLE)
+    target_link_libraries(engine
+            ${OPENGL_LIBRARIES}
+            )
+elseif (UNIX AND NOT APPLE)
     target_link_libraries(engine
             dl
             GL
-            SDL2
             )
 endif ()

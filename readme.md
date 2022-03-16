@@ -57,6 +57,25 @@ If you have experience with either C/C++, have a passion for programming and fam
 
 Alternatively, feel free to ping me an email at [hogsy@oldtimes-software.com](mailto:hogsy@oldtimes-software.com).
 
+## Building
+
+**(these instructions aren't necessarily up-to-date)**
+
+### Windows
+
+#### Visual Studio
+
+1. Use `vcpkg_setup_msvc.bat`; this will fetch vcpkg and install the dependencies
+2. Now use `cmake_generate_vs2022-x64.bat` which will generate the Visual Studio solution for you under a new `build` directory
+
+### macOS w/ Apple Silicon
+
+No plans to support "legacy" x86/x64 based devices right now unless someone else steps in to do it.
+macOS support is generally going to be at the bottom of my priority list for supported platforms.
+
+1. If you don't have vcpkg installed already, use `vcpkg_setup_apple.sh`; this will fetch vcpkg and install the dependencies
+2. Use CMake as usual, but pass `-DCMAKE_TOOLCHAIN_FILE=vcpkg\scripts\buildsystems\vcpkg.cmake` as an argument so it can find packages provided by vcpkg
+
 ## Resources
 
 - [Anachrodox](https://anachrodox.talonbrave.info/)
