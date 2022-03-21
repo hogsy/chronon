@@ -68,7 +68,7 @@ struct edict_s
 {
 	entity_state_t	s;
 	struct gclient_s	*client;
-	qboolean	inuse;
+	bool	inuse;
 	int			linkcount;
 
 	// FIXME: move these fields to a server private sv_entity_t
@@ -127,10 +127,10 @@ typedef struct
 	// collision detection
 	trace_t ( *trace )( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passent, int contentmask );
 	int ( *pointcontents )( vec3_t point );
-	qboolean ( *inPVS )( vec3_t p1, vec3_t p2 );
-	qboolean ( *inPHS )( vec3_t p1, vec3_t p2 );
-	void ( *SetAreaPortalState )( int portalnum, qboolean open );
-	qboolean ( *AreasConnected )( int area1, int area2 );
+	bool ( *inPVS )( vec3_t p1, vec3_t p2 );
+	bool ( *inPHS )( vec3_t p1, vec3_t p2 );
+	void ( *SetAreaPortalState )( int portalnum, bool open );
+	bool ( *AreasConnected )( int area1, int area2 );
 
 	// an entity will never be sent to a client or used for collision
 	// if it is not passed to linkentity.  If the size, position, or
@@ -142,7 +142,7 @@ typedef struct
 
 	// network messaging
 	void ( *multicast )( vec3_t origin, multicast_t to );
-	void ( *unicast )( edict_t *ent, qboolean reliable );
+	void ( *unicast )( edict_t *ent, bool reliable );
 	void ( *WriteChar )( int c );
 	void ( *WriteByte )( int c );
 	void ( *WriteShort )( int c );
@@ -199,7 +199,7 @@ typedef struct
 	// about the world state and the clients.
 	// WriteGame is called every time a level is exited.
 	// ReadGame is called on a loadgame.
-	void		(*WriteGame) (char *filename, qboolean autosave);
+	void		(*WriteGame) (char *filename, bool autosave);
 	void		(*ReadGame) (char *filename);
 
 	// ReadLevel is called after the default map information has been
@@ -207,7 +207,7 @@ typedef struct
 	void		(*WriteLevel) (char *filename);
 	void		(*ReadLevel) (char *filename);
 
-	qboolean	(*ClientConnect) (edict_t *ent, char *userinfo);
+	bool	(*ClientConnect) (edict_t *ent, char *userinfo);
 	void		(*ClientBegin) (edict_t *ent);
 	void		(*ClientUserinfoChanged) (edict_t *ent, char *userinfo);
 	void		(*ClientDisconnect) (edict_t *ent);

@@ -46,7 +46,7 @@ extern cvar_t *vid_gamma;
 
 // Global variables used internally by this module
 viddef_t viddef;// global video state; used by other modules
-qboolean reflib_active = 0;
+bool reflib_active = 0;
 
 HWND cl_hwnd;// Main window handle for life of program
 
@@ -54,14 +54,14 @@ HWND cl_hwnd;// Main window handle for life of program
 
 LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-static qboolean s_alttab_disabled;
+static bool s_alttab_disabled;
 
 extern unsigned sys_msg_time;
 
 /*
 ** WIN32 helper functions
 */
-extern qboolean s_win95;
+extern bool s_win95;
 
 static void WIN_DisableAltTab( void )
 {
@@ -191,7 +191,7 @@ int MapKey( int key )
 {
 	int      result;
 	int      modified = ( key >> 16 ) & 255;
-	qboolean is_extended = false;
+	bool is_extended = false;
 
 	if ( modified > 127 ) return 0;
 
@@ -484,7 +484,7 @@ vidmode_t vid_modes[] = {
 		{ "Mode 9: 1600x1200", 1600, 1200, 9 },
 		{ "Mode 10: 2048x1536", 2048, 1536, 10 } };
 
-qboolean VID_GetModeInfo( int *width, int *height, int mode )
+bool VID_GetModeInfo( int *width, int *height, int mode )
 {
 	if ( mode < 0 || mode >= VID_NUM_MODES ) return false;
 
@@ -533,7 +533,7 @@ void VID_NewWindow( int width, int height )
 VID_LoadRefresh
 ==============
 */
-qboolean VID_LoadRefresh()
+bool VID_LoadRefresh()
 {
 	if ( R_Init( nullptr, ( void * ) MainWndProc ) == -1 )
 	{

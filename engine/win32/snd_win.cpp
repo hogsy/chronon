@@ -43,10 +43,10 @@ typedef enum
 
 cvar_t *s_wavonly;
 
-static qboolean dsound_init;
-static qboolean wav_init;
-static qboolean snd_firsttime = true, snd_isdirect, snd_iswave;
-static qboolean primary_format_set;
+static bool dsound_init;
+static bool wav_init;
+static bool snd_firsttime = true, snd_isdirect, snd_iswave;
+static bool primary_format_set;
 
 // starts at 0 for disabled
 static int snd_buffer_count = 0;
@@ -79,7 +79,7 @@ LPDIRECTSOUNDBUFFER pDSBuf, pDSPBuf;
 HINSTANCE hInstDS;
 
 sndinitstat SNDDMA_InitDirect( void );
-qboolean    SNDDMA_InitWav( void );
+bool    SNDDMA_InitWav( void );
 
 void FreeSound( void );
 
@@ -103,7 +103,7 @@ static const char *DSoundError( int error )
 /*
 ** DS_CreateBuffers
 */
-static qboolean DS_CreateBuffers( void )
+static bool DS_CreateBuffers( void )
 {
 	DSBUFFERDESC dsbuf;
 	DSBCAPS      dsbcaps;
@@ -446,7 +446,7 @@ SNDDM_InitWav
 Crappy windows multimedia base
 ==================
 */
-qboolean SNDDMA_InitWav( void )
+bool SNDDMA_InitWav( void )
 {
 	WAVEFORMATEX format;
 	int          i;
@@ -593,7 +593,7 @@ Try to find a sound device to mix for.
 Returns false if nothing is found.
 ==================
 */
-qboolean SNDDMA_Init( void )
+bool SNDDMA_Init( void )
 {
 	sndinitstat stat;
 
@@ -845,7 +845,7 @@ The window have been destroyed and recreated
 between a deactivate and an activate.
 ===========
 */
-void S_Activate( qboolean active )
+void S_Activate( bool active )
 {
 	if ( active )
 	{

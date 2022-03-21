@@ -138,7 +138,7 @@ R_CullBox
 Returns true if the box is completely outside the frustom
 =================
 */
-qboolean R_CullBox( vec3_t mins, vec3_t maxs )
+bool R_CullBox( vec3_t mins, vec3_t maxs )
 {
 	int i;
 
@@ -953,7 +953,7 @@ void R_Register( void )
 R_SetMode
 ==================
 */
-qboolean R_SetMode( void )
+bool R_SetMode( void )
 {
 #if 1// simplified until we get SDL2 implemented
 	rserr_t err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value, false );
@@ -964,7 +964,7 @@ qboolean R_SetMode( void )
 	return ( err == rserr_ok );
 #else
 	rserr_t  err;
-	qboolean fullscreen;
+	bool fullscreen;
 
 	if ( vid_fullscreen->modified && !gl_config.allow_cds )
 	{

@@ -26,11 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "resource.h"
 #include "winquake.h"
 
-qboolean s_win95;
+bool s_win95;
 
 int      starttime;
-qboolean ActiveApp;
-qboolean Minimized;
+bool ActiveApp;
+bool Minimized;
 
 static HANDLE hinput, houtput;
 
@@ -60,7 +60,7 @@ Sys_ScanForCD
 char *Sys_ScanForCD( void )
 {
 	static char     cddir[ MAX_OSPATH ];
-	static qboolean done;
+	static bool done;
 #ifndef DEMO
 	char  drive[ 4 ];
 	FILE *f;

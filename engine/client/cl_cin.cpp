@@ -29,7 +29,7 @@ typedef struct
 
 typedef struct
 {
-	qboolean restart_sound;
+	bool restart_sound;
 	int      s_rate;
 	int      s_width;
 	int      s_channels;
@@ -533,7 +533,7 @@ Returns true if a cinematic is active, meaning the view rendering
 should be skipped
 ==================
 */
-qboolean SCR_DrawCinematic( void )
+bool SCR_DrawCinematic( void )
 {
 	if ( cl.cinematictime <= 0 )
 	{

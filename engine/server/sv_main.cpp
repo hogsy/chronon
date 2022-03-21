@@ -976,7 +976,7 @@ not just stuck on the outgoing message list, because the server is going
 to totally exit after returning from this function.
 ==================
 */
-void SV_FinalMessage( const char *message, qboolean reconnect )
+void SV_FinalMessage( const char *message, bool reconnect )
 {
 	int       i;
 	client_t *cl;
@@ -1012,7 +1012,7 @@ Called when each game quits,
 before Sys_Quit or Sys_Error
 ================
 */
-void SV_Shutdown( const char *finalmsg, qboolean reconnect )
+void SV_Shutdown( const char *finalmsg, bool reconnect )
 {
 	if ( svs.clients )
 		SV_FinalMessage( finalmsg, reconnect );

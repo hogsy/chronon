@@ -44,7 +44,7 @@ typedef struct
 	vec3_t	origin;
 	vec3_t	oldorigin;
 	vec3_t	angles;
-	qboolean present;
+	bool present;
 } projectile_t;
 
 #	define MAX_PROJECTILES 64
@@ -75,7 +75,7 @@ void CL_ParseProjectiles (void)
 	byte	b;
 	projectile_t	pr;
 	int lastempty = -1;
-	qboolean old = false;
+	bool old = false;
 
 	c = MSG_ReadByte (&net_message);
 	for (i=0 ; i<c ; i++)

@@ -53,7 +53,7 @@ void M_Menu_Quit_f( void );
 
 void M_Menu_Credits( void );
 
-qboolean m_entersound;// play after drawing a frame, so caching
+bool m_entersound;// play after drawing a frame, so caching
 					  // won't disrupt the sound
 
 void ( *m_drawfunc )( void );
@@ -310,7 +310,7 @@ and both above and below y.
 void M_DrawCursor( int x, int y, int f )
 {
 	char            cursorname[ 80 ];
-	static qboolean cached;
+	static bool cached;
 
 	if ( !cached )
 	{
@@ -1703,7 +1703,7 @@ static menuframework_s s_loadgame_menu;
 static menuaction_s    s_loadgame_actions[ MAX_SAVEGAMES ];
 
 char     m_savestrings[ MAX_SAVEGAMES ][ 32 ];
-qboolean m_savevalid[ MAX_SAVEGAMES ];
+bool m_savevalid[ MAX_SAVEGAMES ];
 
 void Create_Savestrings( void )
 {
@@ -2960,7 +2960,7 @@ static void FreeFileList( char **list, int n )
 	free( list );
 }
 
-static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
+static bool IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 {
 	int  i;
 	char scratch[ 1024 ];
@@ -2980,7 +2980,7 @@ static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 
 extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
 
-static qboolean PlayerConfig_ScanDirectories( void )
+static bool PlayerConfig_ScanDirectories( void )
 {
 	char   findname[ 1024 ];
 	char   scratch[ 1024 ];
@@ -3140,7 +3140,7 @@ static int pmicmpfnc( const void *_a, const void *_b )
 }
 
 
-qboolean PlayerConfig_MenuInit( void )
+bool PlayerConfig_MenuInit( void )
 {
 	extern cvar_t *name;
 	extern cvar_t *skin;

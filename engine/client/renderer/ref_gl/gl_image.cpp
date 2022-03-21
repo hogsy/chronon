@@ -35,8 +35,8 @@ cvar_t *intensity;
 
 unsigned d_8to24table[ 256 ];
 
-static bool GL_Upload8( const byte *data, int width, int height, qboolean mipmap, qboolean is_sky );
-static bool GL_Upload32( unsigned *data, int width, int height, qboolean mipmap );
+static bool GL_Upload8( const byte *data, int width, int height, bool mipmap, bool is_sky );
+static bool GL_Upload32( unsigned *data, int width, int height, bool mipmap );
 
 
 int gl_solid_format = 3;
@@ -343,7 +343,7 @@ void GL_ImageList_f()
 
 int      scrap_allocated[ MAX_SCRAPS ][ BLOCK_WIDTH ];
 byte     scrap_texels[ MAX_SCRAPS ][ BLOCK_WIDTH * BLOCK_HEIGHT ];
-qboolean scrap_dirty;
+bool scrap_dirty;
 
 // returns a texture number and the position inside it
 int Scrap_AllocBlock( int w, int h, int *x, int *y )
@@ -672,7 +672,7 @@ void GL_MipMap( byte *in, int width, int height )
 	}
 }
 
-static bool GL_Upload32( unsigned *data, int width, int height, qboolean mipmap )
+static bool GL_Upload32( unsigned *data, int width, int height, bool mipmap )
 {
 	int   samples;
 	int   i, c;
@@ -721,7 +721,7 @@ static bool GL_Upload32( unsigned *data, int width, int height, qboolean mipmap 
 	return ( samples == gl_alpha_format );
 }
 
-static bool GL_Upload8( const byte *data, int width, int height, qboolean mipmap, qboolean is_sky )
+static bool GL_Upload8( const byte *data, int width, int height, bool mipmap, bool is_sky )
 {
 	unsigned trans[ 640 * 256 ];
 	int      i, s;

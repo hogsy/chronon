@@ -37,7 +37,7 @@ int	curtime;
 int Sys_Milliseconds (void)
 {
 	static int		base;
-	static qboolean	initialized = false;
+	static bool	initialized = false;
 
 	if (!initialized)
 	{	// let base retain 16 bits of effectively random data
@@ -61,7 +61,7 @@ char findbase[ MAX_OSPATH ];
 char findpath[ MAX_OSPATH ];
 int  findhandle;
 
-static qboolean CompareAttributes( unsigned found, unsigned musthave, unsigned canthave )
+static bool CompareAttributes( unsigned found, unsigned musthave, unsigned canthave )
 {
 	if ( ( found & _A_RDONLY ) && ( canthave & SFF_RDONLY ) )
 		return false;

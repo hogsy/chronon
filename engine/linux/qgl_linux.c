@@ -2663,7 +2663,7 @@ void *qwglGetProcAddress( char *symbol )
 ** 
 */
 
-qboolean QGL_Init( const char *dllname )
+bool QGL_Init( const char *dllname )
 {
 	// update 3Dfx gamma irrespective of underlying DLL
 	{
@@ -2716,7 +2716,7 @@ qboolean QGL_Init( const char *dllname )
 	return true;
 }
 
-void GLimp_EnableLogging( qboolean enable )
+void GLimp_EnableLogging( bool enable )
 {
 	if ( enable )
 	{

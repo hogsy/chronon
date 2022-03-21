@@ -178,7 +178,7 @@ void Com_Error( int code, const char *fmt, ... )
 	}
 #endif
 
-	static qboolean recursive = false;
+	static bool recursive = false;
 	if ( recursive ) Sys_Error( "Recursive error!" );
 	recursive = true;
 
@@ -424,7 +424,7 @@ Can delta from either a baseline or a previous packet_entity
 ==================
 */
 void MSG_WriteDeltaEntity( entity_state_t *from, entity_state_t *to,
-	sizebuf_t *msg, qboolean force, qboolean newentity ) {
+	sizebuf_t *msg, bool force, bool newentity ) {
 	int bits;
 
 	if( !to->number ) Com_Error( ERR_FATAL, "Unset entity number" );

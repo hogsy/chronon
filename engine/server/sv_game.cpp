@@ -31,7 +31,7 @@ PF_Unicast
 Sends the contents of the mutlicast buffer to a single client
 ===============
 */
-void PF_Unicast( edict_t *ent, qboolean reliable )
+void PF_Unicast( edict_t *ent, bool reliable )
 {
 	int       p;
 	client_t *client;
@@ -230,7 +230,7 @@ PF_inPVS
 Also checks portalareas so that doors block sight
 =================
 */
-qboolean PF_inPVS( vec3_t p1, vec3_t p2 )
+bool PF_inPVS( vec3_t p1, vec3_t p2 )
 {
 	int   leafnum;
 	int   cluster;
@@ -260,7 +260,7 @@ PF_inPHS
 Also checks portalareas so that doors block sound
 =================
 */
-qboolean PF_inPHS( vec3_t p1, vec3_t p2 )
+bool PF_inPHS( vec3_t p1, vec3_t p2 )
 {
 	int   leafnum;
 	int   cluster;

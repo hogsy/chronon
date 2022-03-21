@@ -87,7 +87,7 @@ SV_SetPlayer
 Sets sv_client and sv_player to the player with idnum Cmd_Argv(1)
 ==================
 */
-qboolean SV_SetPlayer( void )
+bool SV_SetPlayer( void )
 {
 	client_t   *cl;
 	int         i;
@@ -317,7 +317,7 @@ SV_WriteServerFile
 
 ==============
 */
-void SV_WriteServerFile( qboolean autosave )
+void SV_WriteServerFile( bool autosave )
 {
 	FILE      *f;
 	cvar_t    *var;
@@ -472,7 +472,7 @@ void SV_GameMap_f( void )
 	const char *map;
 	int         i;
 	client_t   *cl;
-	qboolean   *savedInuse;
+	bool   *savedInuse;
 
 	if ( Cmd_Argc() != 2 )
 	{
@@ -498,7 +498,7 @@ void SV_GameMap_f( void )
 			// clear all the client inuse flags before saving so that
 			// when the level is re-entered, the clients will spawn
 			// at spawn points instead of occupying body shells
-			savedInuse = static_cast< qboolean * >( malloc( maxclients->value * sizeof( qboolean ) ) );
+			savedInuse = static_cast< bool * >( malloc( maxclients->value * sizeof( bool ) ) );
 			for ( i = 0, cl = svs.clients; i < maxclients->value; i++, cl++ )
 			{
 				savedInuse[ i ] = cl->edict->inuse;

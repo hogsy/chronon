@@ -35,12 +35,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../client/client.h"
 
-static qboolean cdValid = false;
-static qboolean playing = false;
-static qboolean wasPlaying = false;
-static qboolean initialized = false;
-static qboolean enabled = true;
-static qboolean playLooping = false;
+static bool cdValid = false;
+static bool playing = false;
+static bool wasPlaying = false;
+static bool initialized = false;
+static bool enabled = true;
+static bool playLooping = false;
 static float    cdvolume;
 static byte     remap[ 100 ];
 static byte     playTrack;
@@ -100,7 +100,7 @@ static int CDAudio_GetAudioDiskInfo( void )
 }
 
 
-void CDAudio_Play( int track, qboolean looping )
+void CDAudio_Play( int track, bool looping )
 {
 	struct cdrom_tocentry entry;
 	struct cdrom_ti       ti;
@@ -426,7 +426,7 @@ int CDAudio_Init( void )
 	return 0;
 }
 
-void CDAudio_Activate( qboolean active )
+void CDAudio_Activate( bool active )
 {
 	if ( active )
 		CDAudio_Resume();

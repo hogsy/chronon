@@ -33,7 +33,7 @@ typedef struct
 
 extern viddef_t viddef;// global video state
 
-qboolean VID_GetModeInfo( int *width, int *height, int mode );
+bool VID_GetModeInfo( int *width, int *height, int mode );
 void     VID_NewWindow( int width, int height );
 
 // Video module initialisation etc

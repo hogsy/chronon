@@ -526,7 +526,7 @@ void COM_DefaultExtension( char *path, char *extension ) {
 ============================================================================
 */
 
-qboolean	bigendien;
+bool	bigendien;
 
 // can't just use function pointers, or dll linkage can
 // mess up when qcommon is included in multiple places
@@ -1070,7 +1070,7 @@ Some characters are illegal in info strings because they
 can mess up the server's parsing
 ==================
 */
-qboolean Info_Validate( char *s ) {
+bool Info_Validate( char *s ) {
 	if( strstr( s, "\"" ) )
 		return false;
 	if( strstr( s, ";" ) )

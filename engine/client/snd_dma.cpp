@@ -40,7 +40,7 @@ int s_registration_sequence;
 
 channel_t channels[ MAX_CHANNELS ];
 
-qboolean snd_initialized = false;
+bool snd_initialized = false;
 int      sound_started = 0;
 
 dma_t dma;
@@ -50,7 +50,7 @@ vec3_t listener_forward;
 vec3_t listener_right;
 vec3_t listener_up;
 
-qboolean s_registering;
+bool s_registering;
 
 int soundtime;  // sample PAIRS
 int paintedtime;// sample PAIRS
@@ -200,7 +200,7 @@ S_FindName
 
 ==================
 */
-sfx_t *S_FindName( const char *name, qboolean create )
+sfx_t *S_FindName( const char *name, bool create )
 {
 	int    i;
 	sfx_t *sfx;

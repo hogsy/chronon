@@ -25,12 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern void *cl_hwnd;
 
-static qboolean cdValid = false;
-static qboolean playing = false;
-static qboolean wasPlaying = false;
-static qboolean initialized = false;
-static qboolean enabled = false;
-static qboolean playLooping = false;
+static bool cdValid = false;
+static bool playing = false;
+static bool wasPlaying = false;
+static bool initialized = false;
+static bool enabled = false;
+static bool playLooping = false;
 static byte     remap[ 100 ];
 static byte     cdrom;
 static byte     playTrack;
@@ -107,7 +107,7 @@ static int CDAudio_GetAudioDiskInfo( void )
 }
 
 
-void CDAudio_Play2( int track, qboolean looping )
+void CDAudio_Play2( int track, bool looping )
 {
 	DWORD            dwReturn;
 	MCI_PLAY_PARMS   mciPlayParms;
@@ -182,7 +182,7 @@ void CDAudio_Play2( int track, qboolean looping )
 }
 
 
-void CDAudio_Play( int track, qboolean looping )
+void CDAudio_Play( int track, bool looping )
 {
 	// set a loop counter so that this track will change to the
 	// looptrack later
@@ -506,7 +506,7 @@ The window have been destroyed and recreated
 between a deactivate and an activate.
 ===========
 */
-void CDAudio_Activate( qboolean active )
+void CDAudio_Activate( bool active )
 {
 	if ( active )
 		CDAudio_Resume();
