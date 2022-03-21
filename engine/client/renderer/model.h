@@ -261,11 +261,6 @@ byte    *Mod_ClusterPVS( int cluster, model_t *model );
 
 void Mod_Modellist_f( void );
 
-void  *Hunk_Begin( size_t maxsize );
-void  *Hunk_Alloc( size_t size );
-size_t Hunk_End( void );
-void   Hunk_Free( void *base );
-
 void Mod_FreeAll( void );
 void Mod_Free( model_t *mod );
 
