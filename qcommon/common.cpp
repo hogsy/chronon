@@ -212,7 +212,7 @@ void Com_Error( int code, const char *fmt, ... )
 	if ( logfile )
 	{
 		fclose( logfile );
-		logfile = NULL;
+		logfile = nullptr;
 	}
 
 	Sys_Error( "%s", msg );
@@ -278,7 +278,7 @@ void MSG_WriteChar( sizebuf_t *sb, int c ) {
 	if( c < -128 || c > 127 ) Com_Error( ERR_FATAL, "MSG_WriteChar: range error" );
 #endif
 
-	buf = static_cast<byte *>( SZ_GetSpace( sb, 1 ) );
+	buf = SZ_GetSpace( sb, 1 );
 	buf[ 0 ] = c;
 }
 
@@ -289,7 +289,7 @@ void MSG_WriteByte( sizebuf_t *sb, int c ) {
 	if( c < 0 || c > 255 ) Com_Error( ERR_FATAL, "MSG_WriteByte: range error" );
 #endif
 
-	buf = static_cast<byte *>( SZ_GetSpace( sb, 1 ) );
+	buf = SZ_GetSpace( sb, 1 );
 	buf[ 0 ] = c;
 }
 
@@ -301,7 +301,7 @@ void MSG_WriteShort( sizebuf_t *sb, int c ) {
 		Com_Error( ERR_FATAL, "MSG_WriteShort: range error" );
 #endif
 
-	buf = static_cast<byte *>( SZ_GetSpace( sb, 2 ) );
+	buf = SZ_GetSpace( sb, 2 );
 	buf[ 0 ] = c & 0xff;
 	buf[ 1 ] = c >> 8;
 }
@@ -309,7 +309,7 @@ void MSG_WriteShort( sizebuf_t *sb, int c ) {
 void MSG_WriteLong( sizebuf_t *sb, int c ) {
 	byte *buf;
 
-	buf = static_cast<byte *>( SZ_GetSpace( sb, 4 ) );
+	buf = SZ_GetSpace( sb, 4 );
 	buf[ 0 ] = c & 0xff;
 	buf[ 1 ] = ( c >> 8 ) & 0xff;
 	buf[ 2 ] = ( c >> 16 ) & 0xff;
@@ -762,14 +762,14 @@ void SZ_Clear( sizebuf_t *buf ) {
 	buf->overflowed = false;
 }
 
-void *SZ_GetSpace( sizebuf_t *buf, size_t length ) {
-	void *data;
-
-	if( buf->cursize + length > buf->maxsize ) {
-		if( !buf->allowoverflow )
+byte *SZ_GetSpace( sizebuf_t *buf, size_t length )
+{
+	if ( buf->cursize + length > buf->maxsize )
+	{
+		if ( !buf->allowoverflow )
 			Com_Error( ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow set" );
 
-		if( length > buf->maxsize )
+		if ( length > buf->maxsize )
 			Com_Error( ERR_FATAL, "SZ_GetSpace: %i is > full buffer size", length );
 
 		Com_Printf( "SZ_GetSpace: overflow\n" );
@@ -777,29 +777,31 @@ void *SZ_GetSpace( sizebuf_t *buf, size_t length ) {
 		buf->overflowed = true;
 	}
 
-	data = buf->data + buf->cursize;
+	byte *data = buf->data + buf->cursize;
 	buf->cursize += length;
 
 	return data;
 }
 
-void SZ_Write( sizebuf_t *buf, const void *data, int length ) {
+void SZ_Write( sizebuf_t *buf, const void *data, int length )
+{
 	memcpy( SZ_GetSpace( buf, length ), data, length );
 }
 
-void SZ_Print( sizebuf_t *buf, const char *data ) {
-	int len;
+void SZ_Print( sizebuf_t *buf, const char *data )
+{
+	size_t len = strlen( data ) + 1;
 
-	len = strlen( data ) + 1;
-
-	if( buf->cursize ) {
-		if( buf->data[ buf->cursize - 1 ] )
-			memcpy( (byte *)SZ_GetSpace( buf, len ), data, len );  // no trailing 0
+	if ( buf->cursize )
+	{
+		if ( buf->data[ buf->cursize - 1 ] )
+			memcpy( SZ_GetSpace( buf, len ), data, len );// no trailing 0
 		else
-			memcpy( (byte *)SZ_GetSpace( buf, len - 1 ) - 1, data,
-				len );  // write over trailing 0
-	} else
-		memcpy( (byte *)SZ_GetSpace( buf, len ), data, len );
+			memcpy( SZ_GetSpace( buf, len - 1 ) - 1, data,
+			        len );// write over trailing 0
+	}
+	else
+		memcpy( SZ_GetSpace( buf, len ), data, len );
 }
 
 //============================================================================
