@@ -163,7 +163,7 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 	byte     *mask;
 	int       leafnum, cluster;
 	int       j;
-	qboolean  reliable;
+	bool  reliable;
 	int       area1, area2;
 
 	reliable = false;
@@ -277,7 +277,7 @@ void SV_StartSound( vec3_t origin, edict_t *entity, int channel,
 	int      i;
 	int      ent;
 	vec3_t   origin_v;
-	qboolean use_phs;
+	bool use_phs;
 
 	if ( volume < 0 || volume > 1.0 )
 		Com_Error( ERR_FATAL, "SV_StartSound: volume = %f", volume );
@@ -388,7 +388,7 @@ FRAME UPDATES
 SV_SendClientDatagram
 =======================
 */
-qboolean SV_SendClientDatagram( client_t *client )
+bool SV_SendClientDatagram( client_t *client )
 {
 	byte      msg_buf[ MAX_MSGLEN ];
 	sizebuf_t msg;
@@ -452,7 +452,7 @@ Returns true if the client is over its current
 bandwidth estimation and should not be sent another packet
 =======================
 */
-qboolean SV_RateDrop( client_t *c )
+bool SV_RateDrop( client_t *c )
 {
 	int total;
 	int i;

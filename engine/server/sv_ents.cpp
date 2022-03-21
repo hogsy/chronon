@@ -37,7 +37,7 @@ edict_t	*projectiles[MAX_PROJECTILES];
 int		numprojs;
 cvar_t  *sv_projectiles;
 
-qboolean SV_AddProjectileUpdate (edict_t *ent)
+bool SV_AddProjectileUpdate (edict_t *ent)
 {
 	if (!sv_projectiles)
 		sv_projectiles = Cvar_Get("sv_projectiles", "1", 0);

@@ -200,7 +200,7 @@ typedef struct model_s
 	//
 	// solid volume for clipping
 	//
-	qboolean clipbox;
+	bool clipbox;
 	vec3_t   clipmins, clipmaxs;
 
 	//
@@ -255,7 +255,7 @@ typedef struct model_s
 
 void     Mod_Init( void );
 void     Mod_ClearAll( void );
-model_t *Mod_ForName( const char *name, qboolean crash );
+model_t *Mod_ForName( const char *name, bool crash );
 mleaf_t *Mod_PointInLeaf( float *p, model_t *model );
 byte    *Mod_ClusterPVS( int cluster, model_t *model );
 

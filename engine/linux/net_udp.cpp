@@ -91,7 +91,7 @@ void SockadrToNetadr( struct sockaddr_in *s, netadr_t *a )
 }
 
 
-qboolean NET_CompareAdr( netadr_t a, netadr_t b )
+bool NET_CompareAdr( netadr_t a, netadr_t b )
 {
 	if ( a.ip[ 0 ] == b.ip[ 0 ] && a.ip[ 1 ] == b.ip[ 1 ] && a.ip[ 2 ] == b.ip[ 2 ] && a.ip[ 3 ] == b.ip[ 3 ] && a.port == b.port )
 		return true;
@@ -105,7 +105,7 @@ NET_CompareBaseAdr
 Compares without the port
 ===================
 */
-qboolean NET_CompareBaseAdr( netadr_t a, netadr_t b )
+bool NET_CompareBaseAdr( netadr_t a, netadr_t b )
 {
 	if ( a.type != b.type )
 		return false;
@@ -150,7 +150,7 @@ idnewt:28000
 192.246.40.70:28000
 =============
 */
-qboolean NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
+bool NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
 {
 	struct hostent *h;
 	char           *colon;
@@ -195,7 +195,7 @@ idnewt:28000
 192.246.40.70:28000
 =============
 */
-qboolean NET_StringToAdr( const char *s, netadr_t *a )
+bool NET_StringToAdr( const char *s, netadr_t *a )
 {
 	struct sockaddr_in sadr;
 
@@ -215,7 +215,7 @@ qboolean NET_StringToAdr( const char *s, netadr_t *a )
 }
 
 
-qboolean NET_IsLocalAddress( netadr_t adr )
+bool NET_IsLocalAddress( netadr_t adr )
 {
 	return NET_CompareAdr( adr, net_local_adr );
 }
@@ -228,7 +228,7 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 =============================================================================
 */
 
-qboolean NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
+bool NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
 {
 	int         i;
 	loopback_t *loop;
@@ -267,7 +267,7 @@ void NET_SendLoopPacket( netsrc_t sock, int length, void *data, netadr_t to )
 
 //=============================================================================
 
-qboolean NET_GetPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
+bool NET_GetPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
 {
 	struct sockaddr_in from;
 	int                net_socket;
@@ -406,7 +406,7 @@ NET_Config
 A single player game will only use the loopback code
 ====================
 */
-void NET_Config( qboolean multiplayer )
+void NET_Config( bool multiplayer )
 {
 	int i;
 
@@ -455,7 +455,7 @@ NET_Socket
 int NET_Socket( char *net_interface, int port )
 {
 	int      newsocket;
-	qboolean _true = true;
+	bool _true = true;
 	int      i = 1;
 
 	if ( ( newsocket = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == -1 )

@@ -153,7 +153,7 @@ void R_RenderBrushPoly( msurface_t *fa )
 {
 	int      maps;
 	image_t *image;
-	qboolean is_dynamic = false;
+	bool is_dynamic = false;
 
 	c_brush_polys++;
 
@@ -479,7 +479,7 @@ void R_DrawBrushModel( entity_t *e )
 {
 	vec3_t   mins, maxs;
 	int      i;
-	qboolean rotated;
+	bool rotated;
 
 	if ( currentmodel->nummodelsurfaces == 0 )
 		return;
@@ -810,7 +810,7 @@ static void LM_UploadBlock()
 }
 
 // returns a texture number and the position inside it
-static qboolean LM_AllocBlock( int w, int h, int *x, int *y )
+static bool LM_AllocBlock( int w, int h, int *x, int *y )
 {
 	int i, j;
 	int best, best2;

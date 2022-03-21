@@ -29,7 +29,7 @@ SV_FindIndex
 
 ================
 */
-int SV_FindIndex( const char *name, int start, int max, qboolean create )
+int SV_FindIndex( const char *name, int start, int max, bool create )
 {
 	int i;
 
@@ -166,7 +166,7 @@ clients along with it.
 
 ================
 */
-void SV_SpawnServer( char *server, char *spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame )
+void SV_SpawnServer( char *server, char *spawnpoint, server_state_t serverstate, bool attractloop, bool loadgame )
 {
 	int      i;
 	unsigned checksum;
@@ -382,7 +382,7 @@ another level:
 	map tram.cin+jail_e3
 ======================
 */
-void SV_Map( qboolean attractloop, const char *levelstring, qboolean loadgame )
+void SV_Map( bool attractloop, const char *levelstring, bool loadgame )
 {
 	char  level[ MAX_QPATH ];
 	char *ch;

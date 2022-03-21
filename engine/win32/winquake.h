@@ -32,6 +32,6 @@ extern LPDIRECTSOUNDBUFFER pDSBuf;
 extern DWORD gSndBufSize;
 
 extern void    *cl_hwnd;
-extern qboolean Minimized;
+extern bool Minimized;
 
-void IN_Activate( qboolean active );
+void IN_Activate( bool active );

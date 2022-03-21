@@ -73,7 +73,7 @@ cvar_t *joy_yawsensitivity;
 cvar_t *joy_upthreshold;
 cvar_t *joy_upsensitivity;
 
-qboolean in_appactive;
+bool in_appactive;
 
 // forward-referenced functions
 void IN_StartupJoystick();
@@ -91,7 +91,7 @@ void IN_JoyMove( usercmd_t *cmd );
 // mouse variables
 cvar_t *m_filter;
 
-qboolean mlooking;
+bool mlooking;
 
 void IN_MLookDown() { mlooking = true; }
 void IN_MLookUp()
@@ -111,10 +111,10 @@ static int mouse_x, mouse_y,
 
 static bool isMouseActive;// false when not focus app
 
-qboolean restore_spi;
-qboolean mouseinitialized;
+bool restore_spi;
+bool mouseinitialized;
 int      originalmouseparms[ 3 ], newmouseparms[ 3 ] = { 0, 0, 1 };
-qboolean mouseparmsvalid;
+bool mouseparmsvalid;
 
 static int window_center_x, window_center_y;
 
@@ -177,7 +177,7 @@ static int MapKey( int key )
 
 	if ( key >= K_MAX )
 	{
-		assert( 0 );
+		//assert( 0 );
 		return K_INVALID;
 	}
 
@@ -430,7 +430,7 @@ void IN_Shutdown()
  * The window may have been destroyed and recreated
  * between a deactivate and an activate.
  */
-void IN_Activate( qboolean active )
+void IN_Activate( bool active )
 {
 	Key_ClearStates();
 

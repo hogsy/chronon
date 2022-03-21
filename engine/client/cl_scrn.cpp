@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 float scr_con_current;// aproaches scr_conlines at scr_conspeed
 float scr_conlines;   // 0.0 to 1.0 lines of console to display
 
-qboolean scr_initialized;// ready to draw
+bool scr_initialized;// ready to draw
 
 int scr_draw_loading;
 

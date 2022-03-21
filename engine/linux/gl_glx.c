@@ -72,7 +72,7 @@ static GLXContext ctx = NULL;
 
 // this is inside the renderer shared lib, so these are called from vid_so
 
-static qboolean mouse_avail;
+static bool mouse_avail;
 static int      mx, my;
 static int      old_mouse_x, old_mouse_y;
 
@@ -87,13 +87,13 @@ static cvar_t *r_fakeFullscreen;
 static XF86VidModeModeInfo **vidmodes;
 static int                   default_dotclock_vidmode;
 static int                   num_vidmodes;
-static qboolean              vidmode_active = false;
+static bool              vidmode_active = false;
 
-static qboolean mlooking;
+static bool mlooking;
 
-static qboolean mouse_active = false;
-static qboolean dgamouse = false;
-static qboolean vidmode_ext = false;
+static bool mouse_active = false;
+static bool dgamouse = false;
+static bool vidmode_ext = false;
 
 // state struct passed in Init
 static in_state_t *in_state;
@@ -325,7 +325,7 @@ void RW_IN_Frame( void )
 {
 }
 
-void RW_IN_Activate( qboolean active )
+void RW_IN_Activate( bool active )
 {
 	if ( active || vidmode_active )
 		IN_ActivateMouse();
@@ -472,7 +472,7 @@ static void HandleEvents( void )
 {
 	XEvent   event;
 	int      b;
-	qboolean dowarp = false;
+	bool dowarp = false;
 	int      mwx = vid.width / 2;
 	int      mwy = vid.height / 2;
 
@@ -576,8 +576,8 @@ void KBD_Close( void )
 
 /*****************************************************************************/
 
-static qboolean GLimp_SwitchFullscreen( int width, int height );
-qboolean        GLimp_InitGL( void );
+static bool GLimp_SwitchFullscreen( int width, int height );
+bool        GLimp_InitGL( void );
 
 static void signal_handler( int sig )
 {
@@ -602,7 +602,7 @@ static void InitSig( void )
 /*
 ** GLimp_SetMode
 */
-int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
+int GLimp_SetMode( int *pwidth, int *pheight, int mode, bool fullscreen )
 {
 	int width, height;
 	int attrib[] = {
@@ -829,7 +829,7 @@ void GLimp_EndFrame( void )
 /*
 ** GLimp_AppActivate
 */
-void GLimp_AppActivate( qboolean active )
+void GLimp_AppActivate( bool active )
 {
 }
 

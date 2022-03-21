@@ -157,7 +157,7 @@ void     R_RenderBrushPoly( msurface_t *fa );
 void     R_InitParticleTexture( void );
 void     Draw_InitLocal( void );
 void     GL_SubdivideSurface( msurface_t *fa );
-qboolean R_CullBox( vec3_t mins, vec3_t maxs );
+bool R_CullBox( vec3_t mins, vec3_t maxs );
 void     R_RotateForEntity( entity_t *e );
 void     R_MarkLeaves( void );
 
@@ -236,13 +236,13 @@ typedef struct
 	const char *version_string;
 	const char *extensions_string;
 
-	qboolean allow_cds;
+	bool allow_cds;
 } glconfig_t;
 
 typedef struct
 {
 	float    inverse_intensity;
-	qboolean fullscreen;
+	bool fullscreen;
 
 	int prev_mode;
 
@@ -277,7 +277,7 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 
 void    GLimp_EndFrame( void );
 void    GLimp_Shutdown( void );
-rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, qboolean fullscreen );
-void    GLimp_AppActivate( qboolean active );
-void    GLimp_EnableLogging( qboolean enable );
+rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bool fullscreen );
+void    GLimp_AppActivate( bool active );
+void    GLimp_EnableLogging( bool enable );
 void    GLimp_LogNewFrame( void );

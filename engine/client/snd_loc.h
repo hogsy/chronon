@@ -55,7 +55,7 @@ typedef struct playsound_s
 	float               attenuation;
 	int                 entnum;
 	int                 entchannel;
-	qboolean            fixed_origin;// use origin field instead of entnum's origin
+	bool            fixed_origin;// use origin field instead of entnum's origin
 	vec3_t              origin;
 	unsigned            begin;// begin on this sample
 } playsound_t;
@@ -85,8 +85,8 @@ typedef struct
 	vec3_t   origin;      // only use if fixed_origin is set
 	vec_t    dist_mult;   // distance multiplier (attenuation/clipK)
 	int      master_vol;  // 0-255 master volume
-	qboolean fixed_origin;// use origin instead of fetching entnum's origin
-	qboolean autosound;   // from an entity->sound, cleared each frame
+	bool fixed_origin;// use origin instead of fetching entnum's origin
+	bool autosound;   // from an entity->sound, cleared each frame
 } channel_t;
 
 typedef struct
@@ -109,7 +109,7 @@ typedef struct
 */
 
 // initializes cycling through a DMA buffer and returns information on it
-qboolean SNDDMA_Init( void );
+bool SNDDMA_Init( void );
 
 // gets the current DMA position
 int SNDDMA_GetDMAPos( void );

@@ -34,7 +34,7 @@ typedef struct cmdalias_s
 
 cmdalias_t	*cmd_alias;
 
-qboolean	cmd_wait;
+bool	cmd_wait;
 
 #define	ALIAS_LOOP_COUNT	16
 int		alias_count;		// for detecting runaway loops
@@ -257,7 +257,7 @@ the client and server initialize for the first time.
 Other commands are added late, after all initialization is complete.
 ===============
 */
-void Cbuf_AddEarlyCommands (qboolean clear)
+void Cbuf_AddEarlyCommands (bool clear)
 {
 	int		i;
 	const char	*s;
@@ -290,13 +290,13 @@ Returns true if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
-qboolean Cbuf_AddLateCommands (void)
+bool Cbuf_AddLateCommands (void)
 {
 	int		i, j;
 	int		s;
 	char	*text, *build, c;
 	int		argc;
-	qboolean	ret;
+	bool	ret;
 
 // build the combined string to parse from
 	s = 0;
@@ -544,7 +544,7 @@ Cmd_MacroExpandString
 static const char *Cmd_MacroExpandString (const char *text)
 {
 	int		i, j, count, len;
-	qboolean	inquote;
+	bool	inquote;
 	const char	*scan;
 	static	char	expanded[MAX_STRING_CHARS];
 	char	temporary[MAX_STRING_CHARS];
@@ -619,7 +619,7 @@ Parses the given string into command line tokens.
 $Cvars will be expanded unless they are in a quoted token
 ============
 */
-void Cmd_TokenizeString (const char *text, qboolean macroExpand)
+void Cmd_TokenizeString (const char *text, bool macroExpand)
 {
 	int		i;
 	const char	*com_token;
@@ -751,7 +751,7 @@ void	Cmd_RemoveCommand (const char *cmd_name)
 Cmd_Exists
 ============
 */
-qboolean	Cmd_Exists (char *cmd_name)
+bool	Cmd_Exists (char *cmd_name)
 {
 	cmd_function_t	*cmd;
 

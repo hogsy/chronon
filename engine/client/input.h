@@ -31,4 +31,4 @@ void IN_Frame( void );
 void IN_Move( usercmd_t *cmd );
 // add additional movement on top of the keyboard move cmd
 
-void IN_Activate( qboolean active );
+void IN_Activate( bool active );

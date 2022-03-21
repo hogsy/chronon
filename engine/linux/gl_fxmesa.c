@@ -51,8 +51,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 glwstate_t glw_state;
 
-static qboolean GLimp_SwitchFullscreen( int width, int height );
-qboolean        GLimp_InitGL( void );
+static bool GLimp_SwitchFullscreen( int width, int height );
+bool        GLimp_InitGL( void );
 
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_ref;
@@ -119,7 +119,7 @@ static void InitSig( void )
 /*
 ** GLimp_SetMode
 */
-int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
+int GLimp_SetMode( int *pwidth, int *pheight, int mode, bool fullscreen )
 {
 	int   width, height;
 	GLint attribs[ 32 ];
@@ -210,7 +210,7 @@ void GLimp_EndFrame( void )
 /*
 ** GLimp_AppActivate
 */
-void GLimp_AppActivate( qboolean active )
+void GLimp_AppActivate( bool active )
 {
 }
 

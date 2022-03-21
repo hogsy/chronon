@@ -31,4 +31,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <GL/glew.h>
 
-qboolean QGL_Init( void );
+bool QGL_Init( void );

@@ -139,9 +139,9 @@ extern int   key_repeats[ K_MAX ];
 extern int      anykeydown;
 extern char     chat_buffer[];
 extern int      chat_bufferlen;
-extern qboolean chat_team;
+extern bool chat_team;
 
-void Key_Event( int key, qboolean down, unsigned time );
+void Key_Event( int key, bool down, unsigned time );
 void Key_Init( void );
 void Key_WriteBindings( FILE *f );
 void Key_SetBinding( int keynum, const char *binding );
