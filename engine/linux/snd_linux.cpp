@@ -62,6 +62,7 @@ bool SNDDMA_Init(  )
 
 	// open /dev/dsp, confirm capability to mmap, and get size of dma buffer
 
+#if 0
 	if ( !audio_fd )
 	{
 		seteuid( saved_euid );
@@ -230,6 +231,9 @@ bool SNDDMA_Init(  )
 
 	snd_inited = 1;
 	return true;
+#else
+return false;
+#endif
 }
 
 int SNDDMA_GetDMAPos(  )

@@ -380,6 +380,9 @@ uid_t saved_euid;
 
 int CDAudio_Init( void )
 {
+#if 1
+	return -1;
+#else
 	int          i;
 	cvar_t      *cv;
 
@@ -424,6 +427,7 @@ int CDAudio_Init( void )
 	Com_Printf( "CD Audio Initialized\n" );
 
 	return 0;
+#endif
 }
 
 void CDAudio_Activate( bool active )
