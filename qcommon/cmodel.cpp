@@ -548,7 +548,6 @@ Loads in the map and all submodels
 cmodel_t *CM_LoadMap ( const char *name, bool clientload, uint32_t *checksum)
 {
 	unsigned		*buf;
-	int				i;
 	dheader_t		header;
 	int				length;
 	static uint32_t	last_checksum;
@@ -596,7 +595,7 @@ cmodel_t *CM_LoadMap ( const char *name, bool clientload, uint32_t *checksum)
 	*checksum = last_checksum;
 
 	header = *(dheader_t *)buf;
-	for (i=0 ; i<sizeof(dheader_t)/4 ; i++)
+	for (unsigned int i=0 ; i<sizeof(dheader_t)/4 ; i++)
 		((int *)&header)[i] = LittleLong ( ((int *)&header)[i]);
 
 	if (header.version != BSPVERSION)
