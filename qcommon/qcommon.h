@@ -743,7 +743,7 @@ extern unsigned int time_before_ref;
 extern unsigned int time_after_ref;
 
 void Z_Free( void *ptr );
-void *Z_Malloc( int size );  // returns 0 filled memory
+void *Z_Malloc( size_t size );  // returns 0 filled memory
 void *Z_TagMalloc( size_t size, int16_t tag );
 void Z_FreeTags( int tag );
 
