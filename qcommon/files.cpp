@@ -148,12 +148,6 @@ static bool FS_DecompressFile( const uint8_t *srcBuffer, size_t srcLength, uint8
 
 static bool FS_MountPackage( FILE *filePtr, const char *identity, Package *out )
 {
-	if ( filePtr == nullptr )
-	{
-		Com_Printf( "WARNING: Invalid file handle!\n" );
-		return false;
-	}
-
 	if ( identity == nullptr || identity[ 0 ] == '\0' )
 	{
 		Com_Printf( "WARNING: Invalid package identity!\n" );
@@ -173,7 +167,7 @@ static bool FS_MountPackage( FILE *filePtr, const char *identity, Package *out )
 
 	// and now ensure it's as desired!
 	header.magic = LittleLong( ( int ) header.magic );
-	if ( header.magic == ADAT_MAGIC )
+	if ( header.magic != ADAT_MAGIC )
 	{
 		Com_Printf( "WARNING: Invalid magic, expected \"ADAT\"!\n" );
 		return false;

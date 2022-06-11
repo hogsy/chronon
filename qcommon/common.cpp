@@ -173,9 +173,7 @@ void Com_Error( int code, const char *fmt, ... )
 #if !defined( NDEBUG )
 	// Let us catch fails as soon as we reach here
 	if ( code == ERR_FATAL )
-	{
-		raise( SIGABRT );
-	}
+		abort();
 #endif
 
 	static bool recursive = false;
@@ -955,9 +953,9 @@ typedef struct zhead_s {
 	size_t size;
 } zhead_t;
 
-zhead_t z_chain;
-int z_count;
-size_t z_bytes;
+static zhead_t z_chain;
+static int z_count;
+static size_t z_bytes;
 
 void Z_Free( void *ptr )
 {
@@ -1013,7 +1011,7 @@ void *Z_TagMalloc( size_t size, int16_t tag )
 	return ( void * ) ( z + 1 );
 }
 
-void *Z_Malloc( int size ) { return Z_TagMalloc( size, 0 ); }
+void *Z_Malloc( size_t size ) { return Z_TagMalloc( size, 0 ); }
 
 //============================================================================
 

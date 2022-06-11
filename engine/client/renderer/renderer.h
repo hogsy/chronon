@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma once
 
 #include "../client.h"
-#include "client/ref.h"
-#include "client/vid.h"
+#include "../ref.h"
+#include "../vid.h"
 
 #include "model.h"
 
