@@ -26,6 +26,7 @@ if (WIN32)
             win32/q_shwin.cpp
             win32/snd_win.cpp
             )
+    link_directories(../3rdparty/sdl2/lib/)
 elseif (APPLE)
     file(GLOB ENGINE_PLATFORM_SOURCE
             null/cd_null.cpp
@@ -136,11 +137,14 @@ target_include_directories(engine PRIVATE
         ../3rdparty/glew/include/
         )
 
-find_package(SDL2 CONFIG REQUIRED)
-if (WIN32)
-    target_link_libraries(engine SDL2::SDL2 SDL2::SDL2main)
-else ()
+find_package(SDL2 CONFIG)
+if (${SDL2_FOUND})
     target_link_libraries(engine SDL2::SDL2-static)
+else ()
+    message("Linking against SDL2 in repository.")
+    target_include_directories(engine PRIVATE ../3rdparty/sdl2/include/)
+    target_link_directories(engine PRIVATE ../3rdparty/sdl2/lib/)
+    target_link_libraries(engine SDL2)
 endif ()
 
 set(OpenGL_GL_PREFERENCE GLVND)
@@ -148,17 +152,8 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(engine ${OPENGL_LIBRARIES})
 
 if (WIN32)
-    if (MSVC)
-        target_link_options(engine PRIVATE
-                /NODEFAULTLIB:libcmt.lib
-                /NODEFAULTLIB:libcmtd.lib
-                )
-    elseif (MINGW)
-        target_link_libraries(engine
-                mingw32
-                )
-    endif ()
     target_link_libraries(engine
+            mingw32
             Imm32
             Setupapi
             Version

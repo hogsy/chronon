@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // common.c -- misc functions used in client and server
 
 #include <csetjmp>
-#include <csignal>
 
 #include "qcommon.h"
 #include "app.h"
@@ -39,15 +38,15 @@ FILE *log_stats_file;
 cvar_t *host_speeds;
 cvar_t *log_stats;
 cvar_t *developer;
-cvar_t *timescale;
-cvar_t *fixedtime;
-cvar_t *logfile_active;  // 1 = buffer log, 2 = flush after each print
-cvar_t *showtrace;
+static cvar_t *timescale;
+static cvar_t *fixedtime;
+static cvar_t *logfile_active;  // 1 = buffer log, 2 = flush after each print
+static cvar_t *showtrace;
 cvar_t *dedicated;
 
-FILE *logfile;
+static FILE *logfile;
 
-int server_state;
+static int server_state;
 
 // host_speeds times
 unsigned int time_before_game;

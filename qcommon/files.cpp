@@ -88,7 +88,7 @@ struct Package
 		file.read( ( char * ) src.data(), fileIndex->compressedLength );
 
 		// decompress it
-		auto   dst = new uint8_t[ fileIndex->length ];
+		auto   dst = ( uint8_t   *) Z_Malloc( fileIndex->length );
 		size_t dstLength = fileIndex->length;
 		bool   status = FS_DecompressFile( src.data(), fileIndex->compressedLength, dst, &dstLength, fileIndex->length );
 
@@ -100,7 +100,7 @@ struct Package
 			return dst;
 		}
 
-		delete[] dst;
+		Z_Free( dst );
 
 		return nullptr;
 	}
@@ -245,7 +245,9 @@ The "game directory" is the first tree on the search path and directory that all
  */
 long FS_GetLocalFileLength( const char *path )
 {
-	struct stat buf{};
+	struct stat buf
+	{
+	};
 	if ( stat( path, &buf ) != 0 )
 		return -1;
 
@@ -336,7 +338,7 @@ void *FS_FOpenFile( const char *filename, uint32_t *length )
 		p++;
 
 		// see if we have a match!
-		for ( const auto& i : search->packDirectories )
+		for ( const auto &i : search->packDirectories )
 		{
 			if ( i.second.mappedDir != rootFolder )
 				continue;
@@ -420,7 +422,7 @@ int FS_LoadFile( const char *path, void **buffer )
 
 	// look for it in the filesystem or pack files
 	uint32_t length;
-	void *buf = FS_FOpenFile( upath, &length );
+	void    *buf = FS_FOpenFile( upath, &length );
 	if ( buf == nullptr )
 	{
 		if ( buffer != nullptr )

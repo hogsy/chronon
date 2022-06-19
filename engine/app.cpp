@@ -43,9 +43,7 @@ void nox::App::Initialize()
 			SDL_INIT_JOYSTICK |
 			SDL_INIT_TIMER );
 	if ( status != 0 )
-	{
 		Sys_Error( "Failed to initialized SDL2: %s\n", SDL_GetError() );
-	}
 
 	Qcommon_Init( argc_, argv_ );
 }
@@ -156,8 +154,15 @@ void nox::App::ShowCursor( bool show )
 	SDL_ShowCursor( show );
 }
 
+#if defined( _WIN32 )
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
+{
+	int    argc = __argc;
+	char **argv = __argv;
+#else
 extern "C" int main( int argc, char **argv )
 {
+#endif
 	nox::globalApp = new nox::App( argc, argv );
 
 	// todo: consider combining these??
