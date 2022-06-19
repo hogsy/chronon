@@ -68,6 +68,14 @@ Alternatively, feel free to ping me an email at [hogsy@oldtimes-software.com](ma
 1. Use `vcpkg_setup_msvc.bat`; this will fetch vcpkg and install the dependencies
 2. Now use `cmake_generate_vs2022-x64.bat` which will generate the Visual Studio solution for you under a new `build` directory
 
+#### MinGW-w64 
+
+You can download MinGW-w64 from [here](https://www.mingw-w64.org/) and of course will require
+CMake as well which can be found [here](https://cmake.org/).
+
+For now a copy of SDL2 is retained in the repo specifically for compiling against MinGW-w64, as
+the one included in *vcpkg* currently doesn't compile.
+
 ### macOS w/ Apple Silicon
 
 No plans to support "legacy" x86/x64 based devices right now unless someone else steps in to do it.
