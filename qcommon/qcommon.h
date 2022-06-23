@@ -802,20 +802,3 @@ void SCR_BeginLoadingPlaque( void );
 void SV_Init( void );
 void SV_Shutdown( const char *finalmsg, bool reconnect );
 void SV_Frame( unsigned int msec );
-
-/**********************************************
-	Linked Lists
-**********************************************/
-
-typedef struct LinkedListNode LinkedListNode;
-typedef struct LinkedList LinkedList;
-
-LinkedList *LL_CreateLinkedList( void );
-LinkedListNode *LL_InsertLinkedListNode( LinkedList *list, void *userPtr );
-LinkedListNode *LL_GetNextLinkedListNode( LinkedListNode *node );
-LinkedListNode *LL_GetPrevLinkedListNode( LinkedListNode *node );
-LinkedListNode *LL_GetRootNode( LinkedList *list );
-void *LL_GetLinkedListNodeUserData( LinkedListNode *node );
-void LL_DestroyLinkedListNode( LinkedList *list, LinkedListNode *node );
-void LL_DestroyLinkedListNodes( LinkedList *list );
-void LL_DestroyLinkedList( LinkedList *list );

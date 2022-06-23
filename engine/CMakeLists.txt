@@ -81,7 +81,6 @@ add_executable(engine WIN32
         ../qcommon/crc.cpp
         ../qcommon/cvar.cpp
         ../qcommon/files.cpp
-        ../qcommon/llist.cpp
         ../qcommon/md4.cpp
         ../qcommon/net_chan.cpp
         ../qcommon/pmove.cpp
