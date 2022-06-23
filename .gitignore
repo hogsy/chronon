@@ -339,25 +339,14 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-/3.21_Changes.txt
-/3.20_Changes.txt
-/3.19_Changes.txt
-/3.18_changes.txt
-/3.17_Changes.txt
-/3.16_Changes.txt
-/3.15_Changes.txt
-
-/quake2.mak
-/quake2.dsw
-/quake2.dsp
-/quake2.bcp
-/quake2.bce
-/quake2.001
-/makefile
-
 # Generated directories
+/.PVS-Studio
 /vcpkg
 /build
 
+# Generated files
+*.cfg
+
 **/DebugAxp
 /cmake-build-debug/
+/3rdparty/miniz/miniz.1.PVS-Studio.cfg
