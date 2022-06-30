@@ -34,6 +34,7 @@ else ()
             -Wno-unused-function
             -Wno-unused-variable
             -Wno-format-truncation
+            -Wno-class-memaccess
             -fvisibility=hidden
     )
 endif ()
