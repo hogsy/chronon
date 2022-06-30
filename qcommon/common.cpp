@@ -931,9 +931,7 @@ void *M_Alloc( size_t size )
 {
 	void *data = calloc( size, 1 );
 	if ( data == nullptr )
-	{
 		Com_Error( ERR_FATAL, "Failed to allocate %u bytes!\n", size );
-	}
 
 	return data;
 }
@@ -992,9 +990,7 @@ void *Z_TagMalloc( size_t size, int16_t tag )
 	size += sizeof( zhead_t );
 	z = ( zhead_t * ) M_Alloc( size );
 	if ( !z )
-	{
 		Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes", size );
-	}
 
 	z_count++;
 	z_bytes += size;

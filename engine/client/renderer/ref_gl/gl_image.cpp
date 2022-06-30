@@ -22,7 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gl_local.h"
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
 #include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_STATIC
+#include "stb_image_write.h"
 
 image_t gltextures[ MAX_GLTEXTURES ];
 int     numgltextures;
@@ -1260,9 +1264,20 @@ int Image_GetSurfaceFlagsForName( const std::string &path )
 {
 	auto i = textureSurfaceFlags.find( nox::StringToLower( path ) );
 	if ( i == textureSurfaceFlags.end() )
-	{
 		return 0;
-	}
 
 	return i->second;
+}
+
+bool Image_WritePNG( const std::string &path, const void *buf, int w, int h, int c, bool flip )
+{
+	stbi_flip_vertically_on_write( flip );
+	if ( stbi_write_png( path.c_str(), w, h, c, buf, 0 ) == 0 )
+	{
+		Com_Printf( "Failed to write PNG: \"%s\"!\n", path.c_str() );
+		return false;
+	}
+
+	Com_Printf( "Wrote \"%s\"\n", path.c_str() );
+	return true;
 }

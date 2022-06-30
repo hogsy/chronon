@@ -170,7 +170,7 @@ void      R_ClearSkyBox( void );
 void      R_DrawSkyBox( void );
 void      R_MarkLights( dlight_t *light, int bit, mnode_t *node );
 
-void COM_StripExtension( char *in, char *out );
+void COM_StripExtension( const char *in, char *out );
 
 struct image_s *Draw_FindPic( const char *name );
 
@@ -201,6 +201,8 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type );
 void     GL_TextureMode( char *string );
 void     GL_ImageList_f( void );
 int      Image_GetSurfaceFlagsForName( const std::string &path );
+
+bool Image_WritePNG( const std::string &path, const void *buf, int w, int h, int c, bool flip );
 
 void GL_SetTexturePalette( unsigned palette[ 256 ] );
 

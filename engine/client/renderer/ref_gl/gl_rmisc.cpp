@@ -131,81 +131,44 @@ void R_InitParticleTexture( void )
 ==============================================================================
 */
 
-typedef struct _TargaHeader
+void GL_ScreenShot_f()
 {
-	unsigned char  id_length, colormap_type, image_type;
-	unsigned short colormap_index, colormap_length;
-	unsigned char  colormap_size;
-	unsigned short x_origin, y_origin, width, height;
-	unsigned char  pixel_size, attributes;
-} TargaHeader;
-
-
-/*
-==================
-GL_ScreenShot_f
-==================
-*/
-void GL_ScreenShot_f( void )
-{
-	byte *buffer;
-	char  picname[ 80 ];
-	char  checkname[ MAX_OSPATH ];
-	int   i, c, temp;
-	FILE *f;
-
-	// create the scrnshots directory if it doesn't exist
+	// create the screenshots directory if it doesn't exist
+	char checkname[ MAX_OSPATH ];
 	Com_sprintf( checkname, sizeof( checkname ), "%s/screenshots", FS_Gamedir() );
 	Sys_Mkdir( checkname );
 
-	//
-	// find a file name to save it to
-	//
-	strcpy( picname, "00.tga" );
+	// Updated the below so that we're no longer limited to 99 screenshots ~hogsy
 
-	for ( i = 0; i <= 99; i++ )
+	std::string outDir = std::string( FS_Gamedir() ) + "/screenshots/";
+	if ( r_worldmodel != nullptr )
 	{
-		picname[ 0 ] = i / 10 + '0';
-		picname[ 1 ] = i % 10 + '0';
-		Com_sprintf( checkname, sizeof( checkname ), "%s/screenshots/%s", FS_Gamedir(), picname );
-		f = fopen( checkname, "rb" );
-		if ( !f )
-			break;// file doesn't exist
-		fclose( f );
-	}
-	if ( i == 100 )
-	{
-		Com_Printf( "SCR_ScreenShot_f: Couldn't create a file\n" );
-		return;
+		const char *p = strrchr( r_worldmodel->name, '/' );
+		if ( p == nullptr )
+			p = r_worldmodel->name;
+
+		if ( *p == '/' )
+			p++;
+
+		char tmp[ MAX_QPATH ];
+		COM_StripExtension( p, tmp );
+		outDir += tmp;
 	}
 
-
-	buffer = ( byte * ) malloc( vid.width * vid.height * 3 + 18 );
-	memset( buffer, 0, 18 );
-	buffer[ 2 ] = 2;// uncompressed type
-	buffer[ 12 ] = vid.width & 255;
-	buffer[ 13 ] = vid.width >> 8;
-	buffer[ 14 ] = vid.height & 255;
-	buffer[ 15 ] = vid.height >> 8;
-	buffer[ 16 ] = 24;// pixel size
-
-	glReadPixels( 0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18 );
-
-	// swap rgb to bgr
-	c = 18 + vid.width * vid.height * 3;
-	for ( i = 18; i < c; i += 3 )
+	std::string outPath;
+	for ( int i = 0;; ++i )
 	{
-		temp = buffer[ i ];
-		buffer[ i ] = buffer[ i + 2 ];
-		buffer[ i + 2 ] = temp;
+		outPath = outDir + "_" + std::to_string( i ) + ".png";
+		if ( !FS_LocalFileExists( outPath.c_str() ) )
+			break;
 	}
 
-	f = fopen( checkname, "wb" );
-	fwrite( buffer, 1, c, f );
-	fclose( f );
+	byte *buffer = ( byte * ) Z_Malloc( vid.width * vid.height * 4 );
+	glReadPixels( 0, 0, vid.width, vid.height, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
 
-	free( buffer );
-	Com_Printf( "Wrote %s\n", picname );
+	Image_WritePNG( outPath, buffer, vid.width, vid.height, 4, true );
+
+	Z_Free( buffer );
 }
 
 /*
