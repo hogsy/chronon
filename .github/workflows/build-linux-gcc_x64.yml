@@ -16,7 +16,7 @@ jobs:
     steps:    
     - uses: actions/checkout@v2.4.0
     
-    - run: sudo apt install gcc g++ make
+    - run: sudo apt install gcc g++ make libsdl2-dev
     
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
