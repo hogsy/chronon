@@ -187,8 +187,9 @@ static bool FS_MountPackage( FILE *filePtr, const char *identity, Package *out )
 		return false;
 	}
 
-	auto package = new Package();
 	out->mappedDir = identity;
+	std::transform( out->mappedDir.begin(), out->mappedDir.end(), out->mappedDir.begin(), []( unsigned char c )
+	                { return std::tolower( c ); } );
 
 	// seek to the table of contents
 	fseek( filePtr, ( long ) header.tocOffset, SEEK_SET );
@@ -470,18 +471,19 @@ static void FS_AddGameDirectory( const char *dir )
 
 	/* now go ahead and mount all the default packages under that dir */
 
+	//TODO: are these upper-case for all releases?
 	static const char *defaultPacks[] = {
-			"battle",
-			"gameflow",
-			"graphics",
-			"maps",
-			"models",
-			"objects",
-			"particles",
-			"scripts",
-			"sound",
-			"sprites",
-			"textures",
+			"BATTLE",
+			"GAMEFLOW",
+			"GRAPHICS",
+			"MAPS",
+			"MODELS",
+			"OBJECTS",
+			"PARTICLES",
+			"SCRIPTS",
+			"SOUND",
+			"SPRITES",
+			"TEXTURES",
 	};
 
 	for ( auto &defaultPack : defaultPacks )
@@ -492,7 +494,10 @@ static void FS_AddGameDirectory( const char *dir )
 
 		FILE *filePtr = fopen( packPath.c_str(), "rb" );
 		if ( filePtr == nullptr )
+		{
+			Com_Error( ERR_FATAL, "Failed to find default pack: %s\n", packPath.c_str() );
 			continue;
+		}
 
 		Package package;
 		if ( FS_MountPackage( filePtr, defaultPack, &package ) )
