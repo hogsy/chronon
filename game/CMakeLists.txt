@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ]]
 
-add_library(game MODULE
+add_library(hosae-game STATIC
         g_ai.cpp
         g_chase.cpp
         g_cmds.cpp
@@ -46,8 +46,4 @@ add_library(game MODULE
         q_shared.cpp
         )
 
-set_target_properties(game
-        PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/release/anoxdata"
-        PREFIX ""
-        )
+target_compile_definitions(hosae-game PRIVATE GAME_HARD_LINKED)

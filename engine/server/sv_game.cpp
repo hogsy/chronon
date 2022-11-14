@@ -306,7 +306,6 @@ void SV_ShutdownGameProgs()
 	if ( !ge )
 		return;
 	ge->Shutdown();
-	Sys_UnloadGame();
 	ge = nullptr;
 }
 
@@ -385,13 +384,7 @@ void SV_InitGameProgs( void )
 	import.LoadFile = FS_LoadFile;
 	import.FreeFile = FS_FreeFile;
 
-	ge = ( game_export_t * ) Sys_GetGameAPI( &import );
-
-	if ( !ge )
-		Com_Error( ERR_DROP, "failed to load game DLL" );
-	if ( ge->apiversion != GAME_API_VERSION )
-		Com_Error( ERR_DROP, "game is version %i, not %i", ge->apiversion,
-		           GAME_API_VERSION );
-
+	game_export_t *GetGameAPI( game_import_t * import );
+	ge = ( game_export_t * ) GetGameAPI( &import );
 	ge->Init();
 }

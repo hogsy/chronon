@@ -41,11 +41,9 @@ cvar_t	*timelimit;
 cvar_t	*password;
 cvar_t	*spectator_password;
 cvar_t	*needpass;
-cvar_t	*maxclients;
 cvar_t	*maxspectators;
 cvar_t	*maxentities;
 cvar_t	*g_select_empty;
-cvar_t	*dedicated;
 
 cvar_t	*filterban;
 
@@ -108,13 +106,7 @@ Returns a pointer to the structure with all entry points
 and global variables
 =================
 */
-extern "C"
-#if defined( _MSC_VER )
-        __declspec(dllexport)
-#else
-        __attribute__((visibility("default")))
-#endif
-        game_export_t *GetGameAPI (game_import_t *import)
+game_export_t *GetGameAPI (game_import_t *import)
 {
 	gi = *import;
 

@@ -43,7 +43,7 @@ elseif (UNIX)
             )
 endif ()
 
-add_executable(engine WIN32
+add_executable(hosae-engine WIN32
         app.cpp
         hunk.cpp
         input.cpp
@@ -120,36 +120,37 @@ add_executable(engine WIN32
         ../3rdparty/miniz/miniz.c
         ../3rdparty/glew/src/glew.c
         )
-add_dependencies(engine game)
 
-set_target_properties(engine PROPERTIES OUTPUT_NAME hosae)
+set_target_properties(hosae-engine PROPERTIES OUTPUT_NAME hosae)
 
-target_compile_definitions(engine PRIVATE
+target_compile_definitions(hosae-engine PRIVATE
         GLEW_STATIC
         )
-target_include_directories(engine PRIVATE
+target_include_directories(hosae-engine PRIVATE
         ./
         ../
         ../3rdparty/
         ../3rdparty/glew/include/
         )
 
+target_link_libraries(hosae-engine hosae-game)
+
 find_package(SDL2 CONFIG)
 if (${SDL2_FOUND})
-    target_link_libraries(engine SDL2::SDL2-static)
+    target_link_libraries(hosae-engine SDL2::SDL2-static)
 else ()
     message("Linking against SDL2 in repository.")
-    target_include_directories(engine PRIVATE ../3rdparty/sdl2/include/)
-    target_link_directories(engine PRIVATE ../3rdparty/sdl2/lib/)
-    target_link_libraries(engine SDL2)
+    target_include_directories(hosae-engine PRIVATE ../3rdparty/sdl2/include/)
+    target_link_directories(hosae-engine PRIVATE ../3rdparty/sdl2/lib/)
+    target_link_libraries(hosae-engine SDL2)
 endif ()
 
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-target_link_libraries(engine ${OPENGL_LIBRARIES})
+target_link_libraries(hosae-engine ${OPENGL_LIBRARIES})
 
 if (WIN32)
-    target_link_libraries(engine
+    target_link_libraries(hosae-engine
             mingw32
             Imm32
             Setupapi
@@ -158,5 +159,5 @@ if (WIN32)
             Winmm
             )
 elseif (UNIX AND NOT APPLE)
-    target_link_libraries(engine X11 Xext dl)
+    target_link_libraries(hosae-engine X11 Xext dl)
 endif ()

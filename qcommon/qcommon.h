@@ -778,8 +778,6 @@ namespace nox
 	void Sys_MessageBox( const char *error, MessageBoxType boxType );
 }
 
-void Sys_UnloadGame( void );
-void *Sys_GetGameAPI( void *parms );
 // loads the game dll and calls the api init function
 
 void Sys_Error( const char *error, ... );
