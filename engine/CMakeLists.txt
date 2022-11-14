@@ -137,7 +137,7 @@ target_link_libraries(hosae-engine hosae-game)
 
 find_package(SDL2 CONFIG)
 if (${SDL2_FOUND})
-    target_link_libraries(hosae-engine SDL2::SDL2-static)
+    target_link_libraries(hosae-engine ${SDL2_LIBRARIES})
 else ()
     message("Linking against SDL2 in repository.")
     target_include_directories(hosae-engine PRIVATE ../3rdparty/sdl2/include/)
