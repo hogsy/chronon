@@ -87,70 +87,111 @@ static const std::map< std::string, EntityCustomClassSpawnFunction > entityTypes
 	{ "floater", ProtoSpawner },
 };
 
-static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength ) {
+static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength )
+{
 	EntityCustomClassDeclaration customClass;
 	memset( &customClass, 0, sizeof( EntityCustomClassDeclaration ) );
 
-	for( nox::uint i = 0; i < 24; ++i ) {
+	for ( nox::uint i = 0; i < 24; ++i )
+	{
 		const char *token = Script_Parse( &lineDef, "|\n" );
-		if( token == nullptr ) {
+		if ( token == nullptr )
+		{
 			break;
 		}
 
 		// This is fucking awful, but I can't think of a better way right now
-		switch( i ) {
-		case 0: // classname
-			snprintf( customClass.className, sizeof( customClass.className ), "%s", token );
-			break;
-		case 1: // model_path
-			snprintf( customClass.modelPath, sizeof( customClass.modelPath ), "%s", token );
-			break;
+		switch ( i )
+		{
+			case 0:// classname
+				snprintf( customClass.className, sizeof( customClass.className ), "%s", token );
+				break;
+			case 1:// model_path
+				snprintf( customClass.modelPath, sizeof( customClass.modelPath ), "%s", token );
+				break;
 
-		case 2: // scale_x
-			customClass.scale[ 0 ] = strtof( token, nullptr );
-			break;
-		case 3: // scale_y
-			customClass.scale[ 1 ] = strtof( token, nullptr );
-			break;
-		case 4: // scale_z
-			customClass.scale[ 2 ] = strtof( token, nullptr );
-			break;
+			case 2:// scale_x
+				customClass.scale[ 0 ] = strtof( token, nullptr );
+				break;
+			case 3:// scale_y
+				customClass.scale[ 1 ] = strtof( token, nullptr );
+				break;
+			case 4:// scale_z
+				customClass.scale[ 2 ] = strtof( token, nullptr );
+				break;
 
-		case 5: // entity_type
-			snprintf( customClass.entityType, sizeof( customClass.entityType ), "%s", token );
-			break;
+			case 5:// entity_type
+				snprintf( customClass.entityType, sizeof( customClass.entityType ), "%s", token );
+				break;
 
-		case 6: // box_xmin
-			customClass.bbMins[ 0 ] = strtof( token, nullptr );
-			break;
-		case 7: // box_ymin
-			customClass.bbMins[ 1 ] = strtof( token, nullptr );
-			break;
-		case 8: // box_zmin
-			customClass.bbMins[ 2 ] = strtof( token, nullptr );
-			break;
+			case 6:// box_xmin
+				customClass.bbMins[ 0 ] = strtof( token, nullptr );
+				break;
+			case 7:// box_ymin
+				customClass.bbMins[ 1 ] = strtof( token, nullptr );
+				break;
+			case 8:// box_zmin
+				customClass.bbMins[ 2 ] = strtof( token, nullptr );
+				break;
 
-		case 9: // box_xmax
-			customClass.bbMaxs[ 0 ] = strtof( token, nullptr );
-			break;
-		case 10: // box_ymax
-			customClass.bbMaxs[ 1 ] = strtof( token, nullptr );
-			break;
-		case 11: // box_zmax
-			customClass.bbMaxs[ 2 ] = strtof( token, nullptr );
-			break;
+			case 9:// box_xmax
+				customClass.bbMaxs[ 0 ] = strtof( token, nullptr );
+				break;
+			case 10:// box_ymax
+				customClass.bbMaxs[ 1 ] = strtof( token, nullptr );
+				break;
+			case 11:// box_zmax
+				customClass.bbMaxs[ 2 ] = strtof( token, nullptr );
+				break;
 
-		case 12: // noshadow
-			customClass.showShadow = ( Q_strcasecmp( token, "shadow" ) == 0 );
-			break;
+			case 12:// noshadow
+				customClass.showShadow = ( Q_strcasecmp( token, "shadow" ) == 0 );
+				break;
 
-		default:
-			gi.dprintf( "Skipping field %s\n", token );
-			break;
+			case 13:// solidflag
+				customClass.solidFlag = strtoul( token, nullptr, 10 );
+				break;
+
+			case 14://walk_speed
+				customClass.walkSpeed = strtof( token, nullptr );
+				break;
+			case 15://run_speed
+				customClass.runSpeed = strtof( token, nullptr );
+				break;
+			case 16://speed
+				customClass.speed = strtof( token, nullptr );
+				break;
+
+			case 17://lighting
+				customClass.lighting = strtoul( token, nullptr, 10 );
+				break;
+			case 18://blending
+				customClass.blending = strtoul( token, nullptr, 10 );
+				break;
+			case 19://target sequence
+				snprintf( customClass.targetSequence, sizeof( customClass.targetSequence ), "%s", token );
+				break;
+			case 20://misc_value
+				customClass.miscValue = strtol( token, nullptr, 10 );
+				break;
+			case 21://no_mip
+				customClass.noMip = ( *token != '0' );
+				break;
+			case 22://spawn sequence
+				snprintf( customClass.spawnSequence, sizeof( customClass.spawnSequence ), "%s", token );
+				break;
+			case 23://description
+				snprintf( customClass.description, sizeof( customClass.description ), "%s", token );
+				break;
+
+			default:
+				gi.dprintf( "Skipping field %s\n", token );
+				break;
 		}
 	}
 
-	if( *customClass.className == '\0' ) {
+	if ( *customClass.className == '\0' )
+	{
 		gi.error( "Invalid classname for custom entity class in \"models/entity.dat\"!\n" );
 	}
 
