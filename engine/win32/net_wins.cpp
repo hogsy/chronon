@@ -381,7 +381,7 @@ bool NET_GetPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
 			continue;
 		}
 
-		if ( ret == net_message->maxsize )
+		if ( ret == ( int ) net_message->maxsize )
 		{
 			Com_Printf( "Oversize packet from %s\n", NET_AdrToString( *net_from ) );
 			continue;
@@ -693,7 +693,7 @@ A single player game will only use the loopback code
 */
 void NET_Config( bool multiplayer )
 {
-	int             i;
+	int         i;
 	static bool old_config;
 
 	if ( old_config == multiplayer )
@@ -765,15 +765,9 @@ static WSADATA winsockdata;
 NET_Init
 ====================
 */
-void NET_Init( void )
+void NET_Init()
 {
-	WORD wVersionRequested;
-	int  r;
-
-	wVersionRequested = MAKEWORD( 1, 1 );
-
-	r = WSAStartup( MAKEWORD( 1, 1 ), &winsockdata );
-
+	int r = WSAStartup( MAKEWORD( 1, 1 ), &winsockdata );
 	if ( r )
 		Com_Error( ERR_FATAL, "Winsock initialization failed." );
 

@@ -39,8 +39,8 @@ cvar_t *intensity;
 
 unsigned d_8to24table[ 256 ];
 
-static bool GL_Upload8( const byte *data, int width, int height, bool mipmap, bool is_sky );
-static bool GL_Upload32( unsigned *data, int width, int height, bool mipmap );
+static bool GL_Upload8( const byte *data, uint32_t width, uint32_t height, bool mipmap, bool is_sky );
+static bool GL_Upload32( unsigned *data, uint32_t width, uint32_t height, bool mipmap );
 
 
 int gl_solid_format = 3;
@@ -133,12 +133,12 @@ void GL_SelectTexture( GLenum texture )
 	glClientActiveTexture( texture );
 }
 
-void GL_TexEnv( GLenum mode )
+void GL_TexEnv( int32_t mode )
 {
 	static int lastmodes[ 2 ] = { -1, -1 };
 	if ( mode != lastmodes[ gl_state.currenttmu ] )
 	{
-		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode );
+		glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, ( GLint ) mode );
 		lastmodes[ gl_state.currenttmu ] = mode;
 	}
 }
@@ -676,18 +676,17 @@ void GL_MipMap( byte *in, int width, int height )
 	}
 }
 
-static bool GL_Upload32( unsigned *data, int width, int height, bool mipmap )
+static bool GL_Upload32( unsigned *data, uint32_t width, uint32_t height, bool mipmap )
 {
 	int   samples;
-	int   i, c;
 	byte *scan;
 	int   comp;
 
 	// scan the texture for any non-255 alpha
-	c = width * height;
+	unsigned int c = width * height;
 	scan = ( ( byte * ) data ) + 3;
 	samples = gl_solid_format;
-	for ( i = 0; i < c; i++, scan += 4 )
+	for ( unsigned int i = 0; i < c; i++, scan += 4 )
 	{
 		if ( *scan != 255 )
 		{
@@ -708,7 +707,7 @@ static bool GL_Upload32( unsigned *data, int width, int height, bool mipmap )
 		comp = samples;
 	}
 
-	glTexImage2D( GL_TEXTURE_2D, 0, comp, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+	glTexImage2D( GL_TEXTURE_2D, 0, comp, ( GLsizei ) width, ( GLsizei ) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 
 	if ( mipmap )
 	{
@@ -725,18 +724,16 @@ static bool GL_Upload32( unsigned *data, int width, int height, bool mipmap )
 	return ( samples == gl_alpha_format );
 }
 
-static bool GL_Upload8( const byte *data, int width, int height, bool mipmap, bool is_sky )
+static bool GL_Upload8( const byte *data, uint32_t width, uint32_t height, bool mipmap, bool is_sky )
 {
 	unsigned trans[ 640 * 256 ];
-	int      i, s;
 	int      p;
 
-	s = width * height;
-
+	unsigned int s = width * height;
 	if ( s > sizeof( trans ) / 4 )
 		Com_Error( ERR_DROP, "GL_Upload8: too large" );
 
-	for ( i = 0; i < s; i++ )
+	for ( unsigned int i = 0; i < s; i++ )
 	{
 		p = data[ i ];
 		trans[ i ] = d_8to24table[ p ];
@@ -745,7 +742,7 @@ static bool GL_Upload8( const byte *data, int width, int height, bool mipmap, bo
 		{// transparent, so scan around for another color
 			// to avoid alpha fringes
 			// FIXME: do a full flood fill so mips work...
-			if ( i > width && data[ i - width ] != 255 )
+			if ( i > ( unsigned int ) width && data[ i - width ] != 255 )
 				p = data[ i - width ];
 			else if ( i < s - width && data[ i + width ] != 255 )
 				p = data[ i + width ];

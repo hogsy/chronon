@@ -108,12 +108,12 @@ Builds the string that is sent as heartbeats and status replies
 */
 char *SV_StatusString( void )
 {
-	char        player[ 1024 ];
-	static char status[ MAX_MSGLEN - 16 ];
-	int         i;
-	client_t   *cl;
-	int         statusLength;
-	int         playerLength;
+	char         player[ 1024 ];
+	static char  status[ MAX_MSGLEN - 16 ];
+	int          i;
+	client_t    *cl;
+	unsigned int statusLength;
+	unsigned int playerLength;
 
 	strcpy( status, Cvar_Serverinfo() );
 	strcat( status, "\n" );
