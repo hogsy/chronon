@@ -20,6 +20,15 @@ hopefully be fine from a legal standpoint.
 - Make the game easier to modify
 - Improved visuals
 
+## Immediate Roadmap
+
+- [ ] Modernise renderer w/ modern OpenGL (i.e. 3.3)
+- [ ] Finalise MD2 loader
+  - [ ] Multiple skin support
+  - [ ] Vertex key morphing (for facial animation)
+  - [ ] MDA specification - ensure all features are supported
+- [ ] Virtual machine for APE scripts
+
 ## Features
 
 [![Screenshot](preview/thumb_01.png)](preview/01.webp)
