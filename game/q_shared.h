@@ -66,11 +66,16 @@ typedef unsigned char byte; // todo: move this into our own namespace...
 
 #define Q_UNUSED( ... ) ( void ) ( __VA_ARGS__ )
 
-#define Q_ByteToFloat( a ) ( float ) ( ( a ) / 255.0f )
-#define Q_FloatToByte( a ) ( uint8_t )( ( a ) *255 )
+#define Q_BYTE_TO_FLOAT( a ) ( float ) ( ( a ) / 255.0f )
+#define Q_FLOAT_TO_BYTE( a ) ( uint8_t )( ( a ) *255 )
 
 #define Q_BITFLAG( NAME, INDEX ) NAME = ( 1 << ( INDEX ) )
-#define Q_ARRAY_LENGTH( a )      ( sizeof( a ) / sizeof( *( a ) ) )
+
+#define Q_ARRAY_ELEMENTS( a )  ( sizeof( a ) / sizeof( *( a ) ) )// Returns the number of elements within an array.
+#define Q_MAX_ARRAY_INDEX( a ) ( int ) ( PL_ARRAY_ELEMENTS( a ) - 1 )
+
+#define Q_ZERO( DATA, SIZE ) memset( ( DATA ), 0, ( SIZE ) )
+#define Q_ZERO_( DATA )      memset( &( DATA ), 0, sizeof( ( DATA ) ) )
 
 #ifndef NULL
 #define NULL ((void *)0)
