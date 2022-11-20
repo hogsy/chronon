@@ -1,45 +1,43 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-Copyright (C) 2020-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright (C) 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
-namespace nox
+#include "../shader_manager.h"
+
+namespace nox::renderer::gl
 {
-	class GLShaderProgram
+	class ShaderProgram : public IShaderProgram
 	{
 	public:
-		GLShaderProgram();
+		ShaderProgram();
+		~ShaderProgram();
 
-		bool LoadShaderStage( const std::string &path );
+		bool LoadShaderStage( const std::string &path, Stage stage );
+
+		void Enable() override;
+		void Disable() override;
+
+		void Reload() override;
 
 	protected:
 	private:
-		std::string path_;
+		uint32_t glProgram{ 0 };
+		uint32_t glStages[ ( uint32_t ) Stage::MAX_STAGES ];
+
+		std::string fragmentPath;
+		std::string vertexPath;
 	};
 
-	class GLShaderManager
+	class ShaderManager : public IShaderManager
 	{
 	public:
+		ShaderManager() {}
+		~ShaderManager() {}
+
+
+
 	protected:
 	private:
-		std::map< std::string, GLShaderProgram > programs_;
 	};
-}// namespace nox
+}// namespace nox::renderer::gl

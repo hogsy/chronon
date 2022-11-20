@@ -1,23 +1,79 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-Copyright (C) 2020-2021 Mark E Sowden <hogsy@oldtimes-software.com>
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright (C) 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "gl_local.h"
 #include "gl_shader_manager.h"
+
+nox::renderer::gl::ShaderProgram::ShaderProgram()
+{
+	Q_ZERO( glStages, sizeof( uint32_t ) * Stage::MAX_STAGES );
+}
+
+nox::renderer::gl::ShaderProgram::~ShaderProgram()
+{
+}
+
+bool nox::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path, Stage stage )
+{
+	assert( glStages[ stage ] == 0 );
+	if ( glStages[ stage ] != 0 )
+	{
+		Com_Printf( "A stage of this type has already been cached!\n" );
+		return false;
+	}
+
+	GLenum glStage;
+	assert( stage < Stage::MAX_STAGES );
+	if ( stage == Stage::STAGE_PIXEL )
+	{
+		glStage = GL_VERTEX_SHADER;
+	}
+	else if ( stage == Stage::STAGE_VERTEX )
+	{
+		glStage = GL_FRAGMENT_SHADER;
+	}
+	else
+	{
+		Com_Printf( "Unsupported shader stage: %u\n", stage );
+		return false;
+	}
+
+	XGL_CALL( glStages[ stage ] = glCreateShader( glStage ) );
+	if ( glStages[ stage ] == 0 )
+	{
+		Com_Printf( "An error occurred on stage creation!\n" );
+		return false;
+	}
+
+	char *buffer;
+	int   length = FS_LoadFile( path.c_str(), ( void   **) &buffer );
+	if ( length == -1 )
+	{
+		Com_Printf( "Failed to open shader: %s\n", path.c_str() );
+		XGL_CALL( glDeleteShader( glStages[ stage ] ) );
+		glStages[ stage ] = 0;
+		return false;
+	}
+
+	return false;
+}
+
+void nox::renderer::gl::ShaderProgram::Enable()
+{
+	assert( glProgram != 0 );
+	if ( glProgram == 0 )
+	{
+		//TODO: use fallback
+		return;
+	}
+	XGL_CALL( glUseProgram( glProgram ) );
+}
+
+void nox::renderer::gl::ShaderProgram::Disable()
+{
+	XGL_CALL( glUseProgram( 0 ) );
+}
+
+void nox::renderer::gl::ShaderProgram::Reload()
+{
+}

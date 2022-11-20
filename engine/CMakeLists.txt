@@ -97,6 +97,7 @@ add_executable(hosae-engine WIN32
         # -- generic
         client/renderer/light.cpp
         client/renderer/material.cpp
+        client/renderer/shader_manager.cpp
 
         # Server
         server/sv_ccmds.cpp
