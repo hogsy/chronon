@@ -26,30 +26,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // As provided by entity.dat
 struct EntityCustomClassDeclaration {
-	char className[ 64 ];
-	char modelPath[ MAX_QPATH ];
+	char className[ 64 ]{ '\0' };
+	char modelPath[ MAX_QPATH ]{ '\0' };
 
-	vec3_t scale;
+	vec3_t scale{ 0.0f, 0.0f, 0.0f };
 
-	char entityType[ 64 ];
+	char entityType[ 64 ]{ '\0' };
 
-	vec3_t bbMins;
-	vec3_t bbMaxs;
+	vec3_t bbMins{ 0.0f, 0.0f, 0.0f };
+	vec3_t bbMaxs{ 0.0f, 0.0f, 0.0f };
 
-	bool showShadow;
+	bool showShadow{ false };
 
-	unsigned int solidFlag;
+	unsigned int solidFlag{ 0 };
 
-	float walkSpeed;
-	float runSpeed;
-	float speed;
+	float walkSpeed{ 0.0f };
+	float runSpeed{ 0.0f };
+	float speed{ 0.0f };
 
-	unsigned int lighting, blending;
-	char targetSequence[ 64 ];
-	int miscValue;
-	bool noMip;
-	char spawnSequence[ 64 ];
-	char description[ 64 ];
+	unsigned int lighting{ 0 }, blending{ 0 };
+	char targetSequence[ 64 ]{ '\0' };
+	int miscValue{ 0 };
+	bool noMip{ false };
+	char spawnSequence[ 64 ]{ '\0' };
+	char description[ 64 ]{ '\0' };
 };
 static std::map< std::string, EntityCustomClassDeclaration > entityCustomClasses;
 
@@ -90,8 +90,6 @@ static const std::map< std::string, EntityCustomClassSpawnFunction > entityTypes
 static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength )
 {
 	EntityCustomClassDeclaration customClass;
-	memset( &customClass, 0, sizeof( EntityCustomClassDeclaration ) );
-
 	for ( nox::uint i = 0; i < 24; ++i )
 	{
 		const char *token = Script_Parse( &lineDef, "|\n" );
@@ -198,32 +196,44 @@ static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength )
 	entityCustomClasses.insert( std::make_pair( customClass.className, customClass ) );
 }
 
-static void Spawn_PopulateCustomClassList( void ) {
+static void Spawn_PopulateCustomClassList( void )
+{
+	//TODO: should have a global static init for game to register this crap!
+	if ( !entityCustomClasses.empty() )
+	{
+		return;
+	}
+
 	char *fileBuffer;
-	gi.LoadFile( "models/entity.dat", (void **)&fileBuffer );
-	if( fileBuffer == nullptr ) {
+	gi.LoadFile( "models/entity.dat", ( void ** ) &fileBuffer );
+	if ( fileBuffer == nullptr )
+	{
 		gi.error( "Failed to find \"models/entity.dat\"!\n" );
 	}
 
 	const char *p = fileBuffer;
-	while( true ) {
+	while ( true )
+	{
 		p = Script_SkipWhitespace( p );
-		if( p == nullptr ) {
+		if ( p == nullptr )
+		{
 			break;
 		}
 
 		const char *oldPos = p;
 		p = Script_SkipComment( p );
-		if( p != oldPos ) {
+		if ( p != oldPos )
+		{
 			continue;
 		}
 
 		// Read in the line
 		size_t lLength = Script_GetLineLength( p ) + 1;
-		char *lBuf = (char *)gi.TagMalloc( lLength, TAG_GAME );
+		char  *lBuf = ( char  *) gi.TagMalloc( lLength, TAG_GAME );
 
 		p = Script_GetLine( p, lBuf, lLength );
-		if( *lBuf == ';' || *lBuf == '\0' ) {
+		if ( *lBuf == ';' || *lBuf == '\0' )
+		{
 			gi.TagFree( lBuf );
 			break;
 		}
