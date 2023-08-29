@@ -1,17 +1,13 @@
-# HOSAE<br>hogsy's Open-Source Anachronox Engine
+# Chronon
 
 [![Build (Windows GCC x64)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml)
 [![Build (Linux GCC x64)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml)
 
 ## What is this?
 
-This is an open-source reimplementation of Anachronox, built on top of the
-Quake 2 engine (which funnily enough is the same engine Anachronox was
-developed upon).
+This is an open-source reimplementation of Anachronox, built on top of the Quake 2 engine (which funnily enough is the same engine Anachronox was developed upon).
 
-It's important to note that this project is operating to reimplement the game through 
-publicly available documentation and observation, rather than dissassembly, which should 
-hopefully be fine from a legal standpoint.
+It's important to note that this project is operating to reimplement the game through publicly available documentation and observation, rather than dissassembly, which should hopefully be fine from a legal standpoint.
 
 ## Project Goals
 
@@ -37,11 +33,11 @@ hopefully be fine from a legal standpoint.
 [![Screenshot](preview/thumb_04.png)](preview/04.webp)
 [![Screenshot](preview/thumb_06.png)](preview/06.webp)
 
-It's still in a very early stage of development so nothing is playable yet.
+It's still in a very early stage of development, so nothing is playable yet.
 Below is a list of what's been done thus far.
 
 - Loading from Anachronox's _DAT_ packages
-- Engine can initialize itself from the Anachronox game directory
+- Engine can initialise itself from the Anachronox game directory
 - Some preliminary work on loading Anachronox's models
 - Supports the various texture formats Anachronox uses (e.g. PNG, BMP and TGA)
 - Respects custom texture surface flags, inc. alpha effects for textures
@@ -49,11 +45,11 @@ Below is a list of what's been done thus far.
 
 ### Extras
 
-These are extra features, the original game didn't necessarily feature, that this engine introduces.
+These are additional enhancements introduced here that the original game didn't necessarily feature.
 
 - Can target x86, x64 and ARM64 architectures
-- Support for both Windows and Linux
-- Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it)
+- Support for both Microsoft Windows and Linux
+- Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it!)
 - Higher-resolution texture replacements can be loaded in
     - Replacement textures need to be placed under a `hd` directory located under `anoxdata`
     - Can be enabled/disabled via `hd_override` cvar
