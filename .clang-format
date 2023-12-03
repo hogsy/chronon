@@ -1,17 +1,15 @@
-# Generated from CLion C/C++ Code Style settings
-BasedOnStyle: LLVM
+BasedOnStyle: Microsoft
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
-#AlignConsecutiveAssignments: AcrossComments
 AlignConsecutiveBitFields: Consecutive
 AlignConsecutiveMacros: Consecutive
-AlignConsecutiveDeclarations: Consecutive
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
-AllowAllArgumentsOnNextLine: false
-AllowAllConstructorInitializersOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
+AlignArrayOfStructures: Left
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
@@ -51,9 +49,9 @@ SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 0
 SpacesInAngles: true
 SpacesInCStyleCastParentheses: true
-SpacesInContainerLiterals: false
+SpacesInContainerLiterals: true
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
 TabWidth: 4
-UseTab: AlignWithSpaces
+UseTab: ForIndentation
 SortIncludes: Never

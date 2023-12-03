@@ -186,7 +186,7 @@ static int MapKey( int key )
 
 bool IN_HandleEvent( const SDL_Event &event )
 {
-	sys_msg_time = nox::globalApp->GetNumMilliseconds();
+	sys_msg_time = chr::globalApp->GetNumMilliseconds();
 
 	switch ( event.type )
 	{
@@ -278,7 +278,7 @@ void IN_ActivateMouse()
 	window_center_x = ( int ) viddef.width / 2;
 	window_center_y = ( int ) viddef.height / 2;
 
-	nox::globalApp->ShowCursor( false );
+	chr::globalApp->ShowCursor( false );
 }
 
 /**
@@ -293,7 +293,7 @@ void IN_DeactivateMouse()
 
 	isMouseActive = false;
 
-	nox::globalApp->ShowCursor( true );
+	chr::globalApp->ShowCursor( true );
 }
 
 void IN_StartupMouse()

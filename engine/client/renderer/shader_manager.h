@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace nox::renderer
+namespace chr::renderer
 {
 	class IShaderProgram
 	{
@@ -35,5 +35,5 @@ namespace nox::renderer
 		std::map< std::string, IShaderProgram * > programs;
 	};
 
-	nox::renderer::IShaderProgram *InitializeShaderManager();
+	chr::renderer::IShaderProgram *InitializeShaderManager();
 }// namespace nox::renderer

@@ -290,7 +290,7 @@ void CL_PrepRefresh( void )
 		if ( name[ 0 ] != '*' )
 			Com_Printf( "%s\r", name );
 		SCR_UpdateScreen();
-		nox::globalApp->SendKeyEvents();// pump message loop
+		chr::globalApp->SendKeyEvents();// pump message loop
 		if ( name[ 0 ] == '#' )
 		{
 			// special player weapon model
@@ -318,7 +318,7 @@ void CL_PrepRefresh( void )
 	for ( i = 1; i < MAX_IMAGES && cl.configstrings[ CS_IMAGES + i ][ 0 ]; i++ )
 	{
 		cl.image_precache[ i ] = Draw_FindPic( cl.configstrings[ CS_IMAGES + i ] );
-		nox::globalApp->SendKeyEvents();// pump message loop
+		chr::globalApp->SendKeyEvents();// pump message loop
 	}
 
 	Com_Printf( "                                     \r" );
@@ -328,7 +328,7 @@ void CL_PrepRefresh( void )
 			continue;
 		Com_Printf( "client %i\r", i );
 		SCR_UpdateScreen();
-		nox::globalApp->SendKeyEvents();// pump message loop
+		chr::globalApp->SendKeyEvents();// pump message loop
 		CL_ParseClientinfo( i );
 		Com_Printf( "                                     \r" );
 	}
@@ -461,7 +461,7 @@ void V_RenderView()
 	if ( cl_timedemo->value )
 	{
 		if ( !cl.timedemo_start )
-			cl.timedemo_start = nox::globalApp->GetNumMilliseconds();
+			cl.timedemo_start = chr::globalApp->GetNumMilliseconds();
 		cl.timedemo_frames++;
 	}
 

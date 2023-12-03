@@ -161,7 +161,7 @@ typedef struct {
 typedef struct entity_s entity_t;
 
 // TODO: move this...
-namespace nox
+namespace chr
 {
 	class AliasModel
 	{

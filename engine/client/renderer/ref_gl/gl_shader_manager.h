@@ -5,7 +5,7 @@
 
 #include "../shader_manager.h"
 
-namespace nox::renderer::gl
+namespace chr::renderer::gl
 {
 	class ShaderProgram : public IShaderProgram
 	{

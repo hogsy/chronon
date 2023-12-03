@@ -43,7 +43,7 @@ elseif (UNIX)
             )
 endif ()
 
-add_executable(hosae-engine WIN32
+add_executable(chronon-engine WIN32
         app.cpp
         hunk.cpp
         input.cpp
@@ -122,36 +122,36 @@ add_executable(hosae-engine WIN32
         ../3rdparty/glew/src/glew.c
         )
 
-set_target_properties(hosae-engine PROPERTIES OUTPUT_NAME hosae)
+set_target_properties(chronon-engine PROPERTIES OUTPUT_NAME Chronon)
 
-target_compile_definitions(hosae-engine PRIVATE
+target_compile_definitions(chronon-engine PRIVATE
         GLEW_STATIC
         )
-target_include_directories(hosae-engine PRIVATE
+target_include_directories(chronon-engine PRIVATE
         ./
         ../
         ../3rdparty/
         ../3rdparty/glew/include/
         )
 
-target_link_libraries(hosae-engine hosae-game)
+target_link_libraries(chronon-engine chronon-game)
 
 find_package(SDL2 CONFIG)
 if (${SDL2_FOUND})
-    target_link_libraries(hosae-engine ${SDL2_LIBRARIES})
+    target_link_libraries(chronon-engine ${SDL2_LIBRARIES})
 else ()
     message("Linking against SDL2 in repository.")
-    target_include_directories(hosae-engine PRIVATE ../3rdparty/sdl2/include/)
-    target_link_directories(hosae-engine PRIVATE ../3rdparty/sdl2/lib/)
-    target_link_libraries(hosae-engine SDL2)
+    target_include_directories(chronon-engine PRIVATE ../3rdparty/sdl2/include/)
+    target_link_directories(chronon-engine PRIVATE ../3rdparty/sdl2/lib/)
+    target_link_libraries(chronon-engine SDL2)
 endif ()
 
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-target_link_libraries(hosae-engine ${OPENGL_LIBRARIES})
+target_link_libraries(chronon-engine ${OPENGL_LIBRARIES})
 
 if (WIN32)
-    target_link_libraries(hosae-engine
+    target_link_libraries(chronon-engine
             mingw32
             Imm32
             Setupapi
@@ -160,5 +160,5 @@ if (WIN32)
             Winmm
             )
 elseif (UNIX AND NOT APPLE)
-    target_link_libraries(hosae-engine X11 Xext dl)
+    target_link_libraries(chronon-engine X11 Xext dl)
 endif ()

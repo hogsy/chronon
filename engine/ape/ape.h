@@ -5,7 +5,7 @@
 
 #include "../client/client.h"
 
-namespace nox::ape
+namespace chr::ape
 {
 	enum class OpCode
 	{

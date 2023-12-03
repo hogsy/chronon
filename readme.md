@@ -1,7 +1,7 @@
 # Chronon
 
-[![Build (Windows GCC x64)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml)
-[![Build (Linux GCC x64)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml)
+[![Build (Windows GCC x64)](https://github.com/hogsy/chronon/actions/workflows/build-windows-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-windows-gcc_x64.yml)
+[![Build (Linux GCC x64)](https://github.com/hogsy/chronon/actions/workflows/build-linux-gcc_x64.yml/badge.svg)](https://github.com/hogsy/hosae/actions/workflows/build-linux-gcc_x64.yml)
 
 ## What is this?
 

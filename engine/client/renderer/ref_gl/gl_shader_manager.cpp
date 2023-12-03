@@ -4,16 +4,16 @@
 #include "gl_local.h"
 #include "gl_shader_manager.h"
 
-nox::renderer::gl::ShaderProgram::ShaderProgram()
+chr::renderer::gl::ShaderProgram::ShaderProgram()
 {
 	Q_ZERO( glStages, sizeof( uint32_t ) * Stage::MAX_STAGES );
 }
 
-nox::renderer::gl::ShaderProgram::~ShaderProgram()
+chr::renderer::gl::ShaderProgram::~ShaderProgram()
 {
 }
 
-bool nox::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path, Stage stage )
+bool chr::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path, Stage stage )
 {
 	assert( glStages[ stage ] == 0 );
 	if ( glStages[ stage ] != 0 )
@@ -58,7 +58,7 @@ bool nox::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path,
 	return false;
 }
 
-void nox::renderer::gl::ShaderProgram::Enable()
+void chr::renderer::gl::ShaderProgram::Enable()
 {
 	assert( glProgram != 0 );
 	if ( glProgram == 0 )
@@ -69,11 +69,11 @@ void nox::renderer::gl::ShaderProgram::Enable()
 	XGL_CALL( glUseProgram( glProgram ) );
 }
 
-void nox::renderer::gl::ShaderProgram::Disable()
+void chr::renderer::gl::ShaderProgram::Disable()
 {
 	XGL_CALL( glUseProgram( 0 ) );
 }
 
-void nox::renderer::gl::ShaderProgram::Reload()
+void chr::renderer::gl::ShaderProgram::Reload()
 {
 }

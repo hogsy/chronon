@@ -92,7 +92,7 @@ Netchan_Init
 void Netchan_Init (void)
 {
 	// pick a port value that should be nice and random
-	unsigned int port = nox::globalApp->GetNumMilliseconds() & 0xffff;
+	unsigned int port = chr::globalApp->GetNumMilliseconds() & 0xffff;
 
 	showpackets = Cvar_Get ("showpackets", "0", 0);
 	showdrop = Cvar_Get ("showdrop", "0", 0);
@@ -155,7 +155,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->sock = sock;
 	chan->remote_address = adr;
 	chan->qport = qport;
-	chan->last_received = nox::globalApp->GetCurrentMillisecond();
+	chan->last_received = chr::globalApp->GetCurrentMillisecond();
 	chan->incoming_sequence = 0;
 	chan->outgoing_sequence = 1;
 
@@ -243,7 +243,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	w2 = ( chan->incoming_sequence & ~(1<<31) ) | (chan->incoming_reliable_sequence<<31);
 
 	chan->outgoing_sequence++;
-	chan->last_sent = nox::globalApp->GetCurrentMillisecond();
+	chan->last_sent = chr::globalApp->GetCurrentMillisecond();
 
 	MSG_WriteLong (&send, w1);
 	MSG_WriteLong (&send, w2);
@@ -378,7 +378,7 @@ bool Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 //
 // the message can now be read from the current message pointer
 //
-	chan->last_received = nox::globalApp->GetCurrentMillisecond();
+	chan->last_received = chr::globalApp->GetCurrentMillisecond();
 
 	return true;
 }

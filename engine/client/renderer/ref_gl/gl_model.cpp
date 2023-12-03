@@ -957,7 +957,7 @@ void Mod_LoadMDAModel( model_t *mod, void *buffer )
 
 void Mod_LoadAliasModel( model_t *mod, void *buffer )
 {
-	auto *aliasModel = new nox::AliasModel();
+	auto *aliasModel = new chr::AliasModel();
 	if ( !aliasModel->LoadFromBuffer( buffer ) )
 	{
 		Com_Printf( "Failed to load model, \"%s\", from buffer!\n", mod->name );
@@ -975,7 +975,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer )
 	mod->maxs[ 2 ] = 32.0f;
 
 	mod->extradata = aliasModel;
-	mod->extradatasize = sizeof( nox::AliasModel );
+	mod->extradatasize = sizeof( chr::AliasModel );
 
 	mod->numframes = aliasModel->GetNumFrames();
 
@@ -1119,7 +1119,7 @@ void Mod_Free( model_t *mod )
 {
 	if ( mod->type == mod_alias )
 	{
-		auto *aliasModel = static_cast< nox::AliasModel * >( mod->extradata );
+		auto *aliasModel = static_cast< chr::AliasModel * >( mod->extradata );
 		delete aliasModel;
 	}
 	else
@@ -1148,10 +1148,10 @@ void Mod_FreeAll( void )
 
 //=============================================================================
 
-nox::AliasModel::AliasModel() = default;
-nox::AliasModel::~AliasModel() = default;
+chr::AliasModel::AliasModel() = default;
+chr::AliasModel::~AliasModel() = default;
 
-bool nox::AliasModel::LoadFromBuffer( const void *buffer )
+bool chr::AliasModel::LoadFromBuffer( const void *buffer )
 {
 	const dmdl_t *pinmodel = ( dmdl_t * ) buffer;
 	int           version = LittleLong( pinmodel->version );
@@ -1214,7 +1214,7 @@ bool nox::AliasModel::LoadFromBuffer( const void *buffer )
 	return true;
 }
 
-void nox::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
+void chr::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 {
 	uint ofs = LittleLong( mdl->ofs_skins );
 	for ( int i = 0; i < numSkins; ++i )
@@ -1226,7 +1226,7 @@ void nox::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 	}
 }
 
-void nox::AliasModel::LoadTriangles( const dmdl_t *mdl )
+void chr::AliasModel::LoadTriangles( const dmdl_t *mdl )
 {
 	struct dtriangle_t
 	{
@@ -1249,7 +1249,7 @@ void nox::AliasModel::LoadTriangles( const dmdl_t *mdl )
 	}
 }
 
-void nox::AliasModel::LoadTaggedTriangles( const dmdl_t *mdl )
+void chr::AliasModel::LoadTaggedTriangles( const dmdl_t *mdl )
 {
 	struct MD2TaggedSurface
 	{
@@ -1264,7 +1264,7 @@ void nox::AliasModel::LoadTaggedTriangles( const dmdl_t *mdl )
 		taggedTriangles_.emplace( taggedSurface->name, LittleLong( taggedSurface->triangleIndex ) );
 }
 
-void nox::AliasModel::LoadCommands( const dmdl_t *mdl )
+void chr::AliasModel::LoadCommands( const dmdl_t *mdl )
 {
 	uint       ofs = LittleLong( mdl->ofs_glcmds );
 	const int *dcmd = ( int * ) ( ( byte * ) mdl + ofs );
@@ -1272,7 +1272,7 @@ void nox::AliasModel::LoadCommands( const dmdl_t *mdl )
 		glCmds_.push_back( LittleLong( dcmd[ i ] ) );
 }
 
-void nox::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
+void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 {
 	frames_.resize( numFrames_ );
 
@@ -1380,7 +1380,7 @@ float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "anormtab.h"
 };
 
-void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const
+void chr::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const
 {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
@@ -1405,7 +1405,7 @@ void nox::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov,
 	}
 }
 
-void nox::AliasModel::ApplyLighting( const entity_t *e )
+void chr::AliasModel::ApplyLighting( const entity_t *e )
 {
 	if ( e->flags & RF_FULLBRIGHT )
 	{
@@ -1477,7 +1477,7 @@ void nox::AliasModel::ApplyLighting( const entity_t *e )
 	VectorNormalize( shadeVector_ );
 }
 
-void nox::AliasModel::DrawFrameLerp( entity_t *e )
+void chr::AliasModel::DrawFrameLerp( entity_t *e )
 {
 	// move should be the delta back to the previous frame * backlerp
 	vec3_t delta;
@@ -1585,7 +1585,7 @@ void nox::AliasModel::DrawFrameLerp( entity_t *e )
 	c_alias_polys += numTriangles_;
 }
 
-void nox::AliasModel::Draw( entity_t *e )
+void chr::AliasModel::Draw( entity_t *e )
 {
 	if ( e->frame >= numFrames_ || e->frame < 0 )
 	{
@@ -1646,7 +1646,7 @@ void nox::AliasModel::Draw( entity_t *e )
 	if ( e->flags & RF_DEPTHHACK ) glDepthRange( gldepthmin, gldepthmax );
 }
 
-bool nox::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
+bool chr::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
 {
 	Frame *frame = &frames_[ e->frame ];
 	Frame *oldFrame = &frames_[ e->oldframe ];

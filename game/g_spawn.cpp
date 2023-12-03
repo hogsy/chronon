@@ -90,7 +90,7 @@ static const std::map< std::string, EntityCustomClassSpawnFunction > entityTypes
 static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength )
 {
 	EntityCustomClassDeclaration customClass;
-	for ( nox::uint i = 0; i < 24; ++i )
+	for ( chr::uint i = 0; i < 24; ++i )
 	{
 		const char *token = Script_Parse( &lineDef, "|\n" );
 		if ( token == nullptr )
@@ -467,7 +467,7 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 			{
 				vec3_t vec;
 				sscanf( value, "%f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ] );
-				for ( nox::uint i = 0; i < 3; ++i )
+				for ( chr::uint i = 0; i < 3; ++i )
 				{
 					( ( float * ) ( b + f->ofs ) )[ i ] = vec[ i ];
 				}
@@ -477,7 +477,7 @@ void ED_ParseField( const char *key, const char *value, edict_t *ent ) {
 			{
 				vec4_t vec;
 				sscanf( value, "%f %f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ], &vec[ 3 ] );
-				for ( nox::uint i = 0; i < 4; ++i )
+				for ( chr::uint i = 0; i < 4; ++i )
 				{
 					( ( float * ) ( b + f->ofs ) )[ i ] = vec[ i ];
 				}

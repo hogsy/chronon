@@ -4,7 +4,7 @@
 #include "../client.h"
 #include "shader_manager.h"
 
-nox::renderer::IShaderProgram *nox::renderer::IShaderManager::FetchProgram( const std::string &name )
+chr::renderer::IShaderProgram *chr::renderer::IShaderManager::FetchProgram( const std::string &name )
 {
 	auto i = programs.find( name );
 	if ( i == programs.end() )

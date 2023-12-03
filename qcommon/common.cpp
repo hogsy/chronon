@@ -115,7 +115,7 @@ void Com_Printf( const char *fmt, ... ) {
 	Con_Print( msg );
 
 	// also echo to debugging console
-	nox::globalApp->PushConsoleOutput( msg );
+	chr::globalApp->PushConsoleOutput( msg );
 
 	// logfile
 	if( logfile_active && logfile_active->value ) {
@@ -1277,18 +1277,18 @@ void Qcommon_Frame( unsigned int msec )
 	Cbuf_Execute();
 
 	unsigned int time_before;
-	if ( host_speeds->value >= 1.0f ) time_before = nox::globalApp->GetNumMilliseconds();
+	if ( host_speeds->value >= 1.0f ) time_before = chr::globalApp->GetNumMilliseconds();
 
 	SV_Frame( msec );
 
 	unsigned int time_between;
-	if ( host_speeds->value >= 1.0f ) time_between = nox::globalApp->GetNumMilliseconds();
+	if ( host_speeds->value >= 1.0f ) time_between = chr::globalApp->GetNumMilliseconds();
 
 	CL_Frame( msec );
 
 	if ( host_speeds->value >= 1.0f )
 	{
-		unsigned int time_after = nox::globalApp->GetNumMilliseconds();
+		unsigned int time_after = chr::globalApp->GetNumMilliseconds();
 		unsigned int all, sv, gm, cl, rf;
 
 		all = time_after - time_before;

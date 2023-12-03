@@ -249,7 +249,7 @@ void SVC_GetChallenge( void )
 		// overwrite the oldest
 		svs.challenges[ oldest ].challenge = rand() & 0x7fff;
 		svs.challenges[ oldest ].adr = net_from;
-		svs.challenges[ oldest ].time = nox::globalApp->GetCurrentMillisecond();
+		svs.challenges[ oldest ].time = chr::globalApp->GetCurrentMillisecond();
 		i = oldest;
 	}
 
@@ -711,7 +711,7 @@ void SV_PrepWorldFrame( void )
 void SV_RunGameFrame( void )
 {
 	if ( host_speeds->value )
-		time_before_game = nox::globalApp->GetNumMilliseconds();
+		time_before_game = chr::globalApp->GetNumMilliseconds();
 
 	// we always need to bump framenum, even if we
 	// don't run the world, otherwise the delta
@@ -735,7 +735,7 @@ void SV_RunGameFrame( void )
 	}
 
 	if ( host_speeds->value )
-		time_after_game = nox::globalApp->GetNumMilliseconds();
+		time_after_game = chr::globalApp->GetNumMilliseconds();
 }
 
 /*

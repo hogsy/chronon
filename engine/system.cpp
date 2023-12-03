@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon/qcommon.h"
 
-void nox::Sys_MessageBox( const char *error, MessageBoxType boxType )
+void chr::Sys_MessageBox( const char *error, MessageBoxType boxType )
 {
 	uint32_t flags = 0;
 	switch ( boxType )
@@ -56,7 +56,7 @@ void Sys_Error( const char *error, ... )
 	vsprintf( text, error, argptr );
 	va_end( argptr );
 
-	Sys_MessageBox( text, nox::MessageBoxType::MB_ERROR );
+	Sys_MessageBox( text, chr::MessageBoxType::MB_ERROR );
 
 	delete[] text;
 

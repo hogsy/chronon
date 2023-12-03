@@ -31,9 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client/keys.h"
 #include "client/input.h"
 
-nox::App *nox::globalApp = nullptr;
+chr::App *chr::globalApp = nullptr;
 
-void nox::App::Initialize()
+void chr::App::Initialize()
 {
 	int status = SDL_Init(
 			SDL_INIT_VIDEO |
@@ -48,13 +48,13 @@ void nox::App::Initialize()
 	Qcommon_Init( argc_, argv_ );
 }
 
-[[noreturn]] void nox::App::Run()
+[[noreturn]] void chr::App::Run()
 {
 	unsigned int time, newTime;
 	unsigned int oldTime = GetNumMilliseconds();
 	while ( true )
 	{
-		nox::globalApp->PollEvents();
+		chr::globalApp->PollEvents();
 
 		do
 		{
@@ -73,7 +73,7 @@ void nox::App::Initialize()
 
 unsigned int sys_frame_time = 0;// todo: kill
 
-void nox::App::SendKeyEvents()
+void chr::App::SendKeyEvents()
 {
 	SDL_PumpEvents();
 
@@ -82,13 +82,13 @@ void nox::App::SendKeyEvents()
 	sys_frame_time = GetNumMilliseconds();// FIXME: should this be at start?
 }
 
-unsigned int nox::App::GetNumMilliseconds()
+unsigned int chr::App::GetNumMilliseconds()
 {
 	lastMs_ = SDL_GetTicks();
 	return lastMs_;
 }
 
-char *nox::App::GetClipboardData()
+char *chr::App::GetClipboardData()
 {
 	if ( !SDL_HasClipboardText() )
 	{
@@ -99,7 +99,7 @@ char *nox::App::GetClipboardData()
 }
 
 bool IN_HandleEvent( const SDL_Event &event );
-void nox::App::PollEvents()
+void chr::App::PollEvents()
 {
 	SDL_Event event;
 	while ( SDL_PollEvent( &event ) )
@@ -140,7 +140,7 @@ void nox::App::PollEvents()
 /**
  * This pushes the given string to the native terminal/console.
  */
-void nox::App::PushConsoleOutput( const char *text )
+void chr::App::PushConsoleOutput( const char *text )
 {
 #if defined( _WIN32 ) && defined( _MSC_VER )
 	OutputDebugString( text );
@@ -149,7 +149,7 @@ void nox::App::PushConsoleOutput( const char *text )
 #endif
 }
 
-void nox::App::ShowCursor( bool show )
+void chr::App::ShowCursor( bool show )
 {
 	SDL_ShowCursor( show );
 }
@@ -163,9 +163,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 extern "C" int main( int argc, char **argv )
 {
 #endif
-	nox::globalApp = new nox::App( argc, argv );
+	chr::globalApp = new chr::App( argc, argv );
 
 	// todo: consider combining these??
-	nox::globalApp->Initialize();
-	nox::globalApp->Run();
+	chr::globalApp->Initialize();
+	chr::globalApp->Run();
 }

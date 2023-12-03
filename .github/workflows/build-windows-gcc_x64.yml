@@ -37,7 +37,7 @@ jobs:
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2.2.4
       with:
-        name: hosae-release
+        name: chronon-release
         path: release/
         retention-days: 30
       

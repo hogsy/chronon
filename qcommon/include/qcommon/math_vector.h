@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-namespace nox
+namespace chr
 {
 	struct Vector2
 	{
@@ -159,7 +159,7 @@ int VectorCompare( vec3_t v1, vec3_t v2 );
 static inline vec_t VectorLength( const vec3_t v )
 {
 	float length = 0.0f;
-	for ( nox::uint i = 0; i < 3; i++ )
+	for ( chr::uint i = 0; i < 3; i++ )
 		length += v[ i ] * v[ i ];
 
 	return std::sqrt( length );

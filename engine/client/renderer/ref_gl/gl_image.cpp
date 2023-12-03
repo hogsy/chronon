@@ -220,7 +220,7 @@ gltmode_t gl_solid_modes[] = {
 
 void GL_TextureMode( char *string )
 {
-	nox::uint mode;
+	chr::uint mode;
 	for ( mode = 0; mode < NUM_GL_MODES; mode++ )
 	{
 		if ( !Q_stricmp( modes[ mode ].name, string ) )
@@ -1230,7 +1230,7 @@ static void Image_LoadTextureInfo()
 
 		// Copy the string into a temporary buffer without the extension (if there is one)
 		char tmp[ MAX_QPATH ];
-		for ( nox::uint i = 0; i < MAX_QPATH - 1; ++i )
+		for ( chr::uint i = 0; i < MAX_QPATH - 1; ++i )
 		{
 			if ( *token == '\0' || *token == '.' )
 			{
@@ -1259,7 +1259,7 @@ static void Image_LoadTextureInfo()
  */
 int Image_GetSurfaceFlagsForName( const std::string &path )
 {
-	auto i = textureSurfaceFlags.find( nox::StringToLower( path ) );
+	auto i = textureSurfaceFlags.find( chr::StringToLower( path ) );
 	if ( i == textureSurfaceFlags.end() )
 		return 0;
 

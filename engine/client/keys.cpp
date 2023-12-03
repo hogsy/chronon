@@ -247,7 +247,7 @@ void Key_Console( int key )
 	     ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[ K_SHIFT ] ) )
 	{
 		char *cbd;
-		if ( ( cbd = nox::globalApp->GetClipboardData() ) != 0 )
+		if ( ( cbd = chr::globalApp->GetClipboardData() ) != 0 )
 		{
 			int i;
 

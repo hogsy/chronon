@@ -198,7 +198,7 @@ void CL_RegisterSounds( void )
 		if ( !cl.configstrings[ CS_SOUNDS + i ][ 0 ] )
 			break;
 		cl.sound_precache[ i ] = S_RegisterSound( cl.configstrings[ CS_SOUNDS + i ] );
-		nox::globalApp->SendKeyEvents();// pump message loop
+		chr::globalApp->SendKeyEvents();// pump message loop
 	}
 	S_EndRegistration();
 }

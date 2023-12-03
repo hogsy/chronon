@@ -475,7 +475,7 @@ void CL_SendCmd( void )
 
 	if ( cls.state == ca_connected )
 	{
-		if ( cls.netchan.message.cursize || nox::globalApp->GetCurrentMillisecond() - cls.netchan.last_sent > 1000 )
+		if ( cls.netchan.message.cursize || chr::globalApp->GetCurrentMillisecond() - cls.netchan.last_sent > 1000 )
 			Netchan_Transmit( &cls.netchan, 0, buf.data );
 		return;
 	}

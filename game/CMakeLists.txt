@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ]]
 
-add_library(hosae-game STATIC
+add_library(chronon-game STATIC
         g_ai.cpp
         g_chase.cpp
         g_cmds.cpp
@@ -46,4 +46,4 @@ add_library(hosae-game STATIC
         q_shared.cpp
         )
 
-target_compile_definitions(hosae-game PRIVATE GAME_HARD_LINKED)
+target_compile_definitions(chronon-game PRIVATE GAME_HARD_LINKED)

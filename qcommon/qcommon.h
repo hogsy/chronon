@@ -6,7 +6,7 @@
 
 #include "../game/q_shared.h"
 
-#define ENGINE_NAME     "hosae"
+#define ENGINE_NAME     "Chronon"
 #define ENGINE_VERSION  4.00
 
 #define BASEDIRNAME "anoxdata"
@@ -749,7 +749,7 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-namespace nox
+namespace chr
 {
 	enum class MessageBoxType
 	{

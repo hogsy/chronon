@@ -611,7 +611,7 @@ void CL_Disconnect( void )
 	{
 		int time;
 
-		time = nox::globalApp->GetNumMilliseconds() - cl.timedemo_start;
+		time = chr::globalApp->GetNumMilliseconds() - cl.timedemo_start;
 		if ( time > 0 )
 			Com_Printf( "%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames,
 			            time / 1000.0, cl.timedemo_frames * 1000.0 / time );
@@ -858,7 +858,7 @@ void CL_Skins_f( void )
 			continue;
 		Com_Printf( "client %i: %s\n", i, cl.configstrings[ CS_PLAYERSKINS + i ] );
 		SCR_UpdateScreen();
-		nox::globalApp->SendKeyEvents();// pump message loop
+		chr::globalApp->SendKeyEvents();// pump message loop
 		CL_ParseClientinfo( i );
 	}
 }
@@ -1443,7 +1443,7 @@ CL_InitLocal
 void CL_InitLocal( void )
 {
 	cls.state = ca_disconnected;
-	cls.realtime = nox::globalApp->GetNumMilliseconds();
+	cls.realtime = chr::globalApp->GetNumMilliseconds();
 
 	CL_InitInput();
 
@@ -1683,7 +1683,7 @@ CL_SendCommand
 void CL_SendCommand()
 {
 	// get new key events
-	nox::globalApp->SendKeyEvents();
+	chr::globalApp->SendKeyEvents();
 
 	// allow mice or other external controllers to add commands
 	IN_Commands();
@@ -1725,7 +1725,7 @@ void CL_Frame( unsigned int msec )
 	// decide the simulation time
 	cls.frametime = extratime / 1000.0;
 	cl.time += extratime;
-	cls.realtime = nox::globalApp->GetCurrentMillisecond();
+	cls.realtime = chr::globalApp->GetCurrentMillisecond();
 
 	extratime = 0;
 #if 0
@@ -1738,7 +1738,7 @@ void CL_Frame( unsigned int msec )
 
 	// if in the debugger last frame, don't timeout
 	if ( msec > 5000 )
-		cls.netchan.last_received = nox::globalApp->GetNumMilliseconds();
+		cls.netchan.last_received = chr::globalApp->GetNumMilliseconds();
 
 	// fetch results from server
 	CL_ReadPackets();
@@ -1756,10 +1756,10 @@ void CL_Frame( unsigned int msec )
 
 	// update the screen
 	if ( host_speeds->value )
-		time_before_ref = nox::globalApp->GetNumMilliseconds();
+		time_before_ref = chr::globalApp->GetNumMilliseconds();
 	SCR_UpdateScreen();
 	if ( host_speeds->value )
-		time_after_ref = nox::globalApp->GetNumMilliseconds();
+		time_after_ref = chr::globalApp->GetNumMilliseconds();
 
 	// update audio
 	S_Update( cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up );
@@ -1780,13 +1780,13 @@ void CL_Frame( unsigned int msec )
 		{
 			if ( !lasttimecalled )
 			{
-				lasttimecalled = nox::globalApp->GetNumMilliseconds();
+				lasttimecalled = chr::globalApp->GetNumMilliseconds();
 				if ( log_stats_file )
 					fprintf( log_stats_file, "0\n" );
 			}
 			else
 			{
-				unsigned int now = nox::globalApp->GetNumMilliseconds();
+				unsigned int now = chr::globalApp->GetNumMilliseconds();
 
 				if ( log_stats_file )
 					fprintf( log_stats_file, "%d\n", now - lasttimecalled );

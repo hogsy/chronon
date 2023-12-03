@@ -574,7 +574,7 @@ void SCR_BeginLoadingPlaque( void )
 	else
 		scr_draw_loading = 1;
 	SCR_UpdateScreen();
-	cls.disable_screen = nox::globalApp->GetNumMilliseconds();
+	cls.disable_screen = chr::globalApp->GetNumMilliseconds();
 	cls.disable_servercount = cl.servercount;
 }
 
@@ -629,7 +629,7 @@ void SCR_TimeRefresh_f()
 		return;
 	}
 
-	start = nox::globalApp->GetNumMilliseconds();
+	start = chr::globalApp->GetNumMilliseconds();
 
 	if ( Cmd_Argc() == 2 )
 	{// run without page flipping
@@ -653,7 +653,7 @@ void SCR_TimeRefresh_f()
 		}
 	}
 
-	stop = nox::globalApp->GetNumMilliseconds();
+	stop = chr::globalApp->GetNumMilliseconds();
 	time = ( stop - start ) / 1000.0;
 	Com_Printf( "%lf seconds (%lf fps)\n", time, 128 / time );
 }
@@ -1267,7 +1267,7 @@ void SCR_UpdateScreen()
 	// do nothing at all
 	if ( cls.disable_screen )
 	{
-		if ( nox::globalApp->GetNumMilliseconds() - cls.disable_screen > 120000 )
+		if ( chr::globalApp->GetNumMilliseconds() - cls.disable_screen > 120000 )
 		{
 			cls.disable_screen = 0;
 			Com_Printf( "Loading plaque timed out.\n" );

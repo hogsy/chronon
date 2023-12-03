@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define idaxp 0
 #endif
 
-namespace nox
+namespace chr
 {
 	typedef unsigned int uint;
 }
@@ -207,7 +207,7 @@ void Com_PageInMemory(byte *buffer, int size);
 #	define Q_strdup( A ) strdup( ( A ) )
 #endif
 
-namespace nox
+namespace chr
 {
 	inline std::string StringToLower( const std::string &string )
 	{
