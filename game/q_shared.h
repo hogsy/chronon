@@ -265,7 +265,7 @@ SYSTEM SPECIFIC
 ==============================================================
 */
 
-void Sys_Mkdir(char *path);
+int Sys_Mkdir(char *path);
 
 // large block stack allocation routines
 void *Hunk_Begin( size_t maxsize);

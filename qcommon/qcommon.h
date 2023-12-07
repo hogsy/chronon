@@ -673,10 +673,12 @@ void FS_Read( void *buffer, int len, FILE *f );
 
 void FS_FreeFile( void *buffer );
 
-void FS_CreatePath( char *path );
+bool FS_CreatePath( char *path );
 bool FS_LocalFileExists( const char *path );
 
 void FS_CanonicalisePath( char *path );
+
+bool FS_WriteFile( const char *filename, void *data, uint32_t length );
 
 /*
 ==============================================================

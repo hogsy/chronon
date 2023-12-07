@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Copyright © 1997-2001 Id Software, Inc.
-// Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2020-2023 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <iostream>
 #include <fstream>
@@ -33,15 +33,15 @@ struct Package
 {
 	struct Index
 	{
-		char     name[ 128 ];      /* the name of the file, excludes 'model/' etc. */
+		char name[ 128 ];          /* the name of the file, excludes 'model/' etc. */
 		uint32_t offset;           /* offset into the dat that the file resides */
 		uint32_t length;           /* decompressed length of the file */
 		uint32_t compressedLength; /* length of the file in the dat */
 		uint32_t u0;
 	};
 
-	std::string          mappedDir; /* e.g., 'models' */
-	std::string          path;
+	std::string mappedDir; /* e.g., 'models' */
+	std::string path;
 	std::vector< Index > indices; /* index data */
 
 	/**
@@ -64,7 +64,7 @@ struct Package
 	/**
  	 * Load a file from the given package, and decompress the data.
  	 */
-	uint8_t *LoadFile( const char *fileName, uint32_t *fileLength ) const
+	void *LoadFile( const char *fileName, uint32_t *fileLength ) const
 	{
 		// first, ensure that it's actually in the package file table
 		const Index *fileIndex = GetFileIndex( fileName );
@@ -83,24 +83,43 @@ struct Package
 
 		file.seekg( fileIndex->offset );
 
-		// now load the compressed block in
-		std::vector< uint8_t > src( fileIndex->compressedLength );
-		file.read( ( char * ) src.data(), fileIndex->compressedLength );
-
-		// decompress it
-		auto   dst = ( uint8_t   *) Z_Malloc( fileIndex->length );
-		size_t dstLength = fileIndex->length;
-		bool   status = FS_DecompressFile( src.data(), fileIndex->compressedLength, dst, &dstLength, fileIndex->length );
-
-		file.close();
-
-		if ( status )
+		if ( fileIndex->compressedLength > 0 )
 		{
-			*fileLength = dstLength;
-			return dst;
-		}
+			// now load the compressed block in
+			std::vector< uint8_t > src( fileIndex->compressedLength );
+			file.read( ( char * ) src.data(), fileIndex->compressedLength );
 
-		Z_Free( dst );
+			// decompress it
+			auto dst = ( uint8_t * ) Z_Malloc( fileIndex->length );
+			size_t dstLength = fileIndex->length;
+			bool status = FS_DecompressFile( src.data(), fileIndex->compressedLength, dst, &dstLength, fileIndex->length );
+
+			file.close();
+
+			if ( status )
+			{
+				*fileLength = dstLength;
+				return dst;
+			}
+
+			Z_Free( dst );
+		}
+		else
+		{
+			// it's uncompressed
+			void *dst = Z_Malloc( fileIndex->length );
+			file.read( ( char * ) dst, fileIndex->length );
+			if ( !file.fail() )
+			{
+				file.close();
+				*fileLength = fileIndex->length;
+				return dst;
+			}
+
+			file.close();
+
+			Z_Free( dst );
+		}
 
 		return nullptr;
 	}
@@ -130,6 +149,8 @@ void FS_CanonicalisePath( char *path )
  */
 static bool FS_DecompressFile( const uint8_t *srcBuffer, size_t srcLength, uint8_t *dstBuffer, size_t *dstLength, size_t expectedLength )
 {
+	assert( srcLength > 0 );
+
 	int returnCode = mz_uncompress( dstBuffer, ( mz_ulong * ) dstLength, srcBuffer, ( mz_ulong ) srcLength );
 	if ( returnCode != MZ_OK )
 	{
@@ -213,7 +234,7 @@ static bool FS_MountPackage( FILE *filePtr, const char *identity, Package *out )
 // in memory
 //
 
-static char    fs_gamedir[ MAX_OSPATH ];
+static char fs_gamedir[ MAX_OSPATH ];
 static cvar_t *fs_basedir;
 static cvar_t *fs_cddir;
 
@@ -221,9 +242,9 @@ cvar_t *fs_gamedirvar;
 
 struct searchpath_t
 {
-	char                             filename[ MAX_OSPATH ]{ '\0' };
+	char filename[ MAX_OSPATH ]{ '\0' };
 	std::map< std::string, Package > packDirectories;
-	struct searchpath_t             *next{ nullptr };
+	struct searchpath_t *next{ nullptr };
 };
 
 static searchpath_t *fs_searchpaths;
@@ -262,17 +283,25 @@ FS_CreatePath
 Creates any directories needed to store the given filename
 ============
 */
-void FS_CreatePath( char *path )
+bool FS_CreatePath( char *path )
 {
+	int status;
 	for ( char *ofs = path + 1; *ofs; ofs++ )
 	{
 		if ( *ofs == '/' )
 		{// create the directory
 			*ofs = 0;
-			Sys_Mkdir( path );
+			status = Sys_Mkdir( path );
 			*ofs = '/';
+			if ( status != 0 )
+				break;
 		}
 	}
+
+	if ( status != 0 )
+		Com_Printf( "Failed to create path (%s)\n", path );
+
+	return ( status == 0 );
 }
 
 /**
@@ -324,7 +353,7 @@ void *FS_FOpenFile( const char *filename, uint32_t *length )
 
 		// otherwise, load it from one of the anox packages
 
-		/* Anachronox does some horrible path munging in order to determine which package
+		/* Anachronox does some horrible path munging to determine which package
 		 * it should be loading from, so we need to grab the first dir here to do the same. */
 		char rootFolder[ 32 ];
 		memset( rootFolder, 0, sizeof( rootFolder ) );
@@ -344,7 +373,7 @@ void *FS_FOpenFile( const char *filename, uint32_t *length )
 			if ( i.second.mappedDir != rootFolder )
 				continue;
 
-			uint8_t *buffer = i.second.LoadFile( p, length );
+			void *buffer = i.second.LoadFile( p, length );
 			if ( buffer == nullptr )
 				break;
 
@@ -368,10 +397,10 @@ void CDAudio_Stop();
 #define MAX_READ 0x10000// read in blocks of 64k
 void FS_Read( void *buffer, int len, FILE *f )
 {
-	int   block, remaining;
-	int   read;
+	int block, remaining;
+	int read;
 	byte *buf;
-	int   tries;
+	int tries;
 
 	buf = ( byte * ) buffer;
 
@@ -423,7 +452,7 @@ int FS_LoadFile( const char *path, void **buffer )
 
 	// look for it in the filesystem or pack files
 	uint32_t length;
-	void    *buf = FS_FOpenFile( upath, &length );
+	void *buf = FS_FOpenFile( upath, &length );
 	if ( buf == nullptr )
 	{
 		if ( buffer != nullptr )
@@ -473,17 +502,17 @@ static void FS_AddGameDirectory( const char *dir )
 
 	//TODO: are these upper-case for all releases?
 	static const char *defaultPacks[] = {
-			"BATTLE",
-			"GAMEFLOW",
-			"GRAPHICS",
-			"MAPS",
-			"MODELS",
-			"OBJECTS",
-			"PARTICLES",
-			"SCRIPTS",
-			"SOUND",
-			"SPRITES",
-			"TEXTURES",
+	        "BATTLE",
+	        "GAMEFLOW",
+	        "GRAPHICS",
+	        "MAPS",
+	        "MODELS",
+	        "OBJECTS",
+	        "PARTICLES",
+	        "SCRIPTS",
+	        "SOUND",
+	        "SPRITES",
+	        "TEXTURES",
 	};
 
 	for ( auto &defaultPack : defaultPacks )
@@ -534,7 +563,7 @@ FS_ExecAutoexec
 void FS_ExecAutoexec()
 {
 	char *dir;
-	char  name[ MAX_QPATH ];
+	char name[ MAX_QPATH ];
 
 	dir = Cvar_VariableString( "gamedir" );
 	if ( *dir )
@@ -601,8 +630,8 @@ void FS_SetGamedir( const char *dir )
 */
 char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
 {
-	char  *s;
-	int    nfiles = 0;
+	char *s;
+	int nfiles = 0;
 	char **list = nullptr;
 
 	s = Sys_FindFirst( findname, musthave, canthave );
@@ -645,11 +674,11 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 */
 void FS_Dir_f()
 {
-	char  *path = nullptr;
-	char   findname[ 1024 ];
-	char   wildcard[ 1024 ] = "*.*";
+	char *path = nullptr;
+	char findname[ 1024 ];
+	char wildcard[ 1024 ] = "*.*";
 	char **dirnames;
-	int    ndirs;
+	int ndirs;
 
 	if ( Cmd_Argc() != 1 )
 		strcpy( wildcard, Cmd_Argv( 1 ) );
@@ -738,13 +767,81 @@ char *FS_NextPath( char *prevpath )
 
 /*
 ================
+FS_WriteFile
+
+Writes data to a file
+================
+*/
+bool FS_WriteFile( const char *filename, void *data, uint32_t length )
+{
+	char upath[ MAX_OSPATH ];
+	snprintf( upath, sizeof( upath ), "%s", filename );
+	FS_CanonicalisePath( upath );
+
+	FILE *file = fopen( upath, "wb" );
+	if ( file == nullptr )
+	{
+		Com_Printf( "Failed to open %s for writing\n", upath );
+		return false;
+	}
+
+	if ( fwrite( data, length, 1, file ) != 1 )
+		Com_Printf( "Failed to write %s\n", upath );
+
+	fclose( file );
+
+	return true;
+}
+
+/*
+================
+ExtractCommand
+
+Extracts all the packages in the search path
+================
+*/
+static void ExtractCommand()
+{
+	for ( searchpath_t *s = fs_searchpaths; s; s = s->next )
+	{
+		for ( const auto &i : s->packDirectories )
+		{
+			Com_Printf( "Extracting from %s\n", i.second.mappedDir.c_str() );
+			for ( const auto &j : i.second.indices )
+			{
+				unsigned int fileSize;
+				void *p = i.second.LoadFile( j.name, &fileSize );
+				if ( p == nullptr )
+				{
+					Com_Printf( "Failed to load %s\n", j.name );
+					continue;
+				}
+
+				char path[ MAX_OSPATH ];
+				snprintf( path, sizeof( path ), "%s/extracted/%s/%s", FS_Gamedir(), i.second.mappedDir.c_str(), j.name );
+				if ( !FS_CreatePath( path ) )
+					continue;
+
+				FS_WriteFile( path, p, fileSize );
+
+				Z_Free( p );
+			}
+		}
+	}
+
+	Com_Printf( "Done\n" );
+}
+
+/*
+================
 FS_InitFilesystem
 ================
 */
-void FS_InitFilesystem( void )
+void FS_InitFilesystem()
 {
 	Cmd_AddCommand( "path", FS_Path_f );
 	Cmd_AddCommand( "dir", FS_Dir_f );
+	Cmd_AddCommand( "extract", ExtractCommand );
 
 	//
 	// basedir <path>

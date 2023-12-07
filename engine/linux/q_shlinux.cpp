@@ -29,18 +29,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //===============================================================================
 
-void Sys_Mkdir( char *path )
+int Sys_Mkdir( char *path )
 {
-	mkdir( path, 0777 );
-}
-
-char *strlwr( char *s )
-{
-	while ( *s )
+	int status = mkdir( path, 0777 );
+	if ( status == -1 )
 	{
-		*s = tolower( *s );
-		s++;
+		if ( errno == EEXIST )	// directory already exists
+			status = 0;
+		else
+			status = -1;
 	}
+
+	return status;
 }
 
 //============================================
@@ -51,10 +51,10 @@ static char findpattern[ MAX_OSPATH ];
 static DIR *fdir;
 
 static bool CompareAttributes( char *path, char *name,
-                                   unsigned musthave, unsigned canthave )
+                               unsigned musthave, unsigned canthave )
 {
 	struct stat st;
-	char        fn[ MAX_OSPATH ];
+	char fn[ MAX_OSPATH ];
 
 	// . and .. never match
 	if ( strcmp( name, "." ) == 0 || strcmp( name, ".." ) == 0 )
@@ -77,7 +77,7 @@ static bool CompareAttributes( char *path, char *name,
 char *Sys_FindFirst( char *path, unsigned musthave, unsigned canhave )
 {
 	struct dirent *d;
-	char          *p;
+	char *p;
 
 	if ( fdir )
 		Sys_Error( "Sys_BeginFind without close" );
