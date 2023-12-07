@@ -23,15 +23,10 @@ bool chr::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path,
 	}
 
 	GLenum glStage;
-	assert( stage < Stage::MAX_STAGES );
 	if ( stage == Stage::STAGE_PIXEL )
-	{
-		glStage = GL_VERTEX_SHADER;
-	}
-	else if ( stage == Stage::STAGE_VERTEX )
-	{
 		glStage = GL_FRAGMENT_SHADER;
-	}
+	else if ( stage == Stage::STAGE_VERTEX )
+		glStage = GL_VERTEX_SHADER;
 	else
 	{
 		Com_Printf( "Unsupported shader stage: %u\n", stage );
@@ -46,7 +41,7 @@ bool chr::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path,
 	}
 
 	char *buffer;
-	int   length = FS_LoadFile( path.c_str(), ( void   **) &buffer );
+	int length = FS_LoadFile( path.c_str(), ( void ** ) &buffer );
 	if ( length == -1 )
 	{
 		Com_Printf( "Failed to open shader: %s\n", path.c_str() );
@@ -55,7 +50,29 @@ bool chr::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path,
 		return false;
 	}
 
-	return false;
+	XGL_CALL( glShaderSource( glStages[ stage ], 1, &buffer, &length ) );
+	XGL_CALL( glCompileShader( glStages[ stage ] ) );
+
+	FS_FreeFile( buffer );
+
+	GLint compileStatus;
+	XGL_CALL( glGetShaderiv( glStages[ stage ], GL_COMPILE_STATUS, &compileStatus ) );
+	if ( compileStatus == GL_FALSE )
+	{
+		GLint maxLength;
+		XGL_CALL( glGetShaderiv( glStages[ stage ], GL_INFO_LOG_LENGTH, &maxLength ) );
+
+		std::vector< GLchar > infoLog( maxLength );
+		XGL_CALL( glGetShaderInfoLog( glStages[ stage ], maxLength, &maxLength, &infoLog[ 0 ] ) );
+
+		Com_Printf( "Failed to compile shader: %s\n%s\n", path.c_str(), &infoLog[ 0 ] );
+
+		XGL_CALL( glDeleteShader( glStages[ stage ] ) );
+
+		return false;
+	}
+
+	return true;
 }
 
 void chr::renderer::gl::ShaderProgram::Enable()
