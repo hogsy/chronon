@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ]]
 
 add_library(chronon-game STATIC
+        CinematicScript.cpp
+
         g_ai.cpp
         g_chase.cpp
         g_cmds.cpp
