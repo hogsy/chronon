@@ -40,9 +40,11 @@ namespace chr::game
 			unsigned int flags;
 			unsigned int timeOffset;
 			unsigned int maxLength;
+			unsigned int count;
+			ColourF32 colour;
 			std::vector< Node > nodes;
 
-			static constexpr unsigned int NUM_FIELDS = 6;
+			static constexpr unsigned int NUM_FIELDS = 8;
 		};
 
 		struct Block
@@ -59,6 +61,8 @@ namespace chr::game
 		unsigned int blockCount;
 		std::vector< Block > blocks;
 
+		bool interrupt{};
+
 		unsigned int cineId;//TODO: not currently sure what this does...
 
 		bool ParseFile( const std::string &filename );
@@ -68,6 +72,8 @@ namespace chr::game
 		bool ParsePathStatement( std::string &line );
 		bool ParseBlockStatement( std::string &line );
 		bool ParseScriptStatement( std::string &line );
+
+		static std::string SanitizeTokenString( const std::string &string );
 
 		static constexpr unsigned int NUM_FIELDS = 3;
 	};

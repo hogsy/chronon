@@ -1,5 +1,5 @@
-/*
-Copyright © 2020-2023 Mark E Sowden <hogsy@oldtimes-software.com>
+/******************************************************************************
+Copyright © 2020-2024 Mark E Sowden <hogsy@snortysoft.net>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-*/
+******************************************************************************/
 
 #include <sstream>
 
@@ -47,9 +47,12 @@ bool chr::game::CinematicScript::ParseFile( const std::string &filename )
 			continue;
 
 		std::istringstream iss( line );
+		line = line.substr( line.find( ':' ) + 1 );
+
 		std::string prefix;
 		std::getline( iss, prefix, ':' );
 
+		prefix = SanitizeTokenString( prefix );
 		if ( prefix == "script" )
 		{
 			if ( !ParseScriptStatement( line ) )
@@ -58,6 +61,11 @@ bool chr::game::CinematicScript::ParseFile( const std::string &filename )
 				status = false;
 				break;
 			}
+			continue;
+		}
+		else if ( prefix == "interrupt" )
+		{
+			interrupt = true;
 			continue;
 		}
 		else if ( prefix == "cineid" )
@@ -122,14 +130,14 @@ bool chr::game::CinematicScript::ParseFile( const std::string &filename )
 		}
 	}
 
-#if 1
+#if 0
 	printf( "script %s %u %u\n", name.c_str(), version, blockCount );
 	for ( const auto &i : blocks )
 	{
-		printf( "block %s %u\n", i.name.c_str(), i.flags );
+		printf( "\tblock %s %u\n", i.name.c_str(), i.flags );
 		for ( const auto &j : i.paths )
 		{
-			printf( "path %u %s %u %u %u %u\n",
+			printf( "\t\tpath %u %s %u %u %u %u\n",
 			        j.order,
 			        j.name.c_str(),
 			        j.type,
@@ -137,7 +145,7 @@ bool chr::game::CinematicScript::ParseFile( const std::string &filename )
 			        j.timeOffset,
 			        j.maxLength );
 			for ( const auto &k : j.nodes )
-				printf( "node %u %u %f\n", k.type, k.flags, k.timeLength );
+				printf( "\t\t\tnode %u %u %f\n", k.type, k.flags, k.timeLength );
 		}
 	}
 #endif
@@ -149,7 +157,7 @@ bool chr::game::CinematicScript::ParseFile( const std::string &filename )
 
 bool chr::game::CinematicScript::ParseNodeStatement( std::string &line )
 {
-	char *token = std::strtok( &line[ 0 ], ":" );// split line with colon delimiter
+	char *token = std::strtok( line.data(), ":" );// split line with colon delimiter
 
 	if ( blocks.empty() )
 		return false;
@@ -161,21 +169,22 @@ bool chr::game::CinematicScript::ParseNodeStatement( std::string &line )
 	{
 		switch ( count )
 		{
-			case 1:
+			case 0:// name
 				block->paths.emplace_back();
 				block->paths.back().name = token;
 				break;
-			case 2:
+			case 1:// flags
 				blocks.back().flags = std::strtoul( token, nullptr, 16 );
 				break;
 			default:
 				break;
 		}
-		count++;
+
 		token = std::strtok( nullptr, ":" );
+		count++;
 	}
 
-	if ( count != 3 )// If we have not exactly two colons (three tokens)
+	if ( count != 3 )
 		return false;
 
 	return true;
@@ -188,35 +197,53 @@ bool chr::game::CinematicScript::ParsePathStatement( std::string &line )
 
 	Path *path = &blocks.back().paths.emplace_back();
 
-	char *token = std::strtok( &line[ 0 ], ":" );
+	char *token = std::strtok( line.data(), ":" );
 	int count = 0;
 	while ( token != nullptr )
 	{
 		switch ( count )
 		{
-			case 1:
+			case 0:// order
 				path->order = std::strtoul( token, nullptr, 16 );
 				break;
-			case 2:
+			case 1:// name
 				path->name = token;
 				break;
-			case 3:
+			case 2:// type
 				path->type = std::strtoul( token, nullptr, 16 );
 				break;
-			case 4:
+			case 3:// flags
 				path->flags = std::strtoul( token, nullptr, 16 );
 				break;
-			case 5:
+			case 4:// time offset
 				path->timeOffset = std::stoi( token );
+				break;
+			case 5:// max length
+				path->maxLength = std::strtoul( token, nullptr, 16 );
+				break;
+			case 6:// colour
+			{
+				assert( strlen( token ) == 8 );
+				auto *c = ( float * ) &path->colour;
+				for ( unsigned int i = 0; i < 4; ++i )
+				{
+					std::string bs = std::string( token ).substr( i * 2, 2 );
+					c[ i ] = ( float ) ( std::stoi( bs, nullptr, 16 ) ) / 255.0f;
+				}
+				break;
+			}
+			case 7:// count
+				path->count = std::strtoul( token, nullptr, 16 );
 				break;
 			default:
 				break;
 		}
-		count++;
+
 		token = std::strtok( nullptr, ":" );
+		count++;
 	}
 
-	if ( count != Path::NUM_FIELDS )// If we have not exactly two colons (three tokens)
+	if ( count != Path::NUM_FIELDS )
 		return false;
 
 	return true;
@@ -227,26 +254,27 @@ bool chr::game::CinematicScript::ParseBlockStatement( std::string &line )
 	blocks.emplace_back();
 	Block *block = &blocks.back();
 
-	char *token = std::strtok( &line[ 0 ], ":" );// split line with colon delimiter
+	char *token = std::strtok( line.data(), ":" );// split line with colon delimiter
 	int count = 0;
 	while ( token != nullptr )
 	{
 		switch ( count )
 		{
-			case 1:
+			case 0:// name
 				block->name = token;
 				break;
-			case 2:
+			case 1:// flags
 				block->flags = std::strtoul( token, nullptr, 16 );
 				break;
 			default:
 				break;
 		}
-		count++;
+
 		token = std::strtok( nullptr, ":" );
+		count++;
 	}
 
-	if ( count != Block::NUM_FIELDS )// If we have not exactly two colons (three tokens)
+	if ( count != Block::NUM_FIELDS )
 		return false;
 
 	return true;
@@ -254,30 +282,42 @@ bool chr::game::CinematicScript::ParseBlockStatement( std::string &line )
 
 bool chr::game::CinematicScript::ParseScriptStatement( std::string &line )
 {
-	char *token = std::strtok( &line[ 0 ], ":" );// Split line with colon delimiter
+	char *token = std::strtok( line.data(), ":" );// Split line with colon delimiter
 	int count = 0;
 	while ( token != nullptr )
 	{
 		switch ( count )
 		{
-			case 1:
+			case 0:// name
 				name = token;
 				break;
-			case 2:
+			case 1:// version
 				version = std::stoi( token );
 				break;
-			case 3:
+			case 2:// num blocks
 				blockCount = std::stoi( token );
 				break;
 			default:
 				break;
 		}
-		count++;
+
 		token = std::strtok( nullptr, ":" );
+		count++;
 	}
 
-	if ( count != NUM_FIELDS )// If we have not exactly three colons (four tokens)
+	if ( count != NUM_FIELDS )
 		return false;
 
 	return true;
+}
+
+std::string chr::game::CinematicScript::SanitizeTokenString( const std::string &string )
+{
+	size_t p = string.find_first_not_of( ' ' );
+	std::string out = string.substr( p );
+	out.erase( std::remove_if( out.begin(), out.end(),
+	                           []( unsigned char c )
+	                           { return c == '\r' || c == '\n'; } ),
+	           out.end() );
+	return out;
 }
