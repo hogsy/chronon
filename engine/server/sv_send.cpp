@@ -163,7 +163,7 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 	byte     *mask;
 	int       leafnum, cluster;
 	int       j;
-	bool  reliable;
+	bool      reliable;
 	int       area1, area2;
 
 	reliable = false;
@@ -171,12 +171,12 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 	if ( to != MULTICAST_ALL_R && to != MULTICAST_ALL )
 	{
 		leafnum = CM_PointLeafnum( origin );
-		area1 = CM_LeafArea( leafnum );
+		area1   = CM_LeafArea( leafnum );
 	}
 	else
 	{
 		leafnum = 0;// just to avoid compiler warnings
-		area1 = 0;
+		area1   = 0;
 	}
 
 	// if doing a serverrecord, store everything
@@ -189,7 +189,7 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 			reliable = true;// intentional fallthrough
 		case MULTICAST_ALL:
 			leafnum = 0;
-			mask = NULL;
+			mask    = NULL;
 			break;
 
 		case MULTICAST_PHS_R:
@@ -197,7 +197,7 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 		case MULTICAST_PHS:
 			leafnum = CM_PointLeafnum( origin );
 			cluster = CM_LeafCluster( leafnum );
-			mask = CM_ClusterPHS( cluster );
+			mask    = CM_ClusterPHS( cluster );
 			break;
 
 		case MULTICAST_PVS_R:
@@ -205,7 +205,7 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 		case MULTICAST_PVS:
 			leafnum = CM_PointLeafnum( origin );
 			cluster = CM_LeafCluster( leafnum );
-			mask = CM_ClusterPVS( cluster );
+			mask    = CM_ClusterPVS( cluster );
 			break;
 
 		default:
@@ -225,7 +225,7 @@ void SV_Multicast( vec3_t origin, multicast_t to )
 		{
 			leafnum = CM_PointLeafnum( client->edict->s.origin );
 			cluster = CM_LeafCluster( leafnum );
-			area2 = CM_LeafArea( leafnum );
+			area2   = CM_LeafArea( leafnum );
 			if ( !CM_AreasConnected( area1, area2 ) )
 				continue;
 			if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
@@ -272,12 +272,12 @@ void SV_StartSound( vec3_t origin, edict_t *entity, int channel,
                     int soundindex, float volume,
                     float attenuation, float timeofs )
 {
-	int      sendchan;
-	int      flags;
-	int      i;
-	int      ent;
-	vec3_t   origin_v;
-	bool use_phs;
+	int    sendchan;
+	int    flags;
+	int    i;
+	int    ent;
+	vec3_t origin_v;
+	bool   use_phs;
 
 	if ( volume < 0 || volume > 1.0 )
 		Com_Error( ERR_FATAL, "SV_StartSound: volume = %f", volume );

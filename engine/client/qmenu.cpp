@@ -200,7 +200,7 @@ bool Field_Key( menufield_s *f, int key )
 			strtok( cbd, "\n\r\b" );
 
 			strncpy( f->buffer, cbd, f->length - 1 );
-			f->cursor = strlen( f->buffer );
+			f->cursor         = strlen( f->buffer );
 			f->visible_offset = f->cursor - f->visible_length;
 			if ( f->visible_offset < 0 )
 				f->visible_offset = 0;
@@ -246,7 +246,7 @@ bool Field_Key( menufield_s *f, int key )
 			if ( f->cursor < f->length )
 			{
 				f->buffer[ f->cursor++ ] = key;
-				f->buffer[ f->cursor ] = 0;
+				f->buffer[ f->cursor ]   = 0;
 
 				if ( f->cursor > f->visible_length )
 				{
@@ -265,7 +265,7 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 
 	if ( menu->nitems < MAXMENUITEMS )
 	{
-		menu->items[ menu->nitems ] = item;
+		menu->items[ menu->nitems ]                                = item;
 		( ( menucommon_s * ) menu->items[ menu->nitems ] )->parent = menu;
 		menu->nitems++;
 	}
@@ -415,7 +415,7 @@ void Menu_DrawStatusBar( const char *string )
 		int l = strlen( string );
 		//int maxrow = VID_HEIGHT / 8;
 		int maxcol = VID_WIDTH / 8;
-		int col = maxcol / 2 - l / 2;
+		int col    = maxcol / 2 - l / 2;
 
 		Draw_Fill( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 4 );
 		Menu_DrawString( col * 8, VID_HEIGHT - 8, string );
@@ -531,7 +531,7 @@ int Menu_TallySlots( menuframework_s *menu )
 		if ( ( ( menucommon_s * ) menu->items[ i ] )->type == MTYPE_LIST )
 		{
 			int          nitems = 0;
-			const char **n = ( ( menulist_s * ) menu->items[ i ] )->itemnames;
+			const char **n      = ( ( menulist_s      *) menu->items[ i ] )->itemnames;
 
 			while ( *n )
 				nitems++, n++;

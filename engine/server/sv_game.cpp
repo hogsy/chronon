@@ -239,12 +239,12 @@ bool PF_inPVS( vec3_t p1, vec3_t p2 )
 
 	leafnum = CM_PointLeafnum( p1 );
 	cluster = CM_LeafCluster( leafnum );
-	area1 = CM_LeafArea( leafnum );
-	mask = CM_ClusterPVS( cluster );
+	area1   = CM_LeafArea( leafnum );
+	mask    = CM_ClusterPVS( cluster );
 
 	leafnum = CM_PointLeafnum( p2 );
 	cluster = CM_LeafCluster( leafnum );
-	area2 = CM_LeafArea( leafnum );
+	area2   = CM_LeafArea( leafnum );
 	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 		return false;
 	if ( !CM_AreasConnected( area1, area2 ) )
@@ -269,12 +269,12 @@ bool PF_inPHS( vec3_t p1, vec3_t p2 )
 
 	leafnum = CM_PointLeafnum( p1 );
 	cluster = CM_LeafCluster( leafnum );
-	area1 = CM_LeafArea( leafnum );
-	mask = CM_ClusterPHS( cluster );
+	area1   = CM_LeafArea( leafnum );
+	mask    = CM_ClusterPHS( cluster );
 
 	leafnum = CM_PointLeafnum( p2 );
 	cluster = CM_LeafCluster( leafnum );
-	area2 = CM_LeafArea( leafnum );
+	area2   = CM_LeafArea( leafnum );
 	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 		return false;// more than one bounce away
 	if ( !CM_AreasConnected( area1, area2 ) )
@@ -328,58 +328,58 @@ void SV_InitGameProgs( void )
 
 
 	// load a new game dll
-	import.multicast = SV_Multicast;
-	import.unicast = PF_Unicast;
-	import.bprintf = SV_BroadcastPrintf;
-	import.dprintf = PF_dprintf;
-	import.cprintf = PF_cprintf;
+	import.multicast    = SV_Multicast;
+	import.unicast      = PF_Unicast;
+	import.bprintf      = SV_BroadcastPrintf;
+	import.dprintf      = PF_dprintf;
+	import.cprintf      = PF_cprintf;
 	import.centerprintf = PF_centerprintf;
-	import.error = PF_error;
+	import.error        = PF_error;
 
-	import.linkentity = SV_LinkEdict;
-	import.unlinkentity = SV_UnlinkEdict;
-	import.BoxEdicts = SV_AreaEdicts;
-	import.trace = SV_Trace;
+	import.linkentity    = SV_LinkEdict;
+	import.unlinkentity  = SV_UnlinkEdict;
+	import.BoxEdicts     = SV_AreaEdicts;
+	import.trace         = SV_Trace;
 	import.pointcontents = SV_PointContents;
-	import.setmodel = PF_setmodel;
-	import.inPVS = PF_inPVS;
-	import.inPHS = PF_inPHS;
-	import.Pmove = Pmove;
+	import.setmodel      = PF_setmodel;
+	import.inPVS         = PF_inPVS;
+	import.inPHS         = PF_inPHS;
+	import.Pmove         = Pmove;
 
 	import.modelindex = SV_ModelIndex;
 	import.soundindex = SV_SoundIndex;
 	import.imageindex = SV_ImageIndex;
 
-	import.configstring = PF_Configstring;
-	import.sound = PF_StartSound;
+	import.configstring     = PF_Configstring;
+	import.sound            = PF_StartSound;
 	import.positioned_sound = SV_StartSound;
 
-	import.WriteChar = PF_WriteChar;
-	import.WriteByte = PF_WriteByte;
-	import.WriteShort = PF_WriteShort;
-	import.WriteLong = PF_WriteLong;
-	import.WriteFloat = PF_WriteFloat;
-	import.WriteString = PF_WriteString;
+	import.WriteChar     = PF_WriteChar;
+	import.WriteByte     = PF_WriteByte;
+	import.WriteShort    = PF_WriteShort;
+	import.WriteLong     = PF_WriteLong;
+	import.WriteFloat    = PF_WriteFloat;
+	import.WriteString   = PF_WriteString;
 	import.WritePosition = PF_WritePos;
-	import.WriteDir = PF_WriteDir;
-	import.WriteAngle = PF_WriteAngle;
+	import.WriteDir      = PF_WriteDir;
+	import.WriteAngle    = PF_WriteAngle;
 
 	import.TagMalloc = Z_TagMalloc;
-	import.TagFree = Z_Free;
-	import.FreeTags = Z_FreeTags;
+	import.TagFree   = Z_Free;
+	import.FreeTags  = Z_FreeTags;
 
-	import.cvar = Cvar_Get;
-	import.cvar_set = Cvar_Set;
+	import.cvar          = Cvar_Get;
+	import.cvar_set      = Cvar_Set;
 	import.cvar_forceset = Cvar_ForceSet;
 
-	import.argc = Cmd_Argc;
-	import.argv = Cmd_Argv;
-	import.args = Cmd_Args;
+	import.argc             = Cmd_Argc;
+	import.argv             = Cmd_Argv;
+	import.args             = Cmd_Args;
 	import.AddCommandString = Cbuf_AddText;
 
-	import.DebugGraph = SCR_DebugGraph;
+	import.DebugGraph         = SCR_DebugGraph;
 	import.SetAreaPortalState = CM_SetAreaPortalState;
-	import.AreasConnected = CM_AreasConnected;
+	import.AreasConnected     = CM_AreasConnected;
 
 	import.LoadFile = FS_LoadFile;
 	import.FreeFile = FS_FreeFile;

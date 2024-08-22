@@ -95,7 +95,7 @@ extern cvar_t *r_novis;
 extern cvar_t *r_nocull;
 extern cvar_t *r_lerpmodels;
 extern cvar_t *
-		r_lightlevel;// FIXME: This is a HACK to get the client's light level
+        r_lightlevel;// FIXME: This is a HACK to get the client's light level
 
 extern cvar_t *vid_fullscreen;
 extern cvar_t *vid_gamma;

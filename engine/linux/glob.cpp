@@ -53,7 +53,7 @@ static int glob_pattern_p( char *pattern )
 {
 	char *p = pattern;
 	char  c;
-	int            open = 0;
+	int   open = 0;
 
 	while ( ( c = *p++ ) != '\0' )
 		switch ( c )
@@ -122,7 +122,7 @@ int glob_match( char *pattern, char *text )
 			case '[':
 			{
 				char c1 = *t++;
-				int           invert;
+				int  invert;
 
 				if ( !c1 )
 					return ( 0 );
@@ -139,7 +139,7 @@ int glob_match( char *pattern, char *text )
 					if ( c == '\\' )
 					{
 						cstart = *p++;
-						cend = cstart;
+						cend   = cstart;
 					}
 					if ( c == '\0' )
 						return 0;

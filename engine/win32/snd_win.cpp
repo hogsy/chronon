@@ -79,7 +79,7 @@ LPDIRECTSOUNDBUFFER pDSBuf, pDSPBuf;
 HINSTANCE hInstDS;
 
 sndinitstat SNDDMA_InitDirect( void );
-bool    SNDDMA_InitWav( void );
+bool        SNDDMA_InitWav( void );
 
 void FreeSound( void );
 
@@ -111,12 +111,12 @@ static bool DS_CreateBuffers( void )
 	DWORD        dwWrite;
 
 	memset( &format, 0, sizeof( format ) );
-	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = dma.channels;
-	format.wBitsPerSample = dma.samplebits;
-	format.nSamplesPerSec = dma.speed;
-	format.nBlockAlign = format.nChannels * format.wBitsPerSample / 8;
-	format.cbSize = 0;
+	format.wFormatTag      = WAVE_FORMAT_PCM;
+	format.nChannels       = dma.channels;
+	format.wBitsPerSample  = dma.samplebits;
+	format.nSamplesPerSec  = dma.speed;
+	format.nBlockAlign     = format.nChannels * format.wBitsPerSample / 8;
+	format.cbSize          = 0;
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 
 	Com_Printf( "Creating DS buffers\n" );
@@ -133,13 +133,13 @@ static bool DS_CreateBuffers( void )
 	// get access to the primary buffer, if possible, so we can set the
 	// sound hardware format
 	memset( &dsbuf, 0, sizeof( dsbuf ) );
-	dsbuf.dwSize = sizeof( DSBUFFERDESC );
-	dsbuf.dwFlags = DSBCAPS_PRIMARYBUFFER;
+	dsbuf.dwSize        = sizeof( DSBUFFERDESC );
+	dsbuf.dwFlags       = DSBCAPS_PRIMARYBUFFER;
 	dsbuf.dwBufferBytes = 0;
-	dsbuf.lpwfxFormat = NULL;
+	dsbuf.lpwfxFormat   = NULL;
 
 	memset( &dsbcaps, 0, sizeof( dsbcaps ) );
-	dsbcaps.dwSize = sizeof( dsbcaps );
+	dsbcaps.dwSize     = sizeof( dsbcaps );
 	primary_format_set = false;
 
 	Com_DPrintf( "...creating primary buffer: " );
@@ -168,10 +168,10 @@ static bool DS_CreateBuffers( void )
 	{
 		// create the secondary buffer we'll actually work with
 		memset( &dsbuf, 0, sizeof( dsbuf ) );
-		dsbuf.dwSize = sizeof( DSBUFFERDESC );
-		dsbuf.dwFlags = DSBCAPS_CTRLFREQUENCY | DSBCAPS_LOCSOFTWARE;
+		dsbuf.dwSize        = sizeof( DSBUFFERDESC );
+		dsbuf.dwFlags       = DSBCAPS_CTRLFREQUENCY | DSBCAPS_LOCSOFTWARE;
 		dsbuf.dwBufferBytes = SECONDARY_BUFFER_SIZE;
-		dsbuf.lpwfxFormat = &format;
+		dsbuf.lpwfxFormat   = &format;
 
 		memset( &dsbcaps, 0, sizeof( dsbcaps ) );
 		dsbcaps.dwSize = sizeof( dsbcaps );
@@ -185,9 +185,9 @@ static bool DS_CreateBuffers( void )
 		}
 		Com_DPrintf( "ok\n" );
 
-		dma.channels = format.nChannels;
+		dma.channels   = format.nChannels;
 		dma.samplebits = format.wBitsPerSample;
-		dma.speed = format.nSamplesPerSec;
+		dma.speed      = format.nSamplesPerSec;
 
 		if ( DS_OK != pDSBuf->GetCaps( &dsbcaps ) )
 		{
@@ -238,11 +238,11 @@ static bool DS_CreateBuffers( void )
 	pDSBuf->GetCurrentPosition( &mmstarttime.u.sample, &dwWrite );
 	pDSBuf->Play( 0, 0, DSBPLAY_LOOPING );
 
-	dma.samples = gSndBufSize / ( dma.samplebits / 8 );
-	dma.samplepos = 0;
+	dma.samples          = gSndBufSize / ( dma.samplebits / 8 );
+	dma.samplepos        = 0;
 	dma.submission_chunk = 1;
-	dma.buffer = ( unsigned char * ) lpData;
-	sample16 = ( dma.samplebits / 8 ) - 1;
+	dma.buffer           = ( unsigned char           *) lpData;
+	sample16             = ( dma.samplebits / 8 ) - 1;
 
 	return true;
 }
@@ -272,7 +272,7 @@ static void DS_DestroyBuffers()
 		Com_DPrintf( "...releasing primary buffer\n" );
 		pDSPBuf->Release();
 	}
-	pDSBuf = nullptr;
+	pDSBuf  = nullptr;
 	pDSPBuf = nullptr;
 
 	dma.buffer = nullptr;
@@ -335,16 +335,16 @@ void FreeSound( void )
 		hInstDS = NULL;
 	}
 
-	pDS = NULL;
-	pDSBuf = NULL;
-	pDSPBuf = NULL;
-	hWaveOut = 0;
-	hData = 0;
-	hWaveHdr = 0;
-	lpData = NULL;
-	lpWaveHdr = NULL;
+	pDS         = NULL;
+	pDSBuf      = NULL;
+	pDSPBuf     = NULL;
+	hWaveOut    = 0;
+	hData       = 0;
+	hWaveHdr    = 0;
+	lpData      = NULL;
+	lpWaveHdr   = NULL;
 	dsound_init = false;
-	wav_init = false;
+	wav_init    = false;
 }
 
 /*
@@ -359,7 +359,7 @@ sndinitstat SNDDMA_InitDirect( void )
 	DSCAPS  dscaps;
 	HRESULT hresult;
 
-	dma.channels = 2;
+	dma.channels   = 2;
 	dma.samplebits = 16;
 
 	if ( s_khz->value == 44 )
@@ -454,10 +454,10 @@ bool SNDDMA_InitWav( void )
 
 	Com_Printf( "Initializing wave sound\n" );
 
-	snd_sent = 0;
+	snd_sent      = 0;
 	snd_completed = 0;
 
-	dma.channels = 2;
+	dma.channels   = 2;
 	dma.samplebits = 16;
 
 	if ( s_khz->value == 44 )
@@ -468,12 +468,12 @@ bool SNDDMA_InitWav( void )
 		dma.speed = 11025;
 
 	memset( &format, 0, sizeof( format ) );
-	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = dma.channels;
-	format.wBitsPerSample = dma.samplebits;
-	format.nSamplesPerSec = dma.speed;
-	format.nBlockAlign = format.nChannels * format.wBitsPerSample / 8;
-	format.cbSize = 0;
+	format.wFormatTag      = WAVE_FORMAT_PCM;
+	format.nChannels       = dma.channels;
+	format.wBitsPerSample  = dma.samplebits;
+	format.nSamplesPerSec  = dma.speed;
+	format.nBlockAlign     = format.nChannels * format.wBitsPerSample / 8;
+	format.cbSize          = 0;
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 
 	/* Open a waveform device for output using window callback. */
@@ -508,7 +508,7 @@ bool SNDDMA_InitWav( void )
 	*/
 	Com_DPrintf( "...allocating waveform buffer: " );
 	gSndBufSize = WAV_BUFFERS * WAV_BUFFER_SIZE;
-	hData = GlobalAlloc( GMEM_MOVEABLE | GMEM_SHARE, gSndBufSize );
+	hData       = GlobalAlloc( GMEM_MOVEABLE | GMEM_SHARE, gSndBufSize );
 	if ( !hData )
 	{
 		Com_Printf( " failed\n" );
@@ -562,7 +562,7 @@ bool SNDDMA_InitWav( void )
 	for ( i = 0; i < WAV_BUFFERS; i++ )
 	{
 		lpWaveHdr[ i ].dwBufferLength = WAV_BUFFER_SIZE;
-		lpWaveHdr[ i ].lpData = lpData + i * WAV_BUFFER_SIZE;
+		lpWaveHdr[ i ].lpData         = lpData + i * WAV_BUFFER_SIZE;
 
 		if ( waveOutPrepareHeader( hWaveOut, lpWaveHdr + i, sizeof( WAVEHDR ) ) !=
 		     MMSYSERR_NOERROR )
@@ -574,11 +574,11 @@ bool SNDDMA_InitWav( void )
 	}
 	Com_DPrintf( "ok\n" );
 
-	dma.samples = gSndBufSize / ( dma.samplebits / 8 );
-	dma.samplepos = 0;
+	dma.samples          = gSndBufSize / ( dma.samplebits / 8 );
+	dma.samplepos        = 0;
 	dma.submission_chunk = 512;
-	dma.buffer = ( unsigned char * ) lpData;
-	sample16 = ( dma.samplebits / 8 ) - 1;
+	dma.buffer           = ( unsigned char           *) lpData;
+	sample16             = ( dma.samplebits / 8 ) - 1;
 
 	wav_init = true;
 
@@ -732,7 +732,7 @@ void  SNDDMA_BeginPainting( void )
 
 	// lock the dsound buffer
 
-	reps = 0;
+	reps       = 0;
 	dma.buffer = NULL;
 
 	while ( ( hresult = pDSBuf->Lock( 0, gSndBufSize, &pbuf, &locksize, &pbuf2, &dwSize2, 0 ) ) != DS_OK )
@@ -805,7 +805,7 @@ void SNDDMA_Submit( void )
 		h = lpWaveHdr + ( snd_sent & WAV_MASK );
 		if ( paintedtime / 256 <= snd_sent )
 			break;//	Com_Printf ("submit overrun\n");
-				  //Com_Printf ("send %i\n", snd_sent);
+			        //Com_Printf ("send %i\n", snd_sent);
 		snd_sent++;
 		/*
 		 * Now the data block can be sent to the output device. The

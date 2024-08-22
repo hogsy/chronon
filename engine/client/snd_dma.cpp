@@ -41,7 +41,7 @@ int s_registration_sequence;
 channel_t channels[ MAX_CHANNELS ];
 
 bool snd_initialized = false;
-int      sound_started = 0;
+int  sound_started   = 0;
 
 dma_t dma;
 
@@ -122,13 +122,13 @@ void S_Init( void )
 		Com_Printf( "not initializing.\n" );
 	else
 	{
-		s_volume = Cvar_Get( "s_volume", "0.7", CVAR_ARCHIVE );
-		s_khz = Cvar_Get( "s_khz", "11", CVAR_ARCHIVE );
+		s_volume     = Cvar_Get( "s_volume", "0.7", CVAR_ARCHIVE );
+		s_khz        = Cvar_Get( "s_khz", "11", CVAR_ARCHIVE );
 		s_loadas8bit = Cvar_Get( "s_loadas8bit", "1", CVAR_ARCHIVE );
-		s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
-		s_show = Cvar_Get( "s_show", "0", 0 );
-		s_testsound = Cvar_Get( "s_testsound", "0", 0 );
-		s_primary = Cvar_Get( "s_primary", "0", CVAR_ARCHIVE );// win32 specific
+		s_mixahead   = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
+		s_show       = Cvar_Get( "s_show", "0", 0 );
+		s_testsound  = Cvar_Get( "s_testsound", "0", 0 );
+		s_primary    = Cvar_Get( "s_primary", "0", CVAR_ARCHIVE );// win32 specific
 
 		Cmd_AddCommand( "play", S_Play );
 		Cmd_AddCommand( "stopsound", S_StopAllSounds );
@@ -141,9 +141,9 @@ void S_Init( void )
 		S_InitScaletable();
 
 		sound_started = 1;
-		num_sfx = 0;
+		num_sfx       = 0;
 
-		soundtime = 0;
+		soundtime   = 0;
 		paintedtime = 0;
 
 		Com_Printf( "sound sampling rate: %i\n", dma.speed );
@@ -276,7 +276,7 @@ sfx_t *S_AliasName( char *aliasname, char *truename )
 	memset( sfx, 0, sizeof( *sfx ) );
 	strcpy( sfx->name, aliasname );
 	sfx->registration_sequence = s_registration_sequence;
-	sfx->truename = s;
+	sfx->truename              = s;
 
 	return sfx;
 }
@@ -307,7 +307,7 @@ sfx_t *S_RegisterSound( const char *name )
 	if ( !sound_started )
 		return nullptr;
 
-	sfx = S_FindName( name, true );
+	sfx                        = S_FindName( name, true );
 	sfx->registration_sequence = s_registration_sequence;
 
 	if ( !s_registering )
@@ -381,7 +381,7 @@ channel_t *S_PickChannel( int entnum, int entchannel )
 
 	// Check for replacement sound, or find the best one to replace
 	first_to_die = -1;
-	life_left = 0x7fffffff;
+	life_left    = 0x7fffffff;
 	for ( ch_idx = 0; ch_idx < MAX_CHANNELS; ch_idx++ )
 	{
 		if ( entchannel != 0// channel 0 never overrides
@@ -397,7 +397,7 @@ channel_t *S_PickChannel( int entnum, int entchannel )
 
 		if ( channels[ ch_idx ].end - paintedtime < life_left )
 		{
-			life_left = channels[ ch_idx ].end - paintedtime;
+			life_left    = channels[ ch_idx ].end - paintedtime;
 			first_to_die = ch_idx;
 		}
 	}
@@ -454,12 +454,12 @@ void S_SpatializeOrigin( vec3_t origin, float master_vol, float dist_mult, int *
 	}
 
 	// add in distance effect
-	scale = ( 1.0 - dist ) * rscale;
+	scale      = ( 1.0 - dist ) * rscale;
 	*right_vol = ( int ) ( master_vol * scale );
 	if ( *right_vol < 0 )
 		*right_vol = 0;
 
-	scale = ( 1.0 - dist ) * lscale;
+	scale     = ( 1.0 - dist ) * lscale;
 	*left_vol = ( int ) ( master_vol * scale );
 	if ( *left_vol < 0 )
 		*left_vol = 0;
@@ -477,7 +477,7 @@ void S_Spatialize( channel_t *ch )
 	// anything coming from the view entity will always be full volume
 	if ( ch->entnum == cl.playernum + 1 )
 	{
-		ch->leftvol = ch->master_vol;
+		ch->leftvol  = ch->master_vol;
 		ch->rightvol = ch->master_vol;
 		return;
 	}
@@ -526,10 +526,10 @@ void S_FreePlaysound( playsound_t *ps )
 	ps->next->prev = ps->prev;
 
 	// add to free list
-	ps->next = s_freeplays.next;
+	ps->next               = s_freeplays.next;
 	s_freeplays.next->prev = ps;
-	ps->prev = &s_freeplays;
-	s_freeplays.next = ps;
+	ps->prev               = &s_freeplays;
+	s_freeplays.next       = ps;
 }
 
 
@@ -563,16 +563,16 @@ void S_IssuePlaysound( playsound_t *ps )
 	else
 		ch->dist_mult = ps->attenuation * 0.0005;
 	ch->master_vol = ps->volume;
-	ch->entnum = ps->entnum;
+	ch->entnum     = ps->entnum;
 	ch->entchannel = ps->entchannel;
-	ch->sfx = ps->sfx;
+	ch->sfx        = ps->sfx;
 	VectorCopy( ps->origin, ch->origin );
 	ch->fixed_origin = ps->fixed_origin;
 
 	S_Spatialize( ch );
 
 	ch->pos = 0;
-	sc = S_LoadSound( ch->sfx );
+	sc      = S_LoadSound( ch->sfx );
 	ch->end = paintedtime + sc->length;
 
 	// free the playsound
@@ -582,7 +582,7 @@ void S_IssuePlaysound( playsound_t *ps )
 struct sfx_s *S_RegisterSexedSound( entity_state_t *ent, char *base )
 {
 	int           n;
-	char		 *p;
+	char         *p;
 	struct sfx_s *sfx;
 	char          model[ MAX_QPATH ];
 	char          sexedFilename[ MAX_QPATH ];
@@ -590,7 +590,7 @@ struct sfx_s *S_RegisterSexedSound( entity_state_t *ent, char *base )
 
 	// determine what model the client is using
 	model[ 0 ] = 0;
-	n = CS_PLAYERSKINS + ent->number - 1;
+	n          = CS_PLAYERSKINS + ent->number - 1;
 	if ( cl.configstrings[ n ][ 0 ] )
 	{
 		p = strchr( cl.configstrings[ n ], '\\' );
@@ -685,22 +685,22 @@ void S_StartSound( vec3_t origin, int entnum, int entchannel, sfx_t *sfx, float 
 	else
 		ps->fixed_origin = false;
 
-	ps->entnum = entnum;
-	ps->entchannel = entchannel;
+	ps->entnum      = entnum;
+	ps->entchannel  = entchannel;
 	ps->attenuation = attenuation;
-	ps->volume = vol;
-	ps->sfx = sfx;
+	ps->volume      = vol;
+	ps->sfx         = sfx;
 
 	// drift s_beginofs
 	start = cl.frame.servertime * 0.001 * dma.speed + s_beginofs;
 	if ( start < paintedtime )
 	{
-		start = paintedtime;
+		start      = paintedtime;
 		s_beginofs = start - ( cl.frame.servertime * 0.001 * dma.speed );
 	}
 	else if ( start > paintedtime + 0.3 * dma.speed )
 	{
-		start = paintedtime + 0.1 * dma.speed;
+		start      = paintedtime + 0.1 * dma.speed;
 		s_beginofs = start - ( cl.frame.servertime * 0.001 * dma.speed );
 	}
 	else
@@ -793,8 +793,8 @@ void S_StopAllSounds( void )
 
 	for ( i = 0; i < MAX_PLAYSOUNDS; i++ )
 	{
-		s_playsounds[ i ].prev = &s_freeplays;
-		s_playsounds[ i ].next = s_freeplays.next;
+		s_playsounds[ i ].prev       = &s_freeplays;
+		s_playsounds[ i ].next       = s_freeplays.next;
 		s_playsounds[ i ].prev->next = &s_playsounds[ i ];
 		s_playsounds[ i ].next->prev = &s_playsounds[ i ];
 	}
@@ -820,7 +820,7 @@ void S_AddLoopSounds( void )
 	int             sounds[ MAX_EDICTS ];
 	int             left, right, left_total, right_total;
 	channel_t      *ch;
-	sfx_t		  *sfx;
+	sfx_t          *sfx;
 	sfxcache_t     *sc;
 	int             num;
 	entity_state_t *ent;
@@ -836,8 +836,8 @@ void S_AddLoopSounds( void )
 
 	for ( i = 0; i < cl.frame.num_entities; i++ )
 	{
-		num = ( cl.frame.parse_entities + i ) & ( MAX_PARSE_ENTITIES - 1 );
-		ent = &cl_parse_entities[ num ];
+		num         = ( cl.frame.parse_entities + i ) & ( MAX_PARSE_ENTITIES - 1 );
+		ent         = &cl_parse_entities[ num ];
 		sounds[ i ] = ent->sound;
 	}
 
@@ -886,12 +886,12 @@ void S_AddLoopSounds( void )
 			left_total = 255;
 		if ( right_total > 255 )
 			right_total = 255;
-		ch->leftvol = left_total;
-		ch->rightvol = right_total;
+		ch->leftvol   = left_total;
+		ch->rightvol  = right_total;
 		ch->autosound = true;// remove next frame
-		ch->sfx = sfx;
-		ch->pos = paintedtime % sc->length;
-		ch->end = paintedtime + sc->length - ch->pos;
+		ch->sfx       = sfx;
+		ch->pos       = paintedtime % sc->length;
+		ch->end       = paintedtime + sc->length - ch->pos;
 	}
 }
 
@@ -927,9 +927,9 @@ void S_RawSamples( int samples, int rate, int width, int channels, byte *data )
 				dst = s_rawend & ( MAX_RAW_SAMPLES - 1 );
 				s_rawend++;
 				s_rawsamples[ dst ].left =
-						LittleShort( ( ( short * ) data )[ i * 2 ] ) << 8;
+				        LittleShort( ( ( short * ) data )[ i * 2 ] ) << 8;
 				s_rawsamples[ dst ].right =
-						LittleShort( ( ( short * ) data )[ i * 2 + 1 ] ) << 8;
+				        LittleShort( ( ( short * ) data )[ i * 2 + 1 ] ) << 8;
 			}
 		}
 		else
@@ -942,9 +942,9 @@ void S_RawSamples( int samples, int rate, int width, int channels, byte *data )
 				dst = s_rawend & ( MAX_RAW_SAMPLES - 1 );
 				s_rawend++;
 				s_rawsamples[ dst ].left =
-						LittleShort( ( ( short * ) data )[ src * 2 ] ) << 8;
+				        LittleShort( ( ( short * ) data )[ src * 2 ] ) << 8;
 				s_rawsamples[ dst ].right =
-						LittleShort( ( ( short * ) data )[ src * 2 + 1 ] ) << 8;
+				        LittleShort( ( ( short * ) data )[ src * 2 + 1 ] ) << 8;
 			}
 		}
 	}
@@ -958,9 +958,9 @@ void S_RawSamples( int samples, int rate, int width, int channels, byte *data )
 			dst = s_rawend & ( MAX_RAW_SAMPLES - 1 );
 			s_rawend++;
 			s_rawsamples[ dst ].left =
-					LittleShort( ( ( short * ) data )[ src ] ) << 8;
+			        LittleShort( ( ( short * ) data )[ src ] ) << 8;
 			s_rawsamples[ dst ].right =
-					LittleShort( ( ( short * ) data )[ src ] ) << 8;
+			        LittleShort( ( ( short * ) data )[ src ] ) << 8;
 		}
 	}
 	else if ( channels == 2 && width == 1 )
@@ -973,9 +973,9 @@ void S_RawSamples( int samples, int rate, int width, int channels, byte *data )
 			dst = s_rawend & ( MAX_RAW_SAMPLES - 1 );
 			s_rawend++;
 			s_rawsamples[ dst ].left =
-					( ( char * ) data )[ src * 2 ] << 16;
+			        ( ( char * ) data )[ src * 2 ] << 16;
 			s_rawsamples[ dst ].right =
-					( ( char * ) data )[ src * 2 + 1 ] << 16;
+			        ( ( char * ) data )[ src * 2 + 1 ] << 16;
 		}
 	}
 	else if ( channels == 1 && width == 1 )
@@ -988,7 +988,7 @@ void S_RawSamples( int samples, int rate, int width, int channels, byte *data )
 			dst = s_rawend & ( MAX_RAW_SAMPLES - 1 );
 			s_rawend++;
 			s_rawsamples[ dst ].left =
-					( ( ( byte * ) data )[ src ] - 128 ) << 16;
+			        ( ( ( byte * ) data )[ src ] - 128 ) << 16;
 			s_rawsamples[ dst ].right = ( ( ( byte * ) data )[ src ] - 128 ) << 16;
 		}
 	}
@@ -1058,7 +1058,7 @@ void S_Update( vec3_t origin, vec3_t forward, vec3_t right, vec3_t up )
 	if ( s_show->value )
 	{
 		total = 0;
-		ch = channels;
+		ch    = channels;
 		for ( i = 0; i < MAX_CHANNELS; i++, ch++ )
 			if ( ch->sfx && ( ch->leftvol || ch->rightvol ) )
 			{
@@ -1092,7 +1092,7 @@ void GetSoundtime( void )
 
 		if ( paintedtime > 0x40000000 )
 		{// time to chop things off to avoid 32 bit limits
-			buffers = 0;
+			buffers     = 0;
 			paintedtime = fullsamples;
 			S_StopAllSounds();
 		}
@@ -1132,7 +1132,7 @@ void S_Update_( void )
 
 	// mix to an even submission block size
 	endtime = ( endtime + dma.submission_chunk - 1 ) & ~( dma.submission_chunk - 1 );
-	samps = dma.samples >> ( dma.channels - 1 );
+	samps   = dma.samples >> ( dma.channels - 1 );
 	if ( endtime - soundtime > samps )
 		endtime = soundtime + samps;
 

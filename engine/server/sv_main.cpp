@@ -86,7 +86,7 @@ void SV_DropClient( client_t *drop )
 		drop->download = NULL;
 	}
 
-	drop->state = cs_zombie;// become free in a few seconds
+	drop->state     = cs_zombie;// become free in a few seconds
 	drop->name[ 0 ] = 0;
 }
 
@@ -229,7 +229,7 @@ void SVC_GetChallenge( void )
 	int oldest;
 	int oldestTime;
 
-	oldest = 0;
+	oldest     = 0;
 	oldestTime = 0x7fffffff;
 
 	// see if we already have a challenge for this ip
@@ -240,7 +240,7 @@ void SVC_GetChallenge( void )
 		if ( svs.challenges[ i ].time < oldestTime )
 		{
 			oldestTime = svs.challenges[ i ].time;
-			oldest = i;
+			oldest     = i;
 		}
 	}
 
@@ -248,9 +248,9 @@ void SVC_GetChallenge( void )
 	{
 		// overwrite the oldest
 		svs.challenges[ oldest ].challenge = rand() & 0x7fff;
-		svs.challenges[ oldest ].adr = net_from;
-		svs.challenges[ oldest ].time = chr::globalApp->GetCurrentMillisecond();
-		i = oldest;
+		svs.challenges[ oldest ].adr       = net_from;
+		svs.challenges[ oldest ].time      = chr::globalApp->GetCurrentMillisecond();
+		i                                  = oldest;
 	}
 
 	// send it back
@@ -372,11 +372,11 @@ gotnewcl:
 	// build a new connection
 	// accept the new client
 	// this is the only place a client_t is ever initialized
-	*newcl = temp;
-	sv_client = newcl;
-	edictnum = ( newcl - svs.clients ) + 1;
-	ent = EDICT_NUM( edictnum );
-	newcl->edict = ent;
+	*newcl           = temp;
+	sv_client        = newcl;
+	edictnum         = ( newcl - svs.clients ) + 1;
+	ent              = EDICT_NUM( edictnum );
+	newcl->edict     = ent;
 	newcl->challenge = challenge;// save challenge for checksumming
 
 	// get the game a chance to reject this connection or modify the userinfo
@@ -404,8 +404,8 @@ gotnewcl:
 
 	SZ_Init( &newcl->datagram, newcl->datagram_buf, sizeof( newcl->datagram_buf ) );
 	newcl->datagram.allowoverflow = true;
-	newcl->lastmessage = svs.realtime;// don't timeout
-	newcl->lastconnect = svs.realtime;
+	newcl->lastmessage            = svs.realtime;// don't timeout
+	newcl->lastconnect            = svs.realtime;
 }
 
 int Rcon_Validate( void )
@@ -553,8 +553,8 @@ void SV_CalcPings( void )
 			cl->ping = total / count;
 #endif
 
-			// let the game dll know about the ping
-			cl->edict->client->ping = cl->ping;
+		// let the game dll know about the ping
+		cl->edict->client->ping = cl->ping;
 	}
 }
 
@@ -664,7 +664,7 @@ void SV_CheckTimeouts( void )
 	int       droppoint;
 	int       zombiepoint;
 
-	droppoint = svs.realtime - 1000 * timeout->value;
+	droppoint   = svs.realtime - 1000 * timeout->value;
 	zombiepoint = svs.realtime - 1000 * zombietime->value;
 
 	for ( i = 0, cl = svs.clients; i < maxclients->value; i++, cl++ )
@@ -899,7 +899,7 @@ void SV_UserinfoChanged( client_t *cl )
 	const char *val = Info_ValueForKey( cl->userinfo, "rate" );
 	if ( strlen( val ) )
 	{
-		int i = atoi( val );
+		int i    = atoi( val );
 		cl->rate = i;
 		if ( cl->rate < 100 )
 			cl->rate = 100;
@@ -941,19 +941,19 @@ void SV_Init( void )
 	Cvar_Get( "cheats", "0", CVAR_SERVERINFO | CVAR_LATCH );
 	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_NOSET );
 	;
-	maxclients = Cvar_Get( "maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH );
-	hostname = Cvar_Get( "hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE );
-	timeout = Cvar_Get( "timeout", "125", 0 );
-	zombietime = Cvar_Get( "zombietime", "2", 0 );
-	sv_showclamp = Cvar_Get( "showclamp", "0", 0 );
-	sv_paused = Cvar_Get( "paused", "0", 0 );
-	sv_timedemo = Cvar_Get( "timedemo", "0", 0 );
-	sv_enforcetime = Cvar_Get( "sv_enforcetime", "0", 0 );
-	allow_download = Cvar_Get( "allow_download", "1", CVAR_ARCHIVE );
+	maxclients             = Cvar_Get( "maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH );
+	hostname               = Cvar_Get( "hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE );
+	timeout                = Cvar_Get( "timeout", "125", 0 );
+	zombietime             = Cvar_Get( "zombietime", "2", 0 );
+	sv_showclamp           = Cvar_Get( "showclamp", "0", 0 );
+	sv_paused              = Cvar_Get( "paused", "0", 0 );
+	sv_timedemo            = Cvar_Get( "timedemo", "0", 0 );
+	sv_enforcetime         = Cvar_Get( "sv_enforcetime", "0", 0 );
+	allow_download         = Cvar_Get( "allow_download", "1", CVAR_ARCHIVE );
 	allow_download_players = Cvar_Get( "allow_download_players", "0", CVAR_ARCHIVE );
-	allow_download_models = Cvar_Get( "allow_download_models", "1", CVAR_ARCHIVE );
-	allow_download_sounds = Cvar_Get( "allow_download_sounds", "1", CVAR_ARCHIVE );
-	allow_download_maps = Cvar_Get( "allow_download_maps", "1", CVAR_ARCHIVE );
+	allow_download_models  = Cvar_Get( "allow_download_models", "1", CVAR_ARCHIVE );
+	allow_download_sounds  = Cvar_Get( "allow_download_sounds", "1", CVAR_ARCHIVE );
+	allow_download_maps    = Cvar_Get( "allow_download_maps", "1", CVAR_ARCHIVE );
 
 	sv_noreload = Cvar_Get( "sv_noreload", "0", 0 );
 

@@ -36,7 +36,7 @@ void R_MarkLights( dlight_t *light, int bit, mnode_t *node )
 		return;
 
 	splitplane = node->plane;
-	dist = DotProduct( light->origin, splitplane->normal ) - splitplane->dist;
+	dist       = DotProduct( light->origin, splitplane->normal ) - splitplane->dist;
 
 	if ( dist > light->intensity - DLIGHT_CUTOFF )
 	{
@@ -55,7 +55,7 @@ void R_MarkLights( dlight_t *light, int bit, mnode_t *node )
 	{
 		if ( surf->dlightframe != r_dlightframecount )
 		{
-			surf->dlightbits = 0;
+			surf->dlightbits  = 0;
 			surf->dlightframe = r_dlightframecount;
 		}
 		surf->dlightbits |= bit;
@@ -71,7 +71,7 @@ void R_PushDlights()
 	dlight_t *l;
 
 	r_dlightframecount = r_framecount + 1;// because the count hasn't
-										  //  advanced yet for this frame
+	                                      //  advanced yet for this frame
 	l = r_newrefdef.dlights;
 	for ( i = 0; i < r_newrefdef.num_dlights; i++, l++ )
 	{
@@ -106,13 +106,13 @@ static int RecursiveLightPoint( mnode_t *node, const vec3_t start, vec3_t end )
 	// FIXME: optimize for axial
 	plane = node->plane;
 	front = DotProduct( start, plane->normal ) - plane->dist;
-	back = DotProduct( end, plane->normal ) - plane->dist;
-	side = front < 0;
+	back  = DotProduct( end, plane->normal ) - plane->dist;
+	side  = front < 0;
 
 	if ( ( back < 0 ) == side )
 		return RecursiveLightPoint( node->children[ side ], start, end );
 
-	frac = front / ( front - back );
+	frac     = front / ( front - back );
 	mid[ 0 ] = start[ 0 ] + ( end[ 0 ] - start[ 0 ] ) * frac;
 	mid[ 1 ] = start[ 1 ] + ( end[ 1 ] - start[ 1 ] ) * frac;
 	mid[ 2 ] = start[ 2 ] + ( end[ 2 ] - start[ 2 ] ) * frac;
@@ -261,15 +261,15 @@ void R_AddDynamicLights( msurface_t *surf )
 
 	smax = ( surf->extents[ 0 ] >> 4 ) + 1;
 	tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-	tex = surf->texinfo;
+	tex  = surf->texinfo;
 
 	for ( lnum = 0; lnum < r_newrefdef.num_dlights; lnum++ )
 	{
 		if ( !( surf->dlightbits & ( 1 << lnum ) ) )
 			continue;// not lit by this light
 
-		dl = &r_newrefdef.dlights[ lnum ];
-		frad = dl->intensity;
+		dl    = &r_newrefdef.dlights[ lnum ];
+		frad  = dl->intensity;
 		fdist = DotProduct( dl->origin, surf->plane->normal ) -
 		        surf->plane->dist;
 		frad -= fabs( fdist );
@@ -347,7 +347,7 @@ void R_BuildLightMap( msurface_t *surf, byte *dest, int stride )
 	int           r, g, b, a, max;
 	unsigned int  i, j;
 	unsigned int  size;
-	byte		 *lightmap;
+	byte         *lightmap;
 	float         scale[ 4 ];
 	int           nummaps;
 	float        *bl;
@@ -601,7 +601,7 @@ store:
 					case 'A':
 					default:
 						r = g = b = 0;
-						a = 255 - a;
+						a         = 255 - a;
 						break;
 				}
 

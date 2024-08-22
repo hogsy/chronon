@@ -46,6 +46,6 @@ add_library(chronon-game STATIC
         p_view.cpp
         p_weapon.cpp
         q_shared.cpp
-        )
+)
 
 target_compile_definitions(chronon-game PRIVATE GAME_HARD_LINKED)

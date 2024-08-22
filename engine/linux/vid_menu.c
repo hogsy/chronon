@@ -77,12 +77,12 @@ static void DriverCallback( void *unused )
 
 	if ( s_ref_list[ s_current_menu_index ].curvalue < 2 )
 	{
-		s_current_menu = &s_software_menu;
+		s_current_menu       = &s_software_menu;
 		s_current_menu_index = 0;
 	}
 	else
 	{
-		s_current_menu = &s_opengl_menu;
+		s_current_menu       = &s_opengl_menu;
 		s_current_menu_index = 1;
 	}
 }
@@ -124,9 +124,9 @@ static void ApplyChanges( void *unused )
 	/*
 	** make values consistent
 	*/
-	s_fs_box[ !s_current_menu_index ].curvalue = s_fs_box[ s_current_menu_index ].curvalue;
+	s_fs_box[ !s_current_menu_index ].curvalue            = s_fs_box[ s_current_menu_index ].curvalue;
 	s_brightness_slider[ !s_current_menu_index ].curvalue = s_brightness_slider[ s_current_menu_index ].curvalue;
-	s_ref_list[ !s_current_menu_index ].curvalue = s_ref_list[ s_current_menu_index ].curvalue;
+	s_ref_list[ !s_current_menu_index ].curvalue          = s_ref_list[ s_current_menu_index ].curvalue;
 
 	/*
 	** invert sense so greater = brighter, and scale to a range of 0.5 to 1.3
@@ -216,33 +216,33 @@ static void ApplyChanges( void *unused )
 void VID_MenuInit( void )
 {
 	static const char *resolutions[] =
-			{
-					"[320 240  ]",
-					"[400 300  ]",
-					"[512 384  ]",
-					"[640 480  ]",
-					"[800 600  ]",
-					"[960 720  ]",
-					"[1024 768 ]",
-					"[1152 864 ]",
-					"[1280 1024]",
-					"[1600 1200]",
-					"[2048 1536]",
-					0 };
+	        {
+	                "[320 240  ]",
+	                "[400 300  ]",
+	                "[512 384  ]",
+	                "[640 480  ]",
+	                "[800 600  ]",
+	                "[960 720  ]",
+	                "[1024 768 ]",
+	                "[1152 864 ]",
+	                "[1280 1024]",
+	                "[1600 1200]",
+	                "[2048 1536]",
+	                0 };
 	static const char *refs[] =
-			{
-					"[software       ]",
-					"[software X11   ]",
-					"[Mesa 3-D 3DFX  ]",
-					"[3DFXGL Miniport]",
-					"[OpenGL glX     ]",
-					"[Mesa 3-D glX   ]",
-					0 };
+	        {
+	                "[software       ]",
+	                "[software X11   ]",
+	                "[Mesa 3-D 3DFX  ]",
+	                "[3DFXGL Miniport]",
+	                "[OpenGL glX     ]",
+	                "[Mesa 3-D glX   ]",
+	                0 };
 	static const char *yesno_names[] =
-			{
-					"no",
-					"yes",
-					0 };
+	        {
+	                "no",
+	                "yes",
+	                0 };
 	int i;
 
 	if ( !gl_picmip )
@@ -261,22 +261,22 @@ void VID_MenuInit( void )
 		_windowed_mouse = Cvar_Get( "_windowed_mouse", "0", CVAR_ARCHIVE );
 
 	s_mode_list[ SOFTWARE_MENU ].curvalue = sw_mode->value;
-	s_mode_list[ OPENGL_MENU ].curvalue = gl_mode->value;
+	s_mode_list[ OPENGL_MENU ].curvalue   = gl_mode->value;
 
 	if ( !scr_viewsize )
 		scr_viewsize = Cvar_Get( "viewsize", "100", CVAR_ARCHIVE );
 
 	s_screensize_slider[ SOFTWARE_MENU ].curvalue = scr_viewsize->value / 10;
-	s_screensize_slider[ OPENGL_MENU ].curvalue = scr_viewsize->value / 10;
+	s_screensize_slider[ OPENGL_MENU ].curvalue   = scr_viewsize->value / 10;
 
 	if ( strcmp( vid_ref->string, "soft" ) == 0 )
 	{
-		s_current_menu_index = SOFTWARE_MENU;
+		s_current_menu_index     = SOFTWARE_MENU;
 		s_ref_list[ 0 ].curvalue = s_ref_list[ 1 ].curvalue = REF_SOFT;
 	}
 	else if ( strcmp( vid_ref->string, "softx" ) == 0 )
 	{
-		s_current_menu_index = SOFTWARE_MENU;
+		s_current_menu_index     = SOFTWARE_MENU;
 		s_ref_list[ 0 ].curvalue = s_ref_list[ 1 ].curvalue = REF_SOFTX11;
 	}
 	else if ( strcmp( vid_ref->string, "gl" ) == 0 )
@@ -296,91 +296,91 @@ void VID_MenuInit( void )
 			s_ref_list[ s_current_menu_index ].curvalue = REF_OPENGLX;
 	}
 
-	s_software_menu.x = viddef.width * 0.50;
+	s_software_menu.x      = viddef.width * 0.50;
 	s_software_menu.nitems = 0;
-	s_opengl_menu.x = viddef.width * 0.50;
-	s_opengl_menu.nitems = 0;
+	s_opengl_menu.x        = viddef.width * 0.50;
+	s_opengl_menu.nitems   = 0;
 
 	for ( i = 0; i < 2; i++ )
 	{
-		s_ref_list[ i ].generic.type = MTYPE_SPINCONTROL;
-		s_ref_list[ i ].generic.name = "driver";
-		s_ref_list[ i ].generic.x = 0;
-		s_ref_list[ i ].generic.y = 0;
+		s_ref_list[ i ].generic.type     = MTYPE_SPINCONTROL;
+		s_ref_list[ i ].generic.name     = "driver";
+		s_ref_list[ i ].generic.x        = 0;
+		s_ref_list[ i ].generic.y        = 0;
 		s_ref_list[ i ].generic.callback = DriverCallback;
-		s_ref_list[ i ].itemnames = refs;
+		s_ref_list[ i ].itemnames        = refs;
 
 		s_mode_list[ i ].generic.type = MTYPE_SPINCONTROL;
 		s_mode_list[ i ].generic.name = "video mode";
-		s_mode_list[ i ].generic.x = 0;
-		s_mode_list[ i ].generic.y = 10;
-		s_mode_list[ i ].itemnames = resolutions;
+		s_mode_list[ i ].generic.x    = 0;
+		s_mode_list[ i ].generic.y    = 10;
+		s_mode_list[ i ].itemnames    = resolutions;
 
-		s_screensize_slider[ i ].generic.type = MTYPE_SLIDER;
-		s_screensize_slider[ i ].generic.x = 0;
-		s_screensize_slider[ i ].generic.y = 20;
-		s_screensize_slider[ i ].generic.name = "screen size";
-		s_screensize_slider[ i ].minvalue = 3;
-		s_screensize_slider[ i ].maxvalue = 12;
+		s_screensize_slider[ i ].generic.type     = MTYPE_SLIDER;
+		s_screensize_slider[ i ].generic.x        = 0;
+		s_screensize_slider[ i ].generic.y        = 20;
+		s_screensize_slider[ i ].generic.name     = "screen size";
+		s_screensize_slider[ i ].minvalue         = 3;
+		s_screensize_slider[ i ].maxvalue         = 12;
 		s_screensize_slider[ i ].generic.callback = ScreenSizeCallback;
 
-		s_brightness_slider[ i ].generic.type = MTYPE_SLIDER;
-		s_brightness_slider[ i ].generic.x = 0;
-		s_brightness_slider[ i ].generic.y = 30;
-		s_brightness_slider[ i ].generic.name = "brightness";
+		s_brightness_slider[ i ].generic.type     = MTYPE_SLIDER;
+		s_brightness_slider[ i ].generic.x        = 0;
+		s_brightness_slider[ i ].generic.y        = 30;
+		s_brightness_slider[ i ].generic.name     = "brightness";
 		s_brightness_slider[ i ].generic.callback = BrightnessCallback;
-		s_brightness_slider[ i ].minvalue = 5;
-		s_brightness_slider[ i ].maxvalue = 13;
-		s_brightness_slider[ i ].curvalue = ( 1.3 - vid_gamma->value + 0.5 ) * 10;
+		s_brightness_slider[ i ].minvalue         = 5;
+		s_brightness_slider[ i ].maxvalue         = 13;
+		s_brightness_slider[ i ].curvalue         = ( 1.3 - vid_gamma->value + 0.5 ) * 10;
 
 		s_fs_box[ i ].generic.type = MTYPE_SPINCONTROL;
-		s_fs_box[ i ].generic.x = 0;
-		s_fs_box[ i ].generic.y = 40;
+		s_fs_box[ i ].generic.x    = 0;
+		s_fs_box[ i ].generic.y    = 40;
 		s_fs_box[ i ].generic.name = "fullscreen";
-		s_fs_box[ i ].itemnames = yesno_names;
-		s_fs_box[ i ].curvalue = vid_fullscreen->value;
+		s_fs_box[ i ].itemnames    = yesno_names;
+		s_fs_box[ i ].curvalue     = vid_fullscreen->value;
 
-		s_defaults_action[ i ].generic.type = MTYPE_ACTION;
-		s_defaults_action[ i ].generic.name = "reset to default";
-		s_defaults_action[ i ].generic.x = 0;
-		s_defaults_action[ i ].generic.y = 90;
+		s_defaults_action[ i ].generic.type     = MTYPE_ACTION;
+		s_defaults_action[ i ].generic.name     = "reset to default";
+		s_defaults_action[ i ].generic.x        = 0;
+		s_defaults_action[ i ].generic.y        = 90;
 		s_defaults_action[ i ].generic.callback = ResetDefaults;
 
-		s_apply_action[ i ].generic.type = MTYPE_ACTION;
-		s_apply_action[ i ].generic.name = "apply";
-		s_apply_action[ i ].generic.x = 0;
-		s_apply_action[ i ].generic.y = 100;
+		s_apply_action[ i ].generic.type     = MTYPE_ACTION;
+		s_apply_action[ i ].generic.name     = "apply";
+		s_apply_action[ i ].generic.x        = 0;
+		s_apply_action[ i ].generic.y        = 100;
 		s_apply_action[ i ].generic.callback = ApplyChanges;
 	}
 
 	s_stipple_box.generic.type = MTYPE_SPINCONTROL;
-	s_stipple_box.generic.x = 0;
-	s_stipple_box.generic.y = 60;
+	s_stipple_box.generic.x    = 0;
+	s_stipple_box.generic.y    = 60;
 	s_stipple_box.generic.name = "stipple alpha";
-	s_stipple_box.curvalue = sw_stipplealpha->value;
-	s_stipple_box.itemnames = yesno_names;
+	s_stipple_box.curvalue     = sw_stipplealpha->value;
+	s_stipple_box.itemnames    = yesno_names;
 
 	s_windowed_mouse.generic.type = MTYPE_SPINCONTROL;
-	s_windowed_mouse.generic.x = 0;
-	s_windowed_mouse.generic.y = 72;
+	s_windowed_mouse.generic.x    = 0;
+	s_windowed_mouse.generic.y    = 72;
 	s_windowed_mouse.generic.name = "windowed mouse";
-	s_windowed_mouse.curvalue = _windowed_mouse->value;
-	s_windowed_mouse.itemnames = yesno_names;
+	s_windowed_mouse.curvalue     = _windowed_mouse->value;
+	s_windowed_mouse.itemnames    = yesno_names;
 
 	s_tq_slider.generic.type = MTYPE_SLIDER;
-	s_tq_slider.generic.x = 0;
-	s_tq_slider.generic.y = 60;
+	s_tq_slider.generic.x    = 0;
+	s_tq_slider.generic.y    = 60;
 	s_tq_slider.generic.name = "texture quality";
-	s_tq_slider.minvalue = 0;
-	s_tq_slider.maxvalue = 3;
-	s_tq_slider.curvalue = 3 - gl_picmip->value;
+	s_tq_slider.minvalue     = 0;
+	s_tq_slider.maxvalue     = 3;
+	s_tq_slider.curvalue     = 3 - gl_picmip->value;
 
 	s_paletted_texture_box.generic.type = MTYPE_SPINCONTROL;
-	s_paletted_texture_box.generic.x = 0;
-	s_paletted_texture_box.generic.y = 70;
+	s_paletted_texture_box.generic.x    = 0;
+	s_paletted_texture_box.generic.y    = 70;
 	s_paletted_texture_box.generic.name = "8-bit textures";
-	s_paletted_texture_box.itemnames = yesno_names;
-	s_paletted_texture_box.curvalue = gl_ext_palettedtexture->value;
+	s_paletted_texture_box.itemnames    = yesno_names;
+	s_paletted_texture_box.curvalue     = gl_ext_palettedtexture->value;
 
 	Menu_AddItem( &s_software_menu, ( void * ) &s_ref_list[ SOFTWARE_MENU ] );
 	Menu_AddItem( &s_software_menu, ( void * ) &s_mode_list[ SOFTWARE_MENU ] );
@@ -449,7 +449,7 @@ const char *VID_MenuKey( int key )
 {
 	extern void M_PopMenu( void );
 
-	menuframework_s   *m = s_current_menu;
+	menuframework_s   *m     = s_current_menu;
 	static const char *sound = "misc/menu1.wav";
 
 	switch ( key )

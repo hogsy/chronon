@@ -108,7 +108,7 @@ void CL_AddNetgraph( void )
 		SCR_DebugGraph( 30, 0xdf );
 
 	// see what the latency was on this packet
-	in = cls.netchan.incoming_acknowledged & ( CMD_BACKUP - 1 );
+	in   = cls.netchan.incoming_acknowledged & ( CMD_BACKUP - 1 );
 	ping = cls.realtime - cl.cmd_time[ in ];
 	ping /= 30;
 	if ( ping > 30 )
@@ -161,10 +161,10 @@ void SCR_DrawDebugGraph( void )
 
 	for ( a = 0; a < w; a++ )
 	{
-		i = ( current - 1 - a + 1024 ) & 1023;
-		v = values[ i ].value;
+		i     = ( current - 1 - a + 1024 ) & 1023;
+		v     = values[ i ].value;
 		color = values[ i ].color;
-		v = v * scr_graphscale->value + scr_graphshift->value;
+		v     = v * scr_graphscale->value + scr_graphshift->value;
 
 		if ( v < 0 )
 			v += scr_graphheight->value * ( 1 + ( int ) ( -v / scr_graphheight->value ) );
@@ -202,12 +202,12 @@ void SCR_CenterPrint( char *str )
 	int   i, j, l;
 
 	strncpy( scr_centerstring, str, sizeof( scr_centerstring ) - 1 );
-	scr_centertime_off = scr_centertime->value;
+	scr_centertime_off   = scr_centertime->value;
 	scr_centertime_start = cl.time;
 
 	// count the number of lines for centering
 	scr_center_lines = 1;
-	s = str;
+	s                = str;
 	while ( *s )
 	{
 		if ( *s == '\n' )
@@ -233,7 +233,7 @@ void SCR_CenterPrint( char *str )
 			line[ i++ ] = s[ j ];
 		}
 
-		line[ i ] = '\n';
+		line[ i ]     = '\n';
 		line[ i + 1 ] = 0;
 
 		Com_Printf( "%s", line );
@@ -262,7 +262,7 @@ void SCR_DrawCenterString( void )
 	remaining = 9999;
 
 	scr_erase_center = 0;
-	start = scr_centerstring;
+	start            = scr_centerstring;
 
 	if ( scr_center_lines <= 4 )
 		y = viddef.height * 0.35;
@@ -409,19 +409,19 @@ SCR_Init
 */
 void SCR_Init( void )
 {
-	scr_viewsize = Cvar_Get( "viewsize", "100", CVAR_ARCHIVE );
-	scr_conspeed = Cvar_Get( "scr_conspeed", "3", 0 );
-	scr_showturtle = Cvar_Get( "scr_showturtle", "0", 0 );
-	scr_showpause = Cvar_Get( "scr_showpause", "1", 0 );
-	scr_centertime = Cvar_Get( "scr_centertime", "2.5", 0 );
-	scr_printspeed = Cvar_Get( "scr_printspeed", "8", 0 );
-	scr_netgraph = Cvar_Get( "netgraph", "0", 0 );
-	scr_timegraph = Cvar_Get( "timegraph", "0", 0 );
-	scr_debuggraph = Cvar_Get( "debuggraph", "0", 0 );
+	scr_viewsize    = Cvar_Get( "viewsize", "100", CVAR_ARCHIVE );
+	scr_conspeed    = Cvar_Get( "scr_conspeed", "3", 0 );
+	scr_showturtle  = Cvar_Get( "scr_showturtle", "0", 0 );
+	scr_showpause   = Cvar_Get( "scr_showpause", "1", 0 );
+	scr_centertime  = Cvar_Get( "scr_centertime", "2.5", 0 );
+	scr_printspeed  = Cvar_Get( "scr_printspeed", "8", 0 );
+	scr_netgraph    = Cvar_Get( "netgraph", "0", 0 );
+	scr_timegraph   = Cvar_Get( "timegraph", "0", 0 );
+	scr_debuggraph  = Cvar_Get( "debuggraph", "0", 0 );
 	scr_graphheight = Cvar_Get( "graphheight", "32", 0 );
-	scr_graphscale = Cvar_Get( "graphscale", "1", 0 );
-	scr_graphshift = Cvar_Get( "graphshift", "0", 0 );
-	scr_drawall = Cvar_Get( "scr_drawall", "0", 0 );
+	scr_graphscale  = Cvar_Get( "graphscale", "1", 0 );
+	scr_graphshift  = Cvar_Get( "graphshift", "0", 0 );
+	scr_drawall     = Cvar_Get( "scr_drawall", "0", 0 );
 
 	//
 	// register our commands
@@ -574,7 +574,7 @@ void SCR_BeginLoadingPlaque( void )
 	else
 		scr_draw_loading = 1;
 	SCR_UpdateScreen();
-	cls.disable_screen = chr::globalApp->GetNumMilliseconds();
+	cls.disable_screen      = chr::globalApp->GetNumMilliseconds();
 	cls.disable_servercount = cl.servercount;
 }
 
@@ -735,10 +735,10 @@ void SCR_TileClear( void )
 	if ( clear.y2 <= clear.y1 )
 		return;// nothing disturbed
 
-	top = scr_vrect.y;
+	top    = scr_vrect.y;
 	bottom = top + scr_vrect.height - 1;
-	left = scr_vrect.x;
-	right = left + scr_vrect.width - 1;
+	left   = scr_vrect.x;
+	right  = left + scr_vrect.width - 1;
 
 	if ( clear.y1 < top )
 	{// clear above view screen
@@ -776,10 +776,10 @@ void SCR_TileClear( void )
 
 #define STAT_MINUS 10// num frame for '-' stats digit
 static const char *sb_nums[ 2 ][ 11 ] =
-		{
-				{ "num0", "num1", "num2", "num3", "num4", "num5",
+        {
+                { "num0", "num1", "num2", "num3", "num4", "num5",
                   "num6", "num7", "num8", "num9", "white" },
-				{ "num0", "num1", "num2", "num3", "num4", "num5",
+                { "num0", "num1", "num2", "num3", "num4", "num5",
                   "num6", "num7", "num8", "num9", "white" } };
 
 #define ICON_WIDTH  24
@@ -952,8 +952,8 @@ static void SCR_ExecuteLayoutString( const char *s )
 	if ( !s[ 0 ] )
 		return;
 
-	x = 0;
-	y = 0;
+	x     = 0;
+	y     = 0;
 	width = 3;
 
 	while ( s )
@@ -962,38 +962,38 @@ static void SCR_ExecuteLayoutString( const char *s )
 		if ( !strcmp( token, "xl" ) )
 		{
 			token = COM_Parse( &s );
-			x = atoi( token );
+			x     = atoi( token );
 			continue;
 		}
 		if ( !strcmp( token, "xr" ) )
 		{
 			token = COM_Parse( &s );
-			x = viddef.width + atoi( token );
+			x     = viddef.width + atoi( token );
 			continue;
 		}
 		if ( !strcmp( token, "xv" ) )
 		{
 			token = COM_Parse( &s );
-			x = viddef.width / 2 - 160 + atoi( token );
+			x     = viddef.width / 2 - 160 + atoi( token );
 			continue;
 		}
 
 		if ( !strcmp( token, "yt" ) )
 		{
 			token = COM_Parse( &s );
-			y = atoi( token );
+			y     = atoi( token );
 			continue;
 		}
 		if ( !strcmp( token, "yb" ) )
 		{
 			token = COM_Parse( &s );
-			y = viddef.height + atoi( token );
+			y     = viddef.height + atoi( token );
 			continue;
 		}
 		if ( !strcmp( token, "yv" ) )
 		{
 			token = COM_Parse( &s );
-			y = viddef.height / 2 - 120 + atoi( token );
+			y     = viddef.height / 2 - 120 + atoi( token );
 			continue;
 		}
 
@@ -1017,9 +1017,9 @@ static void SCR_ExecuteLayoutString( const char *s )
 			int score, ping, time;
 
 			token = COM_Parse( &s );
-			x = viddef.width / 2 - 160 + atoi( token );
+			x     = viddef.width / 2 - 160 + atoi( token );
 			token = COM_Parse( &s );
-			y = viddef.height / 2 - 120 + atoi( token );
+			y     = viddef.height / 2 - 120 + atoi( token );
 			SCR_AddDirtyPoint( x, y );
 			SCR_AddDirtyPoint( x + 159, y + 31 );
 
@@ -1033,10 +1033,10 @@ static void SCR_ExecuteLayoutString( const char *s )
 			score = atoi( token );
 
 			token = COM_Parse( &s );
-			ping = atoi( token );
+			ping  = atoi( token );
 
 			token = COM_Parse( &s );
-			time = atoi( token );
+			time  = atoi( token );
 
 			DrawAltString( x + 32, y, ci->name );
 			DrawString( x + 32, y + 8, "Score: " );
@@ -1056,9 +1056,9 @@ static void SCR_ExecuteLayoutString( const char *s )
 			char block[ 80 ];
 
 			token = COM_Parse( &s );
-			x = viddef.width / 2 - 160 + atoi( token );
+			x     = viddef.width / 2 - 160 + atoi( token );
 			token = COM_Parse( &s );
-			y = viddef.height / 2 - 120 + atoi( token );
+			y     = viddef.height / 2 - 120 + atoi( token );
 			SCR_AddDirtyPoint( x, y );
 			SCR_AddDirtyPoint( x + 159, y + 31 );
 
@@ -1072,7 +1072,7 @@ static void SCR_ExecuteLayoutString( const char *s )
 			score = atoi( token );
 
 			token = COM_Parse( &s );
-			ping = atoi( token );
+			ping  = atoi( token );
 			if ( ping > 999 )
 				ping = 999;
 

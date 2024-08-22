@@ -23,7 +23,7 @@ if (WIN32)
             win32/net_wins.cpp
             win32/q_shwin.cpp
             win32/snd_win.cpp
-            )
+    )
     link_directories(../3rdparty/sdl2/lib/)
 elseif (APPLE)
     file(GLOB ENGINE_PLATFORM_SOURCE
@@ -32,7 +32,7 @@ elseif (APPLE)
             linux/glob.cpp
             linux/net_udp.cpp
             linux/q_shlinux.cpp
-            )
+    )
 elseif (UNIX)
     file(GLOB ENGINE_PLATFORM_SOURCE
             linux/cd_linux.cpp
@@ -40,7 +40,7 @@ elseif (UNIX)
             linux/net_udp.cpp
             linux/q_shlinux.cpp
             linux/snd_linux.cpp
-            )
+    )
 endif ()
 
 add_executable(chronon-engine WIN32
@@ -120,19 +120,19 @@ add_executable(chronon-engine WIN32
         # 3rd Party
         ../3rdparty/miniz/miniz.c
         ../3rdparty/glew/src/glew.c
-        )
+)
 
 set_target_properties(chronon-engine PROPERTIES OUTPUT_NAME Chronon)
 
 target_compile_definitions(chronon-engine PRIVATE
         GLEW_STATIC
-        )
+)
 target_include_directories(chronon-engine PRIVATE
         ./
         ../
         ../3rdparty/
         ../3rdparty/glew/include/
-        )
+)
 
 target_link_libraries(chronon-engine chronon-game)
 
@@ -158,7 +158,7 @@ if (WIN32)
             Version
             Ws2_32
             Winmm
-            )
+    )
 elseif (UNIX AND NOT APPLE)
     target_link_libraries(chronon-engine X11 Xext dl)
 endif ()

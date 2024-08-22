@@ -35,13 +35,7 @@ chr::App *chr::globalApp = nullptr;
 
 void chr::App::Initialize()
 {
-	int status = SDL_Init(
-			SDL_INIT_VIDEO |
-			SDL_INIT_EVENTS |
-			SDL_INIT_GAMECONTROLLER |
-			SDL_INIT_HAPTIC |
-			SDL_INIT_JOYSTICK |
-			SDL_INIT_TIMER );
+	int status = SDL_Init( SDL_INIT_EVERYTHING );
 	if ( status != 0 )
 		Sys_Error( "Failed to initialized SDL2: %s\n", SDL_GetError() );
 
@@ -59,7 +53,7 @@ void chr::App::Initialize()
 		do
 		{
 			newTime = GetNumMilliseconds();
-			time = newTime - oldTime;
+			time    = newTime - oldTime;
 		} while ( time < 1 );
 
 #if defined( Q_PLATFORM_X86 )

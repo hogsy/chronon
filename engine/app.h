@@ -61,4 +61,4 @@ namespace chr
 	};
 
 	extern App *globalApp;
-}// namespace nox
+}// namespace chr

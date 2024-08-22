@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 bool s_win95;
 
-int      starttime;
+int  starttime;
 bool ActiveApp;
 bool Minimized;
 
@@ -59,7 +59,7 @@ Sys_ScanForCD
 */
 char *Sys_ScanForCD( void )
 {
-	static char     cddir[ MAX_OSPATH ];
+	static char cddir[ MAX_OSPATH ];
 	static bool done;
 #ifndef DEMO
 	char  drive[ 4 ];
@@ -284,7 +284,7 @@ ParseCommandLine
 */
 void ParseCommandLine( LPSTR lpCmdLine )
 {
-	argc = 1;
+	argc      = 1;
 	argv[ 0 ] = "exe";
 
 	while ( *lpCmdLine && ( argc < MAX_NUM_ARGVS ) )
@@ -369,7 +369,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		do {
 			newtime = Sys_Milliseconds();
-			time = newtime - oldtime;
+			time    = newtime - oldtime;
 		} while ( time < 1 );
 		//			Con_Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime,
 		//oldtime, time);

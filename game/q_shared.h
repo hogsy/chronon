@@ -67,7 +67,7 @@ typedef unsigned char byte;// todo: move this into our own namespace...
 #define Q_UNUSED( ... ) ( void ) ( __VA_ARGS__ )
 
 #define Q_BYTE_TO_FLOAT( a ) ( float ) ( ( a ) / 255.0f )
-#define Q_FLOAT_TO_BYTE( a ) ( uint8_t )( ( a ) * 255 )
+#define Q_FLOAT_TO_BYTE( a ) ( uint8_t ) ( ( a ) * 255 )
 
 #define Q_BITFLAG( NAME, INDEX ) NAME = ( 1 << ( INDEX ) )
 
@@ -157,7 +157,7 @@ namespace chr
 		float r, g, b, a;
 	};
 
-	ColourF32 ConvertColourU8ToColourF32( const ColourU8 &src )
+	static inline ColourF32 ConvertColourU8ToColourF32( const ColourU8 &src )
 	{
 		return ( ColourF32 ){
 		        ( ( float ) src.r ) / 255.0f,
@@ -185,8 +185,8 @@ int Q_log2( int val );
 void R_ConcatRotations( float in1[ 3 ][ 3 ], float in2[ 3 ][ 3 ], float out[ 3 ][ 3 ] );
 void R_ConcatTransforms( float in1[ 3 ][ 4 ], float in2[ 3 ][ 4 ], float out[ 3 ][ 4 ] );
 
-void AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
-int BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
+void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
+int   BoxOnPlaneSide( vec3_t emins, vec3_t emaxs, struct cplane_s *plane );
 float anglemod( float a );
 float LerpAngle( float a1, float a2, float frac );
 
@@ -203,14 +203,14 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point,
 
 //=============================================
 
-char *COM_SkipPath( char *pathname );
-void COM_StripExtension( const char *in, char *out );
+char       *COM_SkipPath( char *pathname );
+void        COM_StripExtension( const char *in, char *out );
 const char *COM_FileExtension( char *in );
-void COM_FileBase( char *in, char *out );
-void COM_FilePath( char *in, char *out );
-void COM_DefaultExtension( char *path, char *extension );
+void        COM_FileBase( char *in, char *out );
+void        COM_FilePath( char *in, char *out );
+void        COM_DefaultExtension( char *path, char *extension );
 
-size_t Script_GetLineLength( const char *data );
+size_t      Script_GetLineLength( const char *data );
 const char *Script_GetLine( const char *data, char *dest, size_t destSize );
 const char *Script_SkipWhitespace( const char *data );
 const char *Script_SkipComment( const char *data );
@@ -260,12 +260,12 @@ int Q_vscprintf( const char *format, va_list pArgs );
 
 short BigShort( short l );
 short LittleShort( short l );
-int BigLong( int l );
-int LittleLong( int l );
+int   BigLong( int l );
+int   LittleLong( int l );
 float BigFloat( float l );
 float LittleFloat( float l );
 
-void Swap_Init( void );
+void  Swap_Init( void );
 char *va( const char *format, ... );
 
 //=============================================
@@ -278,9 +278,9 @@ char *va( const char *format, ... );
 #define MAX_INFO_STRING 512
 
 const char *Info_ValueForKey( char *s, const char *key );
-void Info_RemoveKey( char *s, const char *key );
-void Info_SetValueForKey( char *s, const char *key, const char *value );
-bool Info_Validate( char *s );
+void        Info_RemoveKey( char *s, const char *key );
+void        Info_SetValueForKey( char *s, const char *key, const char *value );
+bool        Info_Validate( char *s );
 
 /*
 ==============================================================
@@ -293,9 +293,9 @@ SYSTEM SPECIFIC
 int Sys_Mkdir( char *path );
 
 // large block stack allocation routines
-void *Hunk_Begin( size_t maxsize );
-void *Hunk_Alloc( size_t size );
-void Hunk_Free( void *buf );
+void  *Hunk_Begin( size_t maxsize );
+void  *Hunk_Alloc( size_t size );
+void   Hunk_Free( void *buf );
 size_t Hunk_End();
 
 // directory searching
@@ -310,7 +310,7 @@ size_t Hunk_End();
 */
 char *Sys_FindFirst( char *path, unsigned musthave, unsigned canthave );
 char *Sys_FindNext( unsigned musthave, unsigned canthave );
-void Sys_FindClose();
+void  Sys_FindClose();
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link
 void Sys_Error( const char *error, ... );
@@ -327,23 +327,21 @@ CVARS (console variables)
 #ifndef CVAR
 #	define CVAR
 
-#	define CVAR_ARCHIVE    1U// set to cause it to be saved to vars.rc
-#	define CVAR_USERINFO   2U// added to userinfo  when changed
-#	define CVAR_SERVERINFO 4U// added to serverinfo when changed
-#	define CVAR_NOSET \
-		8U                // don't allow change from console at all, \
-		                  // but can be set from the command line
-#	define CVAR_LATCH 16U// save changes until server restart
+#	define CVAR_ARCHIVE    1U // set to cause it to be saved to vars.rc
+#	define CVAR_USERINFO   2U // added to userinfo  when changed
+#	define CVAR_SERVERINFO 4U // added to serverinfo when changed
+#	define CVAR_NOSET      8U // don't allow change from console at all, but can be set from the command line
+#	define CVAR_LATCH      16U// save changes until server restart
 
 // nothing outside the Cvar_*() functions should modify these fields!
 typedef struct cvar_s
 {
-	char *name;
-	char *string;
-	char *latched_string;// for CVAR_LATCH vars
-	int flags;
-	bool modified;// set each time the cvar is changed
-	float value;
+	char          *name;
+	char          *string;
+	char          *latched_string;// for CVAR_LATCH vars
+	int            flags;
+	bool           modified;// set each time the cvar is changed
+	float          value;
 	struct cvar_s *next;
 } cvar_t;
 
@@ -360,13 +358,13 @@ COLLISION DETECTION
 enum ContentFlag
 {
 	// lower bits are stronger, and will eat weaker brushes completely
-	CONTENTS_SOLID = ( 1 << 0 ), // an eye is never valid in a solid
-	CONTENTS_WINDOW = ( 1 << 1 ),// translucent, but not watery
-	CONTENTS_AUX = ( 1 << 2 ),
-	CONTENTS_LAVA = ( 1 << 3 ),
-	CONTENTS_SLIME = ( 1 << 4 ),
-	CONTENTS_WATER = ( 1 << 5 ),
-	CONTENTS_MIST = ( 1 << 6 ),
+	CONTENTS_SOLID        = ( 1 << 0 ),// an eye is never valid in a solid
+	CONTENTS_WINDOW       = ( 1 << 1 ),// translucent, but not watery
+	CONTENTS_AUX          = ( 1 << 2 ),
+	CONTENTS_LAVA         = ( 1 << 3 ),
+	CONTENTS_SLIME        = ( 1 << 4 ),
+	CONTENTS_WATER        = ( 1 << 5 ),
+	CONTENTS_MIST         = ( 1 << 6 ),
 	LAST_VISIBLE_CONTENTS = CONTENTS_MIST,
 
 	CONTENTS_UNUSED0 = ( 1 << 7 ),
@@ -380,24 +378,24 @@ enum ContentFlag
 
 	// remaining contents are non-visible, and don't eat brushes
 
-	CONTENTS_AREAPORTAL = ( 1 << 15 ),
-	CONTENTS_PLAYERCLIP = ( 1 << 16 ),
+	CONTENTS_AREAPORTAL  = ( 1 << 15 ),
+	CONTENTS_PLAYERCLIP  = ( 1 << 16 ),
 	CONTENTS_MONSTERCLIP = ( 1 << 17 ),
 
 	// currents can be added to any other contents, and may be mixed
-	CONTENTS_CURRENT_0 = ( 1 << 18 ),
-	CONTENTS_CURRENT_90 = ( 1 << 19 ),
-	CONTENTS_CURRENT_180 = ( 1 << 20 ),
-	CONTENTS_CURRENT_270 = ( 1 << 21 ),
-	CONTENTS_CURRENT_UP = ( 1 << 22 ),
+	CONTENTS_CURRENT_0    = ( 1 << 18 ),
+	CONTENTS_CURRENT_90   = ( 1 << 19 ),
+	CONTENTS_CURRENT_180  = ( 1 << 20 ),
+	CONTENTS_CURRENT_270  = ( 1 << 21 ),
+	CONTENTS_CURRENT_UP   = ( 1 << 22 ),
 	CONTENTS_CURRENT_DOWN = ( 1 << 23 ),
 
-	CONTENTS_ORIGIN = ( 1 << 24 ), // removed before bsping an entity
-	CONTENTS_MONSTER = ( 1 << 25 ),// should never be on a brush, only in game
+	CONTENTS_ORIGIN      = ( 1 << 24 ),// removed before bsping an entity
+	CONTENTS_MONSTER     = ( 1 << 25 ),// should never be on a brush, only in game
 	CONTENTS_DEADMONSTER = ( 1 << 26 ),
-	CONTENTS_DETAIL = ( 1 << 27 ),     // brushes to be added after vis leafs
+	CONTENTS_DETAIL      = ( 1 << 27 ),// brushes to be added after vis leafs
 	CONTENTS_TRANSLUCENT = ( 1 << 28 ),// auto set if any surface has trans
-	CONTENTS_LADDER = ( 1 << 29 ),
+	CONTENTS_LADDER      = ( 1 << 29 ),
 
 	CONTENTS_UNUSED8 = ( 1 << 30 ),
 	CONTENTS_UNUSED9 = ( 1 << 31 ),
@@ -405,43 +403,43 @@ enum ContentFlag
 
 enum SurfaceFlag
 {
-	SURF_LIGHT = ( 1 << 0 ),// value will hold the light strength
-	SURF_SLICK = ( 1 << 1 ),// effects game physics
-	SURF_SKY = ( 1 << 2 ),  // don't draw, but add to skybox
-	SURF_WARP = ( 1 << 3 ), // turbulent water warp
+	SURF_LIGHT   = ( 1 << 0 ),// value will hold the light strength
+	SURF_SLICK   = ( 1 << 1 ),// effects game physics
+	SURF_SKY     = ( 1 << 2 ),// don't draw, but add to skybox
+	SURF_WARP    = ( 1 << 3 ),// turbulent water warp
 	SURF_TRANS33 = ( 1 << 4 ),
 	SURF_TRANS66 = ( 1 << 5 ),
 	SURF_FLOWING = ( 1 << 6 ),// scroll towards angle
-	SURF_NODRAW = ( 1 << 7 ), // don't bother referencing the texture
+	SURF_NODRAW  = ( 1 << 7 ),// don't bother referencing the texture
 
 	SURF_HINT = ( 1 << 8 ),
 	SURF_SKIP = ( 1 << 9 ),
 
-	SURF_SND_WOOD = ( 1 << 10 ),
-	SURF_SND_METAL = ( 1 << 11 ),
-	SURF_SND_STONE = ( 1 << 12 ),
+	SURF_SND_WOOD   = ( 1 << 10 ),
+	SURF_SND_METAL  = ( 1 << 11 ),
+	SURF_SND_STONE  = ( 1 << 12 ),
 	SURF_SND_CARPET = ( 1 << 13 ),
-	SURF_SND_ICE = ( 1 << 14 ),
-	SURF_SND_SNOW = ( 1 << 15 ),
+	SURF_SND_ICE    = ( 1 << 14 ),
+	SURF_SND_SNOW   = ( 1 << 15 ),
 
 	SURF_ALPHA_BANNER = ( 1 << 16 ),
-	SURF_ALPHA_TEST = ( 1 << 17 ),
-	SURF_NO_VTURB = ( 1 << 18 ),
+	SURF_ALPHA_TEST   = ( 1 << 17 ),
+	SURF_NO_VTURB     = ( 1 << 18 ),
 
 	SURF_SND_HOLLOW = ( 1 << 19 ),
 	SURF_SND_PUDDLE = ( 1 << 20 ),
 	SURF_SND_SCROLL = ( 1 << 21 ),
 	SURF_SND_GRAVEL = ( 1 << 22 ),
 	SURF_SND_LEAVES = ( 1 << 23 ),
-	SURF_SND_GRASS = ( 1 << 24 ),
-	SURF_SND_SAND = ( 1 << 25 ),
-	SURF_SND_WATER = ( 1 << 26 ),
+	SURF_SND_GRASS  = ( 1 << 24 ),
+	SURF_SND_SAND   = ( 1 << 25 ),
+	SURF_SND_WATER  = ( 1 << 26 ),
 
-	SURF_PARTICLES = ( 1 << 27 ),
-	SURF_HALF_SCROLL = ( 1 << 28 ),
+	SURF_PARTICLES    = ( 1 << 27 ),
+	SURF_HALF_SCROLL  = ( 1 << 28 ),
 	SURF_QUART_SCROLL = ( 1 << 29 ),
-	SURF_FOG = ( 1 << 30 ),
-	SURF_CURVE = ( 1 << 31 ),
+	SURF_FOG          = ( 1 << 30 ),
+	SURF_CURVE        = ( 1 << 31 ),
 
 	MAX_SURF_FLAGS
 };
@@ -471,10 +469,10 @@ enum SurfaceFlag
 typedef struct cplane_s
 {
 	vec3_t normal;
-	float dist;
-	byte type;    // for fast side tests
-	byte signbits;// signx + (signy<<1) + (signz<<1)
-	byte pad[ 2 ];
+	float  dist;
+	byte   type;    // for fast side tests
+	byte   signbits;// signx + (signy<<1) + (signz<<1)
+	byte   pad[ 2 ];
 } cplane_t;
 
 // structure offset for asm code
@@ -491,33 +489,33 @@ typedef struct cmodel_s
 {
 	vec3_t mins, maxs;
 	vec3_t origin;// for sounds or lights
-	int headnode;
+	int    headnode;
 } cmodel_t;
 
 typedef struct csurface_s
 {
 	char name[ 16 ];
-	int flags;
-	int value;
+	int  flags;
+	int  value;
 } csurface_t;
 
 typedef struct mapsurface_s// used internally due to name len probs //ZOID
 {
 	csurface_t c;
-	char rname[ 32 ];
+	char       rname[ 32 ];
 } mapsurface_t;
 
 // a trace is returned when a box is swept through the world
 struct trace_t
 {
-	bool allsolid;      // if true, plane is not valid
-	bool startsolid;    // if true, the initial point was in a solid area
-	float fraction;     // time completed, 1.0 = didn't hit anything
-	vec3_t endpos;      // final position
-	cplane_t plane;     // surface normal at impact
-	csurface_t *surface;// surface hit
-	int contents;       // contents on other side of surface hit
-	struct edict_s *ent;// not set by CM_*() functions
+	bool            allsolid;  // if true, plane is not valid
+	bool            startsolid;// if true, the initial point was in a solid area
+	float           fraction;  // time completed, 1.0 = didn't hit anything
+	vec3_t          endpos;    // final position
+	cplane_t        plane;     // surface normal at impact
+	csurface_t     *surface;   // surface hit
+	int             contents;  // contents on other side of surface hit
+	struct edict_s *ent;       // not set by CM_*() functions
 };
 
 // pmove_state_t is the information necessary for client side movement
@@ -554,8 +552,8 @@ typedef struct
 
 	short origin[ 3 ];  // 12.3
 	short velocity[ 3 ];// 12.3
-	byte pm_flags;      // ducked, jump_held, etc
-	byte pm_time;       // each unit = 8 ms
+	byte  pm_flags;     // ducked, jump_held, etc
+	byte  pm_time;      // each unit = 8 ms
 	short gravity;
 	short
 	        delta_angles[ 3 ];// add to command angles to get view direction
@@ -572,12 +570,12 @@ typedef struct
 // usercmd_t is sent to the server each client frame
 typedef struct usercmd_s
 {
-	byte msec;
-	byte buttons;
+	byte  msec;
+	byte  buttons;
 	short angles[ 3 ];
 	short forwardmove, sidemove, upmove;
-	byte impulse;   // remove?
-	byte lightlevel;// light level the player is standing on
+	byte  impulse;   // remove?
+	byte  lightlevel;// light level the player is standing on
 } usercmd_t;
 
 #define MAXTOUCH 32
@@ -588,20 +586,20 @@ typedef struct
 
 	// command (in)
 	usercmd_t cmd;
-	bool snapinitial;// if s has been changed outside pmove
+	bool      snapinitial;// if s has been changed outside pmove
 
 	// results (out)
-	int numtouch;
+	int             numtouch;
 	struct edict_s *touchents[ MAXTOUCH ];
 
 	vec3_t viewangles;// clamped
-	float viewheight;
+	float  viewheight;
 
 	vec3_t mins, maxs;// bounding box size
 
 	struct edict_s *groundentity;
-	int watertype;
-	int waterlevel;
+	int             watertype;
+	int             waterlevel;
 
 	// callbacks to test the world
 	trace_t ( *trace )( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end );
@@ -1123,12 +1121,12 @@ enum ConfigString
 	CS_MAPCHECKSUM,// for catching cheater maps
 
 	CS_MODELS,
-	CS_SOUNDS = ( CS_MODELS + MAX_MODELS ),
-	CS_IMAGES = ( CS_SOUNDS + MAX_SOUNDS ),
-	CS_LIGHTS = ( CS_IMAGES + MAX_IMAGES ),
-	CS_ITEMS = ( CS_LIGHTS + MAX_LIGHTSTYLES ),
+	CS_SOUNDS      = ( CS_MODELS + MAX_MODELS ),
+	CS_IMAGES      = ( CS_SOUNDS + MAX_SOUNDS ),
+	CS_LIGHTS      = ( CS_IMAGES + MAX_IMAGES ),
+	CS_ITEMS       = ( CS_LIGHTS + MAX_LIGHTSTYLES ),
 	CS_PLAYERSKINS = ( CS_ITEMS + MAX_ITEMS ),
-	CS_GENERAL = ( CS_PLAYERSKINS + MAX_CLIENTS ),
+	CS_GENERAL     = ( CS_PLAYERSKINS + MAX_CLIENTS ),
 
 	MAX_CONFIGSTRINGS = ( CS_GENERAL + MAX_GENERAL ),
 };
@@ -1158,23 +1156,23 @@ typedef struct entity_state_s
 {
 	int number;// edict index
 
-	vec3_t origin;
-	vec3_t angles;
-	vec3_t old_origin;// for lerping
-	vec3_t scale;
-	int modelindex;
-	int modelindex2, modelindex3, modelindex4;// weapons, CTF flags, etc
-	int frame;
-	int skinnum;
+	vec3_t       origin;
+	vec3_t       angles;
+	vec3_t       old_origin;// for lerping
+	vec3_t       scale;
+	int          modelindex;
+	int          modelindex2, modelindex3, modelindex4;// weapons, CTF flags, etc
+	int          frame;
+	int          skinnum;
 	unsigned int effects;// PGM - we're filling it, so it needs to be unsigned
-	int renderfx;
-	int solid;// for client side prediction, 8*(bits 0-4) is x/y radius
-	          // 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
-	          // gi.linkentity sets this properly
-	int sound;// for looping sounds, to guarantee shutoff
-	int event;// impulse events -- muzzle flashes, footsteps, etc
-	          // events only go out for a single frame, they
-	          // are automatically cleared each frame
+	int          renderfx;
+	int          solid;// for client side prediction, 8*(bits 0-4) is x/y radius
+	                   // 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
+	                   // gi.linkentity sets this properly
+	int sound;         // for looping sounds, to guarantee shutoff
+	int event;         // impulse events -- muzzle flashes, footsteps, etc
+	                   // events only go out for a single frame, they
+	                   // are automatically cleared each frame
 } entity_state_t;
 
 //==============================================
@@ -1196,8 +1194,8 @@ typedef struct
 
 	vec3_t gunangles;
 	vec3_t gunoffset;
-	int gunindex;
-	int gunframe;
+	int    gunindex;
+	int    gunframe;
 
 	float blend[ 4 ];// rgba full screen effect
 

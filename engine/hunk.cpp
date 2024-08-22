@@ -30,9 +30,9 @@ static size_t cursize;
 void *Hunk_Begin( size_t maxsize )
 {
 	// reserve a huge chunk of memory, but don't commit any yet
-	cursize = 0;
+	cursize     = 0;
 	hunkmaxsize = maxsize;
-	membase = ( byte * ) calloc( maxsize, sizeof( byte ) );
+	membase     = ( byte     *) calloc( maxsize, sizeof( byte ) );
 	if ( membase == nullptr )
 	{
 		Sys_Error( "VirtualAlloc reserve failed" );

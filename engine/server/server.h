@@ -63,8 +63,8 @@ typedef struct
 	byte      multicast_buf[ MAX_MSGLEN ];
 
 	// demo server information
-	FILE    *demofile;
-	bool timedemo;// don't time sync
+	FILE *demofile;
+	bool  timedemo;// don't time sync
 } server_t;
 
 #define EDICT_NUM( n )     ( ( edict_t * ) ( ( byte * ) ge->edicts + ge->edict_size * ( n ) ) )
@@ -103,7 +103,7 @@ typedef struct client_s
 	usercmd_t lastcmd;  // for filling in big drops
 
 	int commandMsec;// every seconds this is reset, if user
-					// commands exhaust it, assume time cheating
+	        // commands exhaust it, assume time cheating
 
 	int frame_latency[ LATENCY_COUNTS ];
 	int ping;
@@ -159,12 +159,12 @@ typedef struct
 typedef struct
 {
 	bool initialized;// sv_init has completed
-	int      realtime;   // always increasing, no clamping, etc
+	int  realtime;   // always increasing, no clamping, etc
 
 	char mapcmd[ MAX_TOKEN_CHARS ];// ie: *intro.cin+base
 
 	int spawncount;// incremented each server start
-				   // used to check late spawns
+	               // used to check late spawns
 
 	client_t       *clients;             // [maxclients->value];
 	int             num_client_entities; // maxclients->value*UPDATE_BACKUP*MAX_PACKET_ENTITIES
@@ -195,7 +195,7 @@ extern cvar_t *sv_paused;
 extern cvar_t *maxclients;
 extern cvar_t *sv_noreload;     // don't reload level state when reentering
 extern cvar_t *sv_airaccelerate;// don't reload level state when reentering
-								// development tool
+                                // development tool
 extern cvar_t *sv_enforcetime;
 
 extern client_t *sv_client;

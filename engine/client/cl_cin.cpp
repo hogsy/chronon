@@ -30,9 +30,9 @@ typedef struct
 typedef struct
 {
 	bool restart_sound;
-	int      s_rate;
-	int      s_width;
-	int      s_channels;
+	int  s_rate;
+	int  s_width;
+	int  s_channels;
 
 	int   width;
 	int   height;
@@ -119,7 +119,7 @@ void SCR_LoadPCX( char *filename, byte **pic, byte **palette, int *width, int *h
 			if ( ( dataByte & 0xC0 ) == 0xC0 )
 			{
 				runLength = dataByte & 0x3F;
-				dataByte = *raw++;
+				dataByte  = *raw++;
 			}
 			else
 				runLength = 1;
@@ -209,7 +209,7 @@ int SmallestNode1( int numhnodes )
 	int i;
 	int best, bestnode;
 
-	best = 99999999;
+	best     = 99999999;
 	bestnode = -1;
 	for ( i = 0; i < numhnodes; i++ )
 	{
@@ -219,7 +219,7 @@ int SmallestNode1( int numhnodes )
 			continue;
 		if ( cin.h_count[ i ] < best )
 		{
-			best = cin.h_count[ i ];
+			best     = cin.h_count[ i ];
 			bestnode = i;
 		}
 	}
@@ -262,7 +262,7 @@ void Huff1TableInit( void )
 
 		// build the nodes
 		numhnodes = 256;
-		nodebase = cin.hnodes1 + prev * 256 * 2;
+		nodebase  = cin.hnodes1 + prev * 256 * 2;
 
 		while ( numhnodes != 511 )
 		{
@@ -310,7 +310,7 @@ cblock_t Huff1Decompress( cblock_t in )
 
 	hnodesbase = cin.hnodes1 - 256 * 2;// nodes 0-255 aren't stored
 
-	hnodes = hnodesbase;
+	hnodes  = hnodesbase;
 	nodenum = cin.numhnodes1[ 0 ];
 	while ( count )
 	{
@@ -318,7 +318,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -329,7 +329,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -340,7 +340,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -351,7 +351,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -362,7 +362,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -373,7 +373,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -384,7 +384,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -395,7 +395,7 @@ cblock_t Huff1Decompress( cblock_t in )
 		//-----------
 		if ( nodenum < 256 )
 		{
-			hnodes = hnodesbase + ( nodenum << 9 );
+			hnodes   = hnodesbase + ( nodenum << 9 );
 			*out_p++ = nodenum;
 			if ( !--count )
 				break;
@@ -456,14 +456,14 @@ byte *SCR_ReadNextFrame( void )
 
 	// read sound
 	start = cl.cinematicframe * cin.s_rate / 14;
-	end = ( cl.cinematicframe + 1 ) * cin.s_rate / 14;
+	end   = ( cl.cinematicframe + 1 ) * cin.s_rate / 14;
 	count = end - start;
 
 	FS_Read( samples, count * cin.s_width * cin.s_channels, cl.cinematic_file );
 
 	S_RawSamples( count, cin.s_rate, cin.s_width, cin.s_channels, samples );
 
-	in.data = compressed;
+	in.data  = compressed;
 	in.count = size;
 
 	huf1 = Huff1Decompress( in );
@@ -511,7 +511,7 @@ void SCR_RunCinematic( void )
 	}
 	if ( cin.pic )
 		Z_Free( cin.pic );
-	cin.pic = cin.pic_pending;
+	cin.pic         = cin.pic_pending;
 	cin.pic_pending = NULL;
 	cin.pic_pending = SCR_ReadNextFrame();
 	if ( !cin.pic_pending )
@@ -647,6 +647,6 @@ void SCR_PlayCinematic( char *arg )
 	cl.cinematictime = Sys_Milliseconds ();
 #else
 	cl.cinematicframe = 0;
-	cl.cinematictime = 0;
+	cl.cinematictime  = 0;
 #endif
 }

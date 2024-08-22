@@ -106,8 +106,8 @@ void SV_New_f( void )
 	if ( sv.state == ss_game )
 	{
 		// set up the entity for the client
-		ent = EDICT_NUM( playernum + 1 );
-		ent->s.number = playernum + 1;
+		ent              = EDICT_NUM( playernum + 1 );
+		ent->s.number    = playernum + 1;
 		sv_client->edict = ent;
 		memset( &sv_client->lastcmd, 0, sizeof( sv_client->lastcmd ) );
 
@@ -341,7 +341,7 @@ void SV_BeginDownload_f( void )
 	if ( sv_client->download )
 		FS_FreeFile( sv_client->download );
 
-	sv_client->downloadsize = FS_LoadFile( name, ( void ** ) &sv_client->download );
+	sv_client->downloadsize  = FS_LoadFile( name, ( void  **) &sv_client->download );
 	sv_client->downloadcount = offset;
 
 	if ( offset > sv_client->downloadsize )
@@ -445,24 +445,24 @@ typedef struct
 } ucmd_t;
 
 ucmd_t ucmds[] =
-		{
-				// auto issued
-				{ "new", SV_New_f },
-				{ "configstrings", SV_Configstrings_f },
-				{ "baselines", SV_Baselines_f },
-				{ "begin", SV_Begin_f },
+        {
+                // auto issued
+                { "new", SV_New_f },
+                { "configstrings", SV_Configstrings_f },
+                { "baselines", SV_Baselines_f },
+                { "begin", SV_Begin_f },
 
-				{ "nextserver", SV_Nextserver_f },
+                { "nextserver", SV_Nextserver_f },
 
-				{ "disconnect", SV_Disconnect_f },
+                { "disconnect", SV_Disconnect_f },
 
-				// issued by hand at client consoles
-				{ "info", SV_ShowServerinfo_f },
+                // issued by hand at client consoles
+                { "info", SV_ShowServerinfo_f },
 
-				{ "download", SV_BeginDownload_f },
-				{ "nextdl", SV_NextDownload_f },
+                { "download", SV_BeginDownload_f },
+                { "nextdl", SV_NextDownload_f },
 
-				{ nullptr, nullptr } };
+                { nullptr, nullptr } };
 
 /*
 ==================
@@ -534,14 +534,14 @@ void SV_ExecuteClientMessage( client_t *cl )
 	int       stringCmdCount;
 	int       checksum, calculatedChecksum;
 	int       checksumIndex;
-	bool  move_issued;
+	bool      move_issued;
 	int       lastframe;
 
 	sv_client = cl;
 	sv_player = sv_client->edict;
 
 	// only allow one move command
-	move_issued = false;
+	move_issued    = false;
 	stringCmdCount = 0;
 
 	while ( 1 )
@@ -576,17 +576,17 @@ void SV_ExecuteClientMessage( client_t *cl )
 				if ( move_issued )
 					return;// someone is trying to cheat...
 
-				move_issued = true;
+				move_issued   = true;
 				checksumIndex = net_message.readcount;
-				checksum = MSG_ReadByte( &net_message );
-				lastframe = MSG_ReadLong( &net_message );
+				checksum      = MSG_ReadByte( &net_message );
+				lastframe     = MSG_ReadLong( &net_message );
 				if ( lastframe != cl->lastframe )
 				{
 					cl->lastframe = lastframe;
 					if ( cl->lastframe > 0 )
 					{
 						cl->frame_latency[ cl->lastframe & ( LATENCY_COUNTS - 1 ) ] =
-								svs.realtime - cl->frames[ cl->lastframe & UPDATE_MASK ].senttime;
+						        svs.realtime - cl->frames[ cl->lastframe & UPDATE_MASK ].senttime;
 					}
 				}
 
@@ -603,9 +603,9 @@ void SV_ExecuteClientMessage( client_t *cl )
 
 				// if the checksum fails, ignore the rest of the packet
 				calculatedChecksum = COM_BlockSequenceCRCByte(
-						net_message.data + checksumIndex + 1,
-						net_message.readcount - checksumIndex - 1,
-						cl->netchan.incoming_sequence );
+				        net_message.data + checksumIndex + 1,
+				        net_message.readcount - checksumIndex - 1,
+				        cl->netchan.incoming_sequence );
 
 				if ( calculatedChecksum != checksum )
 				{

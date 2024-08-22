@@ -1,5 +1,5 @@
-/*
-Copyright © 2020-2023 Mark E Sowden <hogsy@oldtimes-software.com>
+/******************************************************************************
+Copyright © 2020-2024 Mark E Sowden <hogsy@snortysoft.net>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-*/
+******************************************************************************/
 
 #pragma once
 
@@ -29,19 +29,19 @@ namespace chr::game
 		{
 			unsigned int type;// almost always the same as path type
 			unsigned int flags;
-			float timeLength;
+			float        timeLength;
 		};
 
 		struct Path
 		{
-			unsigned int order;
-			std::string name;
-			unsigned int type;
-			unsigned int flags;
-			unsigned int timeOffset;
-			unsigned int maxLength;
-			unsigned int count;
-			ColourF32 colour;
+			unsigned int        order;
+			std::string         name;
+			unsigned int        type;
+			unsigned int        flags;
+			unsigned int        timeOffset;
+			unsigned int        maxLength;
+			unsigned int        count;
+			ColourF32           colour;
 			std::vector< Node > nodes;
 
 			static constexpr unsigned int NUM_FIELDS = 8;
@@ -49,16 +49,16 @@ namespace chr::game
 
 		struct Block
 		{
-			std::string name;
-			unsigned int flags;
+			std::string         name;
+			unsigned int        flags;
 			std::vector< Path > paths;
 
 			static constexpr unsigned int NUM_FIELDS = 2;
 		};
 
-		std::string name;
-		unsigned int version;
-		unsigned int blockCount;
+		std::string          name;
+		unsigned int         version;
+		unsigned int         blockCount;
 		std::vector< Block > blocks;
 
 		bool interrupt{};

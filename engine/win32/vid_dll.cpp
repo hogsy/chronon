@@ -46,7 +46,7 @@ extern cvar_t *vid_gamma;
 
 // Global variables used internally by this module
 viddef_t viddef;// global video state; used by other modules
-bool reflib_active = 0;
+bool     reflib_active = 0;
 
 HWND cl_hwnd;// Main window handle for life of program
 
@@ -112,72 +112,72 @@ DLL GLUE
 //==========================================================================
 
 byte scantokey[ 128 ] = {
-		//  0           1       2       3       4       5       6       7
-		//  8           9       A       B       C       D       E       F
-		0, 27,
-		'1', '2',
-		'3', '4',
-		'5', '6',
-		'7', '8',
-		'9', '0',
-		'-', '=',
-		K_BACKSPACE, 9,// 0
-		'q', 'w',
-		'e', 'r',
-		't', 'y',
-		'u', 'i',
-		'o', 'p',
-		'[', ']',
-		13, K_CTRL,
-		'a', 's',// 1
-		'd', 'f',
-		'g', 'h',
-		'j', 'k',
-		'l', ';',
-		'\'', '`',
-		K_SHIFT, '\\',
-		'z', 'x',
-		'c', 'v',// 2
-		'b', 'n',
-		'm', ',',
-		'.', '/',
-		K_SHIFT, '*',
-		K_ALT, ' ',
-		0, K_F1,
-		K_F2, K_F3,
-		K_F4, K_F5,// 3
-		K_F6, K_F7,
-		K_F8, K_F9,
-		K_F10, K_PAUSE,
-		0, K_HOME,
-		K_UPARROW, K_PGUP,
-		K_KP_MINUS, K_LEFTARROW,
-		K_KP_5, K_RIGHTARROW,
-		K_KP_PLUS, K_END,// 4
-		K_DOWNARROW, K_PGDN,
-		K_INS, K_DEL,
-		0, 0,
-		0, K_F11,
-		K_F12, 0,
-		0, 0,
-		0, 0,
-		0, 0,// 5
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,// 6
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0,
-		0, 0// 7
+        //  0           1       2       3       4       5       6       7
+        //  8           9       A       B       C       D       E       F
+        0, 27,
+        '1', '2',
+        '3', '4',
+        '5', '6',
+        '7', '8',
+        '9', '0',
+        '-', '=',
+        K_BACKSPACE, 9,// 0
+        'q', 'w',
+        'e', 'r',
+        't', 'y',
+        'u', 'i',
+        'o', 'p',
+        '[', ']',
+        13, K_CTRL,
+        'a', 's',// 1
+        'd', 'f',
+        'g', 'h',
+        'j', 'k',
+        'l', ';',
+        '\'', '`',
+        K_SHIFT, '\\',
+        'z', 'x',
+        'c', 'v',// 2
+        'b', 'n',
+        'm', ',',
+        '.', '/',
+        K_SHIFT, '*',
+        K_ALT, ' ',
+        0, K_F1,
+        K_F2, K_F3,
+        K_F4, K_F5,// 3
+        K_F6, K_F7,
+        K_F8, K_F9,
+        K_F10, K_PAUSE,
+        0, K_HOME,
+        K_UPARROW, K_PGUP,
+        K_KP_MINUS, K_LEFTARROW,
+        K_KP_5, K_RIGHTARROW,
+        K_KP_PLUS, K_END,// 4
+        K_DOWNARROW, K_PGDN,
+        K_INS, K_DEL,
+        0, 0,
+        0, K_F11,
+        K_F12, 0,
+        0, 0,
+        0, 0,
+        0, 0,// 5
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,// 6
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0,
+        0, 0// 7
 };
 
 /*
@@ -189,8 +189,8 @@ Map from windows to quake keynums
 */
 int MapKey( int key )
 {
-	int      result;
-	int      modified = ( key >> 16 ) & 255;
+	int  result;
+	int  modified    = ( key >> 16 ) & 255;
 	bool is_extended = false;
 
 	if ( modified > 127 ) return 0;
@@ -344,7 +344,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			int fActive, fMinimized;
 
 			// KJB: Watch this for problems in fullscreen modes with Alt-tabbing.
-			fActive = LOWORD( wParam );
+			fActive    = LOWORD( wParam );
 			fMinimized = ( BOOL ) HIWORD( wParam );
 
 			AppActivate( fActive != WA_INACTIVE, fMinimized );
@@ -364,9 +364,9 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				xPos = ( short ) LOWORD( lParam );// horizontal position
 				yPos = ( short ) HIWORD( lParam );// vertical position
 
-				r.left = 0;
-				r.top = 0;
-				r.right = 1;
+				r.left   = 0;
+				r.top    = 0;
+				r.right  = 1;
 				r.bottom = 1;
 
 				style = GetWindowLong( hWnd, GWL_STYLE );
@@ -472,23 +472,23 @@ typedef struct vidmode_s
 } vidmode_t;
 
 vidmode_t vid_modes[] = {
-		{ "Mode 0: 320x240", 320, 240, 0 },
-		{ "Mode 1: 400x300", 400, 300, 1 },
-		{ "Mode 2: 512x384", 512, 384, 2 },
-		{ "Mode 3: 640x480", 640, 480, 3 },
-		{ "Mode 4: 800x600", 800, 600, 4 },
-		{ "Mode 5: 960x720", 960, 720, 5 },
-		{ "Mode 6: 1024x768", 1024, 768, 6 },
-		{ "Mode 7: 1152x864", 1152, 864, 7 },
-		{ "Mode 8: 1280x960", 1280, 960, 8 },
-		{ "Mode 9: 1600x1200", 1600, 1200, 9 },
-		{ "Mode 10: 2048x1536", 2048, 1536, 10 } };
+        { "Mode 0: 320x240", 320, 240, 0 },
+        { "Mode 1: 400x300", 400, 300, 1 },
+        { "Mode 2: 512x384", 512, 384, 2 },
+        { "Mode 3: 640x480", 640, 480, 3 },
+        { "Mode 4: 800x600", 800, 600, 4 },
+        { "Mode 5: 960x720", 960, 720, 5 },
+        { "Mode 6: 1024x768", 1024, 768, 6 },
+        { "Mode 7: 1152x864", 1152, 864, 7 },
+        { "Mode 8: 1280x960", 1280, 960, 8 },
+        { "Mode 9: 1600x1200", 1600, 1200, 9 },
+        { "Mode 10: 2048x1536", 2048, 1536, 10 } };
 
 bool VID_GetModeInfo( int *width, int *height, int mode )
 {
 	if ( mode < 0 || mode >= VID_NUM_MODES ) return false;
 
-	*width = vid_modes[ mode ].width;
+	*width  = vid_modes[ mode ].width;
 	*height = vid_modes[ mode ].height;
 
 	return true;
@@ -503,9 +503,9 @@ void VID_UpdateWindowPosAndSize( int x, int y )
 	int  style;
 	int  w, h;
 
-	r.left = 0;
-	r.top = 0;
-	r.right = viddef.width;
+	r.left   = 0;
+	r.top    = 0;
+	r.right  = viddef.width;
 	r.bottom = viddef.height;
 
 	style = GetWindowLong( cl_hwnd, GWL_STYLE );
@@ -522,7 +522,7 @@ void VID_UpdateWindowPosAndSize( int x, int y )
 */
 void VID_NewWindow( int width, int height )
 {
-	viddef.width = width;
+	viddef.width  = width;
 	viddef.height = height;
 
 	cl.force_refdef = true;// can't use a paused refdef
@@ -583,10 +583,10 @@ void VID_CheckChanges( void )
 		/*
 		** refresh has changed
 		*/
-		vid_ref->modified = false;
+		vid_ref->modified        = false;
 		vid_fullscreen->modified = true;
-		cl.refresh_prepped = false;
-		cls.disable_screen = true;
+		cl.refresh_prepped       = false;
+		cls.disable_screen       = true;
 
 		if ( !VID_LoadRefresh() )
 		{
@@ -616,12 +616,12 @@ VID_Init
 void VID_Init( void )
 {
 	/* Create the video variables so we know how to start the graphics drivers */
-	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
-	vid_xpos = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
-	vid_ypos = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
+	vid_ref        = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
+	vid_xpos       = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
+	vid_ypos       = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
 	vid_fullscreen = Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
-	vid_gamma = Cvar_Get( "vid_gamma", "1", CVAR_ARCHIVE );
-	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
+	vid_gamma      = Cvar_Get( "vid_gamma", "1", CVAR_ARCHIVE );
+	win_noalttab   = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
 
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand( "vid_restart", VID_Restart_f );

@@ -56,10 +56,10 @@ void Fog_SetState( bool enable )
 			//glFogf( GL_FOG_START, 100.0f );
 			//glFogf( GL_FOG_END, 1.0f );
 			vec4_t colour = {
-					fogState.colour[ 0 ],
-					fogState.colour[ 1 ],
-					fogState.colour[ 2 ],
-					1.0f };
+			        fogState.colour[ 0 ],
+			        fogState.colour[ 1 ],
+			        fogState.colour[ 2 ],
+			        1.0f };
 			glFogfv( GL_FOG_COLOR, colour );
 			glFogi( GL_FOG_COORD_SRC, GL_FRAGMENT_DEPTH );
 
@@ -82,15 +82,15 @@ R_InitParticleTexture
 ==================
 */
 byte dottexture[ 8 ][ 8 ] =
-		{
-				{ 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 1, 1, 0, 0, 0, 0 },
-				{ 0, 1, 1, 1, 1, 0, 0, 0 },
-				{ 0, 1, 1, 1, 1, 0, 0, 0 },
-				{ 0, 0, 1, 1, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0, 0 },
+        {
+                { 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 1, 0, 0, 0, 0 },
+                { 0, 1, 1, 1, 1, 0, 0, 0 },
+                { 0, 1, 1, 1, 1, 0, 0, 0 },
+                { 0, 0, 1, 1, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 
 void R_InitParticleTexture( void )
@@ -114,10 +114,10 @@ void R_InitParticleTexture( void )
 	r_particletexture = GL_LoadPic( "***particle***", ( byte * ) data, 8, 8, it_sprite, 32 );
 
 	uint8_t missingData[] = {
-			255, 0, 255, 255,
-			0, 0, 0, 255,
-			0, 0, 0, 255,
-			255, 0, 255, 255 };
+	        255, 0, 255, 255,
+	        0, 0, 0, 255,
+	        0, 0, 0, 255,
+	        255, 0, 255, 255 };
 
 	r_notexture = GL_LoadPic( "***r_notexture***", missingData, 2, 2, it_wall, 32 );
 }

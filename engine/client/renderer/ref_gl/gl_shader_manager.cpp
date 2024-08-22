@@ -41,7 +41,7 @@ bool chr::renderer::gl::ShaderProgram::LoadShaderStage( const std::string &path,
 	}
 
 	char *buffer;
-	int length = FS_LoadFile( path.c_str(), ( void ** ) &buffer );
+	int   length = FS_LoadFile( path.c_str(), ( void   **) &buffer );
 	if ( length == -1 )
 	{
 		Com_Printf( "Failed to open shader: %s\n", path.c_str() );

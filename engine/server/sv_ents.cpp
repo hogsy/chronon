@@ -405,18 +405,18 @@ void SV_WriteFrameToClient( client_t *client, sizebuf_t *msg )
 
 	if ( client->lastframe <= 0 )
 	{// client is asking for a retransmit
-		oldframe = NULL;
+		oldframe  = NULL;
 		lastframe = -1;
 	}
 	else if ( sv.framenum - client->lastframe >= ( UPDATE_BACKUP - 3 ) )
-	{   // client hasn't gotten a good message through in a long time
+	{// client hasn't gotten a good message through in a long time
 		//		Com_Printf ("%s: Delta request from out-of-date packet.\n", client->name);
-		oldframe = NULL;
+		oldframe  = NULL;
 		lastframe = -1;
 	}
 	else
 	{// we have a valid message to delta from
-		oldframe = &client->frames[ client->lastframe & UPDATE_MASK ];
+		oldframe  = &client->frames[ client->lastframe & UPDATE_MASK ];
 		lastframe = client->lastframe;
 	}
 
@@ -535,8 +535,8 @@ void SV_BuildClientFrame( client_t *client )
 	for ( i = 0; i < 3; i++ )
 		org[ i ] = clent->client->ps.pmove.origin[ i ] * 0.125 + clent->client->ps.viewoffset[ i ];
 
-	leafnum = CM_PointLeafnum( org );
-	clientarea = CM_LeafArea( leafnum );
+	leafnum       = CM_PointLeafnum( org );
+	clientarea    = CM_LeafArea( leafnum );
 	clientcluster = CM_LeafCluster( leafnum );
 
 	// calculate the visible areas
@@ -680,7 +680,7 @@ void SV_RecordDemoMessage( void )
 
 	MSG_WriteByte( &buf, svc_packetentities );
 
-	e = 1;
+	e   = 1;
 	ent = EDICT_NUM( e );
 	while ( e < ge->num_edicts )
 	{

@@ -30,9 +30,9 @@ static int m_main_cursor;
 
 #define NUM_CURSOR_FRAMES 15
 
-static const char *menu_in_sound = "misc/menu1.wav";
+static const char *menu_in_sound   = "misc/menu1.wav";
 static const char *menu_move_sound = "misc/menu2.wav";
-static const char *menu_out_sound = "misc/menu3.wav";
+static const char *menu_out_sound  = "misc/menu3.wav";
 
 void M_Menu_Main_f( void );
 void M_Menu_Game_f( void );
@@ -54,7 +54,7 @@ void M_Menu_Quit_f( void );
 void M_Menu_Credits( void );
 
 bool m_entersound;// play after drawing a frame, so caching
-					  // won't disrupt the sound
+                  // won't disrupt the sound
 
 void ( *m_drawfunc )( void );
 const char *( *m_keyfunc )( int key );
@@ -103,12 +103,12 @@ void M_PushMenu( void ( *draw )(), const char *( *key )( int k ) )
 		if ( m_menudepth >= MAX_MENU_DEPTH )
 			Com_Error( ERR_FATAL, "M_PushMenu: MAX_MENU_DEPTH" );
 		m_layers[ m_menudepth ].draw = m_drawfunc;
-		m_layers[ m_menudepth ].key = m_keyfunc;
+		m_layers[ m_menudepth ].key  = m_keyfunc;
 		m_menudepth++;
 	}
 
 	m_drawfunc = draw;
-	m_keyfunc = key;
+	m_keyfunc  = key;
 
 	m_entersound = true;
 
@@ -117,10 +117,10 @@ void M_PushMenu( void ( *draw )(), const char *( *key )( int k ) )
 
 void M_ForceMenuOff( void )
 {
-	m_drawfunc = 0;
-	m_keyfunc = 0;
+	m_drawfunc   = 0;
+	m_keyfunc    = 0;
 	cls.key_dest = key_game;
-	m_menudepth = 0;
+	m_menudepth  = 0;
 	Key_ClearStates();
 	Cvar_Set( "paused", "0" );
 }
@@ -133,7 +133,7 @@ void M_PopMenu( void )
 	m_menudepth--;
 
 	m_drawfunc = m_layers[ m_menudepth ].draw;
-	m_keyfunc = m_layers[ m_menudepth ].key;
+	m_keyfunc  = m_layers[ m_menudepth ].key;
 
 	if ( !m_menudepth )
 		M_ForceMenuOff();
@@ -309,7 +309,7 @@ and both above and below y.
 */
 void M_DrawCursor( int x, int y, int f )
 {
-	char            cursorname[ 80 ];
+	char        cursorname[ 80 ];
 	static bool cached;
 
 	if ( !cached )
@@ -388,17 +388,17 @@ void M_Main_Draw( void )
 	int                w, h;
 	int                ystart;
 	int                xoffset;
-	int                widest = -1;
+	int                widest      = -1;
 	int                totalheight = 0;
 	char               litname[ 80 ];
 	static const char *names[] =
-			{
-					"m_main_game",
-					"m_main_multiplayer",
-					"m_main_options",
-					"m_main_video",
-					"m_main_quit",
-					0 };
+	        {
+	                "m_main_game",
+	                "m_main_multiplayer",
+	                "m_main_options",
+	                "m_main_video",
+	                "m_main_quit",
+	                0 };
 
 	for ( i = 0; names[ i ] != 0; i++ )
 	{
@@ -409,7 +409,7 @@ void M_Main_Draw( void )
 		totalheight += ( h + 12 );
 	}
 
-	ystart = ( viddef.height / 2 - 110 );
+	ystart  = ( viddef.height / 2 - 110 );
 	xoffset = ( viddef.width - widest + 70 ) / 2;
 
 	for ( i = 0; names[ i ] != 0; i++ )
@@ -532,28 +532,28 @@ static void StartNetworkServerFunc( void *unused )
 
 void Multiplayer_MenuInit( void )
 {
-	s_multiplayer_menu.x = viddef.width * 0.50 - 64;
+	s_multiplayer_menu.x      = viddef.width * 0.50 - 64;
 	s_multiplayer_menu.nitems = 0;
 
-	s_join_network_server_action.generic.type = MTYPE_ACTION;
-	s_join_network_server_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_join_network_server_action.generic.x = 0;
-	s_join_network_server_action.generic.y = 0;
-	s_join_network_server_action.generic.name = " join network server";
+	s_join_network_server_action.generic.type     = MTYPE_ACTION;
+	s_join_network_server_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_join_network_server_action.generic.x        = 0;
+	s_join_network_server_action.generic.y        = 0;
+	s_join_network_server_action.generic.name     = " join network server";
 	s_join_network_server_action.generic.callback = JoinNetworkServerFunc;
 
-	s_start_network_server_action.generic.type = MTYPE_ACTION;
-	s_start_network_server_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_start_network_server_action.generic.x = 0;
-	s_start_network_server_action.generic.y = 10;
-	s_start_network_server_action.generic.name = " start network server";
+	s_start_network_server_action.generic.type     = MTYPE_ACTION;
+	s_start_network_server_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_start_network_server_action.generic.x        = 0;
+	s_start_network_server_action.generic.y        = 10;
+	s_start_network_server_action.generic.name     = " start network server";
 	s_start_network_server_action.generic.callback = StartNetworkServerFunc;
 
-	s_player_setup_action.generic.type = MTYPE_ACTION;
-	s_player_setup_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_player_setup_action.generic.x = 0;
-	s_player_setup_action.generic.y = 20;
-	s_player_setup_action.generic.name = " player setup";
+	s_player_setup_action.generic.type     = MTYPE_ACTION;
+	s_player_setup_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_player_setup_action.generic.x        = 0;
+	s_player_setup_action.generic.y        = 20;
+	s_player_setup_action.generic.name     = " player setup";
 	s_player_setup_action.generic.callback = PlayerSetupFunc;
 
 	Menu_AddItem( &s_multiplayer_menu, ( void * ) &s_join_network_server_action );
@@ -584,33 +584,33 @@ KEYS MENU
 =======================================================================
 */
 static const char *bindnames[][ 2 ] =
-		{
-				{ "+attack", "attack" },
-				{ "weapnext", "next weapon" },
-				{ "+forward", "walk forward" },
-				{ "+back", "backpedal" },
-				{ "+left", "turn left" },
-				{ "+right", "turn right" },
-				{ "+speed", "run" },
-				{ "+moveleft", "step left" },
-				{ "+moveright", "step right" },
-				{ "+strafe", "sidestep" },
-				{ "+lookup", "look up" },
-				{ "+lookdown", "look down" },
-				{ "centerview", "center view" },
-				{ "+mlook", "mouse look" },
-				{ "+klook", "keyboard look" },
-				{ "+moveup", "up / jump" },
-				{ "+movedown", "down / crouch" },
+        {
+                { "+attack", "attack" },
+                { "weapnext", "next weapon" },
+                { "+forward", "walk forward" },
+                { "+back", "backpedal" },
+                { "+left", "turn left" },
+                { "+right", "turn right" },
+                { "+speed", "run" },
+                { "+moveleft", "step left" },
+                { "+moveright", "step right" },
+                { "+strafe", "sidestep" },
+                { "+lookup", "look up" },
+                { "+lookdown", "look down" },
+                { "centerview", "center view" },
+                { "+mlook", "mouse look" },
+                { "+klook", "keyboard look" },
+                { "+moveup", "up / jump" },
+                { "+movedown", "down / crouch" },
 
-				{ "inven", "inventory" },
-				{ "invuse", "use item" },
-				{ "invdrop", "drop item" },
-				{ "invprev", "prev item" },
-				{ "invnext", "next item" },
+                { "inven", "inventory" },
+                { "invuse", "use item" },
+                { "invdrop", "drop item" },
+                { "invprev", "prev item" },
+                { "invnext", "next item" },
 
-				{ "cmd help", "help computer" },
-				{ 0, 0 } };
+                { "cmd help", "help computer" },
+                { 0, 0 } };
 
 int        keys_cursor;
 static int bind_grab;
@@ -667,8 +667,8 @@ static void M_FindKeysForCommand( const char *command, int *twokeys )
 	char *b;
 
 	twokeys[ 0 ] = twokeys[ 1 ] = -1;
-	l = strlen( command );
-	count = 0;
+	l                           = strlen( command );
+	count                       = 0;
 
 	for ( j = 0; j < 256; j++ )
 	{
@@ -743,193 +743,193 @@ static void Keys_MenuInit( void )
 	int y = 0;
 	int i = 0;
 
-	s_keys_menu.x = viddef.width * 0.50;
-	s_keys_menu.nitems = 0;
+	s_keys_menu.x          = viddef.width * 0.50;
+	s_keys_menu.nitems     = 0;
 	s_keys_menu.cursordraw = KeyCursorDrawFunc;
 
-	s_keys_attack_action.generic.type = MTYPE_ACTION;
-	s_keys_attack_action.generic.flags = QMF_GRAYED;
-	s_keys_attack_action.generic.x = 0;
-	s_keys_attack_action.generic.y = y;
-	s_keys_attack_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_attack_action.generic.type           = MTYPE_ACTION;
+	s_keys_attack_action.generic.flags          = QMF_GRAYED;
+	s_keys_attack_action.generic.x              = 0;
+	s_keys_attack_action.generic.y              = y;
+	s_keys_attack_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_attack_action.generic.localdata[ 0 ] = i;
-	s_keys_attack_action.generic.name = bindnames[ s_keys_attack_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_attack_action.generic.name           = bindnames[ s_keys_attack_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_change_weapon_action.generic.type = MTYPE_ACTION;
-	s_keys_change_weapon_action.generic.flags = QMF_GRAYED;
-	s_keys_change_weapon_action.generic.x = 0;
-	s_keys_change_weapon_action.generic.y = y += 9;
-	s_keys_change_weapon_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_change_weapon_action.generic.type           = MTYPE_ACTION;
+	s_keys_change_weapon_action.generic.flags          = QMF_GRAYED;
+	s_keys_change_weapon_action.generic.x              = 0;
+	s_keys_change_weapon_action.generic.y              = y += 9;
+	s_keys_change_weapon_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_change_weapon_action.generic.localdata[ 0 ] = ++i;
-	s_keys_change_weapon_action.generic.name = bindnames[ s_keys_change_weapon_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_change_weapon_action.generic.name           = bindnames[ s_keys_change_weapon_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_walk_forward_action.generic.type = MTYPE_ACTION;
-	s_keys_walk_forward_action.generic.flags = QMF_GRAYED;
-	s_keys_walk_forward_action.generic.x = 0;
-	s_keys_walk_forward_action.generic.y = y += 9;
-	s_keys_walk_forward_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_walk_forward_action.generic.type           = MTYPE_ACTION;
+	s_keys_walk_forward_action.generic.flags          = QMF_GRAYED;
+	s_keys_walk_forward_action.generic.x              = 0;
+	s_keys_walk_forward_action.generic.y              = y += 9;
+	s_keys_walk_forward_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_walk_forward_action.generic.localdata[ 0 ] = ++i;
-	s_keys_walk_forward_action.generic.name = bindnames[ s_keys_walk_forward_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_walk_forward_action.generic.name           = bindnames[ s_keys_walk_forward_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_backpedal_action.generic.type = MTYPE_ACTION;
-	s_keys_backpedal_action.generic.flags = QMF_GRAYED;
-	s_keys_backpedal_action.generic.x = 0;
-	s_keys_backpedal_action.generic.y = y += 9;
-	s_keys_backpedal_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_backpedal_action.generic.type           = MTYPE_ACTION;
+	s_keys_backpedal_action.generic.flags          = QMF_GRAYED;
+	s_keys_backpedal_action.generic.x              = 0;
+	s_keys_backpedal_action.generic.y              = y += 9;
+	s_keys_backpedal_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_backpedal_action.generic.localdata[ 0 ] = ++i;
-	s_keys_backpedal_action.generic.name = bindnames[ s_keys_backpedal_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_backpedal_action.generic.name           = bindnames[ s_keys_backpedal_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_turn_left_action.generic.type = MTYPE_ACTION;
-	s_keys_turn_left_action.generic.flags = QMF_GRAYED;
-	s_keys_turn_left_action.generic.x = 0;
-	s_keys_turn_left_action.generic.y = y += 9;
-	s_keys_turn_left_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_turn_left_action.generic.type           = MTYPE_ACTION;
+	s_keys_turn_left_action.generic.flags          = QMF_GRAYED;
+	s_keys_turn_left_action.generic.x              = 0;
+	s_keys_turn_left_action.generic.y              = y += 9;
+	s_keys_turn_left_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_turn_left_action.generic.localdata[ 0 ] = ++i;
-	s_keys_turn_left_action.generic.name = bindnames[ s_keys_turn_left_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_turn_left_action.generic.name           = bindnames[ s_keys_turn_left_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_turn_right_action.generic.type = MTYPE_ACTION;
-	s_keys_turn_right_action.generic.flags = QMF_GRAYED;
-	s_keys_turn_right_action.generic.x = 0;
-	s_keys_turn_right_action.generic.y = y += 9;
-	s_keys_turn_right_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_turn_right_action.generic.type           = MTYPE_ACTION;
+	s_keys_turn_right_action.generic.flags          = QMF_GRAYED;
+	s_keys_turn_right_action.generic.x              = 0;
+	s_keys_turn_right_action.generic.y              = y += 9;
+	s_keys_turn_right_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_turn_right_action.generic.localdata[ 0 ] = ++i;
-	s_keys_turn_right_action.generic.name = bindnames[ s_keys_turn_right_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_turn_right_action.generic.name           = bindnames[ s_keys_turn_right_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_run_action.generic.type = MTYPE_ACTION;
-	s_keys_run_action.generic.flags = QMF_GRAYED;
-	s_keys_run_action.generic.x = 0;
-	s_keys_run_action.generic.y = y += 9;
-	s_keys_run_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_run_action.generic.type           = MTYPE_ACTION;
+	s_keys_run_action.generic.flags          = QMF_GRAYED;
+	s_keys_run_action.generic.x              = 0;
+	s_keys_run_action.generic.y              = y += 9;
+	s_keys_run_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_run_action.generic.localdata[ 0 ] = ++i;
-	s_keys_run_action.generic.name = bindnames[ s_keys_run_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_run_action.generic.name           = bindnames[ s_keys_run_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_step_left_action.generic.type = MTYPE_ACTION;
-	s_keys_step_left_action.generic.flags = QMF_GRAYED;
-	s_keys_step_left_action.generic.x = 0;
-	s_keys_step_left_action.generic.y = y += 9;
-	s_keys_step_left_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_step_left_action.generic.type           = MTYPE_ACTION;
+	s_keys_step_left_action.generic.flags          = QMF_GRAYED;
+	s_keys_step_left_action.generic.x              = 0;
+	s_keys_step_left_action.generic.y              = y += 9;
+	s_keys_step_left_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_step_left_action.generic.localdata[ 0 ] = ++i;
-	s_keys_step_left_action.generic.name = bindnames[ s_keys_step_left_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_step_left_action.generic.name           = bindnames[ s_keys_step_left_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_step_right_action.generic.type = MTYPE_ACTION;
-	s_keys_step_right_action.generic.flags = QMF_GRAYED;
-	s_keys_step_right_action.generic.x = 0;
-	s_keys_step_right_action.generic.y = y += 9;
-	s_keys_step_right_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_step_right_action.generic.type           = MTYPE_ACTION;
+	s_keys_step_right_action.generic.flags          = QMF_GRAYED;
+	s_keys_step_right_action.generic.x              = 0;
+	s_keys_step_right_action.generic.y              = y += 9;
+	s_keys_step_right_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_step_right_action.generic.localdata[ 0 ] = ++i;
-	s_keys_step_right_action.generic.name = bindnames[ s_keys_step_right_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_step_right_action.generic.name           = bindnames[ s_keys_step_right_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_sidestep_action.generic.type = MTYPE_ACTION;
-	s_keys_sidestep_action.generic.flags = QMF_GRAYED;
-	s_keys_sidestep_action.generic.x = 0;
-	s_keys_sidestep_action.generic.y = y += 9;
-	s_keys_sidestep_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_sidestep_action.generic.type           = MTYPE_ACTION;
+	s_keys_sidestep_action.generic.flags          = QMF_GRAYED;
+	s_keys_sidestep_action.generic.x              = 0;
+	s_keys_sidestep_action.generic.y              = y += 9;
+	s_keys_sidestep_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_sidestep_action.generic.localdata[ 0 ] = ++i;
-	s_keys_sidestep_action.generic.name = bindnames[ s_keys_sidestep_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_sidestep_action.generic.name           = bindnames[ s_keys_sidestep_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_look_up_action.generic.type = MTYPE_ACTION;
-	s_keys_look_up_action.generic.flags = QMF_GRAYED;
-	s_keys_look_up_action.generic.x = 0;
-	s_keys_look_up_action.generic.y = y += 9;
-	s_keys_look_up_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_look_up_action.generic.type           = MTYPE_ACTION;
+	s_keys_look_up_action.generic.flags          = QMF_GRAYED;
+	s_keys_look_up_action.generic.x              = 0;
+	s_keys_look_up_action.generic.y              = y += 9;
+	s_keys_look_up_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_look_up_action.generic.localdata[ 0 ] = ++i;
-	s_keys_look_up_action.generic.name = bindnames[ s_keys_look_up_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_look_up_action.generic.name           = bindnames[ s_keys_look_up_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_look_down_action.generic.type = MTYPE_ACTION;
-	s_keys_look_down_action.generic.flags = QMF_GRAYED;
-	s_keys_look_down_action.generic.x = 0;
-	s_keys_look_down_action.generic.y = y += 9;
-	s_keys_look_down_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_look_down_action.generic.type           = MTYPE_ACTION;
+	s_keys_look_down_action.generic.flags          = QMF_GRAYED;
+	s_keys_look_down_action.generic.x              = 0;
+	s_keys_look_down_action.generic.y              = y += 9;
+	s_keys_look_down_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_look_down_action.generic.localdata[ 0 ] = ++i;
-	s_keys_look_down_action.generic.name = bindnames[ s_keys_look_down_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_look_down_action.generic.name           = bindnames[ s_keys_look_down_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_center_view_action.generic.type = MTYPE_ACTION;
-	s_keys_center_view_action.generic.flags = QMF_GRAYED;
-	s_keys_center_view_action.generic.x = 0;
-	s_keys_center_view_action.generic.y = y += 9;
-	s_keys_center_view_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_center_view_action.generic.type           = MTYPE_ACTION;
+	s_keys_center_view_action.generic.flags          = QMF_GRAYED;
+	s_keys_center_view_action.generic.x              = 0;
+	s_keys_center_view_action.generic.y              = y += 9;
+	s_keys_center_view_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_center_view_action.generic.localdata[ 0 ] = ++i;
-	s_keys_center_view_action.generic.name = bindnames[ s_keys_center_view_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_center_view_action.generic.name           = bindnames[ s_keys_center_view_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_mouse_look_action.generic.type = MTYPE_ACTION;
-	s_keys_mouse_look_action.generic.flags = QMF_GRAYED;
-	s_keys_mouse_look_action.generic.x = 0;
-	s_keys_mouse_look_action.generic.y = y += 9;
-	s_keys_mouse_look_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_mouse_look_action.generic.type           = MTYPE_ACTION;
+	s_keys_mouse_look_action.generic.flags          = QMF_GRAYED;
+	s_keys_mouse_look_action.generic.x              = 0;
+	s_keys_mouse_look_action.generic.y              = y += 9;
+	s_keys_mouse_look_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_mouse_look_action.generic.localdata[ 0 ] = ++i;
-	s_keys_mouse_look_action.generic.name = bindnames[ s_keys_mouse_look_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_mouse_look_action.generic.name           = bindnames[ s_keys_mouse_look_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_keyboard_look_action.generic.type = MTYPE_ACTION;
-	s_keys_keyboard_look_action.generic.flags = QMF_GRAYED;
-	s_keys_keyboard_look_action.generic.x = 0;
-	s_keys_keyboard_look_action.generic.y = y += 9;
-	s_keys_keyboard_look_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_keyboard_look_action.generic.type           = MTYPE_ACTION;
+	s_keys_keyboard_look_action.generic.flags          = QMF_GRAYED;
+	s_keys_keyboard_look_action.generic.x              = 0;
+	s_keys_keyboard_look_action.generic.y              = y += 9;
+	s_keys_keyboard_look_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_keyboard_look_action.generic.localdata[ 0 ] = ++i;
-	s_keys_keyboard_look_action.generic.name = bindnames[ s_keys_keyboard_look_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_keyboard_look_action.generic.name           = bindnames[ s_keys_keyboard_look_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_move_up_action.generic.type = MTYPE_ACTION;
-	s_keys_move_up_action.generic.flags = QMF_GRAYED;
-	s_keys_move_up_action.generic.x = 0;
-	s_keys_move_up_action.generic.y = y += 9;
-	s_keys_move_up_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_move_up_action.generic.type           = MTYPE_ACTION;
+	s_keys_move_up_action.generic.flags          = QMF_GRAYED;
+	s_keys_move_up_action.generic.x              = 0;
+	s_keys_move_up_action.generic.y              = y += 9;
+	s_keys_move_up_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_move_up_action.generic.localdata[ 0 ] = ++i;
-	s_keys_move_up_action.generic.name = bindnames[ s_keys_move_up_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_move_up_action.generic.name           = bindnames[ s_keys_move_up_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_move_down_action.generic.type = MTYPE_ACTION;
-	s_keys_move_down_action.generic.flags = QMF_GRAYED;
-	s_keys_move_down_action.generic.x = 0;
-	s_keys_move_down_action.generic.y = y += 9;
-	s_keys_move_down_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_move_down_action.generic.type           = MTYPE_ACTION;
+	s_keys_move_down_action.generic.flags          = QMF_GRAYED;
+	s_keys_move_down_action.generic.x              = 0;
+	s_keys_move_down_action.generic.y              = y += 9;
+	s_keys_move_down_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_move_down_action.generic.localdata[ 0 ] = ++i;
-	s_keys_move_down_action.generic.name = bindnames[ s_keys_move_down_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_move_down_action.generic.name           = bindnames[ s_keys_move_down_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_inventory_action.generic.type = MTYPE_ACTION;
-	s_keys_inventory_action.generic.flags = QMF_GRAYED;
-	s_keys_inventory_action.generic.x = 0;
-	s_keys_inventory_action.generic.y = y += 9;
-	s_keys_inventory_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_inventory_action.generic.type           = MTYPE_ACTION;
+	s_keys_inventory_action.generic.flags          = QMF_GRAYED;
+	s_keys_inventory_action.generic.x              = 0;
+	s_keys_inventory_action.generic.y              = y += 9;
+	s_keys_inventory_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_inventory_action.generic.localdata[ 0 ] = ++i;
-	s_keys_inventory_action.generic.name = bindnames[ s_keys_inventory_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_inventory_action.generic.name           = bindnames[ s_keys_inventory_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_inv_use_action.generic.type = MTYPE_ACTION;
-	s_keys_inv_use_action.generic.flags = QMF_GRAYED;
-	s_keys_inv_use_action.generic.x = 0;
-	s_keys_inv_use_action.generic.y = y += 9;
-	s_keys_inv_use_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_inv_use_action.generic.type           = MTYPE_ACTION;
+	s_keys_inv_use_action.generic.flags          = QMF_GRAYED;
+	s_keys_inv_use_action.generic.x              = 0;
+	s_keys_inv_use_action.generic.y              = y += 9;
+	s_keys_inv_use_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_inv_use_action.generic.localdata[ 0 ] = ++i;
-	s_keys_inv_use_action.generic.name = bindnames[ s_keys_inv_use_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_inv_use_action.generic.name           = bindnames[ s_keys_inv_use_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_inv_drop_action.generic.type = MTYPE_ACTION;
-	s_keys_inv_drop_action.generic.flags = QMF_GRAYED;
-	s_keys_inv_drop_action.generic.x = 0;
-	s_keys_inv_drop_action.generic.y = y += 9;
-	s_keys_inv_drop_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_inv_drop_action.generic.type           = MTYPE_ACTION;
+	s_keys_inv_drop_action.generic.flags          = QMF_GRAYED;
+	s_keys_inv_drop_action.generic.x              = 0;
+	s_keys_inv_drop_action.generic.y              = y += 9;
+	s_keys_inv_drop_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_inv_drop_action.generic.localdata[ 0 ] = ++i;
-	s_keys_inv_drop_action.generic.name = bindnames[ s_keys_inv_drop_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_inv_drop_action.generic.name           = bindnames[ s_keys_inv_drop_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_inv_prev_action.generic.type = MTYPE_ACTION;
-	s_keys_inv_prev_action.generic.flags = QMF_GRAYED;
-	s_keys_inv_prev_action.generic.x = 0;
-	s_keys_inv_prev_action.generic.y = y += 9;
-	s_keys_inv_prev_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_inv_prev_action.generic.type           = MTYPE_ACTION;
+	s_keys_inv_prev_action.generic.flags          = QMF_GRAYED;
+	s_keys_inv_prev_action.generic.x              = 0;
+	s_keys_inv_prev_action.generic.y              = y += 9;
+	s_keys_inv_prev_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_inv_prev_action.generic.localdata[ 0 ] = ++i;
-	s_keys_inv_prev_action.generic.name = bindnames[ s_keys_inv_prev_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_inv_prev_action.generic.name           = bindnames[ s_keys_inv_prev_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_inv_next_action.generic.type = MTYPE_ACTION;
-	s_keys_inv_next_action.generic.flags = QMF_GRAYED;
-	s_keys_inv_next_action.generic.x = 0;
-	s_keys_inv_next_action.generic.y = y += 9;
-	s_keys_inv_next_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_inv_next_action.generic.type           = MTYPE_ACTION;
+	s_keys_inv_next_action.generic.flags          = QMF_GRAYED;
+	s_keys_inv_next_action.generic.x              = 0;
+	s_keys_inv_next_action.generic.y              = y += 9;
+	s_keys_inv_next_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_inv_next_action.generic.localdata[ 0 ] = ++i;
-	s_keys_inv_next_action.generic.name = bindnames[ s_keys_inv_next_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_inv_next_action.generic.name           = bindnames[ s_keys_inv_next_action.generic.localdata[ 0 ] ][ 1 ];
 
-	s_keys_help_computer_action.generic.type = MTYPE_ACTION;
-	s_keys_help_computer_action.generic.flags = QMF_GRAYED;
-	s_keys_help_computer_action.generic.x = 0;
-	s_keys_help_computer_action.generic.y = y += 9;
-	s_keys_help_computer_action.generic.ownerdraw = DrawKeyBindingFunc;
+	s_keys_help_computer_action.generic.type           = MTYPE_ACTION;
+	s_keys_help_computer_action.generic.flags          = QMF_GRAYED;
+	s_keys_help_computer_action.generic.x              = 0;
+	s_keys_help_computer_action.generic.y              = y += 9;
+	s_keys_help_computer_action.generic.ownerdraw      = DrawKeyBindingFunc;
 	s_keys_help_computer_action.generic.localdata[ 0 ] = ++i;
-	s_keys_help_computer_action.generic.name = bindnames[ s_keys_help_computer_action.generic.localdata[ 0 ] ][ 1 ];
+	s_keys_help_computer_action.generic.name           = bindnames[ s_keys_help_computer_action.generic.localdata[ 0 ] ][ 1 ];
 
 	Menu_AddItem( &s_keys_menu, ( void * ) &s_keys_attack_action );
 	Menu_AddItem( &s_keys_menu, ( void * ) &s_keys_change_weapon_action );
@@ -1088,9 +1088,9 @@ static float ClampCvar( float min, float max, float value )
 
 static void ControlsSetMenuItemValues( void )
 {
-	s_options_sfxvolume_slider.curvalue = Cvar_VariableValue( "s_volume" ) * 10;
-	s_options_cdvolume_box.curvalue = !Cvar_VariableValue( "cd_nocd" );
-	s_options_quality_list.curvalue = !Cvar_VariableValue( "s_loadas8bit" );
+	s_options_sfxvolume_slider.curvalue   = Cvar_VariableValue( "s_volume" ) * 10;
+	s_options_cdvolume_box.curvalue       = !Cvar_VariableValue( "cd_nocd" );
+	s_options_quality_list.curvalue       = !Cvar_VariableValue( "s_loadas8bit" );
 	s_options_sensitivity_slider.curvalue = ( sensitivity->value ) * 2;
 
 	Cvar_SetValue( "cl_run", ClampCvar( 0, 1, cl_run->value ) );
@@ -1215,124 +1215,124 @@ static void UpdateSoundQualityFunc( void *unused )
 void Options_MenuInit( void )
 {
 	static const char *cd_music_items[] =
-			{
-					"disabled",
-					"enabled",
-					0 };
+	        {
+	                "disabled",
+	                "enabled",
+	                0 };
 	static const char *quality_items[] =
-			{
-					"low", "high", 0 };
+	        {
+	                "low", "high", 0 };
 
 	static const char *compatibility_items[] =
-			{
-					"max compatibility", "max performance", 0 };
+	        {
+	                "max compatibility", "max performance", 0 };
 
 	static const char *yesno_names[] =
-			{
-					"no",
-					"yes",
-					0 };
+	        {
+	                "no",
+	                "yes",
+	                0 };
 
 	static const char *crosshair_names[] =
-			{
-					"none",
-					"cross",
-					"dot",
-					"angle",
-					0 };
+	        {
+	                "none",
+	                "cross",
+	                "dot",
+	                "angle",
+	                0 };
 
 	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
 
 	/*
 	** configure controls menu and menu items
 	*/
-	s_options_menu.x = viddef.width / 2;
-	s_options_menu.y = viddef.height / 2 - 58;
+	s_options_menu.x      = viddef.width / 2;
+	s_options_menu.y      = viddef.height / 2 - 58;
 	s_options_menu.nitems = 0;
 
-	s_options_sfxvolume_slider.generic.type = MTYPE_SLIDER;
-	s_options_sfxvolume_slider.generic.x = 0;
-	s_options_sfxvolume_slider.generic.y = 0;
-	s_options_sfxvolume_slider.generic.name = "effects volume";
+	s_options_sfxvolume_slider.generic.type     = MTYPE_SLIDER;
+	s_options_sfxvolume_slider.generic.x        = 0;
+	s_options_sfxvolume_slider.generic.y        = 0;
+	s_options_sfxvolume_slider.generic.name     = "effects volume";
 	s_options_sfxvolume_slider.generic.callback = UpdateVolumeFunc;
-	s_options_sfxvolume_slider.minvalue = 0;
-	s_options_sfxvolume_slider.maxvalue = 10;
-	s_options_sfxvolume_slider.curvalue = Cvar_VariableValue( "s_volume" ) * 10;
+	s_options_sfxvolume_slider.minvalue         = 0;
+	s_options_sfxvolume_slider.maxvalue         = 10;
+	s_options_sfxvolume_slider.curvalue         = Cvar_VariableValue( "s_volume" ) * 10;
 
-	s_options_cdvolume_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_cdvolume_box.generic.x = 0;
-	s_options_cdvolume_box.generic.y = 10;
-	s_options_cdvolume_box.generic.name = "CD music";
+	s_options_cdvolume_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_cdvolume_box.generic.x        = 0;
+	s_options_cdvolume_box.generic.y        = 10;
+	s_options_cdvolume_box.generic.name     = "CD music";
 	s_options_cdvolume_box.generic.callback = UpdateCDVolumeFunc;
-	s_options_cdvolume_box.itemnames = cd_music_items;
-	s_options_cdvolume_box.curvalue = !Cvar_VariableValue( "cd_nocd" );
+	s_options_cdvolume_box.itemnames        = cd_music_items;
+	s_options_cdvolume_box.curvalue         = !Cvar_VariableValue( "cd_nocd" );
 
 	s_options_quality_list.generic.type = MTYPE_SPINCONTROL;
-	s_options_quality_list.generic.x = 0;
-	s_options_quality_list.generic.y = 20;
+	s_options_quality_list.generic.x    = 0;
+	s_options_quality_list.generic.y    = 20;
 	;
-	s_options_quality_list.generic.name = "sound quality";
+	s_options_quality_list.generic.name     = "sound quality";
 	s_options_quality_list.generic.callback = UpdateSoundQualityFunc;
-	s_options_quality_list.itemnames = quality_items;
-	s_options_quality_list.curvalue = !Cvar_VariableValue( "s_loadas8bit" );
+	s_options_quality_list.itemnames        = quality_items;
+	s_options_quality_list.curvalue         = !Cvar_VariableValue( "s_loadas8bit" );
 
-	s_options_compatibility_list.generic.type = MTYPE_SPINCONTROL;
-	s_options_compatibility_list.generic.x = 0;
-	s_options_compatibility_list.generic.y = 30;
-	s_options_compatibility_list.generic.name = "sound compatibility";
+	s_options_compatibility_list.generic.type     = MTYPE_SPINCONTROL;
+	s_options_compatibility_list.generic.x        = 0;
+	s_options_compatibility_list.generic.y        = 30;
+	s_options_compatibility_list.generic.name     = "sound compatibility";
 	s_options_compatibility_list.generic.callback = UpdateSoundQualityFunc;
-	s_options_compatibility_list.itemnames = compatibility_items;
-	s_options_compatibility_list.curvalue = Cvar_VariableValue( "s_primary" );
+	s_options_compatibility_list.itemnames        = compatibility_items;
+	s_options_compatibility_list.curvalue         = Cvar_VariableValue( "s_primary" );
 
-	s_options_sensitivity_slider.generic.type = MTYPE_SLIDER;
-	s_options_sensitivity_slider.generic.x = 0;
-	s_options_sensitivity_slider.generic.y = 50;
-	s_options_sensitivity_slider.generic.name = "mouse speed";
+	s_options_sensitivity_slider.generic.type     = MTYPE_SLIDER;
+	s_options_sensitivity_slider.generic.x        = 0;
+	s_options_sensitivity_slider.generic.y        = 50;
+	s_options_sensitivity_slider.generic.name     = "mouse speed";
 	s_options_sensitivity_slider.generic.callback = MouseSpeedFunc;
-	s_options_sensitivity_slider.minvalue = 2;
-	s_options_sensitivity_slider.maxvalue = 22;
+	s_options_sensitivity_slider.minvalue         = 2;
+	s_options_sensitivity_slider.maxvalue         = 22;
 
-	s_options_alwaysrun_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_alwaysrun_box.generic.x = 0;
-	s_options_alwaysrun_box.generic.y = 60;
-	s_options_alwaysrun_box.generic.name = "always run";
+	s_options_alwaysrun_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_alwaysrun_box.generic.x        = 0;
+	s_options_alwaysrun_box.generic.y        = 60;
+	s_options_alwaysrun_box.generic.name     = "always run";
 	s_options_alwaysrun_box.generic.callback = AlwaysRunFunc;
-	s_options_alwaysrun_box.itemnames = yesno_names;
+	s_options_alwaysrun_box.itemnames        = yesno_names;
 
-	s_options_invertmouse_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_invertmouse_box.generic.x = 0;
-	s_options_invertmouse_box.generic.y = 70;
-	s_options_invertmouse_box.generic.name = "invert mouse";
+	s_options_invertmouse_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_invertmouse_box.generic.x        = 0;
+	s_options_invertmouse_box.generic.y        = 70;
+	s_options_invertmouse_box.generic.name     = "invert mouse";
 	s_options_invertmouse_box.generic.callback = InvertMouseFunc;
-	s_options_invertmouse_box.itemnames = yesno_names;
+	s_options_invertmouse_box.itemnames        = yesno_names;
 
-	s_options_lookspring_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_lookspring_box.generic.x = 0;
-	s_options_lookspring_box.generic.y = 80;
-	s_options_lookspring_box.generic.name = "lookspring";
+	s_options_lookspring_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_lookspring_box.generic.x        = 0;
+	s_options_lookspring_box.generic.y        = 80;
+	s_options_lookspring_box.generic.name     = "lookspring";
 	s_options_lookspring_box.generic.callback = LookspringFunc;
-	s_options_lookspring_box.itemnames = yesno_names;
+	s_options_lookspring_box.itemnames        = yesno_names;
 
-	s_options_lookstrafe_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_lookstrafe_box.generic.x = 0;
-	s_options_lookstrafe_box.generic.y = 90;
-	s_options_lookstrafe_box.generic.name = "lookstrafe";
+	s_options_lookstrafe_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_lookstrafe_box.generic.x        = 0;
+	s_options_lookstrafe_box.generic.y        = 90;
+	s_options_lookstrafe_box.generic.name     = "lookstrafe";
 	s_options_lookstrafe_box.generic.callback = LookstrafeFunc;
-	s_options_lookstrafe_box.itemnames = yesno_names;
+	s_options_lookstrafe_box.itemnames        = yesno_names;
 
-	s_options_freelook_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_freelook_box.generic.x = 0;
-	s_options_freelook_box.generic.y = 100;
-	s_options_freelook_box.generic.name = "free look";
+	s_options_freelook_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_freelook_box.generic.x        = 0;
+	s_options_freelook_box.generic.y        = 100;
+	s_options_freelook_box.generic.name     = "free look";
 	s_options_freelook_box.generic.callback = FreeLookFunc;
-	s_options_freelook_box.itemnames = yesno_names;
+	s_options_freelook_box.itemnames        = yesno_names;
 
-	s_options_crosshair_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_crosshair_box.generic.x = 0;
-	s_options_crosshair_box.generic.y = 110;
-	s_options_crosshair_box.generic.name = "crosshair";
+	s_options_crosshair_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_crosshair_box.generic.x        = 0;
+	s_options_crosshair_box.generic.y        = 110;
+	s_options_crosshair_box.generic.name     = "crosshair";
 	s_options_crosshair_box.generic.callback = CrosshairFunc;
-	s_options_crosshair_box.itemnames = crosshair_names;
+	s_options_crosshair_box.itemnames        = crosshair_names;
 	/*
 	s_options_noalttab_box.generic.type = MTYPE_SPINCONTROL;
 	s_options_noalttab_box.generic.x	= 0;
@@ -1341,29 +1341,29 @@ void Options_MenuInit( void )
 	s_options_noalttab_box.generic.callback = NoAltTabFunc;
 	s_options_noalttab_box.itemnames = yesno_names;
 */
-	s_options_joystick_box.generic.type = MTYPE_SPINCONTROL;
-	s_options_joystick_box.generic.x = 0;
-	s_options_joystick_box.generic.y = 120;
-	s_options_joystick_box.generic.name = "use joystick";
+	s_options_joystick_box.generic.type     = MTYPE_SPINCONTROL;
+	s_options_joystick_box.generic.x        = 0;
+	s_options_joystick_box.generic.y        = 120;
+	s_options_joystick_box.generic.name     = "use joystick";
 	s_options_joystick_box.generic.callback = JoystickFunc;
-	s_options_joystick_box.itemnames = yesno_names;
+	s_options_joystick_box.itemnames        = yesno_names;
 
-	s_options_customize_options_action.generic.type = MTYPE_ACTION;
-	s_options_customize_options_action.generic.x = 0;
-	s_options_customize_options_action.generic.y = 140;
-	s_options_customize_options_action.generic.name = "customize controls";
+	s_options_customize_options_action.generic.type     = MTYPE_ACTION;
+	s_options_customize_options_action.generic.x        = 0;
+	s_options_customize_options_action.generic.y        = 140;
+	s_options_customize_options_action.generic.name     = "customize controls";
 	s_options_customize_options_action.generic.callback = CustomizeControlsFunc;
 
-	s_options_defaults_action.generic.type = MTYPE_ACTION;
-	s_options_defaults_action.generic.x = 0;
-	s_options_defaults_action.generic.y = 150;
-	s_options_defaults_action.generic.name = "reset defaults";
+	s_options_defaults_action.generic.type     = MTYPE_ACTION;
+	s_options_defaults_action.generic.x        = 0;
+	s_options_defaults_action.generic.y        = 150;
+	s_options_defaults_action.generic.name     = "reset defaults";
 	s_options_defaults_action.generic.callback = ControlsResetDefaultsFunc;
 
-	s_options_console_action.generic.type = MTYPE_ACTION;
-	s_options_console_action.generic.x = 0;
-	s_options_console_action.generic.y = 160;
-	s_options_console_action.generic.name = "go to console";
+	s_options_console_action.generic.type     = MTYPE_ACTION;
+	s_options_console_action.generic.x        = 0;
+	s_options_console_action.generic.y        = 160;
+	s_options_console_action.generic.name     = "go to console";
 	s_options_console_action.generic.callback = ConsoleFunc;
 
 	ControlsSetMenuItemValues();
@@ -1445,12 +1445,12 @@ void M_Credits_MenuDraw( void )
 
 		if ( credits[ i ][ 0 ] == '+' )
 		{
-			bold = true;
+			bold         = true;
 			stringoffset = 1;
 		}
 		else
 		{
-			bold = false;
+			bold         = false;
 			stringoffset = 0;
 		}
 
@@ -1609,51 +1609,51 @@ static void CreditsFunc( void *unused )
 
 void Game_MenuInit( void )
 {
-	s_game_menu.x = viddef.width * 0.50;
+	s_game_menu.x      = viddef.width * 0.50;
 	s_game_menu.nitems = 0;
 
-	s_easy_game_action.generic.type = MTYPE_ACTION;
-	s_easy_game_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_easy_game_action.generic.x = 0;
-	s_easy_game_action.generic.y = 0;
-	s_easy_game_action.generic.name = "easy";
+	s_easy_game_action.generic.type     = MTYPE_ACTION;
+	s_easy_game_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_easy_game_action.generic.x        = 0;
+	s_easy_game_action.generic.y        = 0;
+	s_easy_game_action.generic.name     = "easy";
 	s_easy_game_action.generic.callback = EasyGameFunc;
 
-	s_medium_game_action.generic.type = MTYPE_ACTION;
-	s_medium_game_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_medium_game_action.generic.x = 0;
-	s_medium_game_action.generic.y = 10;
-	s_medium_game_action.generic.name = "medium";
+	s_medium_game_action.generic.type     = MTYPE_ACTION;
+	s_medium_game_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_medium_game_action.generic.x        = 0;
+	s_medium_game_action.generic.y        = 10;
+	s_medium_game_action.generic.name     = "medium";
 	s_medium_game_action.generic.callback = MediumGameFunc;
 
-	s_hard_game_action.generic.type = MTYPE_ACTION;
-	s_hard_game_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_hard_game_action.generic.x = 0;
-	s_hard_game_action.generic.y = 20;
-	s_hard_game_action.generic.name = "hard";
+	s_hard_game_action.generic.type     = MTYPE_ACTION;
+	s_hard_game_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_hard_game_action.generic.x        = 0;
+	s_hard_game_action.generic.y        = 20;
+	s_hard_game_action.generic.name     = "hard";
 	s_hard_game_action.generic.callback = HardGameFunc;
 
 	s_blankline.generic.type = MTYPE_SEPARATOR;
 
-	s_load_game_action.generic.type = MTYPE_ACTION;
-	s_load_game_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_load_game_action.generic.x = 0;
-	s_load_game_action.generic.y = 40;
-	s_load_game_action.generic.name = "load game";
+	s_load_game_action.generic.type     = MTYPE_ACTION;
+	s_load_game_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_load_game_action.generic.x        = 0;
+	s_load_game_action.generic.y        = 40;
+	s_load_game_action.generic.name     = "load game";
 	s_load_game_action.generic.callback = LoadGameFunc;
 
-	s_save_game_action.generic.type = MTYPE_ACTION;
-	s_save_game_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_save_game_action.generic.x = 0;
-	s_save_game_action.generic.y = 50;
-	s_save_game_action.generic.name = "save game";
+	s_save_game_action.generic.type     = MTYPE_ACTION;
+	s_save_game_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_save_game_action.generic.x        = 0;
+	s_save_game_action.generic.y        = 50;
+	s_save_game_action.generic.name     = "save game";
 	s_save_game_action.generic.callback = SaveGameFunc;
 
-	s_credits_action.generic.type = MTYPE_ACTION;
-	s_credits_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_credits_action.generic.x = 0;
-	s_credits_action.generic.y = 60;
-	s_credits_action.generic.name = "credits";
+	s_credits_action.generic.type     = MTYPE_ACTION;
+	s_credits_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_credits_action.generic.x        = 0;
+	s_credits_action.generic.y        = 60;
+	s_credits_action.generic.name     = "credits";
 	s_credits_action.generic.callback = CreditsFunc;
 
 	Menu_AddItem( &s_game_menu, ( void * ) &s_easy_game_action );
@@ -1702,7 +1702,7 @@ static menuframework_s s_savegame_menu;
 static menuframework_s s_loadgame_menu;
 static menuaction_s    s_loadgame_actions[ MAX_SAVEGAMES ];
 
-char     m_savestrings[ MAX_SAVEGAMES ][ 32 ];
+char m_savestrings[ MAX_SAVEGAMES ][ 32 ];
 bool m_savevalid[ MAX_SAVEGAMES ];
 
 void Create_Savestrings( void )
@@ -1742,21 +1742,21 @@ void LoadGame_MenuInit( void )
 {
 	int i;
 
-	s_loadgame_menu.x = viddef.width / 2 - 120;
-	s_loadgame_menu.y = viddef.height / 2 - 58;
+	s_loadgame_menu.x      = viddef.width / 2 - 120;
+	s_loadgame_menu.y      = viddef.height / 2 - 58;
 	s_loadgame_menu.nitems = 0;
 
 	Create_Savestrings();
 
 	for ( i = 0; i < MAX_SAVEGAMES; i++ )
 	{
-		s_loadgame_actions[ i ].generic.name = m_savestrings[ i ];
-		s_loadgame_actions[ i ].generic.flags = QMF_LEFT_JUSTIFY;
+		s_loadgame_actions[ i ].generic.name           = m_savestrings[ i ];
+		s_loadgame_actions[ i ].generic.flags          = QMF_LEFT_JUSTIFY;
 		s_loadgame_actions[ i ].generic.localdata[ 0 ] = i;
-		s_loadgame_actions[ i ].generic.callback = LoadGameCallback;
+		s_loadgame_actions[ i ].generic.callback       = LoadGameCallback;
 
 		s_loadgame_actions[ i ].generic.x = 0;
-		s_loadgame_actions[ i ].generic.y = ( i ) *10;
+		s_loadgame_actions[ i ].generic.y = ( i ) * 10;
 		if ( i > 0 )// separate from autosave
 			s_loadgame_actions[ i ].generic.y += 10;
 
@@ -1820,8 +1820,8 @@ void SaveGame_MenuInit( void )
 {
 	int i;
 
-	s_savegame_menu.x = viddef.width / 2 - 120;
-	s_savegame_menu.y = viddef.height / 2 - 58;
+	s_savegame_menu.x      = viddef.width / 2 - 120;
+	s_savegame_menu.y      = viddef.height / 2 - 58;
 	s_savegame_menu.nitems = 0;
 
 	Create_Savestrings();
@@ -1829,13 +1829,13 @@ void SaveGame_MenuInit( void )
 	// don't include the autosave slot
 	for ( i = 0; i < MAX_SAVEGAMES - 1; i++ )
 	{
-		s_savegame_actions[ i ].generic.name = m_savestrings[ i + 1 ];
+		s_savegame_actions[ i ].generic.name           = m_savestrings[ i + 1 ];
 		s_savegame_actions[ i ].generic.localdata[ 0 ] = i + 1;
-		s_savegame_actions[ i ].generic.flags = QMF_LEFT_JUSTIFY;
-		s_savegame_actions[ i ].generic.callback = SaveGameCallback;
+		s_savegame_actions[ i ].generic.flags          = QMF_LEFT_JUSTIFY;
+		s_savegame_actions[ i ].generic.callback       = SaveGameCallback;
 
 		s_savegame_actions[ i ].generic.x = 0;
-		s_savegame_actions[ i ].generic.y = ( i ) *10;
+		s_savegame_actions[ i ].generic.y = ( i ) * 10;
 
 		s_savegame_actions[ i ].generic.type = MTYPE_ACTION;
 
@@ -1970,38 +1970,38 @@ void JoinServer_MenuInit( void )
 {
 	int i;
 
-	s_joinserver_menu.x = viddef.width * 0.50 - 120;
+	s_joinserver_menu.x      = viddef.width * 0.50 - 120;
 	s_joinserver_menu.nitems = 0;
 
-	s_joinserver_address_book_action.generic.type = MTYPE_ACTION;
-	s_joinserver_address_book_action.generic.name = "address book";
-	s_joinserver_address_book_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_joinserver_address_book_action.generic.x = 0;
-	s_joinserver_address_book_action.generic.y = 0;
+	s_joinserver_address_book_action.generic.type     = MTYPE_ACTION;
+	s_joinserver_address_book_action.generic.name     = "address book";
+	s_joinserver_address_book_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_joinserver_address_book_action.generic.x        = 0;
+	s_joinserver_address_book_action.generic.y        = 0;
 	s_joinserver_address_book_action.generic.callback = AddressBookFunc;
 
-	s_joinserver_search_action.generic.type = MTYPE_ACTION;
-	s_joinserver_search_action.generic.name = "refresh server list";
-	s_joinserver_search_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_joinserver_search_action.generic.x = 0;
-	s_joinserver_search_action.generic.y = 10;
-	s_joinserver_search_action.generic.callback = SearchLocalGamesFunc;
+	s_joinserver_search_action.generic.type      = MTYPE_ACTION;
+	s_joinserver_search_action.generic.name      = "refresh server list";
+	s_joinserver_search_action.generic.flags     = QMF_LEFT_JUSTIFY;
+	s_joinserver_search_action.generic.x         = 0;
+	s_joinserver_search_action.generic.y         = 10;
+	s_joinserver_search_action.generic.callback  = SearchLocalGamesFunc;
 	s_joinserver_search_action.generic.statusbar = "search for servers";
 
 	s_joinserver_server_title.generic.type = MTYPE_SEPARATOR;
 	s_joinserver_server_title.generic.name = "connect to...";
-	s_joinserver_server_title.generic.x = 80;
-	s_joinserver_server_title.generic.y = 30;
+	s_joinserver_server_title.generic.x    = 80;
+	s_joinserver_server_title.generic.y    = 30;
 
 	for ( i = 0; i < MAX_LOCAL_SERVERS; i++ )
 	{
 		s_joinserver_server_actions[ i ].generic.type = MTYPE_ACTION;
 		strcpy( local_server_names[ i ], NO_SERVER_STRING );
-		s_joinserver_server_actions[ i ].generic.name = local_server_names[ i ];
-		s_joinserver_server_actions[ i ].generic.flags = QMF_LEFT_JUSTIFY;
-		s_joinserver_server_actions[ i ].generic.x = 0;
-		s_joinserver_server_actions[ i ].generic.y = 40 + i * 10;
-		s_joinserver_server_actions[ i ].generic.callback = JoinServerFunc;
+		s_joinserver_server_actions[ i ].generic.name      = local_server_names[ i ];
+		s_joinserver_server_actions[ i ].generic.flags     = QMF_LEFT_JUSTIFY;
+		s_joinserver_server_actions[ i ].generic.x         = 0;
+		s_joinserver_server_actions[ i ].generic.y         = 40 + i * 10;
+		s_joinserver_server_actions[ i ].generic.callback  = JoinServerFunc;
 		s_joinserver_server_actions[ i ].generic.statusbar = "press ENTER to connect";
 	}
 
@@ -2072,7 +2072,7 @@ void RulesChangeFunc( void *self )
 	// DM
 	if ( s_rules_box.curvalue == 0 )
 	{
-		s_maxclients_field.generic.statusbar = NULL;
+		s_maxclients_field.generic.statusbar             = NULL;
 		s_startserver_dmoptions_action.generic.statusbar = NULL;
 	}
 	else if ( s_rules_box.curvalue == 1 )// coop				// PGM
@@ -2097,8 +2097,8 @@ void StartServerActionFunc( void *self )
 	strcpy( startmap, strchr( mapnames[ s_startmap_list.curvalue ], '\n' ) + 1 );
 
 	maxclients = atoi( s_maxclients_field.buffer );
-	timelimit = atoi( s_timelimit_field.buffer );
-	fraglimit = atoi( s_fraglimit_field.buffer );
+	timelimit  = atoi( s_timelimit_field.buffer );
+	fraglimit  = atoi( s_fraglimit_field.buffer );
 
 	Cvar_SetValue( "maxclients", ClampCvar( 0, maxclients, maxclients ) );
 	Cvar_SetValue( "timelimit", ClampCvar( 0, timelimit, timelimit ) );
@@ -2145,10 +2145,10 @@ void StartServerActionFunc( void *self )
 void StartServer_MenuInit( void )
 {
 	static const char *dm_coop_names[] =
-			{
-					"deathmatch",
-					"cooperative",
-					nullptr };
+	        {
+	                "deathmatch",
+	                "cooperative",
+	                nullptr };
 
 	char       *buffer;
 	char        mapsname[ 1024 ];
@@ -2226,18 +2226,18 @@ void StartServer_MenuInit( void )
 	/*
 	** initialize the menu stuff
 	*/
-	s_startserver_menu.x = viddef.width * 0.50;
+	s_startserver_menu.x      = viddef.width * 0.50;
 	s_startserver_menu.nitems = 0;
 
 	s_startmap_list.generic.type = MTYPE_SPINCONTROL;
-	s_startmap_list.generic.x = 0;
-	s_startmap_list.generic.y = 0;
+	s_startmap_list.generic.x    = 0;
+	s_startmap_list.generic.y    = 0;
 	s_startmap_list.generic.name = "initial map";
-	s_startmap_list.itemnames = ( const char ** ) mapnames;
+	s_startmap_list.itemnames    = ( const char    **) mapnames;
 
 	s_rules_box.generic.type = MTYPE_SPINCONTROL;
-	s_rules_box.generic.x = 0;
-	s_rules_box.generic.y = 20;
+	s_rules_box.generic.x    = 0;
+	s_rules_box.generic.y    = 20;
 	s_rules_box.generic.name = "rules";
 
 	s_rules_box.itemnames = dm_coop_names;
@@ -2248,24 +2248,24 @@ void StartServer_MenuInit( void )
 		s_rules_box.curvalue = 0;
 	s_rules_box.generic.callback = RulesChangeFunc;
 
-	s_timelimit_field.generic.type = MTYPE_FIELD;
-	s_timelimit_field.generic.name = "time limit";
-	s_timelimit_field.generic.flags = QMF_NUMBERSONLY;
-	s_timelimit_field.generic.x = 0;
-	s_timelimit_field.generic.y = 36;
+	s_timelimit_field.generic.type      = MTYPE_FIELD;
+	s_timelimit_field.generic.name      = "time limit";
+	s_timelimit_field.generic.flags     = QMF_NUMBERSONLY;
+	s_timelimit_field.generic.x         = 0;
+	s_timelimit_field.generic.y         = 36;
 	s_timelimit_field.generic.statusbar = "0 = no limit";
-	s_timelimit_field.length = 3;
-	s_timelimit_field.visible_length = 3;
+	s_timelimit_field.length            = 3;
+	s_timelimit_field.visible_length    = 3;
 	strcpy( s_timelimit_field.buffer, Cvar_VariableString( "timelimit" ) );
 
-	s_fraglimit_field.generic.type = MTYPE_FIELD;
-	s_fraglimit_field.generic.name = "frag limit";
-	s_fraglimit_field.generic.flags = QMF_NUMBERSONLY;
-	s_fraglimit_field.generic.x = 0;
-	s_fraglimit_field.generic.y = 54;
+	s_fraglimit_field.generic.type      = MTYPE_FIELD;
+	s_fraglimit_field.generic.name      = "frag limit";
+	s_fraglimit_field.generic.flags     = QMF_NUMBERSONLY;
+	s_fraglimit_field.generic.x         = 0;
+	s_fraglimit_field.generic.y         = 54;
 	s_fraglimit_field.generic.statusbar = "0 = no limit";
-	s_fraglimit_field.length = 3;
-	s_fraglimit_field.visible_length = 3;
+	s_fraglimit_field.length            = 3;
+	s_fraglimit_field.visible_length    = 3;
 	strcpy( s_fraglimit_field.buffer, Cvar_VariableString( "fraglimit" ) );
 
 	/*
@@ -2274,42 +2274,42 @@ void StartServer_MenuInit( void )
 	** option to 8 players, otherwise use whatever its current value is. 
 	** Clamping will be done when the server is actually started.
 	*/
-	s_maxclients_field.generic.type = MTYPE_FIELD;
-	s_maxclients_field.generic.name = "max players";
-	s_maxclients_field.generic.flags = QMF_NUMBERSONLY;
-	s_maxclients_field.generic.x = 0;
-	s_maxclients_field.generic.y = 72;
+	s_maxclients_field.generic.type      = MTYPE_FIELD;
+	s_maxclients_field.generic.name      = "max players";
+	s_maxclients_field.generic.flags     = QMF_NUMBERSONLY;
+	s_maxclients_field.generic.x         = 0;
+	s_maxclients_field.generic.y         = 72;
 	s_maxclients_field.generic.statusbar = NULL;
-	s_maxclients_field.length = 3;
-	s_maxclients_field.visible_length = 3;
+	s_maxclients_field.length            = 3;
+	s_maxclients_field.visible_length    = 3;
 	if ( Cvar_VariableValue( "maxclients" ) == 1 )
 		strcpy( s_maxclients_field.buffer, "8" );
 	else
 		strcpy( s_maxclients_field.buffer, Cvar_VariableString( "maxclients" ) );
 
-	s_hostname_field.generic.type = MTYPE_FIELD;
-	s_hostname_field.generic.name = "hostname";
-	s_hostname_field.generic.flags = 0;
-	s_hostname_field.generic.x = 0;
-	s_hostname_field.generic.y = 90;
+	s_hostname_field.generic.type      = MTYPE_FIELD;
+	s_hostname_field.generic.name      = "hostname";
+	s_hostname_field.generic.flags     = 0;
+	s_hostname_field.generic.x         = 0;
+	s_hostname_field.generic.y         = 90;
 	s_hostname_field.generic.statusbar = NULL;
-	s_hostname_field.length = 12;
-	s_hostname_field.visible_length = 12;
+	s_hostname_field.length            = 12;
+	s_hostname_field.visible_length    = 12;
 	strcpy( s_hostname_field.buffer, Cvar_VariableString( "hostname" ) );
 
-	s_startserver_dmoptions_action.generic.type = MTYPE_ACTION;
-	s_startserver_dmoptions_action.generic.name = " deathmatch flags";
-	s_startserver_dmoptions_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_startserver_dmoptions_action.generic.x = 24;
-	s_startserver_dmoptions_action.generic.y = 108;
+	s_startserver_dmoptions_action.generic.type      = MTYPE_ACTION;
+	s_startserver_dmoptions_action.generic.name      = " deathmatch flags";
+	s_startserver_dmoptions_action.generic.flags     = QMF_LEFT_JUSTIFY;
+	s_startserver_dmoptions_action.generic.x         = 24;
+	s_startserver_dmoptions_action.generic.y         = 108;
 	s_startserver_dmoptions_action.generic.statusbar = NULL;
-	s_startserver_dmoptions_action.generic.callback = DMOptionsFunc;
+	s_startserver_dmoptions_action.generic.callback  = DMOptionsFunc;
 
-	s_startserver_start_action.generic.type = MTYPE_ACTION;
-	s_startserver_start_action.generic.name = " begin";
-	s_startserver_start_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_startserver_start_action.generic.x = 24;
-	s_startserver_start_action.generic.y = 128;
+	s_startserver_start_action.generic.type     = MTYPE_ACTION;
+	s_startserver_start_action.generic.name     = " begin";
+	s_startserver_start_action.generic.flags    = QMF_LEFT_JUSTIFY;
+	s_startserver_start_action.generic.x        = 24;
+	s_startserver_start_action.generic.y        = 128;
 	s_startserver_start_action.generic.callback = StartServerActionFunc;
 
 	Menu_AddItem( &s_startserver_menu, &s_startmap_list );
@@ -2345,7 +2345,7 @@ const char *StartServer_MenuKey( int key )
 			free( mapnames );
 		}
 		mapnames = 0;
-		nummaps = 0;
+		nummaps  = 0;
 	}
 
 	return Default_MenuKey( &s_startserver_menu, key );
@@ -2505,135 +2505,135 @@ setvalue:
 void DMOptions_MenuInit( void )
 {
 	static const char *yes_no_names[] =
-			{
-					"no", "yes", 0 };
+	        {
+	                "no", "yes", 0 };
 	static const char *teamplay_names[] =
-			{
-					"disabled", "by skin", "by model", 0 };
+	        {
+	                "disabled", "by skin", "by model", 0 };
 	int dmflags = Cvar_VariableValue( "dmflags" );
-	int y = 0;
+	int y       = 0;
 
-	s_dmoptions_menu.x = viddef.width * 0.50;
+	s_dmoptions_menu.x      = viddef.width * 0.50;
 	s_dmoptions_menu.nitems = 0;
 
-	s_falls_box.generic.type = MTYPE_SPINCONTROL;
-	s_falls_box.generic.x = 0;
-	s_falls_box.generic.y = y;
-	s_falls_box.generic.name = "falling damage";
+	s_falls_box.generic.type     = MTYPE_SPINCONTROL;
+	s_falls_box.generic.x        = 0;
+	s_falls_box.generic.y        = y;
+	s_falls_box.generic.name     = "falling damage";
 	s_falls_box.generic.callback = DMFlagCallback;
-	s_falls_box.itemnames = yes_no_names;
-	s_falls_box.curvalue = ( dmflags & DF_NO_FALLING ) == 0;
+	s_falls_box.itemnames        = yes_no_names;
+	s_falls_box.curvalue         = ( dmflags & DF_NO_FALLING ) == 0;
 
-	s_weapons_stay_box.generic.type = MTYPE_SPINCONTROL;
-	s_weapons_stay_box.generic.x = 0;
-	s_weapons_stay_box.generic.y = y += 10;
-	s_weapons_stay_box.generic.name = "weapons stay";
+	s_weapons_stay_box.generic.type     = MTYPE_SPINCONTROL;
+	s_weapons_stay_box.generic.x        = 0;
+	s_weapons_stay_box.generic.y        = y += 10;
+	s_weapons_stay_box.generic.name     = "weapons stay";
 	s_weapons_stay_box.generic.callback = DMFlagCallback;
-	s_weapons_stay_box.itemnames = yes_no_names;
-	s_weapons_stay_box.curvalue = ( dmflags & DF_WEAPONS_STAY ) != 0;
+	s_weapons_stay_box.itemnames        = yes_no_names;
+	s_weapons_stay_box.curvalue         = ( dmflags & DF_WEAPONS_STAY ) != 0;
 
-	s_instant_powerups_box.generic.type = MTYPE_SPINCONTROL;
-	s_instant_powerups_box.generic.x = 0;
-	s_instant_powerups_box.generic.y = y += 10;
-	s_instant_powerups_box.generic.name = "instant powerups";
+	s_instant_powerups_box.generic.type     = MTYPE_SPINCONTROL;
+	s_instant_powerups_box.generic.x        = 0;
+	s_instant_powerups_box.generic.y        = y += 10;
+	s_instant_powerups_box.generic.name     = "instant powerups";
 	s_instant_powerups_box.generic.callback = DMFlagCallback;
-	s_instant_powerups_box.itemnames = yes_no_names;
-	s_instant_powerups_box.curvalue = ( dmflags & DF_INSTANT_ITEMS ) != 0;
+	s_instant_powerups_box.itemnames        = yes_no_names;
+	s_instant_powerups_box.curvalue         = ( dmflags & DF_INSTANT_ITEMS ) != 0;
 
-	s_powerups_box.generic.type = MTYPE_SPINCONTROL;
-	s_powerups_box.generic.x = 0;
-	s_powerups_box.generic.y = y += 10;
-	s_powerups_box.generic.name = "allow powerups";
+	s_powerups_box.generic.type     = MTYPE_SPINCONTROL;
+	s_powerups_box.generic.x        = 0;
+	s_powerups_box.generic.y        = y += 10;
+	s_powerups_box.generic.name     = "allow powerups";
 	s_powerups_box.generic.callback = DMFlagCallback;
-	s_powerups_box.itemnames = yes_no_names;
-	s_powerups_box.curvalue = ( dmflags & DF_NO_ITEMS ) == 0;
+	s_powerups_box.itemnames        = yes_no_names;
+	s_powerups_box.curvalue         = ( dmflags & DF_NO_ITEMS ) == 0;
 
-	s_health_box.generic.type = MTYPE_SPINCONTROL;
-	s_health_box.generic.x = 0;
-	s_health_box.generic.y = y += 10;
+	s_health_box.generic.type     = MTYPE_SPINCONTROL;
+	s_health_box.generic.x        = 0;
+	s_health_box.generic.y        = y += 10;
 	s_health_box.generic.callback = DMFlagCallback;
-	s_health_box.generic.name = "allow health";
-	s_health_box.itemnames = yes_no_names;
-	s_health_box.curvalue = ( dmflags & DF_NO_HEALTH ) == 0;
+	s_health_box.generic.name     = "allow health";
+	s_health_box.itemnames        = yes_no_names;
+	s_health_box.curvalue         = ( dmflags & DF_NO_HEALTH ) == 0;
 
-	s_armor_box.generic.type = MTYPE_SPINCONTROL;
-	s_armor_box.generic.x = 0;
-	s_armor_box.generic.y = y += 10;
-	s_armor_box.generic.name = "allow armor";
+	s_armor_box.generic.type     = MTYPE_SPINCONTROL;
+	s_armor_box.generic.x        = 0;
+	s_armor_box.generic.y        = y += 10;
+	s_armor_box.generic.name     = "allow armor";
 	s_armor_box.generic.callback = DMFlagCallback;
-	s_armor_box.itemnames = yes_no_names;
-	s_armor_box.curvalue = ( dmflags & DF_NO_ARMOR ) == 0;
+	s_armor_box.itemnames        = yes_no_names;
+	s_armor_box.curvalue         = ( dmflags & DF_NO_ARMOR ) == 0;
 
-	s_spawn_farthest_box.generic.type = MTYPE_SPINCONTROL;
-	s_spawn_farthest_box.generic.x = 0;
-	s_spawn_farthest_box.generic.y = y += 10;
-	s_spawn_farthest_box.generic.name = "spawn farthest";
+	s_spawn_farthest_box.generic.type     = MTYPE_SPINCONTROL;
+	s_spawn_farthest_box.generic.x        = 0;
+	s_spawn_farthest_box.generic.y        = y += 10;
+	s_spawn_farthest_box.generic.name     = "spawn farthest";
 	s_spawn_farthest_box.generic.callback = DMFlagCallback;
-	s_spawn_farthest_box.itemnames = yes_no_names;
-	s_spawn_farthest_box.curvalue = ( dmflags & DF_SPAWN_FARTHEST ) != 0;
+	s_spawn_farthest_box.itemnames        = yes_no_names;
+	s_spawn_farthest_box.curvalue         = ( dmflags & DF_SPAWN_FARTHEST ) != 0;
 
-	s_samelevel_box.generic.type = MTYPE_SPINCONTROL;
-	s_samelevel_box.generic.x = 0;
-	s_samelevel_box.generic.y = y += 10;
-	s_samelevel_box.generic.name = "same map";
+	s_samelevel_box.generic.type     = MTYPE_SPINCONTROL;
+	s_samelevel_box.generic.x        = 0;
+	s_samelevel_box.generic.y        = y += 10;
+	s_samelevel_box.generic.name     = "same map";
 	s_samelevel_box.generic.callback = DMFlagCallback;
-	s_samelevel_box.itemnames = yes_no_names;
-	s_samelevel_box.curvalue = ( dmflags & DF_SAME_LEVEL ) != 0;
+	s_samelevel_box.itemnames        = yes_no_names;
+	s_samelevel_box.curvalue         = ( dmflags & DF_SAME_LEVEL ) != 0;
 
-	s_force_respawn_box.generic.type = MTYPE_SPINCONTROL;
-	s_force_respawn_box.generic.x = 0;
-	s_force_respawn_box.generic.y = y += 10;
-	s_force_respawn_box.generic.name = "force respawn";
+	s_force_respawn_box.generic.type     = MTYPE_SPINCONTROL;
+	s_force_respawn_box.generic.x        = 0;
+	s_force_respawn_box.generic.y        = y += 10;
+	s_force_respawn_box.generic.name     = "force respawn";
 	s_force_respawn_box.generic.callback = DMFlagCallback;
-	s_force_respawn_box.itemnames = yes_no_names;
-	s_force_respawn_box.curvalue = ( dmflags & DF_FORCE_RESPAWN ) != 0;
+	s_force_respawn_box.itemnames        = yes_no_names;
+	s_force_respawn_box.curvalue         = ( dmflags & DF_FORCE_RESPAWN ) != 0;
 
-	s_teamplay_box.generic.type = MTYPE_SPINCONTROL;
-	s_teamplay_box.generic.x = 0;
-	s_teamplay_box.generic.y = y += 10;
-	s_teamplay_box.generic.name = "teamplay";
+	s_teamplay_box.generic.type     = MTYPE_SPINCONTROL;
+	s_teamplay_box.generic.x        = 0;
+	s_teamplay_box.generic.y        = y += 10;
+	s_teamplay_box.generic.name     = "teamplay";
 	s_teamplay_box.generic.callback = DMFlagCallback;
-	s_teamplay_box.itemnames = teamplay_names;
+	s_teamplay_box.itemnames        = teamplay_names;
 
-	s_allow_exit_box.generic.type = MTYPE_SPINCONTROL;
-	s_allow_exit_box.generic.x = 0;
-	s_allow_exit_box.generic.y = y += 10;
-	s_allow_exit_box.generic.name = "allow exit";
+	s_allow_exit_box.generic.type     = MTYPE_SPINCONTROL;
+	s_allow_exit_box.generic.x        = 0;
+	s_allow_exit_box.generic.y        = y += 10;
+	s_allow_exit_box.generic.name     = "allow exit";
 	s_allow_exit_box.generic.callback = DMFlagCallback;
-	s_allow_exit_box.itemnames = yes_no_names;
-	s_allow_exit_box.curvalue = ( dmflags & DF_ALLOW_EXIT ) != 0;
+	s_allow_exit_box.itemnames        = yes_no_names;
+	s_allow_exit_box.curvalue         = ( dmflags & DF_ALLOW_EXIT ) != 0;
 
-	s_infinite_ammo_box.generic.type = MTYPE_SPINCONTROL;
-	s_infinite_ammo_box.generic.x = 0;
-	s_infinite_ammo_box.generic.y = y += 10;
-	s_infinite_ammo_box.generic.name = "infinite ammo";
+	s_infinite_ammo_box.generic.type     = MTYPE_SPINCONTROL;
+	s_infinite_ammo_box.generic.x        = 0;
+	s_infinite_ammo_box.generic.y        = y += 10;
+	s_infinite_ammo_box.generic.name     = "infinite ammo";
 	s_infinite_ammo_box.generic.callback = DMFlagCallback;
-	s_infinite_ammo_box.itemnames = yes_no_names;
-	s_infinite_ammo_box.curvalue = ( dmflags & DF_INFINITE_AMMO ) != 0;
+	s_infinite_ammo_box.itemnames        = yes_no_names;
+	s_infinite_ammo_box.curvalue         = ( dmflags & DF_INFINITE_AMMO ) != 0;
 
-	s_fixed_fov_box.generic.type = MTYPE_SPINCONTROL;
-	s_fixed_fov_box.generic.x = 0;
-	s_fixed_fov_box.generic.y = y += 10;
-	s_fixed_fov_box.generic.name = "fixed FOV";
+	s_fixed_fov_box.generic.type     = MTYPE_SPINCONTROL;
+	s_fixed_fov_box.generic.x        = 0;
+	s_fixed_fov_box.generic.y        = y += 10;
+	s_fixed_fov_box.generic.name     = "fixed FOV";
 	s_fixed_fov_box.generic.callback = DMFlagCallback;
-	s_fixed_fov_box.itemnames = yes_no_names;
-	s_fixed_fov_box.curvalue = ( dmflags & DF_FIXED_FOV ) != 0;
+	s_fixed_fov_box.itemnames        = yes_no_names;
+	s_fixed_fov_box.curvalue         = ( dmflags & DF_FIXED_FOV ) != 0;
 
-	s_quad_drop_box.generic.type = MTYPE_SPINCONTROL;
-	s_quad_drop_box.generic.x = 0;
-	s_quad_drop_box.generic.y = y += 10;
-	s_quad_drop_box.generic.name = "quad drop";
+	s_quad_drop_box.generic.type     = MTYPE_SPINCONTROL;
+	s_quad_drop_box.generic.x        = 0;
+	s_quad_drop_box.generic.y        = y += 10;
+	s_quad_drop_box.generic.name     = "quad drop";
 	s_quad_drop_box.generic.callback = DMFlagCallback;
-	s_quad_drop_box.itemnames = yes_no_names;
-	s_quad_drop_box.curvalue = ( dmflags & DF_QUAD_DROP ) != 0;
+	s_quad_drop_box.itemnames        = yes_no_names;
+	s_quad_drop_box.curvalue         = ( dmflags & DF_QUAD_DROP ) != 0;
 
-	s_friendlyfire_box.generic.type = MTYPE_SPINCONTROL;
-	s_friendlyfire_box.generic.x = 0;
-	s_friendlyfire_box.generic.y = y += 10;
-	s_friendlyfire_box.generic.name = "friendly fire";
+	s_friendlyfire_box.generic.type     = MTYPE_SPINCONTROL;
+	s_friendlyfire_box.generic.x        = 0;
+	s_friendlyfire_box.generic.y        = y += 10;
+	s_friendlyfire_box.generic.name     = "friendly fire";
 	s_friendlyfire_box.generic.callback = DMFlagCallback;
-	s_friendlyfire_box.itemnames = yes_no_names;
-	s_friendlyfire_box.curvalue = ( dmflags & DF_NO_FRIENDLY_FIRE ) == 0;
+	s_friendlyfire_box.itemnames        = yes_no_names;
+	s_friendlyfire_box.curvalue         = ( dmflags & DF_NO_FRIENDLY_FIRE ) == 0;
 
 	Menu_AddItem( &s_dmoptions_menu, &s_falls_box );
 	Menu_AddItem( &s_dmoptions_menu, &s_weapons_stay_box );
@@ -2723,57 +2723,57 @@ static void DownloadCallback( void *self )
 void DownloadOptions_MenuInit( void )
 {
 	static const char *yes_no_names[] =
-			{
-					"no", "yes", 0 };
+	        {
+	                "no", "yes", 0 };
 	int y = 0;
 
-	s_downloadoptions_menu.x = viddef.width * 0.50;
+	s_downloadoptions_menu.x      = viddef.width * 0.50;
 	s_downloadoptions_menu.nitems = 0;
 
 	s_download_title.generic.type = MTYPE_SEPARATOR;
 	s_download_title.generic.name = "Download Options";
-	s_download_title.generic.x = 48;
-	s_download_title.generic.y = y;
+	s_download_title.generic.x    = 48;
+	s_download_title.generic.y    = y;
 
-	s_allow_download_box.generic.type = MTYPE_SPINCONTROL;
-	s_allow_download_box.generic.x = 0;
-	s_allow_download_box.generic.y = y += 20;
-	s_allow_download_box.generic.name = "allow downloading";
+	s_allow_download_box.generic.type     = MTYPE_SPINCONTROL;
+	s_allow_download_box.generic.x        = 0;
+	s_allow_download_box.generic.y        = y += 20;
+	s_allow_download_box.generic.name     = "allow downloading";
 	s_allow_download_box.generic.callback = DownloadCallback;
-	s_allow_download_box.itemnames = yes_no_names;
-	s_allow_download_box.curvalue = ( Cvar_VariableValue( "allow_download" ) != 0 );
+	s_allow_download_box.itemnames        = yes_no_names;
+	s_allow_download_box.curvalue         = ( Cvar_VariableValue( "allow_download" ) != 0 );
 
-	s_allow_download_maps_box.generic.type = MTYPE_SPINCONTROL;
-	s_allow_download_maps_box.generic.x = 0;
-	s_allow_download_maps_box.generic.y = y += 20;
-	s_allow_download_maps_box.generic.name = "maps";
+	s_allow_download_maps_box.generic.type     = MTYPE_SPINCONTROL;
+	s_allow_download_maps_box.generic.x        = 0;
+	s_allow_download_maps_box.generic.y        = y += 20;
+	s_allow_download_maps_box.generic.name     = "maps";
 	s_allow_download_maps_box.generic.callback = DownloadCallback;
-	s_allow_download_maps_box.itemnames = yes_no_names;
-	s_allow_download_maps_box.curvalue = ( Cvar_VariableValue( "allow_download_maps" ) != 0 );
+	s_allow_download_maps_box.itemnames        = yes_no_names;
+	s_allow_download_maps_box.curvalue         = ( Cvar_VariableValue( "allow_download_maps" ) != 0 );
 
-	s_allow_download_players_box.generic.type = MTYPE_SPINCONTROL;
-	s_allow_download_players_box.generic.x = 0;
-	s_allow_download_players_box.generic.y = y += 10;
-	s_allow_download_players_box.generic.name = "player models/skins";
+	s_allow_download_players_box.generic.type     = MTYPE_SPINCONTROL;
+	s_allow_download_players_box.generic.x        = 0;
+	s_allow_download_players_box.generic.y        = y += 10;
+	s_allow_download_players_box.generic.name     = "player models/skins";
 	s_allow_download_players_box.generic.callback = DownloadCallback;
-	s_allow_download_players_box.itemnames = yes_no_names;
-	s_allow_download_players_box.curvalue = ( Cvar_VariableValue( "allow_download_players" ) != 0 );
+	s_allow_download_players_box.itemnames        = yes_no_names;
+	s_allow_download_players_box.curvalue         = ( Cvar_VariableValue( "allow_download_players" ) != 0 );
 
-	s_allow_download_models_box.generic.type = MTYPE_SPINCONTROL;
-	s_allow_download_models_box.generic.x = 0;
-	s_allow_download_models_box.generic.y = y += 10;
-	s_allow_download_models_box.generic.name = "models";
+	s_allow_download_models_box.generic.type     = MTYPE_SPINCONTROL;
+	s_allow_download_models_box.generic.x        = 0;
+	s_allow_download_models_box.generic.y        = y += 10;
+	s_allow_download_models_box.generic.name     = "models";
 	s_allow_download_models_box.generic.callback = DownloadCallback;
-	s_allow_download_models_box.itemnames = yes_no_names;
-	s_allow_download_models_box.curvalue = ( Cvar_VariableValue( "allow_download_models" ) != 0 );
+	s_allow_download_models_box.itemnames        = yes_no_names;
+	s_allow_download_models_box.curvalue         = ( Cvar_VariableValue( "allow_download_models" ) != 0 );
 
-	s_allow_download_sounds_box.generic.type = MTYPE_SPINCONTROL;
-	s_allow_download_sounds_box.generic.x = 0;
-	s_allow_download_sounds_box.generic.y = y += 10;
-	s_allow_download_sounds_box.generic.name = "sounds";
+	s_allow_download_sounds_box.generic.type     = MTYPE_SPINCONTROL;
+	s_allow_download_sounds_box.generic.x        = 0;
+	s_allow_download_sounds_box.generic.y        = y += 10;
+	s_allow_download_sounds_box.generic.name     = "sounds";
 	s_allow_download_sounds_box.generic.callback = DownloadCallback;
-	s_allow_download_sounds_box.itemnames = yes_no_names;
-	s_allow_download_sounds_box.curvalue = ( Cvar_VariableValue( "allow_download_sounds" ) != 0 );
+	s_allow_download_sounds_box.itemnames        = yes_no_names;
+	s_allow_download_sounds_box.curvalue         = ( Cvar_VariableValue( "allow_download_sounds" ) != 0 );
 
 	Menu_AddItem( &s_downloadoptions_menu, &s_download_title );
 	Menu_AddItem( &s_downloadoptions_menu, &s_allow_download_box );
@@ -2820,8 +2820,8 @@ void AddressBook_MenuInit( void )
 {
 	int i;
 
-	s_addressbook_menu.x = viddef.width / 2 - 142;
-	s_addressbook_menu.y = viddef.height / 2 - 58;
+	s_addressbook_menu.x      = viddef.width / 2 - 142;
+	s_addressbook_menu.y      = viddef.height / 2 - 58;
 	s_addressbook_menu.nitems = 0;
 
 	for ( i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++ )
@@ -2833,15 +2833,15 @@ void AddressBook_MenuInit( void )
 
 		adr = Cvar_Get( buffer, "", CVAR_ARCHIVE );
 
-		s_addressbook_fields[ i ].generic.type = MTYPE_FIELD;
-		s_addressbook_fields[ i ].generic.name = 0;
-		s_addressbook_fields[ i ].generic.callback = 0;
-		s_addressbook_fields[ i ].generic.x = 0;
-		s_addressbook_fields[ i ].generic.y = i * 18 + 0;
+		s_addressbook_fields[ i ].generic.type           = MTYPE_FIELD;
+		s_addressbook_fields[ i ].generic.name           = 0;
+		s_addressbook_fields[ i ].generic.callback       = 0;
+		s_addressbook_fields[ i ].generic.x              = 0;
+		s_addressbook_fields[ i ].generic.y              = i * 18 + 0;
 		s_addressbook_fields[ i ].generic.localdata[ 0 ] = i;
-		s_addressbook_fields[ i ].cursor = 0;
-		s_addressbook_fields[ i ].length = 60;
-		s_addressbook_fields[ i ].visible_length = 30;
+		s_addressbook_fields[ i ].cursor                 = 0;
+		s_addressbook_fields[ i ].length                 = 60;
+		s_addressbook_fields[ i ].visible_length         = 30;
 
 		strcpy( s_addressbook_fields[ i ].buffer, adr->string );
 
@@ -2911,7 +2911,7 @@ static playermodelinfo_s s_pmi[ MAX_PLAYERMODELS ];
 static char             *s_pmnames[ MAX_PLAYERMODELS ];
 static int               s_numplayermodels;
 
-static int         rate_tbl[] = { 2500, 3200, 5000, 10000, 25000, 0 };
+static int         rate_tbl[]   = { 2500, 3200, 5000, 10000, 25000, 0 };
 static const char *rate_names[] = { "28.8 Modem", "33.6 Modem", "Single ISDN",
                                     "Dual ISDN/Cable", "T1/LAN", "User defined", 0 };
 
@@ -2942,7 +2942,7 @@ static void ModelCallback( void *unused )
 	Q_UNUSED( unused );
 
 	s_player_skin_box.itemnames = ( const char ** ) s_pmi[ s_player_model_box.curvalue ].skindisplaynames;
-	s_player_skin_box.curvalue = 0;
+	s_player_skin_box.curvalue  = 0;
 }
 
 static void FreeFileList( char **list, int n )
@@ -3093,7 +3093,7 @@ static bool PlayerConfig_ScanDirectories( void )
 		}
 
 		// at this point we have a valid player model
-		s_pmi[ s_numplayermodels ].nskins = nskins;
+		s_pmi[ s_numplayermodels ].nskins           = nskins;
 		s_pmi[ s_numplayermodels ].skindisplaynames = skinnames;
 
 		// make short name for the model
@@ -3149,7 +3149,7 @@ bool PlayerConfig_MenuInit( void )
 	int            i = 0;
 
 	int currentdirectoryindex = 0;
-	int currentskinindex = 0;
+	int currentskinindex      = 0;
 
 	cvar_t *hand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 
@@ -3204,60 +3204,60 @@ bool PlayerConfig_MenuInit( void )
 		}
 	}
 
-	s_player_config_menu.x = viddef.width / 2 - 95;
-	s_player_config_menu.y = viddef.height / 2 - 97;
+	s_player_config_menu.x      = viddef.width / 2 - 95;
+	s_player_config_menu.y      = viddef.height / 2 - 97;
 	s_player_config_menu.nitems = 0;
 
-	s_player_name_field.generic.type = MTYPE_FIELD;
-	s_player_name_field.generic.name = "name";
+	s_player_name_field.generic.type     = MTYPE_FIELD;
+	s_player_name_field.generic.name     = "name";
 	s_player_name_field.generic.callback = 0;
-	s_player_name_field.generic.x = 0;
-	s_player_name_field.generic.y = 0;
-	s_player_name_field.length = 20;
-	s_player_name_field.visible_length = 20;
+	s_player_name_field.generic.x        = 0;
+	s_player_name_field.generic.y        = 0;
+	s_player_name_field.length           = 20;
+	s_player_name_field.visible_length   = 20;
 	strcpy( s_player_name_field.buffer, name->string );
 	s_player_name_field.cursor = strlen( name->string );
 
 	s_player_model_title.generic.type = MTYPE_SEPARATOR;
 	s_player_model_title.generic.name = "model";
-	s_player_model_title.generic.x = -8;
-	s_player_model_title.generic.y = 60;
+	s_player_model_title.generic.x    = -8;
+	s_player_model_title.generic.y    = 60;
 
-	s_player_model_box.generic.type = MTYPE_SPINCONTROL;
-	s_player_model_box.generic.x = -56;
-	s_player_model_box.generic.y = 70;
-	s_player_model_box.generic.callback = ModelCallback;
+	s_player_model_box.generic.type          = MTYPE_SPINCONTROL;
+	s_player_model_box.generic.x             = -56;
+	s_player_model_box.generic.y             = 70;
+	s_player_model_box.generic.callback      = ModelCallback;
 	s_player_model_box.generic.cursor_offset = -48;
-	s_player_model_box.curvalue = currentdirectoryindex;
-	s_player_model_box.itemnames = ( const char ** ) s_pmnames;
+	s_player_model_box.curvalue              = currentdirectoryindex;
+	s_player_model_box.itemnames             = ( const char             **) s_pmnames;
 
 	s_player_skin_title.generic.type = MTYPE_SEPARATOR;
 	s_player_skin_title.generic.name = "skin";
-	s_player_skin_title.generic.x = -16;
-	s_player_skin_title.generic.y = 84;
+	s_player_skin_title.generic.x    = -16;
+	s_player_skin_title.generic.y    = 84;
 
-	s_player_skin_box.generic.type = MTYPE_SPINCONTROL;
-	s_player_skin_box.generic.x = -56;
-	s_player_skin_box.generic.y = 94;
-	s_player_skin_box.generic.name = 0;
-	s_player_skin_box.generic.callback = 0;
+	s_player_skin_box.generic.type          = MTYPE_SPINCONTROL;
+	s_player_skin_box.generic.x             = -56;
+	s_player_skin_box.generic.y             = 94;
+	s_player_skin_box.generic.name          = 0;
+	s_player_skin_box.generic.callback      = 0;
 	s_player_skin_box.generic.cursor_offset = -48;
-	s_player_skin_box.curvalue = currentskinindex;
-	s_player_skin_box.itemnames = ( const char ** ) s_pmi[ currentdirectoryindex ].skindisplaynames;
+	s_player_skin_box.curvalue              = currentskinindex;
+	s_player_skin_box.itemnames             = ( const char             **) s_pmi[ currentdirectoryindex ].skindisplaynames;
 
 	s_player_hand_title.generic.type = MTYPE_SEPARATOR;
 	s_player_hand_title.generic.name = "handedness";
-	s_player_hand_title.generic.x = 32;
-	s_player_hand_title.generic.y = 108;
+	s_player_hand_title.generic.x    = 32;
+	s_player_hand_title.generic.y    = 108;
 
-	s_player_handedness_box.generic.type = MTYPE_SPINCONTROL;
-	s_player_handedness_box.generic.x = -56;
-	s_player_handedness_box.generic.y = 118;
-	s_player_handedness_box.generic.name = 0;
+	s_player_handedness_box.generic.type          = MTYPE_SPINCONTROL;
+	s_player_handedness_box.generic.x             = -56;
+	s_player_handedness_box.generic.y             = 118;
+	s_player_handedness_box.generic.name          = 0;
 	s_player_handedness_box.generic.cursor_offset = -48;
-	s_player_handedness_box.generic.callback = HandednessCallback;
-	s_player_handedness_box.curvalue = Cvar_VariableValue( "hand" );
-	s_player_handedness_box.itemnames = handedness;
+	s_player_handedness_box.generic.callback      = HandednessCallback;
+	s_player_handedness_box.curvalue              = Cvar_VariableValue( "hand" );
+	s_player_handedness_box.itemnames             = handedness;
 
 	for ( i = 0; i < sizeof( rate_tbl ) / sizeof( *rate_tbl ) - 1; i++ )
 		if ( Cvar_VariableValue( "rate" ) == rate_tbl[ i ] )
@@ -3265,25 +3265,25 @@ bool PlayerConfig_MenuInit( void )
 
 	s_player_rate_title.generic.type = MTYPE_SEPARATOR;
 	s_player_rate_title.generic.name = "connect speed";
-	s_player_rate_title.generic.x = 56;
-	s_player_rate_title.generic.y = 156;
+	s_player_rate_title.generic.x    = 56;
+	s_player_rate_title.generic.y    = 156;
 
-	s_player_rate_box.generic.type = MTYPE_SPINCONTROL;
-	s_player_rate_box.generic.x = -56;
-	s_player_rate_box.generic.y = 166;
-	s_player_rate_box.generic.name = 0;
+	s_player_rate_box.generic.type          = MTYPE_SPINCONTROL;
+	s_player_rate_box.generic.x             = -56;
+	s_player_rate_box.generic.y             = 166;
+	s_player_rate_box.generic.name          = 0;
 	s_player_rate_box.generic.cursor_offset = -48;
-	s_player_rate_box.generic.callback = RateCallback;
-	s_player_rate_box.curvalue = i;
-	s_player_rate_box.itemnames = rate_names;
+	s_player_rate_box.generic.callback      = RateCallback;
+	s_player_rate_box.curvalue              = i;
+	s_player_rate_box.itemnames             = rate_names;
 
-	s_player_download_action.generic.type = MTYPE_ACTION;
-	s_player_download_action.generic.name = "download options";
-	s_player_download_action.generic.flags = QMF_LEFT_JUSTIFY;
-	s_player_download_action.generic.x = -24;
-	s_player_download_action.generic.y = 186;
+	s_player_download_action.generic.type      = MTYPE_ACTION;
+	s_player_download_action.generic.name      = "download options";
+	s_player_download_action.generic.flags     = QMF_LEFT_JUSTIFY;
+	s_player_download_action.generic.x         = -24;
+	s_player_download_action.generic.y         = 186;
 	s_player_download_action.generic.statusbar = NULL;
-	s_player_download_action.generic.callback = DownloadOptionsFunc;
+	s_player_download_action.generic.callback  = DownloadOptionsFunc;
 
 	Menu_AddItem( &s_player_config_menu, &s_player_name_field );
 	Menu_AddItem( &s_player_config_menu, &s_player_model_title );
@@ -3311,13 +3311,13 @@ void PlayerConfig_MenuDraw( void )
 
 	memset( &refdef, 0, sizeof( refdef ) );
 
-	refdef.x = viddef.width / 2;
-	refdef.y = viddef.height / 2 - 72;
-	refdef.width = 144;
+	refdef.x      = viddef.width / 2;
+	refdef.y      = viddef.height / 2 - 72;
+	refdef.width  = 144;
 	refdef.height = 168;
-	refdef.fov_x = 40;
-	refdef.fov_y = CalcFov( refdef.fov_x, refdef.width, refdef.height );
-	refdef.time = cls.realtime * 0.001;
+	refdef.fov_x  = 40;
+	refdef.fov_y  = CalcFov( refdef.fov_x, refdef.width, refdef.height );
+	refdef.time   = cls.realtime * 0.001;
 
 	if ( s_pmi[ s_player_model_box.curvalue ].skindisplaynames )
 	{
@@ -3329,24 +3329,24 @@ void PlayerConfig_MenuDraw( void )
 		Com_sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[ s_player_model_box.curvalue ].directory );
 		entity.model = Mod_RegisterModel( scratch );
 		Com_sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[ s_player_model_box.curvalue ].directory, s_pmi[ s_player_model_box.curvalue ].skindisplaynames[ s_player_skin_box.curvalue ] );
-		entity.skin = R_RegisterSkin( scratch );
-		entity.flags = RF_FULLBRIGHT;
+		entity.skin        = R_RegisterSkin( scratch );
+		entity.flags       = RF_FULLBRIGHT;
 		entity.origin[ 0 ] = 80;
 		entity.origin[ 1 ] = 0;
 		entity.origin[ 2 ] = 0;
 		VectorCopy( entity.origin, entity.oldorigin );
-		entity.frame = 0;
-		entity.oldframe = 0;
-		entity.backlerp = 0.0;
+		entity.frame       = 0;
+		entity.oldframe    = 0;
+		entity.backlerp    = 0.0;
 		entity.angles[ 1 ] = yaw++;
 		if ( ++yaw > 360 )
 			yaw -= 360;
 
-		refdef.areabits = 0;
+		refdef.areabits     = 0;
 		refdef.num_entities = 1;
-		refdef.entities = &entity;
-		refdef.lightstyles = 0;
-		refdef.rdflags = RDF_NOWORLDMODEL;
+		refdef.entities     = &entity;
+		refdef.lightstyles  = 0;
+		refdef.rdflags      = RDF_NOWORLDMODEL;
 
 		Menu_Draw( &s_player_config_menu );
 
@@ -3390,7 +3390,7 @@ const char *PlayerConfig_MenuKey( int key )
 			}
 			free( s_pmi[ i ].skindisplaynames );
 			s_pmi[ i ].skindisplaynames = 0;
-			s_pmi[ i ].nskins = 0;
+			s_pmi[ i ].nskins           = 0;
 		}
 	}
 	return Default_MenuKey( &s_player_config_menu, key );

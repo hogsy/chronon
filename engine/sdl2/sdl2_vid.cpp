@@ -94,7 +94,7 @@ bool VID_GetModeInfo( int *width, int *height, int mode )
 		return false;
 	}
 
-	*width = videoModes[ mode ].width;
+	*width  = videoModes[ mode ].width;
 	*height = videoModes[ mode ].height;
 
 	return true;
@@ -102,7 +102,7 @@ bool VID_GetModeInfo( int *width, int *height, int mode )
 
 void VID_NewWindow( int width, int height )
 {
-	viddef.width = width;
+	viddef.width  = width;
 	viddef.height = height;
 }
 
@@ -118,8 +118,8 @@ void VID_CheckChanges()
 
 void VID_Init()
 {
-	vid_xpos = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
-	vid_ypos = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
+	vid_xpos     = Cvar_Get( "vid_xpos", "3", CVAR_ARCHIVE );
+	vid_ypos     = Cvar_Get( "vid_ypos", "22", CVAR_ARCHIVE );
 	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
 
 	if ( R_Init() != rserr_ok )
@@ -157,7 +157,7 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 	static const char *win_fs[] = { "W", "FS" };
 	Com_Printf( " %d %d %s\n", width, height, win_fs[ fullscreen ] );
 
-	*pwidth = width;
+	*pwidth  = width;
 	*pheight = height;
 
 	if ( sdlWindow == nullptr )
@@ -172,7 +172,7 @@ rserr_t GLimp_SetMode( unsigned int *pwidth, unsigned int *pheight, int mode, bo
 
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
-#if defined( __APPLE__ ) // Eventually, this should be core everywhere...
+#if defined( __APPLE__ )// Eventually, this should be core everywhere...
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 #else
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY /*SDL_GL_CONTEXT_PROFILE_CORE*/ );

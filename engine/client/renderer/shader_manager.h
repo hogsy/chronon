@@ -17,7 +17,7 @@ namespace chr::renderer
 		};
 		virtual bool LoadShaderStage( const std::string &path, Stage stage ) = 0;
 
-		virtual void Enable() = 0;
+		virtual void Enable()  = 0;
 		virtual void Disable() = 0;
 
 		virtual void Reload() = 0;
@@ -36,4 +36,4 @@ namespace chr::renderer
 	};
 
 	chr::renderer::IShaderProgram *InitializeShaderManager();
-}// namespace nox::renderer
+}// namespace chr::renderer

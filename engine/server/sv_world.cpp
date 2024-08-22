@@ -33,7 +33,7 @@ FIXME: this use of "area" is different from the bsp file use
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
 // FIXME: remove this mess!
-#define STRUCT_FROM_LINK( l, t, m ) ( ( t * ) ( ( byte * ) l - ( intptr_t ) & ( ( ( t * ) 0 )->m ) ) )
+#define STRUCT_FROM_LINK( l, t, m ) ( ( t * ) ( ( byte * ) l - ( intptr_t ) &( ( ( t * ) 0 )->m ) ) )
 
 #define EDICT_FROM_AREA( l ) STRUCT_FROM_LINK( l, edict_t, area )
 
@@ -74,8 +74,8 @@ void RemoveLink( link_t *l )
 
 void InsertLinkBefore( link_t *l, link_t *before )
 {
-	l->next = before;
-	l->prev = before->prev;
+	l->next       = before;
+	l->prev       = before->prev;
 	l->prev->next = l;
 	l->next->prev = l;
 }
@@ -101,7 +101,7 @@ areanode_t *SV_CreateAreaNode( int depth, vec3_t mins, vec3_t maxs )
 
 	if ( depth == AREA_DEPTH )
 	{
-		anode->axis = -1;
+		anode->axis          = -1;
 		anode->children[ 0 ] = anode->children[ 1 ] = NULL;
 		return anode;
 	}
@@ -254,8 +254,8 @@ void SV_LinkEdict( edict_t *ent )
 
 	// link to PVS leafs
 	ent->num_clusters = 0;
-	ent->areanum = 0;
-	ent->areanum2 = 0;
+	ent->areanum      = 0;
+	ent->areanum2     = 0;
 
 	//get all leafs, including solids
 	num_leafs = CM_BoxLeafnums( ent->absmin, ent->absmax,
@@ -265,7 +265,7 @@ void SV_LinkEdict( edict_t *ent )
 	for ( i = 0; i < num_leafs; i++ )
 	{
 		clusters[ i ] = CM_LeafCluster( leafs[ i ] );
-		area = CM_LeafArea( leafs[ i ] );
+		area          = CM_LeafArea( leafs[ i ] );
 		if ( area )
 		{// doors may legally straggle two areas,
 			// but nothing should evern need more than that
@@ -284,7 +284,7 @@ void SV_LinkEdict( edict_t *ent )
 	if ( num_leafs >= MAX_TOTAL_ENT_LEAFS )
 	{// assume we missed some leafs, and mark by headnode
 		ent->num_clusters = -1;
-		ent->headnode = topnode;
+		ent->headnode     = topnode;
 	}
 	else
 	{
@@ -301,7 +301,7 @@ void SV_LinkEdict( edict_t *ent )
 				if ( ent->num_clusters == MAX_ENT_CLUSTERS )
 				{// assume we missed some leafs, and mark by headnode
 					ent->num_clusters = -1;
-					ent->headnode = topnode;
+					ent->headnode     = topnode;
 					break;
 				}
 
@@ -361,7 +361,7 @@ void SV_AreaEdicts_r( areanode_t *node )
 
 	for ( l = start->next; l != start; l = next )
 	{
-		next = l->next;
+		next  = l->next;
 		check = EDICT_FROM_AREA( l );
 
 		if ( check->solid == SOLID_NOT )
@@ -397,12 +397,12 @@ SV_AreaEdicts
 int SV_AreaEdicts( vec3_t mins, vec3_t maxs, edict_t **list,
                    int maxcount, int areatype )
 {
-	area_mins = mins;
-	area_maxs = maxs;
-	area_list = list;
-	area_count = 0;
+	area_mins     = mins;
+	area_maxs     = maxs;
+	area_list     = list;
+	area_count    = 0;
 	area_maxcount = maxcount;
-	area_type = areatype;
+	area_type     = areatype;
 
 	SV_AreaEdicts_r( sv_areanodes );
 
@@ -531,7 +531,7 @@ void SV_ClipMoveToEntities( moveclip_t *clip )
 
 		// might intersect, so do an exact clip
 		headnode = SV_HullForEntity( touch );
-		angles = touch->s.angles;
+		angles   = touch->s.angles;
 		if ( touch->solid != SOLID_BSP )
 			angles = vec3_origin;// boxes don't rotate
 
@@ -550,7 +550,7 @@ void SV_ClipMoveToEntities( moveclip_t *clip )
 			trace.ent = touch;
 			if ( clip->trace.startsolid )
 			{
-				clip->trace = trace;
+				clip->trace            = trace;
 				clip->trace.startsolid = true;
 			}
 			else
@@ -614,17 +614,17 @@ trace_t SV_Trace( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *p
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
 	// clip to world
-	clip.trace = CM_BoxTrace( start, end, mins, maxs, 0, contentmask );
+	clip.trace     = CM_BoxTrace( start, end, mins, maxs, 0, contentmask );
 	clip.trace.ent = ge->edicts;
 	if ( clip.trace.fraction == 0 )
 		return clip.trace;// blocked by the world
 
 	clip.contentmask = contentmask;
-	clip.start = start;
-	clip.end = end;
-	clip.mins = mins;
-	clip.maxs = maxs;
-	clip.passedict = passedict;
+	clip.start       = start;
+	clip.end         = end;
+	clip.mins        = mins;
+	clip.maxs        = maxs;
+	clip.passedict   = passedict;
 
 	VectorCopy( mins, clip.mins2 );
 	VectorCopy( maxs, clip.maxs2 );

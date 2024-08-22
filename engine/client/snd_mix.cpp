@@ -110,7 +110,7 @@ void S_TransferStereo16( unsigned long *pbuf, int endtime )
 	int lpos;
 	int lpaintedtime;
 
-	snd_p = ( int * ) paintbuffer;
+	snd_p        = ( int        *) paintbuffer;
 	lpaintedtime = paintedtime;
 
 	while ( lpaintedtime < endtime )
@@ -170,11 +170,11 @@ void S_TransferPaintBuffer( int endtime )
 	}
 	else
 	{// general case
-		p = ( int * ) paintbuffer;
-		count = ( endtime - paintedtime ) * dma.channels;
+		p        = ( int        *) paintbuffer;
+		count    = ( endtime - paintedtime ) * dma.channels;
 		out_mask = dma.samples - 1;
-		out_idx = paintedtime * dma.channels & out_mask;
-		step = 3 - dma.channels;
+		out_idx  = paintedtime * dma.channels & out_mask;
+		step     = 3 - dma.channels;
 
 		if ( dma.samplebits == 16 )
 		{
@@ -188,7 +188,7 @@ void S_TransferPaintBuffer( int endtime )
 				else if ( val < ( short ) 0x8000 )
 					val = ( short ) 0x8000;
 				out[ out_idx ] = val;
-				out_idx = ( out_idx + 1 ) & out_mask;
+				out_idx        = ( out_idx + 1 ) & out_mask;
 			}
 		}
 		else if ( dma.samplebits == 8 )
@@ -203,7 +203,7 @@ void S_TransferPaintBuffer( int endtime )
 				else if ( val < ( short ) 0x8000 )
 					val = ( short ) 0x8000;
 				out[ out_idx ] = ( val >> 8 ) + 128;
-				out_idx = ( out_idx + 1 ) & out_mask;
+				out_idx        = ( out_idx + 1 ) & out_mask;
 			}
 		}
 	}
@@ -272,7 +272,7 @@ void S_PaintChannels( int endtime )
 
 			for ( i = paintedtime; i < stop; i++ )
 			{
-				s = i & ( MAX_RAW_SAMPLES - 1 );
+				s                              = i & ( MAX_RAW_SAMPLES - 1 );
 				paintbuffer[ i - paintedtime ] = s_rawsamples[ s ];
 			}
 			//		if (i != end)
@@ -282,7 +282,7 @@ void S_PaintChannels( int endtime )
 			for ( ; i < end; i++ )
 			{
 				paintbuffer[ i - paintedtime ].left =
-						paintbuffer[ i - paintedtime ].right = 0;
+				        paintbuffer[ i - paintedtime ].right = 0;
 			}
 		}
 
@@ -381,7 +381,7 @@ void S_PaintChannelFrom8( channel_t *ch, sfxcache_t *sc, int count, int offset )
 	//as it would always be zero.
 	lscale = snd_scaletable[ ch->leftvol >> 3 ];
 	rscale = snd_scaletable[ ch->rightvol >> 3 ];
-	sfx = ( unsigned char * ) sc->data + ch->pos;
+	sfx    = ( unsigned char    *) sc->data + ch->pos;
 
 	samp = &paintbuffer[ offset ];
 
@@ -479,15 +479,15 @@ void S_PaintChannelFrom16( channel_t *ch, sfxcache_t *sc, int count, int offset 
 	int                    i;
 	portable_samplepair_t *samp;
 
-	leftvol = ch->leftvol * snd_vol;
+	leftvol  = ch->leftvol * snd_vol;
 	rightvol = ch->rightvol * snd_vol;
-	sfx = ( signed short * ) sc->data + ch->pos;
+	sfx      = ( signed short      *) sc->data + ch->pos;
 
 	samp = &paintbuffer[ offset ];
 	for ( i = 0; i < count; i++, samp++ )
 	{
-		data = sfx[ i ];
-		left = ( data * leftvol ) >> 8;
+		data  = sfx[ i ];
+		left  = ( data * leftvol ) >> 8;
 		right = ( data * rightvol ) >> 8;
 		samp->left += left;
 		samp->right += right;

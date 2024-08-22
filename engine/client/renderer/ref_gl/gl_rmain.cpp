@@ -205,7 +205,7 @@ void R_DrawSpriteModel( entity_t *e )
 	} else
 #endif
 	{// normal sprite
-		up = vup;
+		up    = vup;
 		right = vright;
 	}
 
@@ -424,7 +424,7 @@ void GL_DrawParticles( int num_particles, const particle_t particles[],
 			scale = 1 + scale * 0.004;
 
 		*( int * ) color = colortable[ p->color ];
-		color[ 3 ] = p->alpha * 255;
+		color[ 3 ]       = p->alpha * 255;
 
 		glColor4ubv( color );
 
@@ -472,7 +472,7 @@ void R_DrawParticles( void )
 		      i++, p++ )
 		{
 			*( int * ) color = d_8to24table[ p->color ];
-			color[ 3 ] = p->alpha * 255;
+			color[ 3 ]       = p->alpha * 255;
 
 			glColor4ubv( color );
 
@@ -584,8 +584,8 @@ void R_SetFrustum( void )
 
 	for ( i = 0; i < 4; i++ )
 	{
-		frustum[ i ].type = PLANE_ANYZ;
-		frustum[ i ].dist = DotProduct( r_origin, frustum[ i ].normal );
+		frustum[ i ].type     = PLANE_ANYZ;
+		frustum[ i ].dist     = DotProduct( r_origin, frustum[ i ].normal );
 		frustum[ i ].signbits = SignbitsForPlane( &frustum[ i ] );
 	}
 }
@@ -612,9 +612,9 @@ void R_SetupFrame( void )
 	// current viewcluster
 	if ( !( r_newrefdef.rdflags & RDF_NOWORLDMODEL ) )
 	{
-		r_oldviewcluster = r_viewcluster;
+		r_oldviewcluster  = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
-		leaf = Mod_PointInLeaf( r_origin, r_worldmodel );
+		leaf              = Mod_PointInLeaf( r_origin, r_worldmodel );
 		r_viewcluster = r_viewcluster2 = leaf->cluster;
 
 		// check above and below so crossing solid water doesn't draw wrong
@@ -688,9 +688,9 @@ void R_SetupGL()
 	//
 	// set up viewport
 	//
-	x = std::floor( r_newrefdef.x * vid.width / vid.width );
+	x  = std::floor( r_newrefdef.x * vid.width / vid.width );
 	x2 = std::ceil( ( r_newrefdef.x + r_newrefdef.width ) * vid.width / vid.width );
-	y = std::floor( vid.height - r_newrefdef.y * vid.height / vid.height );
+	y  = std::floor( vid.height - r_newrefdef.y * vid.height / vid.height );
 	y2 = std::ceil( vid.height -
 	                ( r_newrefdef.y + r_newrefdef.height ) * vid.height / vid.height );
 
@@ -870,68 +870,68 @@ void R_RenderFrame( refdef_t *fd )
 
 void R_Register( void )
 {
-	r_lefthand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
-	r_norefresh = Cvar_Get( "r_norefresh", "0", 0 );
-	r_fullbright = Cvar_Get( "r_fullbright", "0", 0 );
+	r_lefthand     = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
+	r_norefresh    = Cvar_Get( "r_norefresh", "0", 0 );
+	r_fullbright   = Cvar_Get( "r_fullbright", "0", 0 );
 	r_drawentities = Cvar_Get( "r_drawentities", "1", 0 );
-	r_drawworld = Cvar_Get( "r_drawworld", "1", 0 );
-	r_novis = Cvar_Get( "r_novis", "0", 0 );
-	r_nocull = Cvar_Get( "r_nocull", "0", 0 );
-	r_lerpmodels = Cvar_Get( "r_lerpmodels", "1", 0 );
-	r_speeds = Cvar_Get( "r_speeds", "0", 0 );
+	r_drawworld    = Cvar_Get( "r_drawworld", "1", 0 );
+	r_novis        = Cvar_Get( "r_novis", "0", 0 );
+	r_nocull       = Cvar_Get( "r_nocull", "0", 0 );
+	r_lerpmodels   = Cvar_Get( "r_lerpmodels", "1", 0 );
+	r_speeds       = Cvar_Get( "r_speeds", "0", 0 );
 
 	r_lightlevel = Cvar_Get( "r_lightlevel", "0", 0 );
 
-	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
+	gl_nosubimage     = Cvar_Get( "gl_nosubimage", "0", 0 );
 	gl_allow_software = Cvar_Get( "gl_allow_software", "0", 0 );
 
 	gl_particle_min_size = Cvar_Get( "gl_particle_min_size", "2", CVAR_ARCHIVE );
 	gl_particle_max_size =
-			Cvar_Get( "gl_particle_max_size", "40", CVAR_ARCHIVE );
-	gl_particle_size = Cvar_Get( "gl_particle_size", "40", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_particle_max_size", "40", CVAR_ARCHIVE );
+	gl_particle_size  = Cvar_Get( "gl_particle_size", "40", CVAR_ARCHIVE );
 	gl_particle_att_a = Cvar_Get( "gl_particle_att_a", "0.01", CVAR_ARCHIVE );
 	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
-	gl_modulate = Cvar_Get( "gl_modulate", "1", CVAR_ARCHIVE );
-	gl_log = Cvar_Get( "gl_log", "0", 0 );
-	gl_bitdepth = Cvar_Get( "gl_bitdepth", "0", 0 );
-	gl_mode = Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
-	gl_lightmap = Cvar_Get( "gl_lightmap", "0", 0 );
-	gl_shadows = Cvar_Get( "gl_shadows", "0", CVAR_ARCHIVE );
-	gl_dynamic = Cvar_Get( "gl_dynamic", "1", 0 );
-	gl_nobind = Cvar_Get( "gl_nobind", "0", 0 );
-	gl_round_down = Cvar_Get( "gl_round_down", "1", 0 );
-	gl_picmip = Cvar_Get( "gl_picmip", "0", 0 );
-	gl_skymip = Cvar_Get( "gl_skymip", "0", 0 );
-	gl_showtris = Cvar_Get( "gl_showtris", "0", 0 );
-	gl_ztrick = Cvar_Get( "gl_ztrick", "0", 0 );
-	gl_finish = Cvar_Get( "gl_finish", "0", CVAR_ARCHIVE );
-	gl_clear = Cvar_Get( "gl_clear", "0", 0 );
-	gl_cull = Cvar_Get( "gl_cull", "1", 0 );
-	gl_polyblend = Cvar_Get( "gl_polyblend", "1", 0 );
-	gl_playermip = Cvar_Get( "gl_playermip", "0", 0 );
+	gl_modulate     = Cvar_Get( "gl_modulate", "1", CVAR_ARCHIVE );
+	gl_log          = Cvar_Get( "gl_log", "0", 0 );
+	gl_bitdepth     = Cvar_Get( "gl_bitdepth", "0", 0 );
+	gl_mode         = Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
+	gl_lightmap     = Cvar_Get( "gl_lightmap", "0", 0 );
+	gl_shadows      = Cvar_Get( "gl_shadows", "0", CVAR_ARCHIVE );
+	gl_dynamic      = Cvar_Get( "gl_dynamic", "1", 0 );
+	gl_nobind       = Cvar_Get( "gl_nobind", "0", 0 );
+	gl_round_down   = Cvar_Get( "gl_round_down", "1", 0 );
+	gl_picmip       = Cvar_Get( "gl_picmip", "0", 0 );
+	gl_skymip       = Cvar_Get( "gl_skymip", "0", 0 );
+	gl_showtris     = Cvar_Get( "gl_showtris", "0", 0 );
+	gl_ztrick       = Cvar_Get( "gl_ztrick", "0", 0 );
+	gl_finish       = Cvar_Get( "gl_finish", "0", CVAR_ARCHIVE );
+	gl_clear        = Cvar_Get( "gl_clear", "0", 0 );
+	gl_cull         = Cvar_Get( "gl_cull", "1", 0 );
+	gl_polyblend    = Cvar_Get( "gl_polyblend", "1", 0 );
+	gl_playermip    = Cvar_Get( "gl_playermip", "0", 0 );
 	gl_monolightmap = Cvar_Get( "gl_monolightmap", "0", 0 );
 	gl_texturemode =
-			Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_texturealphamode =
-			Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );
 	gl_texturesolidmode =
-			Cvar_Get( "gl_texturesolidmode", "default", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_texturesolidmode", "default", CVAR_ARCHIVE );
 	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 
 	gl_vertex_arrays = Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
 
 	gl_ext_swapinterval = Cvar_Get( "gl_ext_swapinterval", "1", CVAR_ARCHIVE );
 	gl_ext_palettedtexture =
-			Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
 	gl_ext_multitexture = Cvar_Get( "gl_ext_multitexture", "1", CVAR_ARCHIVE );
 	gl_ext_pointparameters =
-			Cvar_Get( "gl_ext_pointparameters", "1", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_ext_pointparameters", "1", CVAR_ARCHIVE );
 	gl_ext_compiled_vertex_array =
-			Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
+	        Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
 
-	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
+	gl_drawbuffer   = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
 	gl_swapinterval = Cvar_Get( "gl_swapinterval", "1", CVAR_ARCHIVE );
 
 	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
@@ -939,8 +939,8 @@ void R_Register( void )
 	gl_3dlabs_broken = Cvar_Get( "gl_3dlabs_broken", "1", CVAR_ARCHIVE );
 
 	vid_fullscreen = Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
-	vid_gamma = Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
-	vid_ref = Cvar_Get( "vid_ref", "gl", CVAR_ARCHIVE );
+	vid_gamma      = Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
+	vid_ref        = Cvar_Get( "vid_ref", "gl", CVAR_ARCHIVE );
 
 	Cmd_AddCommand( "imagelist", GL_ImageList_f );
 	Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
@@ -959,12 +959,12 @@ bool R_SetMode( void )
 	rserr_t err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value, false );
 
 	vid_fullscreen->modified = false;
-	gl_mode->modified = false;
+	gl_mode->modified        = false;
 
 	return ( err == rserr_ok );
 #else
-	rserr_t  err;
-	bool fullscreen;
+	rserr_t err;
+	bool    fullscreen;
 
 	if ( vid_fullscreen->modified && !gl_config.allow_cds )
 	{
@@ -976,7 +976,7 @@ bool R_SetMode( void )
 	fullscreen = vid_fullscreen->value;
 
 	vid_fullscreen->modified = false;
-	gl_mode->modified = false;
+	gl_mode->modified        = false;
 
 	if ( ( err = GLimp_SetMode( &vid.width, &vid.height, gl_mode->value,
 	                            fullscreen ) ) == rserr_ok )
@@ -1152,7 +1152,7 @@ void R_BeginFrame()
 	{// FIXME: only restart if CDS is required
 		cvar_t *ref;
 
-		ref = Cvar_Get( "vid_ref", "gl", 0 );
+		ref           = Cvar_Get( "vid_ref", "gl", 0 );
 		ref->modified = true;
 	}
 

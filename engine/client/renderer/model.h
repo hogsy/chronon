@@ -200,8 +200,8 @@ typedef struct model_s
 	//
 	// solid volume for clipping
 	//
-	bool clipbox;
-	vec3_t   clipmins, clipmaxs;
+	bool   clipbox;
+	vec3_t clipmins, clipmaxs;
 
 	//
 	// brush model

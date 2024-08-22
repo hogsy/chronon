@@ -1,15 +1,16 @@
-BasedOnStyle: Microsoft
+BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
-AlignConsecutiveBitFields: Consecutive
-AlignConsecutiveMacros: Consecutive
+AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
+AlignConsecutiveMacros: true
+AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
-AlignArrayOfStructures: Left
-AllowAllArgumentsOnNextLine: true
-AllowAllConstructorInitializersOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Always
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
@@ -19,6 +20,20 @@ AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: Yes
 BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: true
 BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
@@ -49,7 +64,7 @@ SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 0
 SpacesInAngles: true
 SpacesInCStyleCastParentheses: true
-SpacesInContainerLiterals: true
+SpacesInContainerLiterals: false
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
 TabWidth: 4

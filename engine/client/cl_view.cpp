@@ -65,8 +65,8 @@ Specifies the model that will be used as the world
 */
 void V_ClearScene( void )
 {
-	r_numdlights = 0;
-	r_numentities = 0;
+	r_numdlights   = 0;
+	r_numentities  = 0;
 	r_numparticles = 0;
 }
 
@@ -117,7 +117,7 @@ void V_AddLight( vec3_t org, float intensity, float r, float g, float b )
 		return;
 	dl = &r_dlights[ r_numdlights++ ];
 	VectorCopy( org, dl->origin );
-	dl->intensity = intensity;
+	dl->intensity  = intensity;
 	dl->color[ 0 ] = r;
 	dl->color[ 1 ] = g;
 	dl->color[ 2 ] = b;
@@ -138,7 +138,7 @@ void V_AddLightStyle( int style, float r, float g, float b )
 		Com_Error( ERR_DROP, "Bad light style %i", style );
 	ls = &r_lightstyles[ style ];
 
-	ls->white = r + g + b;
+	ls->white    = r + g + b;
 	ls->rgb[ 0 ] = r;
 	ls->rgb[ 1 ] = g;
 	ls->rgb[ 2 ] = b;
@@ -202,7 +202,7 @@ void V_TestEntities( void )
 			                   cl.v_right[ j ] * r;
 
 		ent->model = cl.baseclientinfo.model;
-		ent->skin = cl.baseclientinfo.skin;
+		ent->skin  = cl.baseclientinfo.skin;
 	}
 }
 
@@ -235,7 +235,7 @@ void V_TestLights( void )
 		dl->color[ 0 ] = ( ( i % 6 ) + 1 ) & 1;
 		dl->color[ 1 ] = ( ( ( i % 6 ) + 1 ) & 2 ) >> 1;
 		dl->color[ 2 ] = ( ( ( i % 6 ) + 1 ) & 4 ) >> 2;
-		dl->intensity = 200;
+		dl->intensity  = 200;
 	}
 }
 
@@ -359,7 +359,7 @@ void CL_PrepRefresh( void )
 
 	SCR_UpdateScreen();
 	cl.refresh_prepped = true;
-	cl.force_refdef = true;// make sure we have a valid refdef
+	cl.force_refdef    = true;// make sure we have a valid refdef
 
 	// start the cd track
 	CDAudio_Play( atoi( cl.configstrings[ CS_CDTRACK ] ), true );
@@ -499,12 +499,12 @@ void V_RenderView()
 		cl.refdef.vieworg[ 1 ] += 1.0 / 16;
 		cl.refdef.vieworg[ 2 ] += 1.0 / 16;
 
-		cl.refdef.x = scr_vrect.x;
-		cl.refdef.y = scr_vrect.y;
-		cl.refdef.width = scr_vrect.width;
+		cl.refdef.x      = scr_vrect.x;
+		cl.refdef.y      = scr_vrect.y;
+		cl.refdef.width  = scr_vrect.width;
 		cl.refdef.height = scr_vrect.height;
-		cl.refdef.fov_y = CalcFov( cl.refdef.fov_x, cl.refdef.width, cl.refdef.height );
-		cl.refdef.time = cl.time * 0.001;
+		cl.refdef.fov_y  = CalcFov( cl.refdef.fov_x, cl.refdef.width, cl.refdef.height );
+		cl.refdef.time   = cl.time * 0.001;
 
 		cl.refdef.areabits = cl.frame.areabits;
 
@@ -519,18 +519,18 @@ void V_RenderView()
 			VectorClear( cl.refdef.blend );
 		}
 
-		cl.refdef.num_entities = r_numentities;
-		cl.refdef.entities = r_entities;
+		cl.refdef.num_entities  = r_numentities;
+		cl.refdef.entities      = r_entities;
 		cl.refdef.num_particles = r_numparticles;
-		cl.refdef.particles = r_particles;
-		cl.refdef.num_dlights = r_numdlights;
-		cl.refdef.dlights = r_dlights;
-		cl.refdef.lightstyles = r_lightstyles;
+		cl.refdef.particles     = r_particles;
+		cl.refdef.num_dlights   = r_numdlights;
+		cl.refdef.dlights       = r_dlights;
+		cl.refdef.lightstyles   = r_lightstyles;
 
 		cl.refdef.rdflags = cl.frame.playerstate.rdflags;
 
 		// sort entities for better cache locality
-		qsort( cl.refdef.entities, cl.refdef.num_entities, sizeof( cl.refdef.entities[ 0 ] ), ( int( * )( const void *, const void * ) ) entitycmpfnc );
+		qsort( cl.refdef.entities, cl.refdef.num_entities, sizeof( cl.refdef.entities[ 0 ] ), ( int ( * )( const void *, const void * ) ) entitycmpfnc );
 	}
 
 	R_RenderFrame( &cl.refdef );
@@ -575,10 +575,10 @@ void V_Init( void )
 
 	crosshair = Cvar_Get( "crosshair", "0", CVAR_ARCHIVE );
 
-	cl_testblend = Cvar_Get( "cl_testblend", "0", 0 );
+	cl_testblend     = Cvar_Get( "cl_testblend", "0", 0 );
 	cl_testparticles = Cvar_Get( "cl_testparticles", "0", 0 );
-	cl_testentities = Cvar_Get( "cl_testentities", "0", 0 );
-	cl_testlights = Cvar_Get( "cl_testlights", "0", 0 );
+	cl_testentities  = Cvar_Get( "cl_testentities", "0", 0 );
+	cl_testlights    = Cvar_Get( "cl_testlights", "0", 0 );
 
 	cl_stats = Cvar_Get( "cl_stats", "0", 0 );
 }

@@ -178,12 +178,12 @@ typedef struct
 } glmode_t;
 
 glmode_t modes[] = {
-		{ "GL_NEAREST", GL_NEAREST, GL_NEAREST },
-		{ "GL_LINEAR", GL_LINEAR, GL_LINEAR },
-		{ "GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST },
-		{ "GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR },
-		{ "GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST },
-		{ "GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR } };
+        { "GL_NEAREST", GL_NEAREST, GL_NEAREST },
+        { "GL_LINEAR", GL_LINEAR, GL_LINEAR },
+        { "GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST },
+        { "GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR },
+        { "GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST },
+        { "GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR } };
 
 #define NUM_GL_MODES ( sizeof( modes ) / sizeof( glmode_t ) )
 
@@ -194,25 +194,25 @@ typedef struct
 } gltmode_t;
 
 gltmode_t gl_alpha_modes[] = {
-		{ "default", 4 },
-		{ "GL_RGBA", GL_RGBA },
-		{ "GL_RGBA8", GL_RGBA8 },
-		{ "GL_RGB5_A1", GL_RGB5_A1 },
-		{ "GL_RGBA4", GL_RGBA4 },
-		{ "GL_RGBA2", GL_RGBA2 },
+        { "default", 4 },
+        { "GL_RGBA", GL_RGBA },
+        { "GL_RGBA8", GL_RGBA8 },
+        { "GL_RGB5_A1", GL_RGB5_A1 },
+        { "GL_RGBA4", GL_RGBA4 },
+        { "GL_RGBA2", GL_RGBA2 },
 };
 
 #define NUM_GL_ALPHA_MODES ( sizeof( gl_alpha_modes ) / sizeof( gltmode_t ) )
 
 gltmode_t gl_solid_modes[] = {
-		{ "default", 3 },
-		{ "GL_RGB", GL_RGB },
-		{ "GL_RGB8", GL_RGB8 },
-		{ "GL_RGB5", GL_RGB5 },
-		{ "GL_RGB4", GL_RGB4 },
-		{ "GL_R3_G3_B2", GL_R3_G3_B2 },
+        { "default", 3 },
+        { "GL_RGB", GL_RGB },
+        { "GL_RGB8", GL_RGB8 },
+        { "GL_RGB5", GL_RGB5 },
+        { "GL_RGB4", GL_RGB4 },
+        { "GL_R3_G3_B2", GL_R3_G3_B2 },
 #ifdef GL_RGB2_EXT
-		{ "GL_RGB2", GL_RGB2_EXT },
+        { "GL_RGB2", GL_RGB2_EXT },
 #endif
 };
 
@@ -292,9 +292,9 @@ void GL_ImageList_f()
 	image_t    *image;
 	int         texels;
 	const char *palstrings[ 2 ] =
-			{
-					"RGB",
-					"PAL" };
+	        {
+	                "RGB",
+	                "PAL" };
 
 	Com_Printf( "------------------\n" );
 	texels = 0;
@@ -345,8 +345,8 @@ void GL_ImageList_f()
 #define BLOCK_WIDTH  256
 #define BLOCK_HEIGHT 256
 
-int      scrap_allocated[ MAX_SCRAPS ][ BLOCK_WIDTH ];
-byte     scrap_texels[ MAX_SCRAPS ][ BLOCK_WIDTH * BLOCK_HEIGHT ];
+int  scrap_allocated[ MAX_SCRAPS ][ BLOCK_WIDTH ];
+byte scrap_texels[ MAX_SCRAPS ][ BLOCK_WIDTH * BLOCK_HEIGHT ];
 bool scrap_dirty;
 
 // returns a texture number and the position inside it
@@ -424,7 +424,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	int    dataByte, runLength;
 	byte  *out, *pix;
 
-	*pic = nullptr;
+	*pic     = nullptr;
 	*palette = nullptr;
 
 	//
@@ -441,14 +441,14 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	//
 	pcx = ( pcx_t * ) raw;
 
-	pcx->xmin = LittleShort( pcx->xmin );
-	pcx->ymin = LittleShort( pcx->ymin );
-	pcx->xmax = LittleShort( pcx->xmax );
-	pcx->ymax = LittleShort( pcx->ymax );
-	pcx->hres = LittleShort( pcx->hres );
-	pcx->vres = LittleShort( pcx->vres );
+	pcx->xmin           = LittleShort( pcx->xmin );
+	pcx->ymin           = LittleShort( pcx->ymin );
+	pcx->xmax           = LittleShort( pcx->xmax );
+	pcx->ymax           = LittleShort( pcx->ymax );
+	pcx->hres           = LittleShort( pcx->hres );
+	pcx->vres           = LittleShort( pcx->vres );
 	pcx->bytes_per_line = LittleShort( pcx->bytes_per_line );
-	pcx->palette_type = LittleShort( pcx->palette_type );
+	pcx->palette_type   = LittleShort( pcx->palette_type );
 
 	raw = &pcx->data;
 
@@ -460,7 +460,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	out = new byte[ ( pcx->ymax + 1 ) * ( pcx->xmax + 1 ) ];
 
 	*pic = out;
-	pix = out;
+	pix  = out;
 
 	if ( palette )
 	{
@@ -482,7 +482,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 			if ( ( dataByte & 0xC0 ) == 0xC0 )
 			{
 				runLength = dataByte & 0x3F;
-				dataByte = *raw++;
+				dataByte  = *raw++;
 			}
 			else
 				runLength = 1;
@@ -495,7 +495,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	if ( raw - ( byte * ) pcx > len )
 	{
 		Com_DPrintf( "PCX file %s was malformed", filename );
-		delete[] * pic;
+		delete[] *pic;
 		*pic = nullptr;
 	}
 
@@ -555,7 +555,7 @@ typedef struct
 	{                                                                 \
 		if ( pos[ off ] == fillcolor )                                \
 		{                                                             \
-			pos[ off ] = 255;                                         \
+			pos[ off ]     = 255;                                     \
 			fifo[ inpt ].x = x + ( dx ), fifo[ inpt ].y = y + ( dy ); \
 			inpt = ( inpt + 1 ) & FLOODFILL_FIFO_MASK;                \
 		}                                                             \
@@ -636,15 +636,15 @@ void GL_ResampleTexture( unsigned *in, int inwidth, int inheight, unsigned *out,
 
 	for ( i = 0; i < outheight; i++, out += outwidth )
 	{
-		inrow = in + inwidth * ( int ) ( ( i + 0.25 ) * inheight / outheight );
+		inrow  = in + inwidth * ( int ) ( ( i + 0.25 ) * inheight / outheight );
 		inrow2 = in + inwidth * ( int ) ( ( i + 0.75 ) * inheight / outheight );
-		frac = fracstep >> 1;
+		frac   = fracstep >> 1;
 		for ( j = 0; j < outwidth; j++ )
 		{
-			pix1 = ( byte * ) inrow + p1[ j ];
-			pix2 = ( byte * ) inrow + p2[ j ];
-			pix3 = ( byte * ) inrow2 + p1[ j ];
-			pix4 = ( byte * ) inrow2 + p2[ j ];
+			pix1                            = ( byte                            *) inrow + p1[ j ];
+			pix2                            = ( byte                            *) inrow + p2[ j ];
+			pix3                            = ( byte                            *) inrow2 + p1[ j ];
+			pix4                            = ( byte                            *) inrow2 + p2[ j ];
 			( ( byte * ) ( out + j ) )[ 0 ] = ( pix1[ 0 ] + pix2[ 0 ] + pix3[ 0 ] + pix4[ 0 ] ) >> 2;
 			( ( byte * ) ( out + j ) )[ 1 ] = ( pix1[ 1 ] + pix2[ 1 ] + pix3[ 1 ] + pix4[ 1 ] ) >> 2;
 			( ( byte * ) ( out + j ) )[ 2 ] = ( pix1[ 2 ] + pix2[ 2 ] + pix3[ 2 ] + pix4[ 2 ] ) >> 2;
@@ -684,8 +684,8 @@ static bool GL_Upload32( unsigned *data, uint32_t width, uint32_t height, bool m
 
 	// scan the texture for any non-255 alpha
 	unsigned int c = width * height;
-	scan = ( ( byte * ) data ) + 3;
-	samples = gl_solid_format;
+	scan           = ( ( byte           *) data ) + 3;
+	samples        = gl_solid_format;
 	for ( unsigned int i = 0; i < c; i++, scan += 4 )
 	{
 		if ( *scan != 255 )
@@ -702,8 +702,8 @@ static bool GL_Upload32( unsigned *data, uint32_t width, uint32_t height, bool m
 	else
 	{
 		Com_Printf(
-				"Unknown number of texture components %i\n",
-				samples );
+		        "Unknown number of texture components %i\n",
+		        samples );
 		comp = samples;
 	}
 
@@ -735,7 +735,7 @@ static bool GL_Upload8( const byte *data, uint32_t width, uint32_t height, bool 
 
 	for ( unsigned int i = 0; i < s; i++ )
 	{
-		p = data[ i ];
+		p          = data[ i ];
 		trans[ i ] = d_8to24table[ p ];
 
 		if ( p == 255 )
@@ -784,12 +784,12 @@ image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height, 
 	}
 	image = &gltextures[ i ];
 
-	image->name = name;
+	image->name                  = name;
 	image->registration_sequence = registration_sequence;
 
 	image->originalWidth = image->width = width;
 	image->originalHeight = image->height = height;
-	image->type = type;
+	image->type                           = type;
 
 	if ( type == it_skin && bits == 8 )
 		R_FloodFillSkin( pic, width, height );
@@ -811,18 +811,18 @@ image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height, 
 		for ( i = 0; i < image->height; i++ )
 			for ( j = 0; j < image->width; j++, k++ )
 				scrap_texels[ texnum ][ ( y + i ) * BLOCK_WIDTH + x + j ] = pic[ k ];
-		image->texnum = TEXNUM_SCRAPS + texnum;
-		image->scrap = true;
+		image->texnum    = TEXNUM_SCRAPS + texnum;
+		image->scrap     = true;
 		image->has_alpha = true;
-		image->sl = ( x + 0.01f ) / ( float ) BLOCK_WIDTH;
-		image->sh = ( x + image->width - 0.01f ) / ( float ) BLOCK_WIDTH;
-		image->tl = ( y + 0.01f ) / ( float ) BLOCK_WIDTH;
-		image->th = ( y + image->height - 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->sl        = ( x + 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->sh        = ( x + image->width - 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->tl        = ( y + 0.01f ) / ( float ) BLOCK_WIDTH;
+		image->th        = ( y + image->height - 0.01f ) / ( float ) BLOCK_WIDTH;
 	}
 	else
 	{
 	nonscrap:
-		image->scrap = false;
+		image->scrap  = false;
 		image->texnum = TEXNUM_IMAGES + ( image - gltextures );
 		GL_Bind( image->texnum );
 		if ( bits == 8 )
@@ -830,10 +830,10 @@ image_t *GL_LoadPic( const std::string &name, byte *pic, int width, int height, 
 		else
 			image->has_alpha = GL_Upload32( ( unsigned * ) pic, width, height, ( image->type != it_pic && image->type != it_sky ) );
 		image->paletted = false;
-		image->sl = 0;
-		image->sh = 1;
-		image->tl = 0;
-		image->th = 1;
+		image->sl       = 0;
+		image->sh       = 1;
+		image->tl       = 0;
+		image->th       = 1;
 	}
 
 	return image;
@@ -853,10 +853,10 @@ static std::string Image_Load( const std::string &name, byte **pic, byte **palet
 	};
 
 	static const std::map< const std::string, const ImageLoader > imageLoaders = {
-			{ "tga", { 32, nullptr, LoadImage32 } },
-			{ "png", { 32, nullptr, LoadImage32 } },
-			{ "bmp", { 32, nullptr, LoadImage32 } },
-			{ "pcx", { 8, LoadPCX, nullptr } },
+	        { "tga", { 32, nullptr, LoadImage32 } },
+	        { "png", { 32, nullptr, LoadImage32 } },
+	        { "bmp", { 32, nullptr, LoadImage32 } },
+	        { "pcx", { 8, LoadPCX, nullptr } },
 	};
 
 	std::string loadName;
@@ -866,11 +866,11 @@ static std::string Image_Load( const std::string &name, byte **pic, byte **palet
 	std::string extension;
 	if ( l != std::string::npos )
 	{
-		extension = name.substr( l + 1 );
+		extension   = name.substr( l + 1 );
 		auto loader = imageLoaders.find( extension );
 		if ( loader != imageLoaders.end() )
 		{
-			*pic = nullptr;
+			*pic     = nullptr;
 			*palette = nullptr;
 			if ( loader->second.depth == 8 )
 			{
@@ -901,7 +901,7 @@ static std::string Image_Load( const std::string &name, byte **pic, byte **palet
 
 		std::string nName = loadName + "." + loader.first;
 
-		*pic = nullptr;
+		*pic     = nullptr;
 		*palette = nullptr;
 		if ( loader.second.depth == 8 )
 		{
@@ -953,7 +953,7 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type )
 	int         width, height, depth;
 	std::string loadName = Image_Load( name, &pic, &palette, &width, &height, &depth );
 
-	int originalWidth = width;
+	int originalWidth  = width;
 	int originalHeight = height;
 
 	// See if a higher-res variant exists
@@ -972,10 +972,10 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type )
 		{
 			delete[] pic;
 			delete[] palette;
-			pic = nPic;
-			palette = nPal;
-			width = nW;
-			height = nH;
+			pic      = nPic;
+			palette  = nPal;
+			width    = nW;
+			height   = nH;
 			loadName = nLoadName;
 		}
 	}
@@ -987,7 +987,7 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type )
 		image->name = name;
 
 		// If we loaded a higher-res replacement, this ensures we can retain the original tex coords
-		image->originalWidth = originalWidth;
+		image->originalWidth  = originalWidth;
 		image->originalHeight = originalHeight;
 	}
 
@@ -1018,7 +1018,7 @@ void GL_FreeUnusedImages()
 	image_t *image;
 
 	// never free r_notexture or particle texture
-	r_notexture->registration_sequence = registration_sequence;
+	r_notexture->registration_sequence       = registration_sequence;
 	r_particletexture->registration_sequence = registration_sequence;
 
 	for ( i = 0, image = gltextures; i < numgltextures; i++, image++ )
@@ -1055,7 +1055,7 @@ int Draw_GetPalette()
 		g = pal[ i * 3 + 1 ];
 		b = pal[ i * 3 + 2 ];
 
-		v = ( 255 << 24 ) + ( r << 0 ) + ( g << 8 ) + ( b << 16 );
+		v                 = ( 255 << 24 ) + ( r << 0 ) + ( g << 8 ) + ( b << 16 );
 		d_8to24table[ i ] = LittleLong( v );
 	}
 

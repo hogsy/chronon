@@ -57,7 +57,7 @@ void GLAPIENTRY QGL_ErrorCallback( GLenum source, GLenum type, GLuint id, GLenum
 bool QGL_Init()
 {
 	glewExperimental = true;
-	GLenum err = glewInit();
+	GLenum err       = glewInit();
 	if ( err != GLEW_OK )
 	{
 		const char *msg = ( const char * ) glewGetErrorString( err );

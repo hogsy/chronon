@@ -106,14 +106,14 @@ void IN_MLookUp()
 static int mouse_buttons;
 static int mouse_oldbuttonstate;
 static int mouse_x, mouse_y,
-		old_mouse_x, old_mouse_y,
-		mx_accum, my_accum;
+        old_mouse_x, old_mouse_y,
+        mx_accum, my_accum;
 
 static bool isMouseActive;// false when not focus app
 
 bool restore_spi;
 bool mouseinitialized;
-int      originalmouseparms[ 3 ], newmouseparms[ 3 ] = { 0, 0, 1 };
+int  originalmouseparms[ 3 ], newmouseparms[ 3 ] = { 0, 0, 1 };
 bool mouseparmsvalid;
 
 static int window_center_x, window_center_y;
@@ -305,7 +305,7 @@ void IN_StartupMouse()
 	}
 
 	mouseinitialized = true;
-	mouse_buttons = 3;
+	mouse_buttons    = 3;
 }
 
 extern SDL_Window *VID_GetSDLWindowHandle();
@@ -387,28 +387,28 @@ void IN_Init()
 	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );
 
 	// joystick variables
-	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE );
-	joy_name = Cvar_Get( "joy_name", "joystick", 0 );
-	joy_advanced = Cvar_Get( "joy_advanced", "0", 0 );
-	joy_advaxisx = Cvar_Get( "joy_advaxisx", "0", 0 );
-	joy_advaxisy = Cvar_Get( "joy_advaxisy", "0", 0 );
-	joy_advaxisz = Cvar_Get( "joy_advaxisz", "0", 0 );
-	joy_advaxisr = Cvar_Get( "joy_advaxisr", "0", 0 );
-	joy_advaxisu = Cvar_Get( "joy_advaxisu", "0", 0 );
-	joy_advaxisv = Cvar_Get( "joy_advaxisv", "0", 0 );
-	joy_forwardthreshold = Cvar_Get( "joy_forwardthreshold", "0.15", 0 );
-	joy_sidethreshold = Cvar_Get( "joy_sidethreshold", "0.15", 0 );
-	joy_upthreshold = Cvar_Get( "joy_upthreshold", "0.15", 0 );
-	joy_pitchthreshold = Cvar_Get( "joy_pitchthreshold", "0.15", 0 );
-	joy_yawthreshold = Cvar_Get( "joy_yawthreshold", "0.15", 0 );
+	in_joystick            = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE );
+	joy_name               = Cvar_Get( "joy_name", "joystick", 0 );
+	joy_advanced           = Cvar_Get( "joy_advanced", "0", 0 );
+	joy_advaxisx           = Cvar_Get( "joy_advaxisx", "0", 0 );
+	joy_advaxisy           = Cvar_Get( "joy_advaxisy", "0", 0 );
+	joy_advaxisz           = Cvar_Get( "joy_advaxisz", "0", 0 );
+	joy_advaxisr           = Cvar_Get( "joy_advaxisr", "0", 0 );
+	joy_advaxisu           = Cvar_Get( "joy_advaxisu", "0", 0 );
+	joy_advaxisv           = Cvar_Get( "joy_advaxisv", "0", 0 );
+	joy_forwardthreshold   = Cvar_Get( "joy_forwardthreshold", "0.15", 0 );
+	joy_sidethreshold      = Cvar_Get( "joy_sidethreshold", "0.15", 0 );
+	joy_upthreshold        = Cvar_Get( "joy_upthreshold", "0.15", 0 );
+	joy_pitchthreshold     = Cvar_Get( "joy_pitchthreshold", "0.15", 0 );
+	joy_yawthreshold       = Cvar_Get( "joy_yawthreshold", "0.15", 0 );
 	joy_forwardsensitivity = Cvar_Get( "joy_forwardsensitivity", "-1", 0 );
-	joy_sidesensitivity = Cvar_Get( "joy_sidesensitivity", "-1", 0 );
-	joy_upsensitivity = Cvar_Get( "joy_upsensitivity", "-1", 0 );
-	joy_pitchsensitivity = Cvar_Get( "joy_pitchsensitivity", "1", 0 );
-	joy_yawsensitivity = Cvar_Get( "joy_yawsensitivity", "-1", 0 );
+	joy_sidesensitivity    = Cvar_Get( "joy_sidesensitivity", "-1", 0 );
+	joy_upsensitivity      = Cvar_Get( "joy_upsensitivity", "-1", 0 );
+	joy_pitchsensitivity   = Cvar_Get( "joy_pitchsensitivity", "1", 0 );
+	joy_yawsensitivity     = Cvar_Get( "joy_yawsensitivity", "-1", 0 );
 
 	// centering
-	v_centermove = Cvar_Get( "v_centermove", "0.15", 0 );
+	v_centermove  = Cvar_Get( "v_centermove", "0.15", 0 );
 	v_centerspeed = Cvar_Get( "v_centerspeed", "500", 0 );
 
 	Cmd_AddCommand( "+mlook", IN_MLookDown );
@@ -434,7 +434,7 @@ void IN_Activate( bool active )
 {
 	Key_ClearStates();
 
-	in_appactive = active;
+	in_appactive  = active;
 	isMouseActive = !active;// force a new window check or turn off
 }
 
@@ -475,8 +475,8 @@ void IN_Move( usercmd_t *cmd )
 
 void IN_ClearStates()
 {
-	mx_accum = 0;
-	my_accum = 0;
+	mx_accum             = 0;
+	my_accum             = 0;
 	mouse_oldbuttonstate = 0;
 }
 

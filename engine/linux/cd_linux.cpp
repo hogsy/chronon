@@ -35,16 +35,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../client/client.h"
 
-static bool cdValid = false;
-static bool playing = false;
-static bool wasPlaying = false;
-static bool initialized = false;
-static bool enabled = true;
-static bool playLooping = false;
-static float    cdvolume;
-static byte     remap[ 100 ];
-static byte     playTrack;
-static byte     maxTrack;
+static bool  cdValid     = false;
+static bool  playing     = false;
+static bool  wasPlaying  = false;
+static bool  initialized = false;
+static bool  enabled     = true;
+static bool  playLooping = false;
+static float cdvolume;
+static byte  remap[ 100 ];
+static byte  playTrack;
+static byte  maxTrack;
 
 static int cdfile = -1;
 
@@ -93,7 +93,7 @@ static int CDAudio_GetAudioDiskInfo( void )
 		return -1;
 	}
 
-	cdValid = true;
+	cdValid  = true;
 	maxTrack = tochdr.cdth_trk1;
 
 	return 0;
@@ -124,7 +124,7 @@ void CDAudio_Play( int track, bool looping )
 	}
 
 	// don't try to play a non-audio track
-	entry.cdte_track = track;
+	entry.cdte_track  = track;
 	entry.cdte_format = CDROM_MSF;
 	if ( ioctl( cdfile, CDROMREADTOCENTRY, &entry ) == -1 )
 	{
@@ -159,8 +159,8 @@ void CDAudio_Play( int track, bool looping )
 		Com_DPrintf( "ioctl cdromresume failed\n" );
 
 	playLooping = looping;
-	playTrack = track;
-	playing = true;
+	playTrack   = track;
+	playing     = true;
 
 	if ( cd_volume->value == 0.0 )
 		CDAudio_Pause();
@@ -179,7 +179,7 @@ void CDAudio_Stop( void )
 		Com_DPrintf( "ioctl cdromstop failed (%d)\n", errno );
 
 	wasPlaying = false;
-	playing = false;
+	playing    = false;
 }
 
 void CDAudio_Pause( void )
@@ -194,7 +194,7 @@ void CDAudio_Pause( void )
 		Com_DPrintf( "ioctl cdrompause failed\n" );
 
 	wasPlaying = playing;
-	playing = false;
+	playing    = false;
 }
 
 
@@ -358,7 +358,7 @@ void CDAudio_Update( void )
 
 	if ( playing && lastchk < time( NULL ) )
 	{
-		lastchk = time( NULL ) + 2;//two seconds between chks
+		lastchk             = time( NULL ) + 2;//two seconds between chks
 		subchnl.cdsc_format = CDROM_MSF;
 		if ( ioctl( cdfile, CDROMSUBCHNL, &subchnl ) == -1 )
 		{
@@ -383,8 +383,8 @@ int CDAudio_Init( void )
 #if 1
 	return -1;
 #else
-	int          i;
-	cvar_t      *cv;
+	int     i;
+	cvar_t *cv;
 
 	cv = Cvar_Get( "nocdaudio", "0", CVAR_NOSET );
 	if ( cv->value )
@@ -414,7 +414,7 @@ int CDAudio_Init( void )
 	for ( i = 0; i < 100; i++ )
 		remap[ i ] = i;
 	initialized = true;
-	enabled = true;
+	enabled     = true;
 
 	if ( CDAudio_GetAudioDiskInfo() )
 	{

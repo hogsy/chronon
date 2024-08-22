@@ -36,8 +36,8 @@ bool chr::game::CinematicScript::ParseFile( const std::string &filename )
 
 	bool status = true;
 
-	std::string line;
-	unsigned int lineNumber = 0;
+	std::string        line;
+	unsigned int       lineNumber = 0;
 	std::istringstream streamBuffer( ( const char * ) buffer );
 	while ( std::getline( streamBuffer, line ) )
 	{
@@ -198,7 +198,7 @@ bool chr::game::CinematicScript::ParsePathStatement( std::string &line )
 	Path *path = &blocks.back().paths.emplace_back();
 
 	char *token = std::strtok( line.data(), ":" );
-	int count = 0;
+	int   count = 0;
 	while ( token != nullptr )
 	{
 		switch ( count )
@@ -228,7 +228,7 @@ bool chr::game::CinematicScript::ParsePathStatement( std::string &line )
 				for ( unsigned int i = 0; i < 4; ++i )
 				{
 					std::string bs = std::string( token ).substr( i * 2, 2 );
-					c[ i ] = ( float ) ( std::stoi( bs, nullptr, 16 ) ) / 255.0f;
+					c[ i ]         = ( float ) ( std::stoi( bs, nullptr, 16 ) ) / 255.0f;
 				}
 				break;
 			}
@@ -255,7 +255,7 @@ bool chr::game::CinematicScript::ParseBlockStatement( std::string &line )
 	Block *block = &blocks.back();
 
 	char *token = std::strtok( line.data(), ":" );// split line with colon delimiter
-	int count = 0;
+	int   count = 0;
 	while ( token != nullptr )
 	{
 		switch ( count )
@@ -283,7 +283,7 @@ bool chr::game::CinematicScript::ParseBlockStatement( std::string &line )
 bool chr::game::CinematicScript::ParseScriptStatement( std::string &line )
 {
 	char *token = std::strtok( line.data(), ":" );// Split line with colon delimiter
-	int count = 0;
+	int   count = 0;
 	while ( token != nullptr )
 	{
 		switch ( count )
@@ -313,7 +313,7 @@ bool chr::game::CinematicScript::ParseScriptStatement( std::string &line )
 
 std::string chr::game::CinematicScript::SanitizeTokenString( const std::string &string )
 {
-	size_t p = string.find_first_not_of( ' ' );
+	size_t      p   = string.find_first_not_of( ' ' );
 	std::string out = string.substr( p );
 	out.erase( std::remove_if( out.begin(), out.end(),
 	                           []( unsigned char c )

@@ -111,7 +111,7 @@ extern cvar_t *allow_download_maps;
 void CL_WriteDemoMessage()
 {
 	// the first eight bytes are just packet sequencing stuff
-	int len = ( int ) net_message.cursize - 8;
+	int len   = ( int ) net_message.cursize - 8;
 	int swlen = LittleLong( len );
 	fwrite( &swlen, 4, 1, cls.demofile );
 	fwrite( net_message.data + 8, len, 1, cls.demofile );
@@ -139,7 +139,7 @@ void CL_Stop_f( void )
 	len = -1;
 	fwrite( &len, 4, 1, cls.demofile );
 	fclose( cls.demofile );
-	cls.demofile = NULL;
+	cls.demofile      = NULL;
 	cls.demorecording = false;
 	Com_Printf( "Stopped demo.\n" );
 }
@@ -420,7 +420,7 @@ void CL_SendConnectPacket( void )
 	if ( adr.port == 0 )
 		adr.port = BigShort( PORT_SERVER );
 
-	port = ( int ) Cvar_VariableValue( "qport" );
+	port              = ( int ) Cvar_VariableValue( "qport" );
 	userinfo_modified = false;
 
 	Netchan_OutOfBandPrint( NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
@@ -687,8 +687,8 @@ void CL_Packet_f( void )
 	if ( !adr.port )
 		adr.port = BigShort( PORT_SERVER );
 
-	in = Cmd_Argv( 2 );
-	out = send + 4;
+	in        = Cmd_Argv( 2 );
+	out       = send + 4;
 	send[ 0 ] = send[ 1 ] = send[ 2 ] = send[ 3 ] = ( char ) 0xff;
 
 	l = strlen( in );
@@ -1109,8 +1109,8 @@ static const char *env_suf[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
 
 void CL_RequestNextDownload( void )
 {
-	char     fn[ MAX_OSPATH ];
-	dmdl_t  *pheader;
+	char    fn[ MAX_OSPATH ];
+	dmdl_t *pheader;
 
 	if ( cls.state != ca_connected )
 		return;
@@ -1164,12 +1164,12 @@ void CL_RequestNextDownload( void )
 					{
 						// not an alias model
 						FS_FreeFile( precache_model );
-						precache_model = 0;
+						precache_model      = 0;
 						precache_model_skin = 0;
 						precache_check++;
 						continue;
 					}
-					pheader = ( dmdl_t * ) precache_model;
+					pheader     = ( dmdl_t     *) precache_model;
 					int version = LittleLong( pheader->version );
 					if ( version != 14 && version != 15 )
 					{
@@ -1372,7 +1372,7 @@ void CL_RequestNextDownload( void )
 	if ( precache_check == TEXTURE_CNT )
 	{
 		precache_check = TEXTURE_CNT + 1;
-		precache_tex = 0;
+		precache_tex   = 0;
 	}
 
 	// confirm existance of textures, download any that don't exist
@@ -1426,9 +1426,9 @@ void CL_Precache_f( void )
 		return;
 	}
 
-	precache_check = CS_MODELS;
+	precache_check      = CS_MODELS;
 	precache_spawncount = atoi( Cmd_Argv( 1 ) );
-	precache_model = 0;
+	precache_model      = 0;
 	precache_model_skin = 0;
 
 	CL_RequestNextDownload();
@@ -1442,7 +1442,7 @@ CL_InitLocal
 */
 void CL_InitLocal( void )
 {
-	cls.state = ca_disconnected;
+	cls.state    = ca_disconnected;
 	cls.realtime = chr::globalApp->GetNumMilliseconds();
 
 	CL_InitInput();
@@ -1461,63 +1461,63 @@ void CL_InitLocal( void )
 	// register our variables
 	//
 	cl_stereo_separation = Cvar_Get( "cl_stereo_separation", "0.4", CVAR_ARCHIVE );
-	cl_stereo = Cvar_Get( "cl_stereo", "0", 0 );
+	cl_stereo            = Cvar_Get( "cl_stereo", "0", 0 );
 
-	cl_add_blend = Cvar_Get( "cl_blend", "1", 0 );
-	cl_add_lights = Cvar_Get( "cl_lights", "1", 0 );
+	cl_add_blend     = Cvar_Get( "cl_blend", "1", 0 );
+	cl_add_lights    = Cvar_Get( "cl_lights", "1", 0 );
 	cl_add_particles = Cvar_Get( "cl_particles", "1", 0 );
-	cl_add_entities = Cvar_Get( "cl_entities", "1", 0 );
-	cl_gun = Cvar_Get( "cl_gun", "1", 0 );
-	cl_footsteps = Cvar_Get( "cl_footsteps", "1", 0 );
-	cl_noskins = Cvar_Get( "cl_noskins", "0", 0 );
-	cl_autoskins = Cvar_Get( "cl_autoskins", "0", 0 );
-	cl_predict = Cvar_Get( "cl_predict", "1", 0 );
+	cl_add_entities  = Cvar_Get( "cl_entities", "1", 0 );
+	cl_gun           = Cvar_Get( "cl_gun", "1", 0 );
+	cl_footsteps     = Cvar_Get( "cl_footsteps", "1", 0 );
+	cl_noskins       = Cvar_Get( "cl_noskins", "0", 0 );
+	cl_autoskins     = Cvar_Get( "cl_autoskins", "0", 0 );
+	cl_predict       = Cvar_Get( "cl_predict", "1", 0 );
 	//	cl_minfps = Cvar_Get ("cl_minfps", "5", 0);
 	cl_maxfps = Cvar_Get( "cl_maxfps", "90", 0 );
 
-	cl_upspeed = Cvar_Get( "cl_upspeed", "200", 0 );
-	cl_forwardspeed = Cvar_Get( "cl_forwardspeed", "200", 0 );
-	cl_sidespeed = Cvar_Get( "cl_sidespeed", "200", 0 );
-	cl_yawspeed = Cvar_Get( "cl_yawspeed", "140", 0 );
-	cl_pitchspeed = Cvar_Get( "cl_pitchspeed", "150", 0 );
+	cl_upspeed       = Cvar_Get( "cl_upspeed", "200", 0 );
+	cl_forwardspeed  = Cvar_Get( "cl_forwardspeed", "200", 0 );
+	cl_sidespeed     = Cvar_Get( "cl_sidespeed", "200", 0 );
+	cl_yawspeed      = Cvar_Get( "cl_yawspeed", "140", 0 );
+	cl_pitchspeed    = Cvar_Get( "cl_pitchspeed", "150", 0 );
 	cl_anglespeedkey = Cvar_Get( "cl_anglespeedkey", "1.5", 0 );
 
-	cl_run = Cvar_Get( "cl_run", "0", CVAR_ARCHIVE );
-	freelook = Cvar_Get( "freelook", "0", CVAR_ARCHIVE );
-	lookspring = Cvar_Get( "lookspring", "0", CVAR_ARCHIVE );
-	lookstrafe = Cvar_Get( "lookstrafe", "0", CVAR_ARCHIVE );
+	cl_run      = Cvar_Get( "cl_run", "0", CVAR_ARCHIVE );
+	freelook    = Cvar_Get( "freelook", "0", CVAR_ARCHIVE );
+	lookspring  = Cvar_Get( "lookspring", "0", CVAR_ARCHIVE );
+	lookstrafe  = Cvar_Get( "lookstrafe", "0", CVAR_ARCHIVE );
 	sensitivity = Cvar_Get( "sensitivity", "3", CVAR_ARCHIVE );
 
-	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
-	m_yaw = Cvar_Get( "m_yaw", "0.022", 0 );
+	m_pitch   = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
+	m_yaw     = Cvar_Get( "m_yaw", "0.022", 0 );
 	m_forward = Cvar_Get( "m_forward", "1", 0 );
-	m_side = Cvar_Get( "m_side", "1", 0 );
+	m_side    = Cvar_Get( "m_side", "1", 0 );
 
-	cl_shownet = Cvar_Get( "cl_shownet", "0", 0 );
-	cl_showmiss = Cvar_Get( "cl_showmiss", "0", 0 );
+	cl_shownet   = Cvar_Get( "cl_shownet", "0", 0 );
+	cl_showmiss  = Cvar_Get( "cl_showmiss", "0", 0 );
 	cl_showclamp = Cvar_Get( "showclamp", "0", 0 );
-	cl_timeout = Cvar_Get( "cl_timeout", "120", 0 );
-	cl_paused = Cvar_Get( "paused", "0", 0 );
-	cl_timedemo = Cvar_Get( "timedemo", "0", 0 );
+	cl_timeout   = Cvar_Get( "cl_timeout", "120", 0 );
+	cl_paused    = Cvar_Get( "paused", "0", 0 );
+	cl_timedemo  = Cvar_Get( "timedemo", "0", 0 );
 
 	rcon_client_password = Cvar_Get( "rcon_password", "", 0 );
-	rcon_address = Cvar_Get( "rcon_address", "", 0 );
+	rcon_address         = Cvar_Get( "rcon_address", "", 0 );
 
 	cl_lightlevel = Cvar_Get( "r_lightlevel", "0", 0 );
 
 	//
 	// userinfo
 	//
-	info_password = Cvar_Get( "password", "", CVAR_USERINFO );
-	info_spectator = Cvar_Get( "spectator", "0", CVAR_USERINFO );
-	name = Cvar_Get( "name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE );
-	skin = Cvar_Get( "skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE );
-	rate = Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );// FIXME
-	msg = Cvar_Get( "msg", "1", CVAR_USERINFO | CVAR_ARCHIVE );
-	hand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
-	fov = Cvar_Get( "fov", "90", CVAR_USERINFO | CVAR_ARCHIVE );
-	gender = Cvar_Get( "gender", "male", CVAR_USERINFO | CVAR_ARCHIVE );
-	gender_auto = Cvar_Get( "gender_auto", "1", CVAR_ARCHIVE );
+	info_password    = Cvar_Get( "password", "", CVAR_USERINFO );
+	info_spectator   = Cvar_Get( "spectator", "0", CVAR_USERINFO );
+	name             = Cvar_Get( "name", "unnamed", CVAR_USERINFO | CVAR_ARCHIVE );
+	skin             = Cvar_Get( "skin", "male/grunt", CVAR_USERINFO | CVAR_ARCHIVE );
+	rate             = Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );// FIXME
+	msg              = Cvar_Get( "msg", "1", CVAR_USERINFO | CVAR_ARCHIVE );
+	hand             = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
+	fov              = Cvar_Get( "fov", "90", CVAR_USERINFO | CVAR_ARCHIVE );
+	gender           = Cvar_Get( "gender", "male", CVAR_USERINFO | CVAR_ARCHIVE );
+	gender_auto      = Cvar_Get( "gender_auto", "1", CVAR_ARCHIVE );
 	gender->modified = false;// clear this so we know when user sets it manually
 
 	cl_vwep = Cvar_Get( "cl_vwep", "1", CVAR_ARCHIVE );
@@ -1628,18 +1628,18 @@ typedef struct
 } cheatvar_t;
 
 cheatvar_t cheatvars[] = {
-		{ "timescale", "1" },
-		{ "timedemo", "0" },
-		{ "r_drawworld", "1" },
-		{ "cl_testlights", "0" },
-		{ "r_fullbright", "0" },
-		{ "r_drawflat", "0" },
-		{ "paused", "0" },
-		{ "fixedtime", "0" },
-		{ "sw_draworder", "0" },
-		{ "gl_lightmap", "0" },
-		{ "gl_saturatelighting", "0" },
-		{ nullptr, nullptr } };
+        { "timescale", "1" },
+        { "timedemo", "0" },
+        { "r_drawworld", "1" },
+        { "cl_testlights", "0" },
+        { "r_fullbright", "0" },
+        { "r_drawflat", "0" },
+        { "paused", "0" },
+        { "fixedtime", "0" },
+        { "sw_draworder", "0" },
+        { "gl_lightmap", "0" },
+        { "gl_saturatelighting", "0" },
+        { nullptr, nullptr } };
 
 int numcheatvars;
 
@@ -1817,7 +1817,7 @@ void CL_Init( void )
 
 	V_Init();
 
-	net_message.data = net_message_buffer;
+	net_message.data    = net_message_buffer;
 	net_message.maxsize = sizeof( net_message_buffer );
 
 	M_Init();

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 image_t *draw_chars;
 
 extern bool scrap_dirty;
-void            Scrap_Upload( void );
+void        Scrap_Upload( void );
 
 
 /*
@@ -332,12 +332,12 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 	if ( rows <= 256 )
 	{
 		hscale = 1;
-		trows = rows;
+		trows  = rows;
 	}
 	else
 	{
 		hscale = rows / 256.0;
-		trows = 256;
+		trows  = 256;
 	}
 	t = rows * hscale / 256;
 
@@ -350,10 +350,10 @@ void Draw_StretchRaw( int x, int y, int w, int h, int cols, int rows, byte *data
 		row = ( int ) ( i * hscale );
 		if ( row > rows )
 			break;
-		source = data + cols * row;
-		dest = &image32[ i * 256 ];
+		source   = data + cols * row;
+		dest     = &image32[ i * 256 ];
 		fracstep = cols * 0x10000 / 256;
-		frac = fracstep >> 1;
+		frac     = fracstep >> 1;
 		for ( j = 0; j < 256; j++ )
 		{
 			dest[ j ] = r_rawpalette[ source[ frac >> 16 ] ];

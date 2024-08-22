@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	bool       valid;// cleared if delta parsing was invalid
+	bool           valid;// cleared if delta parsing was invalid
 	int            serverframe;
 	int            servertime;// server time the message is valid for (in msec)
 	int            deltaframe;
@@ -126,7 +126,7 @@ typedef struct
 	vec3_t viewangles;
 
 	int time;      // this is the time value that the client
-				   // is rendering at.  always <= cls.realtime
+	               // is rendering at.  always <= cls.realtime
 	float lerpfrac;// between oldframe and frame
 
 	refdef_t refdef;
@@ -142,19 +142,19 @@ typedef struct
 	//
 	// non-gameserver infornamtion
 	// FIXME: move this cinematic stuff into the cin_t structure
-	FILE		 *cinematic_file;
+	FILE         *cinematic_file;
 	int           cinematictime;// cls.realtime for first cinematic frame
 	int           cinematicframe;
 	unsigned char cinematicpalette[ 768 ];
-	bool      cinematicpalette_active;
+	bool          cinematicpalette_active;
 
 	//
 	// server state information
 	//
 	bool attractloop;// running the attract loop, any key will menu
-	int      servercount;// server identification for prespawns
-	char     gamedir[ MAX_QPATH ];
-	int      playernum;
+	int  servercount;// server identification for prespawns
+	char gamedir[ MAX_QPATH ];
+	int  playernum;
 
 	char configstrings[ MAX_CONFIGSTRINGS ][ MAX_QPATH ];
 
@@ -219,17 +219,17 @@ typedef struct
 
 	// screen rendering information
 	float disable_screen;   // showing loading plaque between levels
-							// or changing rendering dlls
-							// if time gets > 30 seconds ahead, break it
+	                        // or changing rendering dlls
+	                        // if time gets > 30 seconds ahead, break it
 	int disable_servercount;// when we receive a frame and cl.servercount
-							// > cls.disable_servercount, clear disable_screen
+	                        // > cls.disable_servercount, clear disable_screen
 
 	// connection information
 	char  servername[ MAX_OSPATH ];// name of server from original connect
 	float connect_time;            // for connection retransmits
 
 	int quakePort;// a 16 bit value that allows quake servers
-				  // to work around address translating routers
+	              // to work around address translating routers
 	netchan_t netchan;
 	int       serverProtocol;// in case we are doing some kind of version hack
 
@@ -243,9 +243,9 @@ typedef struct
 	int      downloadpercent;
 
 	// demo recording info must be here, so it isn't cleared on level change
-	bool demorecording;
-	bool demowaiting;// don't record until a non-delta message is received
-	FILE    *demofile;
+	bool  demorecording;
+	bool  demowaiting;// don't record until a non-delta message is received
+	FILE *demofile;
 } client_static_t;
 
 extern client_static_t cls;
@@ -326,8 +326,8 @@ extern entity_state_t cl_parse_entities[ MAX_PARSE_ENTITIES ];
 extern netadr_t  net_from;
 extern sizebuf_t net_message;
 
-void     DrawString( int x, int y, const char *s );
-void     DrawAltString( int x, int y, const char *s );// toggle high bit
+void DrawString( int x, int y, const char *s );
+void DrawAltString( int x, int y, const char *s );// toggle high bit
 bool CL_CheckOrDownloadFile( char *filename );
 
 void CL_AddNetgraph();

@@ -36,16 +36,16 @@ int  key_linepos;
 int  shift_down = false;
 int  anykeydown;
 
-int edit_line = 0;
+int edit_line    = 0;
 int history_line = 0;
 
-int      key_waiting;
-char    *keybindings[ 256 ];
-bool consolekeys[ 256 ];// if true, can't be rebound while in console
-bool menubound[ 256 ];  // if true, can't be rebound while in menu
-int      keyshift[ 256 ];   // key to map to if shift held down in console
-int      key_repeats[ 256 ];// if > 1, it is autorepeating
-bool keydown[ 256 ];
+int   key_waiting;
+char *keybindings[ 256 ];
+bool  consolekeys[ 256 ];// if true, can't be rebound while in console
+bool  menubound[ 256 ];  // if true, can't be rebound while in menu
+int   keyshift[ 256 ];   // key to map to if shift held down in console
+int   key_repeats[ 256 ];// if > 1, it is autorepeating
+bool  keydown[ 256 ];
 
 typedef struct
 {
@@ -54,107 +54,107 @@ typedef struct
 } keyname_t;
 
 keyname_t keynames[] =
-		{
-				{ "TAB", K_TAB },
-				{ "ENTER", K_ENTER },
-				{ "ESCAPE", K_ESCAPE },
-				{ "SPACE", K_SPACE },
-				{ "BACKSPACE", K_BACKSPACE },
-				{ "UPARROW", K_UPARROW },
-				{ "DOWNARROW", K_DOWNARROW },
-				{ "LEFTARROW", K_LEFTARROW },
-				{ "RIGHTARROW", K_RIGHTARROW },
+        {
+                { "TAB", K_TAB },
+                { "ENTER", K_ENTER },
+                { "ESCAPE", K_ESCAPE },
+                { "SPACE", K_SPACE },
+                { "BACKSPACE", K_BACKSPACE },
+                { "UPARROW", K_UPARROW },
+                { "DOWNARROW", K_DOWNARROW },
+                { "LEFTARROW", K_LEFTARROW },
+                { "RIGHTARROW", K_RIGHTARROW },
 
-				{ "ALT", K_ALT },
-				{ "CTRL", K_CTRL },
-				{ "SHIFT", K_SHIFT },
+                { "ALT", K_ALT },
+                { "CTRL", K_CTRL },
+                { "SHIFT", K_SHIFT },
 
-				{ "F1", K_F1 },
-				{ "F2", K_F2 },
-				{ "F3", K_F3 },
-				{ "F4", K_F4 },
-				{ "F5", K_F5 },
-				{ "F6", K_F6 },
-				{ "F7", K_F7 },
-				{ "F8", K_F8 },
-				{ "F9", K_F9 },
-				{ "F10", K_F10 },
-				{ "F11", K_F11 },
-				{ "F12", K_F12 },
+                { "F1", K_F1 },
+                { "F2", K_F2 },
+                { "F3", K_F3 },
+                { "F4", K_F4 },
+                { "F5", K_F5 },
+                { "F6", K_F6 },
+                { "F7", K_F7 },
+                { "F8", K_F8 },
+                { "F9", K_F9 },
+                { "F10", K_F10 },
+                { "F11", K_F11 },
+                { "F12", K_F12 },
 
-				{ "INS", K_INS },
-				{ "DEL", K_DEL },
-				{ "PGDN", K_PGDN },
-				{ "PGUP", K_PGUP },
-				{ "HOME", K_HOME },
-				{ "END", K_END },
+                { "INS", K_INS },
+                { "DEL", K_DEL },
+                { "PGDN", K_PGDN },
+                { "PGUP", K_PGUP },
+                { "HOME", K_HOME },
+                { "END", K_END },
 
-				{ "MOUSE1", K_MOUSE1 },
-				{ "MOUSE2", K_MOUSE2 },
-				{ "MOUSE3", K_MOUSE3 },
+                { "MOUSE1", K_MOUSE1 },
+                { "MOUSE2", K_MOUSE2 },
+                { "MOUSE3", K_MOUSE3 },
 
-				{ "JOY1", K_JOY1 },
-				{ "JOY2", K_JOY2 },
-				{ "JOY3", K_JOY3 },
-				{ "JOY4", K_JOY4 },
+                { "JOY1", K_JOY1 },
+                { "JOY2", K_JOY2 },
+                { "JOY3", K_JOY3 },
+                { "JOY4", K_JOY4 },
 
-				{ "AUX1", K_AUX1 },
-				{ "AUX2", K_AUX2 },
-				{ "AUX3", K_AUX3 },
-				{ "AUX4", K_AUX4 },
-				{ "AUX5", K_AUX5 },
-				{ "AUX6", K_AUX6 },
-				{ "AUX7", K_AUX7 },
-				{ "AUX8", K_AUX8 },
-				{ "AUX9", K_AUX9 },
-				{ "AUX10", K_AUX10 },
-				{ "AUX11", K_AUX11 },
-				{ "AUX12", K_AUX12 },
-				{ "AUX13", K_AUX13 },
-				{ "AUX14", K_AUX14 },
-				{ "AUX15", K_AUX15 },
-				{ "AUX16", K_AUX16 },
-				{ "AUX17", K_AUX17 },
-				{ "AUX18", K_AUX18 },
-				{ "AUX19", K_AUX19 },
-				{ "AUX20", K_AUX20 },
-				{ "AUX21", K_AUX21 },
-				{ "AUX22", K_AUX22 },
-				{ "AUX23", K_AUX23 },
-				{ "AUX24", K_AUX24 },
-				{ "AUX25", K_AUX25 },
-				{ "AUX26", K_AUX26 },
-				{ "AUX27", K_AUX27 },
-				{ "AUX28", K_AUX28 },
-				{ "AUX29", K_AUX29 },
-				{ "AUX30", K_AUX30 },
-				{ "AUX31", K_AUX31 },
-				{ "AUX32", K_AUX32 },
+                { "AUX1", K_AUX1 },
+                { "AUX2", K_AUX2 },
+                { "AUX3", K_AUX3 },
+                { "AUX4", K_AUX4 },
+                { "AUX5", K_AUX5 },
+                { "AUX6", K_AUX6 },
+                { "AUX7", K_AUX7 },
+                { "AUX8", K_AUX8 },
+                { "AUX9", K_AUX9 },
+                { "AUX10", K_AUX10 },
+                { "AUX11", K_AUX11 },
+                { "AUX12", K_AUX12 },
+                { "AUX13", K_AUX13 },
+                { "AUX14", K_AUX14 },
+                { "AUX15", K_AUX15 },
+                { "AUX16", K_AUX16 },
+                { "AUX17", K_AUX17 },
+                { "AUX18", K_AUX18 },
+                { "AUX19", K_AUX19 },
+                { "AUX20", K_AUX20 },
+                { "AUX21", K_AUX21 },
+                { "AUX22", K_AUX22 },
+                { "AUX23", K_AUX23 },
+                { "AUX24", K_AUX24 },
+                { "AUX25", K_AUX25 },
+                { "AUX26", K_AUX26 },
+                { "AUX27", K_AUX27 },
+                { "AUX28", K_AUX28 },
+                { "AUX29", K_AUX29 },
+                { "AUX30", K_AUX30 },
+                { "AUX31", K_AUX31 },
+                { "AUX32", K_AUX32 },
 
-				{ "KP_HOME", K_KP_HOME },
-				{ "KP_UPARROW", K_KP_UPARROW },
-				{ "KP_PGUP", K_KP_PGUP },
-				{ "KP_LEFTARROW", K_KP_LEFTARROW },
-				{ "KP_5", K_KP_5 },
-				{ "KP_RIGHTARROW", K_KP_RIGHTARROW },
-				{ "KP_END", K_KP_END },
-				{ "KP_DOWNARROW", K_KP_DOWNARROW },
-				{ "KP_PGDN", K_KP_PGDN },
-				{ "KP_ENTER", K_KP_ENTER },
-				{ "KP_INS", K_KP_INS },
-				{ "KP_DEL", K_KP_DEL },
-				{ "KP_SLASH", K_KP_SLASH },
-				{ "KP_MINUS", K_KP_MINUS },
-				{ "KP_PLUS", K_KP_PLUS },
+                { "KP_HOME", K_KP_HOME },
+                { "KP_UPARROW", K_KP_UPARROW },
+                { "KP_PGUP", K_KP_PGUP },
+                { "KP_LEFTARROW", K_KP_LEFTARROW },
+                { "KP_5", K_KP_5 },
+                { "KP_RIGHTARROW", K_KP_RIGHTARROW },
+                { "KP_END", K_KP_END },
+                { "KP_DOWNARROW", K_KP_DOWNARROW },
+                { "KP_PGDN", K_KP_PGDN },
+                { "KP_ENTER", K_KP_ENTER },
+                { "KP_INS", K_KP_INS },
+                { "KP_DEL", K_KP_DEL },
+                { "KP_SLASH", K_KP_SLASH },
+                { "KP_MINUS", K_KP_MINUS },
+                { "KP_PLUS", K_KP_PLUS },
 
-				{ "MWHEELUP", K_MWHEELUP },
-				{ "MWHEELDOWN", K_MWHEELDOWN },
+                { "MWHEELUP", K_MWHEELUP },
+                { "MWHEELDOWN", K_MWHEELDOWN },
 
-				{ "PAUSE", K_PAUSE },
+                { "PAUSE", K_PAUSE },
 
-				{ "SEMICOLON", ';' },// because a raw semicolon seperates commands
+                { "SEMICOLON", ';' },// because a raw semicolon seperates commands
 
-				{ NULL, 0 } };
+                { NULL, 0 } };
 
 /*
 ==============================================================================
@@ -179,7 +179,7 @@ void CompleteCommand( void )
 	{
 		key_lines[ edit_line ][ 1 ] = '/';
 		strcpy( key_lines[ edit_line ] + 2, cmd );
-		key_linepos = strlen( cmd ) + 2;
+		key_linepos                           = strlen( cmd ) + 2;
 		key_lines[ edit_line ][ key_linepos ] = ' ';
 		key_linepos++;
 		key_lines[ edit_line ][ key_linepos ] = 0;
@@ -287,13 +287,13 @@ void Key_Console( int key )
 
 		Cbuf_AddText( "\n" );
 		Com_Printf( "%s\n", key_lines[ edit_line ] );
-		edit_line = ( edit_line + 1 ) & 31;
-		history_line = edit_line;
+		edit_line                   = ( edit_line + 1 ) & 31;
+		history_line                = edit_line;
 		key_lines[ edit_line ][ 0 ] = ']';
-		key_linepos = 1;
+		key_linepos                 = 1;
 		if ( cls.state == ca_disconnected )
 			SCR_UpdateScreen();// force an update, because the command
-							   // may take some time
+			                   // may take some time
 		return;
 	}
 
@@ -335,7 +335,7 @@ void Key_Console( int key )
 		if ( history_line == edit_line )
 		{
 			key_lines[ edit_line ][ 0 ] = ']';
-			key_linepos = 1;
+			key_linepos                 = 1;
 		}
 		else
 		{
@@ -385,8 +385,8 @@ void Key_Console( int key )
 //============================================================================
 
 bool chat_team;
-char     chat_buffer[ MAXCMDLINE ];
-int      chat_bufferlen = 0;
+char chat_buffer[ MAXCMDLINE ];
+int  chat_bufferlen = 0;
 
 void Key_Message( int key )
 {
@@ -400,16 +400,16 @@ void Key_Message( int key )
 		Cbuf_AddText( chat_buffer );
 		Cbuf_AddText( "\"\n" );
 
-		cls.key_dest = key_game;
-		chat_bufferlen = 0;
+		cls.key_dest     = key_game;
+		chat_bufferlen   = 0;
 		chat_buffer[ 0 ] = 0;
 		return;
 	}
 
 	if ( key == K_ESCAPE )
 	{
-		cls.key_dest = key_game;
-		chat_bufferlen = 0;
+		cls.key_dest     = key_game;
+		chat_bufferlen   = 0;
 		chat_buffer[ 0 ] = 0;
 		return;
 	}
@@ -431,7 +431,7 @@ void Key_Message( int key )
 		return;// all full
 
 	chat_buffer[ chat_bufferlen++ ] = key;
-	chat_buffer[ chat_bufferlen ] = 0;
+	chat_buffer[ chat_bufferlen ]   = 0;
 }
 
 //============================================================================
@@ -512,10 +512,10 @@ void Key_SetBinding( int keynum, const char *binding )
 	}
 
 	// allocate memory for new binding
-	size_t l = strlen( binding );
+	size_t l    = strlen( binding );
 	char  *newn = static_cast< char  *>( Z_Malloc( l + 1 ) );
 	strcpy( newn, binding );
-	newn[ l ] = 0;
+	newn[ l ]             = 0;
 	keybindings[ keynum ] = newn;
 }
 
@@ -647,34 +647,34 @@ void Key_Init()
 	//
 	for ( i = 32; i < 128; i++ )
 		consolekeys[ i ] = true;
-	consolekeys[ K_ENTER ] = true;
-	consolekeys[ K_KP_ENTER ] = true;
-	consolekeys[ K_TAB ] = true;
-	consolekeys[ K_LEFTARROW ] = true;
-	consolekeys[ K_KP_LEFTARROW ] = true;
-	consolekeys[ K_RIGHTARROW ] = true;
+	consolekeys[ K_ENTER ]         = true;
+	consolekeys[ K_KP_ENTER ]      = true;
+	consolekeys[ K_TAB ]           = true;
+	consolekeys[ K_LEFTARROW ]     = true;
+	consolekeys[ K_KP_LEFTARROW ]  = true;
+	consolekeys[ K_RIGHTARROW ]    = true;
 	consolekeys[ K_KP_RIGHTARROW ] = true;
-	consolekeys[ K_UPARROW ] = true;
-	consolekeys[ K_KP_UPARROW ] = true;
-	consolekeys[ K_DOWNARROW ] = true;
-	consolekeys[ K_KP_DOWNARROW ] = true;
-	consolekeys[ K_BACKSPACE ] = true;
-	consolekeys[ K_HOME ] = true;
-	consolekeys[ K_KP_HOME ] = true;
-	consolekeys[ K_END ] = true;
-	consolekeys[ K_KP_END ] = true;
-	consolekeys[ K_PGUP ] = true;
-	consolekeys[ K_KP_PGUP ] = true;
-	consolekeys[ K_PGDN ] = true;
-	consolekeys[ K_KP_PGDN ] = true;
-	consolekeys[ K_SHIFT ] = true;
-	consolekeys[ K_INS ] = true;
-	consolekeys[ K_KP_INS ] = true;
-	consolekeys[ K_KP_DEL ] = true;
-	consolekeys[ K_KP_SLASH ] = true;
-	consolekeys[ K_KP_PLUS ] = true;
-	consolekeys[ K_KP_MINUS ] = true;
-	consolekeys[ K_KP_5 ] = true;
+	consolekeys[ K_UPARROW ]       = true;
+	consolekeys[ K_KP_UPARROW ]    = true;
+	consolekeys[ K_DOWNARROW ]     = true;
+	consolekeys[ K_KP_DOWNARROW ]  = true;
+	consolekeys[ K_BACKSPACE ]     = true;
+	consolekeys[ K_HOME ]          = true;
+	consolekeys[ K_KP_HOME ]       = true;
+	consolekeys[ K_END ]           = true;
+	consolekeys[ K_KP_END ]        = true;
+	consolekeys[ K_PGUP ]          = true;
+	consolekeys[ K_KP_PGUP ]       = true;
+	consolekeys[ K_PGDN ]          = true;
+	consolekeys[ K_KP_PGDN ]       = true;
+	consolekeys[ K_SHIFT ]         = true;
+	consolekeys[ K_INS ]           = true;
+	consolekeys[ K_KP_INS ]        = true;
+	consolekeys[ K_KP_DEL ]        = true;
+	consolekeys[ K_KP_SLASH ]      = true;
+	consolekeys[ K_KP_PLUS ]       = true;
+	consolekeys[ K_KP_MINUS ]      = true;
+	consolekeys[ K_KP_5 ]          = true;
 
 	consolekeys[ '`' ] = false;
 	consolekeys[ '~' ] = false;
@@ -683,26 +683,26 @@ void Key_Init()
 		keyshift[ i ] = i;
 	for ( i = 'a'; i <= 'z'; i++ )
 		keyshift[ i ] = i - 'a' + 'A';
-	keyshift[ '1' ] = '!';
-	keyshift[ '2' ] = '@';
-	keyshift[ '3' ] = '#';
-	keyshift[ '4' ] = '$';
-	keyshift[ '5' ] = '%';
-	keyshift[ '6' ] = '^';
-	keyshift[ '7' ] = '&';
-	keyshift[ '8' ] = '*';
-	keyshift[ '9' ] = '(';
-	keyshift[ '0' ] = ')';
-	keyshift[ '-' ] = '_';
-	keyshift[ '=' ] = '+';
-	keyshift[ ',' ] = '<';
-	keyshift[ '.' ] = '>';
-	keyshift[ '/' ] = '?';
-	keyshift[ ';' ] = ':';
+	keyshift[ '1' ]  = '!';
+	keyshift[ '2' ]  = '@';
+	keyshift[ '3' ]  = '#';
+	keyshift[ '4' ]  = '$';
+	keyshift[ '5' ]  = '%';
+	keyshift[ '6' ]  = '^';
+	keyshift[ '7' ]  = '&';
+	keyshift[ '8' ]  = '*';
+	keyshift[ '9' ]  = '(';
+	keyshift[ '0' ]  = ')';
+	keyshift[ '-' ]  = '_';
+	keyshift[ '=' ]  = '+';
+	keyshift[ ',' ]  = '<';
+	keyshift[ '.' ]  = '>';
+	keyshift[ '/' ]  = '?';
+	keyshift[ ';' ]  = ':';
 	keyshift[ '\'' ] = '"';
-	keyshift[ '[' ] = '{';
-	keyshift[ ']' ] = '}';
-	keyshift[ '`' ] = '~';
+	keyshift[ '[' ]  = '{';
+	keyshift[ ']' ]  = '}';
+	keyshift[ '`' ]  = '~';
 	keyshift[ '\\' ] = '|';
 
 	menubound[ K_ESCAPE ] = true;
@@ -891,7 +891,7 @@ void Key_ClearStates()
 	{
 		if ( keydown[ i ] || key_repeats[ i ] )
 			Key_Event( i, false, 0 );
-		keydown[ i ] = false;
+		keydown[ i ]     = false;
 		key_repeats[ i ] = 0;
 	}
 }

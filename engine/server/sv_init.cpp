@@ -147,8 +147,8 @@ void SV_CheckForSavegame( void )
 		// prevents these from being passed down.
 		server_state_t previousState;// PGM
 
-		previousState = sv.state;// PGM
-		sv.state = ss_loading;   // PGM
+		previousState = sv.state;  // PGM
+		sv.state      = ss_loading;// PGM
 		for ( i = 0; i < 100; i++ )
 			ge->RunFrame();
 
@@ -181,14 +181,14 @@ void SV_SpawnServer( char *server, char *spawnpoint, server_state_t serverstate,
 		fclose( sv.demofile );
 
 	svs.spawncount++;// any partially connected client will be
-					 // restarted
+	                 // restarted
 	sv.state = ss_dead;
 	Com_SetServerState( sv.state );
 
 	// wipe the entire per-level structure
 	memset( &sv, 0, sizeof( sv ) );
-	svs.realtime = 0;
-	sv.loadgame = loadgame;
+	svs.realtime   = 0;
+	sv.loadgame    = loadgame;
 	sv.attractloop = attractloop;
 
 	// save name for levels that don't set message
@@ -341,10 +341,10 @@ void SV_InitGame( void )
 		Cvar_FullSet( "maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH );
 	}
 
-	svs.spawncount = rand();
-	svs.clients = static_cast< client_t * >( Z_Malloc( sizeof( client_t ) * maxclients->value ) );
+	svs.spawncount          = rand();
+	svs.clients             = static_cast< client_t             *>( Z_Malloc( sizeof( client_t ) * maxclients->value ) );
 	svs.num_client_entities = maxclients->value * UPDATE_BACKUP * 64;
-	svs.client_entities = static_cast< entity_state_t * >( Z_Malloc( sizeof( entity_state_t ) * svs.num_client_entities ) );
+	svs.client_entities     = static_cast< entity_state_t     *>( Z_Malloc( sizeof( entity_state_t ) * svs.num_client_entities ) );
 
 	// init network stuff
 	NET_Config( ( maxclients->value > 1 ) );
@@ -358,8 +358,8 @@ void SV_InitGame( void )
 	SV_InitGameProgs();
 	for ( i = 0; i < maxclients->value; i++ )
 	{
-		ent = EDICT_NUM( i + 1 );
-		ent->s.number = i + 1;
+		ent                    = EDICT_NUM( i + 1 );
+		ent->s.number          = i + 1;
 		svs.clients[ i ].edict = ent;
 		memset( &svs.clients[ i ].lastcmd, 0, sizeof( svs.clients[ i ].lastcmd ) );
 	}
@@ -389,7 +389,7 @@ void SV_Map( bool attractloop, const char *levelstring, bool loadgame )
 	int   l;
 	char  spawnpoint[ MAX_QPATH ];
 
-	sv.loadgame = loadgame;
+	sv.loadgame    = loadgame;
 	sv.attractloop = attractloop;
 
 	if ( sv.state == ss_dead && !sv.loadgame )

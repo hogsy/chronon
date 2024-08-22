@@ -56,15 +56,15 @@ void NetadrToSockadr( netadr_t *a, struct sockaddr *s )
 
 	if ( a->type == NA_BROADCAST )
 	{
-		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
-		( ( struct sockaddr_in * ) s )->sin_port = a->port;
+		( ( struct sockaddr_in * ) s )->sin_family      = AF_INET;
+		( ( struct sockaddr_in * ) s )->sin_port        = a->port;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = INADDR_BROADCAST;
 	}
 	else if ( a->type == NA_IP )
 	{
-		( ( struct sockaddr_in * ) s )->sin_family = AF_INET;
+		( ( struct sockaddr_in * ) s )->sin_family      = AF_INET;
 		( ( struct sockaddr_in * ) s )->sin_addr.s_addr = *( int * ) &a->ip;
-		( ( struct sockaddr_in * ) s )->sin_port = a->port;
+		( ( struct sockaddr_in * ) s )->sin_port        = a->port;
 	}
 	else if ( a->type == NA_IPX )
 	{
@@ -86,9 +86,9 @@ void SockadrToNetadr( struct sockaddr *s, netadr_t *a )
 {
 	if ( s->sa_family == AF_INET )
 	{
-		a->type = NA_IP;
+		a->type           = NA_IP;
 		*( int * ) &a->ip = ( ( struct sockaddr_in * ) s )->sin_addr.s_addr;
-		a->port = ( ( struct sockaddr_in * ) s )->sin_port;
+		a->port           = ( ( struct sockaddr_in           *) s )->sin_port;
 	}
 	else if ( s->sa_family == AF_IPX )
 	{
@@ -201,7 +201,7 @@ bool NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
 	if ( ( strlen( s ) >= 23 ) && ( s[ 8 ] == ':' ) && ( s[ 21 ] == ':' ) )// check for an IPX address
 	{
 		( ( struct sockaddr_ipx * ) sadr )->sa_family = AF_IPX;
-		copy[ 2 ] = 0;
+		copy[ 2 ]                                     = 0;
 		DO( 0, sa_netnum[ 0 ] );
 		DO( 2, sa_netnum[ 1 ] );
 		DO( 4, sa_netnum[ 2 ] );
@@ -226,7 +226,7 @@ bool NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
 		for ( colon = copy; *colon; colon++ )
 			if ( *colon == ':' )
 			{
-				*colon = 0;
+				*colon                                      = 0;
 				( ( struct sockaddr_in * ) sadr )->sin_port = htons( ( short ) atoi( colon + 1 ) );
 			}
 
@@ -355,7 +355,7 @@ bool NET_GetPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
 			continue;
 
 		fromlen = sizeof( from );
-		ret = recvfrom( net_socket, ( char * ) net_message->data, net_message->maxsize, 0, ( struct sockaddr * ) &from, &fromlen );
+		ret     = recvfrom( net_socket, ( char     *) net_message->data, net_message->maxsize, 0, ( struct sockaddr     *) &from, &fromlen );
 
 		SockadrToNetadr( &from, net_from );
 
@@ -485,7 +485,7 @@ int NET_IPSocket( char *net_interface, int port )
 	int                newsocket;
 	struct sockaddr_in address;
 	u_long             _true = true;
-	int                i = 1;
+	int                i     = 1;
 	int                err;
 
 	if ( ( newsocket = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == -1 )
@@ -750,7 +750,7 @@ void NET_Sleep( int msec )
 		if ( ipx_sockets[ NS_SERVER ] > i )
 			i = ipx_sockets[ NS_SERVER ];
 	}
-	timeout.tv_sec = msec / 1000;
+	timeout.tv_sec  = msec / 1000;
 	timeout.tv_usec = ( msec % 1000 ) * 1000;
 	select( i + 1, &fdset, NULL, NULL, &timeout );
 }

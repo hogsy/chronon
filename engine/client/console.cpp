@@ -55,7 +55,7 @@ void DrawAltString( int x, int y, const char *s )
 void Key_ClearTyping( void )
 {
 	key_lines[ edit_line ][ 1 ] = 0;// clear any typing
-	key_linepos = 1;
+	key_linepos                 = 1;
 }
 
 /*
@@ -208,7 +208,7 @@ Con_MessageMode_f
 */
 void Con_MessageMode_f( void )
 {
-	chat_team = false;
+	chat_team    = false;
 	cls.key_dest = key_message;
 }
 
@@ -219,7 +219,7 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f( void )
 {
-	chat_team = true;
+	chat_team    = true;
 	cls.key_dest = key_message;
 }
 
@@ -241,18 +241,18 @@ void Con_CheckResize( void )
 
 	if ( width < 1 )// video hasn't been initialized yet
 	{
-		width = 38;
-		con.linewidth = width;
+		width          = 38;
+		con.linewidth  = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
 		memset( con.text, ' ', CON_TEXTSIZE );
 	}
 	else
 	{
-		oldwidth = con.linewidth;
-		con.linewidth = width;
-		oldtotallines = con.totallines;
+		oldwidth       = con.linewidth;
+		con.linewidth  = width;
+		oldtotallines  = con.totallines;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		numlines = oldtotallines;
+		numlines       = oldtotallines;
 
 		if ( con.totallines < numlines ) numlines = con.totallines;
 
@@ -268,7 +268,7 @@ void Con_CheckResize( void )
 			for ( j = 0; j < numchars; j++ )
 			{
 				con.text[ ( con.totallines - 1 - i ) * con.linewidth + j ] =
-						tbuf[ ( ( con.current - i + oldtotallines ) % oldtotallines ) *
+				        tbuf[ ( ( con.current - i + oldtotallines ) % oldtotallines ) *
 				                      oldwidth +
 				              j ];
 			}
@@ -381,11 +381,11 @@ void Con_Print( char *txt )
 
 			case '\r':
 				con.x = 0;
-				cr = 1;
+				cr    = 1;
 				break;
 
 			default:// display character and advance
-				y = con.current % con.totallines;
+				y                                     = con.current % con.totallines;
 				con.text[ y * con.linewidth + con.x ] = c | mask | con.ormask;
 				con.x++;
 				if ( con.x >= con.linewidth ) con.x = 0;
@@ -613,7 +613,7 @@ void Con_DrawConsole( float frac )
 		else
 			strcpy( dlbar, text );
 		strcat( dlbar, ": " );
-		i = strlen( dlbar );
+		i            = strlen( dlbar );
 		dlbar[ i++ ] = '\x80';
 		// where's the dot go?
 		if ( cls.downloadpercent == 0 )
@@ -627,7 +627,7 @@ void Con_DrawConsole( float frac )
 			else
 				dlbar[ i++ ] = '\x81';
 		dlbar[ i++ ] = '\x82';
-		dlbar[ i ] = 0;
+		dlbar[ i ]   = 0;
 
 		sprintf( dlbar + strlen( dlbar ), " %02d%%", cls.downloadpercent );
 

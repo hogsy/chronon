@@ -79,7 +79,7 @@ void CL_DrawInventory( void )
 
 	selected = cl.frame.playerstate.stats[ STAT_SELECTED_ITEM ];
 
-	num = 0;
+	num          = 0;
 	selected_num = 0;
 	for ( i = 0; i < MAX_ITEMS; i++ )
 	{

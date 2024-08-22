@@ -472,7 +472,7 @@ void SV_GameMap_f( void )
 	const char *map;
 	int         i;
 	client_t   *cl;
-	bool   *savedInuse;
+	bool       *savedInuse;
 
 	if ( Cmd_Argc() != 2 )
 	{
@@ -501,7 +501,7 @@ void SV_GameMap_f( void )
 			savedInuse = static_cast< bool * >( malloc( maxclients->value * sizeof( bool ) ) );
 			for ( i = 0, cl = svs.clients; i < maxclients->value; i++, cl++ )
 			{
-				savedInuse[ i ] = cl->edict->inuse;
+				savedInuse[ i ]  = cl->edict->inuse;
 				cl->edict->inuse = false;
 			}
 
@@ -904,7 +904,7 @@ void SV_ServerRecord_f()
 	//
 	// write a single giant fake message with all the startup info
 	//
-	static const unsigned int bufSize = 32768;
+	static const unsigned int bufSize  = 32768;
 	byte                     *buf_data = static_cast< byte                     *>( malloc( bufSize ) );
 	SZ_Init( &buf, buf_data, bufSize );
 

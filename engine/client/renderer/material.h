@@ -72,7 +72,7 @@ namespace chr::renderer
 	class Profile
 	{
 	public:
-		Profile() = default;
+		Profile()  = default;
 		~Profile() = default;
 
 		[[nodiscard]] inline std::string GetName() const { return name_; }
@@ -94,4 +94,4 @@ namespace chr::renderer
 	private:
 		std::vector< Skin > skins_;
 	};
-}// namespace nox::renderer
+}// namespace chr::renderer

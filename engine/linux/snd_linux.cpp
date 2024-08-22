@@ -37,7 +37,7 @@ cvar_t *snddevice;
 
 static int tryrates[] = { 11025, 22051, 44100, 8000 };
 
-bool SNDDMA_Init(  )
+bool SNDDMA_Init()
 {
 
 	int                   rc;
@@ -54,10 +54,10 @@ bool SNDDMA_Init(  )
 
 	if ( !snddevice )
 	{
-		sndbits = Cvar_Get( "sndbits", "16", CVAR_ARCHIVE );
-		sndspeed = Cvar_Get( "sndspeed", "0", CVAR_ARCHIVE );
+		sndbits     = Cvar_Get( "sndbits", "16", CVAR_ARCHIVE );
+		sndspeed    = Cvar_Get( "sndspeed", "0", CVAR_ARCHIVE );
 		sndchannels = Cvar_Get( "sndchannels", "2", CVAR_ARCHIVE );
-		snddevice = Cvar_Get( "snddevice", "/dev/dsp", CVAR_ARCHIVE );
+		snddevice   = Cvar_Get( "snddevice", "/dev/dsp", CVAR_ARCHIVE );
 	}
 
 	// open /dev/dsp, confirm capability to mmap, and get size of dma buffer
@@ -232,11 +232,11 @@ bool SNDDMA_Init(  )
 	snd_inited = 1;
 	return true;
 #else
-return false;
+	return false;
 #endif
 }
 
-int SNDDMA_GetDMAPos(  )
+int SNDDMA_GetDMAPos()
 {
 
 	struct count_info count;
@@ -258,7 +258,7 @@ int SNDDMA_GetDMAPos(  )
 	return dma.samplepos;
 }
 
-void SNDDMA_Shutdown(  )
+void SNDDMA_Shutdown()
 {
 #if 0
 	if (snd_inited)
@@ -276,10 +276,10 @@ SNDDMA_Submit
 Send sound to device if buffer isn't really the dma buffer
 ===============
 */
-void SNDDMA_Submit(  )
+void SNDDMA_Submit()
 {
 }
 
-void SNDDMA_BeginPainting(  )
+void SNDDMA_BeginPainting()
 {
 }

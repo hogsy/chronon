@@ -363,7 +363,7 @@ void CL_DeltaEntity( frame_t *frame, int newnum, entity_state_t *old, int bits )
 	}
 
 	ent->serverframe = cl.frame.serverframe;
-	ent->current = *state;
+	ent->current     = *state;
 }
 
 /*
@@ -382,7 +382,7 @@ void CL_ParsePacketEntities( frame_t *oldframe, frame_t *newframe )
 	int             oldindex, oldnum;
 
 	newframe->parse_entities = cl.parse_entities;
-	newframe->num_entities = 0;
+	newframe->num_entities   = 0;
 
 	// delta from the entities present in oldframe
 	oldindex = 0;
@@ -395,7 +395,7 @@ void CL_ParsePacketEntities( frame_t *oldframe, frame_t *newframe )
 		else
 		{
 			oldstate = &cl_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-			oldnum = oldstate->number;
+			oldnum   = oldstate->number;
 		}
 	}
 
@@ -424,7 +424,7 @@ void CL_ParsePacketEntities( frame_t *oldframe, frame_t *newframe )
 			else
 			{
 				oldstate = &cl_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
+				oldnum   = oldstate->number;
 			}
 		}
 
@@ -442,7 +442,7 @@ void CL_ParsePacketEntities( frame_t *oldframe, frame_t *newframe )
 			else
 			{
 				oldstate = &cl_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
+				oldnum   = oldstate->number;
 			}
 			continue;
 		}
@@ -460,7 +460,7 @@ void CL_ParsePacketEntities( frame_t *oldframe, frame_t *newframe )
 			else
 			{
 				oldstate = &cl_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-				oldnum = oldstate->number;
+				oldnum   = oldstate->number;
 			}
 			continue;
 		}
@@ -488,7 +488,7 @@ void CL_ParsePacketEntities( frame_t *oldframe, frame_t *newframe )
 		else
 		{
 			oldstate = &cl_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES - 1 ) ];
-			oldnum = oldstate->number;
+			oldnum   = oldstate->number;
 		}
 	}
 }
@@ -586,7 +586,7 @@ void CL_ParsePlayerstate( frame_t *oldframe, frame_t *newframe )
 
 	if ( flags & PS_WEAPONFRAME )
 	{
-		state->gunframe = MSG_ReadByte( &net_message );
+		state->gunframe       = MSG_ReadByte( &net_message );
 		state->gunoffset[ 0 ] = MSG_ReadChar( &net_message ) * 0.25;
 		state->gunoffset[ 1 ] = MSG_ReadChar( &net_message ) * 0.25;
 		state->gunoffset[ 2 ] = MSG_ReadChar( &net_message ) * 0.25;
@@ -631,7 +631,7 @@ void CL_FireEntityEvents( frame_t *frame )
 	for ( pnum = 0; pnum < frame->num_entities; pnum++ )
 	{
 		num = ( frame->parse_entities + pnum ) & ( MAX_PARSE_ENTITIES - 1 );
-		s1 = &cl_parse_entities[ num ];
+		s1  = &cl_parse_entities[ num ];
 		if ( s1->event )
 			CL_EntityEvent( s1 );
 
@@ -660,8 +660,8 @@ void CL_ParseFrame( void )
 #endif
 
 	cl.frame.serverframe = MSG_ReadLong( &net_message );
-	cl.frame.deltaframe = MSG_ReadLong( &net_message );
-	cl.frame.servertime = cl.frame.serverframe * 100;
+	cl.frame.deltaframe  = MSG_ReadLong( &net_message );
+	cl.frame.servertime  = cl.frame.serverframe * 100;
 
 	// BIG HACK to let old demos continue to work
 	if ( cls.serverProtocol != 26 )
@@ -677,8 +677,8 @@ void CL_ParseFrame( void )
 	// message
 	if ( cl.frame.deltaframe <= 0 )
 	{
-		cl.frame.valid = true;// uncompressed frame
-		old = NULL;
+		cl.frame.valid  = true;// uncompressed frame
+		old             = NULL;
 		cls.demowaiting = false;// we can start recording now
 	}
 	else
@@ -738,8 +738,8 @@ void CL_ParseFrame( void )
 		// getting a valid frame message ends the connection process
 		if ( cls.state != ca_active )
 		{
-			cls.state = ca_active;
-			cl.force_refdef = true;
+			cls.state                = ca_active;
+			cl.force_refdef          = true;
 			cl.predicted_origin[ 0 ] = cl.frame.playerstate.pmove.origin[ 0 ] * 0.125;
 			cl.predicted_origin[ 1 ] = cl.frame.playerstate.pmove.origin[ 1 ] * 0.125;
 			cl.predicted_origin[ 2 ] = cl.frame.playerstate.pmove.origin[ 2 ] * 0.125;
@@ -773,7 +773,7 @@ struct model_s *S_RegisterSexedModel( entity_state_t *ent, char *base )
 
 	// determine what model the client is using
 	model[ 0 ] = 0;
-	n = CS_PLAYERSKINS + ent->number - 1;
+	n          = CS_PLAYERSKINS + ent->number - 1;
 	if ( cl.configstrings[ n ][ 0 ] )
 	{
 		p = strchr( cl.configstrings[ n ], '\\' );
@@ -846,7 +846,7 @@ void CL_AddPacketEntities( frame_t *frame )
 
 		cent = &cl_entities[ s1->number ];
 
-		effects = s1->effects;
+		effects  = s1->effects;
 		renderfx = s1->renderfx;
 
 		// set frame
@@ -915,9 +915,9 @@ void CL_AddPacketEntities( frame_t *frame )
 		// tweak the color of beams
 		if ( renderfx & RF_BEAM )
 		{// the four beam colors are encoded in 32 bits of skinnum (hack)
-			ent.alpha = 0.30;
+			ent.alpha   = 0.30;
 			ent.skinnum = ( s1->skinnum >> ( ( rand() % 4 ) * 8 ) ) & 0xff;
-			ent.model = NULL;
+			ent.model   = NULL;
 		}
 		else
 		{
@@ -925,12 +925,12 @@ void CL_AddPacketEntities( frame_t *frame )
 			if ( s1->modelindex == 255 )
 			{// use custom player skin
 				ent.skinnum = 0;
-				ci = &cl.clientinfo[ s1->skinnum & 0xff ];
-				ent.skin = ci->skin;
-				ent.model = ci->model;
+				ci          = &cl.clientinfo[ s1->skinnum & 0xff ];
+				ent.skin    = ci->skin;
+				ent.model   = ci->model;
 				if ( !ent.skin || !ent.model )
 				{
-					ent.skin = cl.baseclientinfo.skin;
+					ent.skin  = cl.baseclientinfo.skin;
 					ent.model = cl.baseclientinfo.model;
 				}
 
@@ -940,17 +940,17 @@ void CL_AddPacketEntities( frame_t *frame )
 				{
 					if ( !strncmp( ( char * ) ent.skin, "players/male", 12 ) )
 					{
-						ent.skin = R_RegisterSkin( "players/male/disguise.pcx" );
+						ent.skin  = R_RegisterSkin( "players/male/disguise.pcx" );
 						ent.model = Mod_RegisterModel( "players/male/tris.md2" );
 					}
 					else if ( !strncmp( ( char * ) ent.skin, "players/female", 14 ) )
 					{
-						ent.skin = R_RegisterSkin( "players/female/disguise.pcx" );
+						ent.skin  = R_RegisterSkin( "players/female/disguise.pcx" );
 						ent.model = Mod_RegisterModel( "players/female/tris.md2" );
 					}
 					else if ( !strncmp( ( char * ) ent.skin, "players/cyborg", 14 ) )
 					{
-						ent.skin = R_RegisterSkin( "players/cyborg/disguise.pcx" );
+						ent.skin  = R_RegisterSkin( "players/cyborg/disguise.pcx" );
 						ent.model = Mod_RegisterModel( "players/cyborg/tris.md2" );
 					}
 				}
@@ -960,8 +960,8 @@ void CL_AddPacketEntities( frame_t *frame )
 			else
 			{
 				ent.skinnum = s1->skinnum;
-				ent.skin = NULL;
-				ent.model = cl.model_draw[ s1->modelindex ];
+				ent.skin    = NULL;
+				ent.model   = cl.model_draw[ s1->modelindex ];
 			}
 		}
 
@@ -1003,8 +1003,8 @@ void CL_AddPacketEntities( frame_t *frame )
 
 			for ( i = 0; i < 3; i++ )
 			{
-				a1 = cent->current.angles[ i ];
-				a2 = cent->prev.angles[ i ];
+				a1              = cent->current.angles[ i ];
+				a2              = cent->prev.angles[ i ];
 				ent.angles[ i ] = LerpAngle( a2, a1, cl.lerpfrac );
 			}
 		}
@@ -1067,10 +1067,10 @@ void CL_AddPacketEntities( frame_t *frame )
 			V_AddEntity( &ent );
 		}
 
-		ent.skin = NULL;// never use a custom skin on others
+		ent.skin    = NULL;// never use a custom skin on others
 		ent.skinnum = 0;
-		ent.flags = 0;
-		ent.alpha = 0;
+		ent.flags   = 0;
+		ent.alpha   = 0;
 
 		// duplicate for linked models
 		if ( s1->modelindex2 )
@@ -1078,7 +1078,7 @@ void CL_AddPacketEntities( frame_t *frame )
 			if ( s1->modelindex2 == 255 )
 			{// custom weapon
 				ci = &cl.clientinfo[ s1->skinnum & 0xff ];
-				i = ( s1->skinnum >> 8 );// 0 is default weapon model
+				i  = ( s1->skinnum >> 8 );// 0 is default weapon model
 				if ( !cl_vwep->value || i > MAX_CLIENTWEAPONMODELS - 1 )
 					i = 0;
 				ent.model = ci->weaponmodel[ i ];
@@ -1122,9 +1122,9 @@ void CL_AddPacketEntities( frame_t *frame )
 
 		if ( effects & EF_POWERSCREEN )
 		{
-			ent.model = cl_mod_powerscreen;
+			ent.model    = cl_mod_powerscreen;
 			ent.oldframe = 0;
-			ent.frame = 0;
+			ent.frame    = 0;
 			ent.flags |= ( RF_TRANSLUCENT | RF_SHELL_GREEN );
 			ent.alpha = 0.30;
 			V_AddEntity( &ent );
@@ -1304,7 +1304,7 @@ void CL_AddViewWeapon( player_state_t *ps, player_state_t *ops )
 
 	if ( gun_frame )
 	{
-		gun.frame = gun_frame;   // development tool
+		gun.frame    = gun_frame;// development tool
 		gun.oldframe = gun_frame;// development tool
 	}
 	else
@@ -1316,7 +1316,7 @@ void CL_AddViewWeapon( player_state_t *ps, player_state_t *ops )
 			gun.oldframe = ops->gunframe;
 	}
 
-	gun.flags = RF_MINLIGHT | RF_DEPTHHACK | RF_WEAPONMODEL;
+	gun.flags    = RF_MINLIGHT | RF_DEPTHHACK | RF_WEAPONMODEL;
 	gun.backlerp = 1.0 - cl.lerpfrac;
 	VectorCopy( gun.origin, gun.oldorigin );// don't lerp at all
 	V_AddEntity( &gun );
@@ -1338,8 +1338,8 @@ void CL_CalcViewValues( void )
 	player_state_t *ps, *ops;
 
 	// find the previous frame to interpolate from
-	ps = &cl.frame.playerstate;
-	i = ( cl.frame.serverframe - 1 ) & UPDATE_MASK;
+	ps       = &cl.frame.playerstate;
+	i        = ( cl.frame.serverframe - 1 ) & UPDATE_MASK;
 	oldframe = &cl.frames[ i ];
 	if ( oldframe->serverframe != cl.frame.serverframe - 1 || !oldframe->valid )
 		oldframe = &cl.frame;// previous frame was dropped or involid
@@ -1417,14 +1417,14 @@ void CL_AddEntities( void )
 	{
 		if ( cl_showclamp->value )
 			Com_Printf( "high clamp %i\n", cl.time - cl.frame.servertime );
-		cl.time = cl.frame.servertime;
+		cl.time     = cl.frame.servertime;
 		cl.lerpfrac = 1.0;
 	}
 	else if ( cl.time < cl.frame.servertime - 100 )
 	{
 		if ( cl_showclamp->value )
 			Com_Printf( "low clamp %i\n", cl.frame.servertime - 100 - cl.time );
-		cl.time = cl.frame.servertime - 100;
+		cl.time     = cl.frame.servertime - 100;
 		cl.lerpfrac = 0;
 	}
 	else

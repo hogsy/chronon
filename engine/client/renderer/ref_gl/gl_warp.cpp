@@ -40,7 +40,7 @@ static void BoundPoly( int numverts, float *verts, vec3_t mins, vec3_t maxs )
 
 	mins[ 0 ] = mins[ 1 ] = mins[ 2 ] = 9999;
 	maxs[ 0 ] = maxs[ 1 ] = maxs[ 2 ] = -9999;
-	v = verts;
+	v                                 = verts;
 	for ( i = 0; i < numverts; i++ )
 		for ( j = 0; j < 3; j++, v++ )
 		{
@@ -91,7 +91,7 @@ static void SubdividePolygon( int numverts, float *verts )
 		VectorCopy( verts, v );
 
 		f = b = 0;
-		v = verts;
+		v     = verts;
 		for ( j = 0; j < numverts; j++, v += 3 )
 		{
 			if ( dist[ j ] >= 0 )
@@ -123,10 +123,10 @@ static void SubdividePolygon( int numverts, float *verts )
 	}
 
 	// add a point in the center to help keep warp valid
-	poly = static_cast< glpoly_t * >( Hunk_Alloc( sizeof( glpoly_t ) + ( ( numverts - 4 ) + 2 ) * VERTEXSIZE * sizeof( float ) ) );
-	poly->next = warpface->polys;
+	poly            = static_cast< glpoly_t            *>( Hunk_Alloc( sizeof( glpoly_t ) + ( ( numverts - 4 ) + 2 ) * VERTEXSIZE * sizeof( float ) ) );
+	poly->next      = warpface->polys;
 	warpface->polys = poly;
-	poly->numverts = numverts + 2;
+	poly->numverts  = numverts + 2;
 	VectorClear( total );
 	total_s = 0;
 	total_t = 0;
@@ -195,7 +195,7 @@ void GL_SubdivideSurface( msurface_t *fa )
 
 // speed up sin calculations - Ed
 float r_turbsin[] =
-		{
+        {
 #include "warpsin.h"
 };
 #define TURBSCALE ( 256.0 / ( 2 * M_PI ) )
@@ -259,44 +259,44 @@ void EmitWaterPolys( msurface_t *fa )
 
 
 vec3_t skyclip[ 6 ] = {
-		{ 1, 1, 0 },
-		{ 1, -1, 0 },
-		{ 0, -1, 1 },
-		{ 0, 1, 1 },
-		{ 1, 0, 1 },
-		{ -1, 0, 1 } };
+        { 1, 1, 0 },
+        { 1, -1, 0 },
+        { 0, -1, 1 },
+        { 0, 1, 1 },
+        { 1, 0, 1 },
+        { -1, 0, 1 } };
 int c_sky;
 
 // 1 = s, 2 = t, 3 = 2048
 int st_to_vec[ 6 ][ 3 ] =
-		{
-				{ 3, -1, 2 },
-				{ -3, 1, 2 },
+        {
+                { 3, -1, 2 },
+                { -3, 1, 2 },
 
-				{ 1, 3, 2 },
-				{ -1, -3, 2 },
+                { 1, 3, 2 },
+                { -1, -3, 2 },
 
-				{ -2, -1, 3 },// 0 degrees yaw, look straight up
-				{ 2, -1, -3 } // look straight down
+                { -2, -1, 3 },// 0 degrees yaw, look straight up
+                { 2, -1, -3 } // look straight down
 
-				//	{-1,2,3},
-				//	{1,2,-3}
+                //	{-1,2,3},
+                //	{1,2,-3}
 };
 
 // s = [0]/[2], t = [1]/[2]
 static int vec_to_st[ 6 ][ 3 ] =
-		{
-				{ -2, 3, 1 },
-				{ 2, 3, -1 },
+        {
+                { -2, 3, 1 },
+                { 2, 3, -1 },
 
-				{ 1, 3, 2 },
-				{ -1, 3, -2 },
+                { 1, 3, 2 },
+                { -1, 3, -2 },
 
-				{ -2, -1, 3 },
-				{ -2, 1, -3 }
+                { -2, -1, 3 },
+                { -2, 1, -3 }
 
-				//	{-1,2,3},
-				//	{1,2,-3}
+                //	{-1,2,3},
+                //	{1,2,-3}
 };
 
 static float skymins[ 2 ][ 6 ], skymaxs[ 2 ][ 6 ];
@@ -387,15 +387,15 @@ void DrawSkyPolygon( int nump, vec3_t vecs )
 #define MAX_CLIP_VERTS 64
 static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 {
-	float   *norm;
-	float   *v;
-	bool front, back;
-	float    d, e;
-	float    dists[ MAX_CLIP_VERTS ];
-	int      sides[ MAX_CLIP_VERTS ];
-	vec3_t   newv[ 2 ][ MAX_CLIP_VERTS ];
-	int      newc[ 2 ];
-	int      i, j;
+	float *norm;
+	float *v;
+	bool   front, back;
+	float  d, e;
+	float  dists[ MAX_CLIP_VERTS ];
+	int    sides[ MAX_CLIP_VERTS ];
+	vec3_t newv[ 2 ][ MAX_CLIP_VERTS ];
+	int    newc[ 2 ];
+	int    i, j;
 
 	if ( nump > MAX_CLIP_VERTS - 2 )
 		Com_Error( ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS" );
@@ -406,18 +406,18 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 	}
 
 	front = back = false;
-	norm = skyclip[ stage ];
+	norm         = skyclip[ stage ];
 	for ( i = 0, v = vecs; i < nump; i++, v += 3 )
 	{
 		d = DotProduct( v, norm );
 		if ( d > ON_EPSILON )
 		{
-			front = true;
+			front      = true;
 			sides[ i ] = SIDE_FRONT;
 		}
 		else if ( d < -ON_EPSILON )
 		{
-			back = true;
+			back       = true;
 			sides[ i ] = SIDE_BACK;
 		}
 		else
@@ -463,7 +463,7 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage )
 		d = dists[ i ] / ( dists[ i ] - dists[ i + 1 ] );
 		for ( j = 0; j < 3; j++ )
 		{
-			e = v[ j ] + d * ( v[ j + 3 ] - v[ j ] );
+			e                           = v[ j ] + d * ( v[ j + 3 ] - v[ j ] );
 			newv[ 0 ][ newc[ 0 ] ][ j ] = e;
 			newv[ 1 ][ newc[ 1 ] ][ j ] = e;
 		}

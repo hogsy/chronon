@@ -136,9 +136,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern char *keybindings[ K_MAX ];
 extern int   key_repeats[ K_MAX ];
 
-extern int      anykeydown;
-extern char     chat_buffer[];
-extern int      chat_bufferlen;
+extern int  anykeydown;
+extern char chat_buffer[];
+extern int  chat_bufferlen;
 extern bool chat_team;
 
 void Key_Event( int key, bool down, unsigned time );

@@ -133,14 +133,14 @@ void CL_RegisterTEntSounds( void )
 	// PMM - version stuff
 	//	Com_Printf ("%s\n", ROGUE_VERSION_STRING);
 	// PMM
-	cl_sfx_ric1 = S_RegisterSound( "world/ric1.wav" );
-	cl_sfx_ric2 = S_RegisterSound( "world/ric2.wav" );
-	cl_sfx_ric3 = S_RegisterSound( "world/ric3.wav" );
-	cl_sfx_lashit = S_RegisterSound( "weapons/lashit.wav" );
-	cl_sfx_spark5 = S_RegisterSound( "world/spark5.wav" );
-	cl_sfx_spark6 = S_RegisterSound( "world/spark6.wav" );
-	cl_sfx_spark7 = S_RegisterSound( "world/spark7.wav" );
-	cl_sfx_railg = S_RegisterSound( "weapons/railgf1a.wav" );
+	cl_sfx_ric1    = S_RegisterSound( "world/ric1.wav" );
+	cl_sfx_ric2    = S_RegisterSound( "world/ric2.wav" );
+	cl_sfx_ric3    = S_RegisterSound( "world/ric3.wav" );
+	cl_sfx_lashit  = S_RegisterSound( "weapons/lashit.wav" );
+	cl_sfx_spark5  = S_RegisterSound( "world/spark5.wav" );
+	cl_sfx_spark6  = S_RegisterSound( "world/spark6.wav" );
+	cl_sfx_spark7  = S_RegisterSound( "world/spark7.wav" );
+	cl_sfx_railg   = S_RegisterSound( "weapons/railgf1a.wav" );
 	cl_sfx_rockexp = S_RegisterSound( "weapons/rocklx1a.wav" );
 	cl_sfx_grenexp = S_RegisterSound( "weapons/grenlx1a.wav" );
 	cl_sfx_watrexp = S_RegisterSound( "weapons/xpld_wat.wav" );
@@ -159,7 +159,7 @@ void CL_RegisterTEntSounds( void )
 
 	//PGM
 	cl_sfx_lightning = S_RegisterSound( "weapons/tesla.wav" );
-	cl_sfx_disrexp = S_RegisterSound( "weapons/disrupthit.wav" );
+	cl_sfx_disrexp   = S_RegisterSound( "weapons/disrupthit.wav" );
 	// version stuff
 	//	sprintf (name, "weapons/sound%d.wav", ROGUE_VERSION_ID);
 	//	if (name[0] == 'w')
@@ -247,13 +247,13 @@ explosion_t *CL_AllocExplosion( void )
 		}
 	}
 	// find the oldest explosion
-	time = cl.time;
+	time  = cl.time;
 	index = 0;
 
 	for ( i = 0; i < MAX_EXPLOSIONS; i++ )
 		if ( cl_explosions[ i ].start < time )
 		{
-			time = cl_explosions[ i ].start;
+			time  = cl_explosions[ i ].start;
 			index = i;
 		}
 	memset( &cl_explosions[ index ], 0, sizeof( cl_explosions[ index ] ) );
@@ -271,18 +271,18 @@ void CL_SmokeAndFlash( vec3_t origin )
 
 	ex = CL_AllocExplosion();
 	VectorCopy( origin, ex->ent.origin );
-	ex->type = ex_misc;
-	ex->frames = 4;
+	ex->type      = ex_misc;
+	ex->frames    = 4;
 	ex->ent.flags = RF_TRANSLUCENT;
-	ex->start = cl.frame.servertime - 100;
+	ex->start     = cl.frame.servertime - 100;
 	ex->ent.model = cl_mod_smoke;
 
 	ex = CL_AllocExplosion();
 	VectorCopy( origin, ex->ent.origin );
-	ex->type = ex_flash;
+	ex->type      = ex_flash;
 	ex->ent.flags = RF_FULLBRIGHT;
-	ex->frames = 2;
-	ex->start = cl.frame.servertime - 100;
+	ex->frames    = 2;
+	ex->start     = cl.frame.servertime - 100;
 	ex->ent.model = cl_mod_flash;
 }
 
@@ -327,8 +327,8 @@ int CL_ParseBeam( struct model_s *model )
 	for ( i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++ )
 		if ( b->entity == ent )
 		{
-			b->entity = ent;
-			b->model = model;
+			b->entity  = ent;
+			b->model   = model;
 			b->endtime = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
@@ -341,8 +341,8 @@ int CL_ParseBeam( struct model_s *model )
 	{
 		if ( !b->model || b->endtime < cl.time )
 		{
-			b->entity = ent;
-			b->model = model;
+			b->entity  = ent;
+			b->model   = model;
 			b->endtime = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
@@ -379,8 +379,8 @@ int CL_ParseBeam2( struct model_s *model )
 	for ( i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++ )
 		if ( b->entity == ent )
 		{
-			b->entity = ent;
-			b->model = model;
+			b->entity  = ent;
+			b->model   = model;
 			b->endtime = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
@@ -393,8 +393,8 @@ int CL_ParseBeam2( struct model_s *model )
 	{
 		if ( !b->model || b->endtime < cl.time )
 		{
-			b->entity = ent;
-			b->model = model;
+			b->entity  = ent;
+			b->model   = model;
 			b->endtime = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
@@ -443,8 +443,8 @@ int CL_ParsePlayerBeam( struct model_s *model )
 	{
 		if ( b->entity == ent )
 		{
-			b->entity = ent;
-			b->model = model;
+			b->entity  = ent;
+			b->model   = model;
 			b->endtime = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
@@ -458,8 +458,8 @@ int CL_ParsePlayerBeam( struct model_s *model )
 	{
 		if ( !b->model || b->endtime < cl.time )
 		{
-			b->entity = ent;
-			b->model = model;
+			b->entity  = ent;
+			b->model   = model;
 			b->endtime = cl.time + 100;// PMM - this needs to be 100 to prevent multiple heatbeams
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
@@ -484,7 +484,7 @@ int CL_ParseLightning( struct model_s *model )
 	beam_t *b;
 	int     i;
 
-	srcEnt = MSG_ReadShort( &net_message );
+	srcEnt  = MSG_ReadShort( &net_message );
 	destEnt = MSG_ReadShort( &net_message );
 
 	MSG_ReadPos( &net_message, start );
@@ -495,10 +495,10 @@ int CL_ParseLightning( struct model_s *model )
 		if ( b->entity == srcEnt && b->dest_entity == destEnt )
 		{
 			//			Com_Printf("%d: OVERRIDE  %d -> %d\n", cl.time, srcEnt, destEnt);
-			b->entity = srcEnt;
+			b->entity      = srcEnt;
 			b->dest_entity = destEnt;
-			b->model = model;
-			b->endtime = cl.time + 200;
+			b->model       = model;
+			b->endtime     = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
 			VectorClear( b->offset );
@@ -511,10 +511,10 @@ int CL_ParseLightning( struct model_s *model )
 		if ( !b->model || b->endtime < cl.time )
 		{
 			//			Com_Printf("%d: NORMAL  %d -> %d\n", cl.time, srcEnt, destEnt);
-			b->entity = srcEnt;
+			b->entity      = srcEnt;
 			b->dest_entity = destEnt;
-			b->model = model;
-			b->endtime = cl.time + 200;
+			b->model       = model;
+			b->endtime     = cl.time + 200;
 			VectorCopy( start, b->start );
 			VectorCopy( end, b->end );
 			VectorClear( b->offset );
@@ -547,11 +547,11 @@ void CL_ParseLaser( int colors )
 			l->ent.flags = RF_TRANSLUCENT | RF_BEAM;
 			VectorCopy( start, l->ent.origin );
 			VectorCopy( end, l->ent.oldorigin );
-			l->ent.alpha = 0.30;
+			l->ent.alpha   = 0.30;
 			l->ent.skinnum = ( colors >> ( ( rand() % 4 ) * 8 ) ) & 0xff;
-			l->ent.model = NULL;
-			l->ent.frame = 4;
-			l->endtime = cl.time + 100;
+			l->ent.model   = NULL;
+			l->ent.frame   = 4;
+			l->endtime     = cl.time + 100;
 			return;
 		}
 	}
@@ -584,17 +584,17 @@ void CL_ParseSteam( void )
 		}
 		if ( free_sustain )
 		{
-			s->id = id;
+			s->id    = id;
 			s->count = MSG_ReadByte( &net_message );
 			MSG_ReadPos( &net_message, s->org );
 			MSG_ReadDir( &net_message, s->dir );
-			r = MSG_ReadByte( &net_message );
-			s->color = r & 0xff;
-			s->magnitude = MSG_ReadShort( &net_message );
-			s->endtime = cl.time + MSG_ReadLong( &net_message );
-			s->think = CL_ParticleSteamEffect2;
+			r                = MSG_ReadByte( &net_message );
+			s->color         = r & 0xff;
+			s->magnitude     = MSG_ReadShort( &net_message );
+			s->endtime       = cl.time + MSG_ReadLong( &net_message );
+			s->think         = CL_ParticleSteamEffect2;
 			s->thinkinterval = 100;
-			s->nextthink = cl.time;
+			s->nextthink     = cl.time;
 		}
 		else
 		{
@@ -603,7 +603,7 @@ void CL_ParseSteam( void )
 			cnt = MSG_ReadByte( &net_message );
 			MSG_ReadPos( &net_message, pos );
 			MSG_ReadDir( &net_message, dir );
-			r = MSG_ReadByte( &net_message );
+			r         = MSG_ReadByte( &net_message );
 			magnitude = MSG_ReadShort( &net_message );
 			magnitude = MSG_ReadLong( &net_message );// really interval
 		}
@@ -613,9 +613,9 @@ void CL_ParseSteam( void )
 		cnt = MSG_ReadByte( &net_message );
 		MSG_ReadPos( &net_message, pos );
 		MSG_ReadDir( &net_message, dir );
-		r = MSG_ReadByte( &net_message );
+		r         = MSG_ReadByte( &net_message );
 		magnitude = MSG_ReadShort( &net_message );
-		color = r & 0xff;
+		color     = r & 0xff;
 		CL_ParticleSteamEffect( pos, dir, color, cnt, magnitude );
 		//		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 	}
@@ -642,10 +642,10 @@ void CL_ParseWidow( void )
 	{
 		s->id = id;
 		MSG_ReadPos( &net_message, s->org );
-		s->endtime = cl.time + 2100;
-		s->think = CL_Widowbeamout;
+		s->endtime       = cl.time + 2100;
+		s->think         = CL_Widowbeamout;
 		s->thinkinterval = 1;
-		s->nextthink = cl.time;
+		s->nextthink     = cl.time;
 	}
 	else// no free sustains
 	{
@@ -673,10 +673,10 @@ void CL_ParseNuke( void )
 	{
 		s->id = 21000;
 		MSG_ReadPos( &net_message, s->org );
-		s->endtime = cl.time + 1000;
-		s->think = CL_Nukeblast;
+		s->endtime       = cl.time + 1000;
+		s->think         = CL_Nukeblast;
 		s->thinkinterval = 1;
-		s->nextthink = cl.time;
+		s->nextthink     = cl.time;
 	}
 	else// no free sustains
 	{
@@ -818,14 +818,14 @@ void CL_ParseTEnt( void )
 			else
 				ex->ent.angles[ 1 ] = 0;
 
-			ex->type = ex_misc;
-			ex->ent.flags = RF_FULLBRIGHT | RF_TRANSLUCENT;
-			ex->start = cl.frame.servertime - 100;
-			ex->light = 150;
+			ex->type            = ex_misc;
+			ex->ent.flags       = RF_FULLBRIGHT | RF_TRANSLUCENT;
+			ex->start           = cl.frame.servertime - 100;
+			ex->light           = 150;
 			ex->lightcolor[ 0 ] = 1;
 			ex->lightcolor[ 1 ] = 1;
-			ex->ent.model = cl_mod_explode;
-			ex->frames = 4;
+			ex->ent.model       = cl_mod_explode;
+			ex->frames          = 4;
 			S_StartSound( pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0 );
 			break;
 
@@ -843,16 +843,16 @@ void CL_ParseTEnt( void )
 
 			ex = CL_AllocExplosion();
 			VectorCopy( pos, ex->ent.origin );
-			ex->type = ex_poly;
-			ex->ent.flags = RF_FULLBRIGHT;
-			ex->start = cl.frame.servertime - 100;
-			ex->light = 350;
+			ex->type            = ex_poly;
+			ex->ent.flags       = RF_FULLBRIGHT;
+			ex->start           = cl.frame.servertime - 100;
+			ex->light           = 350;
 			ex->lightcolor[ 0 ] = 1.0;
 			ex->lightcolor[ 1 ] = 0.5;
 			ex->lightcolor[ 2 ] = 0.5;
-			ex->ent.model = cl_mod_explo4;
-			ex->frames = 19;
-			ex->baseframe = 30;
+			ex->ent.model       = cl_mod_explo4;
+			ex->frames          = 19;
+			ex->baseframe       = 30;
 			ex->ent.angles[ 1 ] = rand() % 360;
 			CL_ExplosionParticles( pos );
 			if ( type == TE_GRENADE_EXPLOSION_WATER )
@@ -866,15 +866,15 @@ void CL_ParseTEnt( void )
 			MSG_ReadPos( &net_message, pos );
 			ex = CL_AllocExplosion();
 			VectorCopy( pos, ex->ent.origin );
-			ex->type = ex_poly;
-			ex->ent.flags = RF_FULLBRIGHT;
-			ex->start = cl.frame.servertime - 100;
-			ex->light = 350;
+			ex->type            = ex_poly;
+			ex->ent.flags       = RF_FULLBRIGHT;
+			ex->start           = cl.frame.servertime - 100;
+			ex->light           = 350;
 			ex->lightcolor[ 0 ] = 1.0;
 			ex->lightcolor[ 1 ] = 0.5;
 			ex->lightcolor[ 2 ] = 0.5;
 			ex->ent.angles[ 1 ] = rand() % 360;
-			ex->ent.model = cl_mod_explo4;
+			ex->ent.model       = cl_mod_explo4;
 			if ( frand() < 0.5 )
 				ex->baseframe = 15;
 			ex->frames = 15;
@@ -891,10 +891,10 @@ void CL_ParseTEnt( void )
 
 			ex = CL_AllocExplosion();
 			VectorCopy( pos, ex->ent.origin );
-			ex->type = ex_poly;
-			ex->ent.flags = RF_FULLBRIGHT;
-			ex->start = cl.frame.servertime - 100;
-			ex->light = 350;
+			ex->type            = ex_poly;
+			ex->ent.flags       = RF_FULLBRIGHT;
+			ex->start           = cl.frame.servertime - 100;
+			ex->light           = 350;
 			ex->lightcolor[ 0 ] = 1.0;
 			ex->lightcolor[ 1 ] = 0.5;
 			ex->lightcolor[ 2 ] = 0.5;
@@ -918,17 +918,17 @@ void CL_ParseTEnt( void )
 			MSG_ReadPos( &net_message, pos );
 			ex = CL_AllocExplosion();
 			VectorCopy( pos, ex->ent.origin );
-			ex->type = ex_poly;
-			ex->ent.flags = RF_FULLBRIGHT;
-			ex->start = cl.frame.servertime - 100;
-			ex->light = 350;
+			ex->type            = ex_poly;
+			ex->ent.flags       = RF_FULLBRIGHT;
+			ex->start           = cl.frame.servertime - 100;
+			ex->light           = 350;
 			ex->lightcolor[ 0 ] = 0.0;
 			ex->lightcolor[ 1 ] = 1.0;
 			ex->lightcolor[ 2 ] = 0.0;
-			ex->ent.model = cl_mod_bfg_explo;
+			ex->ent.model       = cl_mod_bfg_explo;
 			ex->ent.flags |= RF_TRANSLUCENT;
 			ex->ent.alpha = 0.30;
-			ex->frames = 4;
+			ex->frames    = 4;
 			break;
 
 		case TE_BFG_BIGEXPLOSION:
@@ -974,14 +974,14 @@ void CL_ParseTEnt( void )
 			ex->type = ex_flash;
 			// note to self
 			// we need a better no draw flag
-			ex->ent.flags = RF_BEAM;
-			ex->start = cl.frame.servertime - 0.1;
-			ex->light = 100 + ( rand() % 75 );
+			ex->ent.flags       = RF_BEAM;
+			ex->start           = cl.frame.servertime - 0.1;
+			ex->light           = 100 + ( rand() % 75 );
 			ex->lightcolor[ 0 ] = 1.0;
 			ex->lightcolor[ 1 ] = 1.0;
 			ex->lightcolor[ 2 ] = 0.3;
-			ex->ent.model = cl_mod_flash;
-			ex->frames = 2;
+			ex->ent.model       = cl_mod_flash;
+			ex->frames          = 2;
 			break;
 
 		case TE_GREENBLOOD:
@@ -1026,7 +1026,7 @@ void CL_ParseTEnt( void )
 			else
 				ex->ent.angles[ 1 ] = 0;
 
-			ex->type = ex_misc;
+			ex->type      = ex_misc;
 			ex->ent.flags = RF_FULLBRIGHT | RF_TRANSLUCENT;
 
 			// PMM
@@ -1047,7 +1047,7 @@ void CL_ParseTEnt( void )
 				ex->lightcolor[ 2 ] = 0.75;
 			}
 			ex->ent.model = cl_mod_explode;
-			ex->frames = 4;
+			ex->frames    = 4;
 			S_StartSound( pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0 );
 			break;
 
@@ -1068,15 +1068,15 @@ void CL_ParseTEnt( void )
 
 			ex = CL_AllocExplosion();
 			VectorCopy( pos, ex->ent.origin );
-			ex->type = ex_poly;
-			ex->ent.flags = RF_FULLBRIGHT;
-			ex->start = cl.frame.servertime - 100;
-			ex->light = 350;
+			ex->type            = ex_poly;
+			ex->ent.flags       = RF_FULLBRIGHT;
+			ex->start           = cl.frame.servertime - 100;
+			ex->light           = 350;
 			ex->lightcolor[ 0 ] = 1.0;
 			ex->lightcolor[ 1 ] = 0.5;
 			ex->lightcolor[ 2 ] = 0.5;
 			ex->ent.angles[ 1 ] = rand() % 360;
-			ex->ent.model = cl_mod_explo4;
+			ex->ent.model       = cl_mod_explo4;
 			if ( frand() < 0.5 )
 				ex->baseframe = 15;
 			ex->frames = 15;
@@ -1114,9 +1114,9 @@ void CL_ParseTEnt( void )
 			MSG_ReadDir( &net_message, dir );
 			//		r = MSG_ReadByte (&net_message);
 			//		magnitude = MSG_ReadShort (&net_message);
-			r = 8;
+			r         = 8;
 			magnitude = 60;
-			color = r & 0xff;
+			color     = r & 0xff;
 			CL_ParticleSteamEffect( pos, dir, color, cnt, magnitude );
 			S_StartSound( pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0 );
 			break;
@@ -1129,7 +1129,7 @@ void CL_ParseTEnt( void )
 			//		r = MSG_ReadByte (&net_message);
 			//		magnitude = MSG_ReadShort (&net_message);
 			//		color = r & 0xff;
-			color = 0xe0;
+			color     = 0xe0;
 			magnitude = 60;
 			CL_ParticleSteamEffect( pos, dir, color, cnt, magnitude );
 			S_StartSound( pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0 );
@@ -1260,7 +1260,7 @@ void CL_AddBeams( void )
 				yaw += 360;
 
 			forward = sqrtf( dist[ 0 ] * dist[ 0 ] + dist[ 1 ] * dist[ 1 ] );
-			pitch = ( atan2( dist[ 2 ], forward ) * -180.0 / M_PI );
+			pitch   = ( atan2( dist[ 2 ], forward ) * -180.0 / M_PI );
 			if ( pitch < 0 )
 				pitch += 360.0;
 		}
@@ -1279,7 +1279,7 @@ void CL_AddBeams( void )
 			model_length = 30.0;
 		}
 		steps = ceil( d / model_length );
-		len = ( d - model_length ) / ( steps - 1 );
+		len   = ( d - model_length ) / ( steps - 1 );
 
 		// PMM - special case for lightning model .. if the real length is shorter than the model,
 		// flip it around & draw it from the end to the start.  This prevents the model from going
@@ -1292,8 +1292,8 @@ void CL_AddBeams( void )
 			// for this beam)
 			//			for (j=0 ; j<3 ; j++)
 			//				ent.origin[j] -= dist[j]*10.0;
-			ent.model = b->model;
-			ent.flags = RF_FULLBRIGHT;
+			ent.model       = b->model;
+			ent.flags       = RF_FULLBRIGHT;
 			ent.angles[ 0 ] = pitch;
 			ent.angles[ 1 ] = yaw;
 			ent.angles[ 2 ] = rand() % 360;
@@ -1306,7 +1306,7 @@ void CL_AddBeams( void )
 			ent.model = b->model;
 			if ( b->model == cl_mod_lightning )
 			{
-				ent.flags = RF_FULLBRIGHT;
+				ent.flags       = RF_FULLBRIGHT;
 				ent.angles[ 0 ] = -pitch;
 				ent.angles[ 1 ] = yaw + 180.0;
 				ent.angles[ 2 ] = rand() % 360;
@@ -1398,8 +1398,8 @@ void CL_AddPlayerBeams( void )
 			{
 				// set up gun position
 				// code straight out of CL_AddViewWeapon
-				ps = &cl.frame.playerstate;
-				j = ( cl.frame.serverframe - 1 ) & UPDATE_MASK;
+				ps       = &cl.frame.playerstate;
+				j        = ( cl.frame.serverframe - 1 ) & UPDATE_MASK;
 				oldframe = &cl.frames[ j ];
 				if ( oldframe->serverframe != cl.frame.serverframe - 1 || !oldframe->valid )
 					oldframe = &cl.frame;// previous frame was dropped or involid
@@ -1473,7 +1473,7 @@ void CL_AddPlayerBeams( void )
 				yaw += 360;
 
 			forward = sqrtf( dist[ 0 ] * dist[ 0 ] + dist[ 1 ] * dist[ 1 ] );
-			pitch = ( atan2( dist[ 2 ], forward ) * -180.0 / M_PI );
+			pitch   = ( atan2( dist[ 2 ], forward ) * -180.0 / M_PI );
 			if ( pitch < 0 )
 				pitch += 360.0;
 		}
@@ -1533,7 +1533,7 @@ void CL_AddPlayerBeams( void )
 			model_length = 30.0;
 		}
 		steps = ceil( d / model_length );
-		len = ( d - model_length ) / ( steps - 1 );
+		len   = ( d - model_length ) / ( steps - 1 );
 
 		// PMM - special case for lightning model .. if the real length is shorter than the model,
 		// flip it around & draw it from the end to the start.  This prevents the model from going
@@ -1546,8 +1546,8 @@ void CL_AddPlayerBeams( void )
 			// for this beam)
 			//			for (j=0 ; j<3 ; j++)
 			//				ent.origin[j] -= dist[j]*10.0;
-			ent.model = b->model;
-			ent.flags = RF_FULLBRIGHT;
+			ent.model       = b->model;
+			ent.flags       = RF_FULLBRIGHT;
 			ent.angles[ 0 ] = pitch;
 			ent.angles[ 1 ] = yaw;
 			ent.angles[ 2 ] = rand() % 360;
@@ -1562,7 +1562,7 @@ void CL_AddPlayerBeams( void )
 			{
 				//				ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
 				//				ent.alpha = 0.3;
-				ent.flags = RF_FULLBRIGHT;
+				ent.flags       = RF_FULLBRIGHT;
 				ent.angles[ 0 ] = -pitch;
 				ent.angles[ 1 ] = yaw + 180.0;
 				ent.angles[ 2 ] = ( cl.time ) % 360;
@@ -1571,7 +1571,7 @@ void CL_AddPlayerBeams( void )
 			}
 			else if ( b->model == cl_mod_lightning )
 			{
-				ent.flags = RF_FULLBRIGHT;
+				ent.flags       = RF_FULLBRIGHT;
 				ent.angles[ 0 ] = -pitch;
 				ent.angles[ 1 ] = yaw + 180.0;
 				ent.angles[ 2 ] = rand() % 360;
@@ -1613,7 +1613,7 @@ void CL_AddExplosions( void )
 		if ( ex->type == ex_free )
 			continue;
 		frac = ( cl.time - ex->start ) / 100.0f;
-		f = floor( frac );
+		f    = floor( frac );
 
 		ent = &ex->ent;
 
@@ -1672,7 +1672,7 @@ void CL_AddExplosions( void )
 					break;
 				}
 
-				ent->alpha = ( 5.0 - ( float ) f ) / 5.0;
+				ent->alpha   = ( 5.0 - ( float ) f ) / 5.0;
 				ent->skinnum = 0;
 				ent->flags |= RF_TRANSLUCENT;
 				break;
@@ -1690,7 +1690,7 @@ void CL_AddExplosions( void )
 
 		if ( f < 0 )
 			f = 0;
-		ent->frame = ex->baseframe + f + 1;
+		ent->frame    = ex->baseframe + f + 1;
 		ent->oldframe = ex->baseframe + f;
 		ent->backlerp = 1.0 - cl.lerpfrac;
 

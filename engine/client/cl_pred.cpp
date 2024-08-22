@@ -75,7 +75,7 @@ void CL_ClipMoveToEntities( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, 
 	int             i, x, zd, zu;
 	trace_t         trace;
 	int             headnode;
-	float		  *angles;
+	float          *angles;
 	entity_state_t *ent;
 	int             num;
 	cmodel_t       *cmodel;
@@ -98,21 +98,21 @@ void CL_ClipMoveToEntities( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, 
 			if ( !cmodel )
 				continue;
 			headnode = cmodel->headnode;
-			angles = ent->angles;
+			angles   = ent->angles;
 		}
 		else
 		{// encoded bbox
-			x = 8 * ( ent->solid & 31 );
+			x  = 8 * ( ent->solid & 31 );
 			zd = 8 * ( ( ent->solid >> 5 ) & 31 );
 			zu = 8 * ( ( ent->solid >> 10 ) & 63 ) - 32;
 
 			bmins[ 0 ] = bmins[ 1 ] = -x;
 			bmaxs[ 0 ] = bmaxs[ 1 ] = x;
-			bmins[ 2 ] = -zd;
-			bmaxs[ 2 ] = zu;
+			bmins[ 2 ]              = -zd;
+			bmaxs[ 2 ]              = zu;
 
 			headnode = CM_HeadnodeForBox( bmins, bmaxs );
-			angles = vec3_origin;// boxes don't rotate
+			angles   = vec3_origin;// boxes don't rotate
 		}
 
 		if ( tr->allsolid )
@@ -128,7 +128,7 @@ void CL_ClipMoveToEntities( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, 
 			trace.ent = ( struct edict_s * ) ent;
 			if ( tr->startsolid )
 			{
-				*tr = trace;
+				*tr            = trace;
 				tr->startsolid = true;
 			}
 			else
@@ -222,7 +222,7 @@ void CL_PredictMovement( void )
 		return;
 	}
 
-	ack = cls.netchan.incoming_acknowledged;
+	ack     = cls.netchan.incoming_acknowledged;
 	current = cls.netchan.outgoing_sequence;
 
 	// if we are too far out of date, just freeze
@@ -235,7 +235,7 @@ void CL_PredictMovement( void )
 
 	// copy current state to pmove
 	memset( &pm, 0, sizeof( pm ) );
-	pm.trace = CL_PMTrace;
+	pm.trace         = CL_PMTrace;
 	pm.pointcontents = CL_PMpointcontents;
 
 	pm_airaccelerate = atof( cl.configstrings[ CS_AIRACCEL ] );
@@ -250,7 +250,7 @@ void CL_PredictMovement( void )
 	while ( ++ack < current )
 	{
 		frame = ack & ( CMD_BACKUP - 1 );
-		cmd = &cl.cmds[ frame ];
+		cmd   = &cl.cmds[ frame ];
 
 		pm.cmd = *cmd;
 		Pmove( &pm );
@@ -260,11 +260,11 @@ void CL_PredictMovement( void )
 	}
 
 	oldframe = ( ack - 2 ) & ( CMD_BACKUP - 1 );
-	oldz = cl.predicted_origins[ oldframe ][ 2 ];
-	step = pm.s.origin[ 2 ] - oldz;
+	oldz     = cl.predicted_origins[ oldframe ][ 2 ];
+	step     = pm.s.origin[ 2 ] - oldz;
 	if ( step > 63 && step < 160 && ( pm.s.pm_flags & PMF_ON_GROUND ) )
 	{
-		cl.predicted_step = step * 0.125;
+		cl.predicted_step      = step * 0.125;
 		cl.predicted_step_time = cls.realtime - cls.frametime * 500;
 	}
 

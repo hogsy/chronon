@@ -36,8 +36,7 @@ namespace chr::renderer::gl
 		~ShaderManager() {}
 
 
-
 	protected:
 	private:
 	};
-}// namespace nox::renderer::gl
+}// namespace chr::renderer::gl

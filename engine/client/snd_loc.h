@@ -55,7 +55,7 @@ typedef struct playsound_s
 	float               attenuation;
 	int                 entnum;
 	int                 entchannel;
-	bool            fixed_origin;// use origin field instead of entnum's origin
+	bool                fixed_origin;// use origin field instead of entnum's origin
 	vec3_t              origin;
 	unsigned            begin;// begin on this sample
 } playsound_t;
@@ -74,19 +74,19 @@ typedef struct
 // !!! if this is changed, the asm code must change !!!
 typedef struct
 {
-	sfx_t   *sfx;         // sfx number
-	int      leftvol;     // 0-255 volume
-	int      rightvol;    // 0-255 volume
-	int      end;         // end time in global paintsamples
-	int      pos;         // sample position in sfx
-	int      looping;     // where to loop, -1 = no looping OBSOLETE?
-	int      entnum;      // to allow overriding a specific sound
-	int      entchannel;  //
-	vec3_t   origin;      // only use if fixed_origin is set
-	vec_t    dist_mult;   // distance multiplier (attenuation/clipK)
-	int      master_vol;  // 0-255 master volume
-	bool fixed_origin;// use origin instead of fetching entnum's origin
-	bool autosound;   // from an entity->sound, cleared each frame
+	sfx_t *sfx;         // sfx number
+	int    leftvol;     // 0-255 volume
+	int    rightvol;    // 0-255 volume
+	int    end;         // end time in global paintsamples
+	int    pos;         // sample position in sfx
+	int    looping;     // where to loop, -1 = no looping OBSOLETE?
+	int    entnum;      // to allow overriding a specific sound
+	int    entchannel;  //
+	vec3_t origin;      // only use if fixed_origin is set
+	vec_t  dist_mult;   // distance multiplier (attenuation/clipK)
+	int    master_vol;  // 0-255 master volume
+	bool   fixed_origin;// use origin instead of fetching entnum's origin
+	bool   autosound;   // from an entity->sound, cleared each frame
 } channel_t;
 
 typedef struct

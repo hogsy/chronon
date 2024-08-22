@@ -31,7 +31,7 @@ extern LPDIRECTSOUNDBUFFER pDSBuf;
 
 extern DWORD gSndBufSize;
 
-extern void    *cl_hwnd;
-extern bool Minimized;
+extern void *cl_hwnd;
+extern bool  Minimized;
 
 void IN_Activate( bool active );

@@ -25,30 +25,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "renderer/ref_gl/gl_local.h"
 
 const char *svc_strings[ 256 ] =
-		{
-				"svc_bad",
+        {
+                "svc_bad",
 
-				"svc_muzzleflash",
-				"svc_muzzlflash2",
-				"svc_temp_entity",
-				"svc_layout",
-				"svc_inventory",
+                "svc_muzzleflash",
+                "svc_muzzlflash2",
+                "svc_temp_entity",
+                "svc_layout",
+                "svc_inventory",
 
-				"svc_nop",
-				"svc_disconnect",
-				"svc_reconnect",
-				"svc_sound",
-				"svc_print",
-				"svc_stufftext",
-				"svc_serverdata",
-				"svc_configstring",
-				"svc_spawnbaseline",
-				"svc_centerprint",
-				"svc_download",
-				"svc_playerinfo",
-				"svc_packetentities",
-				"svc_deltapacketentities",
-				"svc_frame" };
+                "svc_nop",
+                "svc_disconnect",
+                "svc_reconnect",
+                "svc_sound",
+                "svc_print",
+                "svc_stufftext",
+                "svc_serverdata",
+                "svc_configstring",
+                "svc_spawnbaseline",
+                "svc_centerprint",
+                "svc_download",
+                "svc_playerinfo",
+                "svc_packetentities",
+                "svc_deltapacketentities",
+                "svc_frame" };
 
 //=============================================================================
 
@@ -218,7 +218,7 @@ void CL_ParseDownload( void )
 	int  r;
 
 	// read the data
-	size = MSG_ReadShort( &net_message );
+	size    = MSG_ReadShort( &net_message );
 	percent = MSG_ReadByte( &net_message );
 	if ( size == -1 )
 	{
@@ -286,7 +286,7 @@ void CL_ParseDownload( void )
 		if ( r )
 			Com_Printf( "failed to rename.\n" );
 
-		cls.download = NULL;
+		cls.download        = NULL;
 		cls.downloadpercent = 0;
 
 		// get another file if needed
@@ -323,7 +323,7 @@ void CL_ParseServerData( void )
 	cls.state = ca_connected;
 
 	// parse protocol version number
-	i = MSG_ReadLong( &net_message );
+	i                  = MSG_ReadLong( &net_message );
 	cls.serverProtocol = i;
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
@@ -380,7 +380,7 @@ void CL_ParseBaseline( void )
 	memset( &nullstate, 0, sizeof( nullstate ) );
 
 	newnum = CL_ParseEntityBits( &bits );
-	es = &cl_entities[ newnum ].baseline;
+	es     = &cl_entities[ newnum ].baseline;
 	CL_ParseDelta( &nullstate, es, newnum, bits );
 }
 
@@ -407,11 +407,11 @@ void CL_LoadClientinfo( clientinfo_t *ci, char *s )
 	// isolate the player's name
 	strncpy( ci->name, s, sizeof( ci->name ) );
 	ci->name[ sizeof( ci->name ) - 1 ] = 0;
-	t = strstr( s, "\\" );
+	t                                  = strstr( s, "\\" );
 	if ( t )
 	{
 		ci->name[ t - s ] = 0;
-		s = t + 1;
+		s                 = t + 1;
 	}
 
 	if ( cl_noskins->value || *s == 0 )
@@ -423,8 +423,8 @@ void CL_LoadClientinfo( clientinfo_t *ci, char *s )
 		ci->model = Mod_RegisterModel( model_filename );
 		memset( ci->weaponmodel, 0, sizeof( ci->weaponmodel ) );
 		ci->weaponmodel[ 0 ] = Mod_RegisterModel( weapon_filename );
-		ci->skin = R_RegisterSkin( skin_filename );
-		ci->icon = Draw_FindPic( ci->iconname );
+		ci->skin             = R_RegisterSkin( skin_filename );
+		ci->icon             = Draw_FindPic( ci->iconname );
 	}
 	else
 	{
@@ -500,9 +500,9 @@ void CL_LoadClientinfo( clientinfo_t *ci, char *s )
 	// must have loaded all data types to be valud
 	if ( !ci->skin || !ci->icon || !ci->model || !ci->weaponmodel[ 0 ] )
 	{
-		ci->skin = NULL;
-		ci->icon = NULL;
-		ci->model = NULL;
+		ci->skin             = NULL;
+		ci->icon             = NULL;
+		ci->model            = NULL;
 		ci->weaponmodel[ 0 ] = NULL;
 		return;
 	}
@@ -517,7 +517,7 @@ Load the skin, icon, and model for a client
 */
 void CL_ParseClientinfo( int player )
 {
-	char		 *s;
+	char         *s;
 	clientinfo_t *ci;
 
 	s = cl.configstrings[ player + CS_PLAYERSKINS ];
@@ -611,7 +611,7 @@ void CL_ParseStartSoundPacket( void )
 	int    flags;
 	float  ofs;
 
-	flags = MSG_ReadByte( &net_message );
+	flags     = MSG_ReadByte( &net_message );
 	sound_num = MSG_ReadByte( &net_message );
 
 	if ( flags & SND_VOLUME )
@@ -632,7 +632,7 @@ void CL_ParseStartSoundPacket( void )
 	if ( flags & SND_ENT )
 	{// entity reletive
 		channel = MSG_ReadShort( &net_message );
-		ent = channel >> 3;
+		ent     = channel >> 3;
 		if ( ent > MAX_EDICTS )
 			Com_Error( ERR_DROP, "CL_ParseStartSoundPacket: ent = %i", ent );
 
@@ -640,7 +640,7 @@ void CL_ParseStartSoundPacket( void )
 	}
 	else
 	{
-		ent = 0;
+		ent     = 0;
 		channel = 0;
 	}
 
@@ -736,7 +736,7 @@ void CL_ParseServerMessage( void )
 					fclose( cls.download );
 					cls.download = NULL;
 				}
-				cls.state = ca_connecting;
+				cls.state        = ca_connecting;
 				cls.connect_time = -99999;// CL_CheckForResend() will fire immediately
 				break;
 

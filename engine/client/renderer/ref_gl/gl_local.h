@@ -145,21 +145,21 @@ void R_RenderFrame( refdef_t *fd );
 int  R_Init();
 void R_Shutdown( void );
 
-void     R_RenderView( refdef_t *fd );
-void     GL_ScreenShot_f( void );
-void     R_DrawAliasModel( entity_t *e );
-void     R_DrawBrushModel( entity_t *e );
-void     R_DrawSpriteModel( entity_t *e );
-void     R_DrawBeam( entity_t *e );
-void     R_DrawWorld( void );
-void     R_DrawAlphaSurfaces( void );
-void     R_RenderBrushPoly( msurface_t *fa );
-void     R_InitParticleTexture( void );
-void     Draw_InitLocal( void );
-void     GL_SubdivideSurface( msurface_t *fa );
+void R_RenderView( refdef_t *fd );
+void GL_ScreenShot_f( void );
+void R_DrawAliasModel( entity_t *e );
+void R_DrawBrushModel( entity_t *e );
+void R_DrawSpriteModel( entity_t *e );
+void R_DrawBeam( entity_t *e );
+void R_DrawWorld( void );
+void R_DrawAlphaSurfaces( void );
+void R_RenderBrushPoly( msurface_t *fa );
+void R_InitParticleTexture( void );
+void Draw_InitLocal( void );
+void GL_SubdivideSurface( msurface_t *fa );
 bool R_CullBox( vec3_t mins, vec3_t maxs );
-void     R_RotateForEntity( entity_t *e );
-void     R_MarkLeaves( void );
+void R_RotateForEntity( entity_t *e );
+void R_MarkLeaves( void );
 
 void R_SetSky( const char *name, float rotate, vec3_t axis );
 
@@ -243,8 +243,8 @@ typedef struct
 
 typedef struct
 {
-	float    inverse_intensity;
-	bool fullscreen;
+	float inverse_intensity;
+	bool  fullscreen;
 
 	int prev_mode;
 

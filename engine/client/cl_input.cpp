@@ -89,7 +89,7 @@ void KeyDown( kbutton_t *b )
 		return;// still down
 
 	// save timestamp
-	c = Cmd_Argv( 2 );
+	c           = Cmd_Argv( 2 );
 	b->downtime = atoi( c );
 	if ( !b->downtime )
 		b->downtime = sys_frame_time - 100;
@@ -109,7 +109,7 @@ void KeyUp( kbutton_t *b )
 	else
 	{// typed manually at the console, assume for unsticking, so clear all
 		b->down[ 0 ] = b->down[ 1 ] = 0;
-		b->state = 4;// impulse up
+		b->state                    = 4;// impulse up
 		return;
 	}
 
@@ -126,7 +126,7 @@ void KeyUp( kbutton_t *b )
 		return;// still up (this should not happen)
 
 	// save timestamp
-	c = Cmd_Argv( 2 );
+	c      = Cmd_Argv( 2 );
 	uptime = atoi( c );
 	if ( uptime )
 		b->msec += uptime - b->downtime;
@@ -187,7 +187,7 @@ float CL_KeyState( kbutton_t *key )
 
 	key->state &= 1;// clear impulses
 
-	msec = key->msec;
+	msec      = key->msec;
 	key->msec = 0;
 
 	if ( key->state )
@@ -255,7 +255,7 @@ void CL_AdjustAngles( void )
 		cl.viewangles[ PITCH ] += speed * cl_pitchspeed->value * CL_KeyState( &in_back );
 	}
 
-	up = CL_KeyState( &in_lookup );
+	up   = CL_KeyState( &in_lookup );
 	down = CL_KeyState( &in_lookdown );
 
 	cl.viewangles[ PITCH ] -= speed * cl_pitchspeed->value * up;
@@ -359,7 +359,7 @@ void CL_FinishMove( usercmd_t *cmd )
 		cmd->angles[ i ] = ANGLE2SHORT( cl.viewangles[ i ] );
 
 	cmd->impulse = in_impulse;
-	in_impulse = 0;
+	in_impulse   = 0;
 
 	// send the ambient light level at the player's current position
 	cmd->lightlevel = ( byte ) cl_lightlevel->value;
@@ -462,8 +462,8 @@ void CL_SendCmd( void )
 	// build a command even if not connected
 
 	// save this command off for prediction
-	i = cls.netchan.outgoing_sequence & ( CMD_BACKUP - 1 );
-	cmd = &cl.cmds[ i ];
+	i                = cls.netchan.outgoing_sequence & ( CMD_BACKUP - 1 );
+	cmd              = &cl.cmds[ i ];
 	cl.cmd_time[ i ] = cls.realtime;// for netgraph ping calculation
 
 	*cmd = CL_CreateCmd();
@@ -512,25 +512,25 @@ void CL_SendCmd( void )
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
-	i = ( cls.netchan.outgoing_sequence - 2 ) & ( CMD_BACKUP - 1 );
+	i   = ( cls.netchan.outgoing_sequence - 2 ) & ( CMD_BACKUP - 1 );
 	cmd = &cl.cmds[ i ];
 	memset( &nullcmd, 0, sizeof( nullcmd ) );
 	MSG_WriteDeltaUsercmd( &buf, &nullcmd, cmd );
 	oldcmd = cmd;
 
-	i = ( cls.netchan.outgoing_sequence - 1 ) & ( CMD_BACKUP - 1 );
+	i   = ( cls.netchan.outgoing_sequence - 1 ) & ( CMD_BACKUP - 1 );
 	cmd = &cl.cmds[ i ];
 	MSG_WriteDeltaUsercmd( &buf, oldcmd, cmd );
 	oldcmd = cmd;
 
-	i = ( cls.netchan.outgoing_sequence ) & ( CMD_BACKUP - 1 );
+	i   = ( cls.netchan.outgoing_sequence ) & ( CMD_BACKUP - 1 );
 	cmd = &cl.cmds[ i ];
 	MSG_WriteDeltaUsercmd( &buf, oldcmd, cmd );
 
 	// calculate a checksum over the move commands
 	buf.data[ checksumIndex ] = COM_BlockSequenceCRCByte(
-			buf.data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
-			cls.netchan.outgoing_sequence );
+	        buf.data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
+	        cls.netchan.outgoing_sequence );
 
 	//
 	// deliver the message

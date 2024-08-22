@@ -71,7 +71,7 @@ void NetadrToSockadr( netadr_t *a, struct sockaddr_in *s )
 	{
 		s->sin_family = AF_INET;
 
-		s->sin_port = a->port;
+		s->sin_port             = a->port;
 		*( int * ) &s->sin_addr = -1;
 	}
 	else if ( a->type == NA_IP )
@@ -79,15 +79,15 @@ void NetadrToSockadr( netadr_t *a, struct sockaddr_in *s )
 		s->sin_family = AF_INET;
 
 		*( int * ) &s->sin_addr = *( int * ) &a->ip;
-		s->sin_port = a->port;
+		s->sin_port             = a->port;
 	}
 }
 
 void SockadrToNetadr( struct sockaddr_in *s, netadr_t *a )
 {
 	*( int * ) &a->ip = *( int * ) &s->sin_addr;
-	a->port = s->sin_port;
-	a->type = NA_IP;
+	a->port           = s->sin_port;
+	a->type           = NA_IP;
 }
 
 
@@ -166,7 +166,7 @@ bool NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
 	for ( colon = copy; *colon; colon++ )
 		if ( *colon == ':' )
 		{
-			*colon = 0;
+			*colon                                      = 0;
 			( ( struct sockaddr_in * ) sadr )->sin_port = htons( ( short ) atoi( colon + 1 ) );
 		}
 
@@ -246,7 +246,7 @@ bool NET_GetLoopPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 
 	memcpy( net_message->data, loop->msgs[ i ].data, loop->msgs[ i ].datalen );
 	net_message->cursize = loop->msgs[ i ].datalen;
-	*net_from = net_local_adr;
+	*net_from            = net_local_adr;
 	return true;
 }
 
@@ -288,7 +288,7 @@ bool NET_GetPacket( netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message )
 			continue;
 
 		socklen_t fromlen = sizeof( from );
-		ssize_t   ret = recvfrom( net_socket, net_message->data, net_message->maxsize, 0, ( struct sockaddr   *) &from, &fromlen );
+		ssize_t   ret     = recvfrom( net_socket, net_message->data, net_message->maxsize, 0, ( struct sockaddr       *) &from, &fromlen );
 
 		SockadrToNetadr( &from, net_from );
 
@@ -381,7 +381,7 @@ void NET_OpenIP( void )
 	cvar_t *port, *ip;
 
 	port = Cvar_Get( "port", va( "%i", PORT_SERVER ), CVAR_NOSET );
-	ip = Cvar_Get( "ip", "localhost", CVAR_NOSET );
+	ip   = Cvar_Get( "ip", "localhost", CVAR_NOSET );
 
 	if ( !ip_sockets[ NS_SERVER ] )
 		ip_sockets[ NS_SERVER ] = NET_Socket( ip->string, port->value );
@@ -454,9 +454,9 @@ NET_Socket
 */
 int NET_Socket( char *net_interface, int port )
 {
-	int      newsocket;
+	int  newsocket;
 	bool _true = true;
-	int      i = 1;
+	int  i     = 1;
 
 	if ( ( newsocket = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == -1 )
 	{
@@ -529,8 +529,8 @@ char *NET_ErrorString( void )
 // sleeps msec or until net socket is ready
 void NET_Sleep( int msec )
 {
-	struct timeval  timeout;
-	fd_set          fdset;
+	struct timeval timeout;
+	fd_set         fdset;
 
 	if ( !ip_sockets[ NS_SERVER ] || ( dedicated && ( dedicated->value <= 0.0f ) ) )
 		return;// we're not a server, just run full speed
@@ -538,7 +538,7 @@ void NET_Sleep( int msec )
 	FD_ZERO( &fdset );
 
 	FD_SET( ip_sockets[ NS_SERVER ], &fdset );// network socket
-	timeout.tv_sec = msec / 1000;
+	timeout.tv_sec  = msec / 1000;
 	timeout.tv_usec = ( msec % 1000 ) * 1000;
 	select( ip_sockets[ NS_SERVER ] + 1, &fdset, nullptr, nullptr, &timeout );
 }

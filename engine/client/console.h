@@ -44,7 +44,7 @@ typedef struct
 	int vislines;
 
 	float times[ NUM_CON_TIMES ];// cls.realtime time the line was generated
-								 // for transparent notify lines
+	                             // for transparent notify lines
 } console_t;
 
 extern console_t con;
