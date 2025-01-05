@@ -85,19 +85,19 @@ add_executable(chronon-engine WIN32
 
         # Renderer
         # -- gl
-        client/renderer/ref_gl/gl_draw.cpp
-        client/renderer/ref_gl/gl_image.cpp
-        client/renderer/ref_gl/gl_model.cpp
-        client/renderer/ref_gl/gl_rmain.cpp
-        client/renderer/ref_gl/gl_rmisc.cpp
-        client/renderer/ref_gl/gl_rsurf.cpp
-        client/renderer/ref_gl/gl_shader_manager.cpp
-        client/renderer/ref_gl/gl_warp.cpp
-        client/renderer/ref_gl/qgl.cpp
+        renderer/ref_gl/gl_draw.cpp
+        renderer/ref_gl/gl_image.cpp
+        renderer/ref_gl/gl_model.cpp
+        renderer/ref_gl/gl_rmain.cpp
+        renderer/ref_gl/gl_rmisc.cpp
+        renderer/ref_gl/gl_rsurf.cpp
+        renderer/ref_gl/gl_shader_manager.cpp
+        renderer/ref_gl/gl_warp.cpp
+        renderer/ref_gl/qgl.cpp
         # -- generic
-        client/renderer/light.cpp
-        client/renderer/material.cpp
-        client/renderer/shader_manager.cpp
+        renderer/light.cpp
+        renderer/material.cpp
+        renderer/shader_manager.cpp
 
         # Server
         server/sv_ccmds.cpp

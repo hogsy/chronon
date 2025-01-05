@@ -8,6 +8,7 @@ AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AlignOperands: true
+AlignArrayOfStructures: Left
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
