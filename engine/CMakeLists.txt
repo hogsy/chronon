@@ -83,6 +83,8 @@ add_executable(chronon-engine WIN32
         ../qcommon/net_chan.cpp
         ../qcommon/pmove.cpp
 
+        model/model_alias.cpp
+
         # Renderer
         # -- gl
         renderer/ref_gl/gl_draw.cpp
