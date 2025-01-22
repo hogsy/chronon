@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "m_player.h"
 
+#include "entity/entity.h"
+#include "entity/entity_manager.h"
+
 void ClientUserinfoChanged( edict_t *ent, char *userinfo );
 
 void SP_misc_teleporter_dest( edict_t *ent );
@@ -1111,48 +1114,15 @@ void PutClientInServer( edict_t *ent )
 	client_persistant_t saved;
 	client_respawn_t    resp;
 
-	// find a spawn point
-	// do it before setting health back up, so farthest
-	// ranging doesn't count this client
-	SelectSpawnPoint( ent, spawn_origin, spawn_angles );
-
 	index  = ent - g_edicts - 1;
 	client = ent->client;
 
-	// deathmatch wipes most client data every spawn
-	if ( deathmatch->value )
-	{
-		char userinfo[ MAX_INFO_STRING ];
+	// setup the entity class instance representing a player, and spawn them in
+	ent->classInstance = EntityManager::CreateEntity( ent, "player" );
+	assert( ent->classInstance != nullptr );
+	ent->classInstance->Spawn( EntityManager::SpawnVariables() );
 
-		resp = client->resp;
-		memcpy( userinfo, client->pers.userinfo, sizeof( userinfo ) );
-		InitClientPersistant( client );
-		ClientUserinfoChanged( ent, userinfo );
-	}
-	else if ( coop->value )
-	{
-		//		int			n;
-		char userinfo[ MAX_INFO_STRING ];
-
-		resp = client->resp;
-		memcpy( userinfo, client->pers.userinfo, sizeof( userinfo ) );
-		// this is kind of ugly, but it's how we want to handle keys in coop
-		//		for (n = 0; n < game.num_items; n++)
-		//		{
-		//			if (itemlist[n].flags & IT_KEY)
-		//				resp.coop_respawn.inventory[n] = client->pers.inventory[n];
-		//		}
-		resp.coop_respawn.game_helpchanged = client->pers.game_helpchanged;
-		resp.coop_respawn.helpchanged      = client->pers.helpchanged;
-		client->pers                       = resp.coop_respawn;
-		ClientUserinfoChanged( ent, userinfo );
-		if ( resp.score > client->pers.score )
-			client->pers.score = resp.score;
-	}
-	else
-	{
-		memset( &resp, 0, sizeof( resp ) );
-	}
+	Q_ZERO_( resp );
 
 	// clear everything but the persistant data
 	saved = client->pers;
@@ -1166,25 +1136,7 @@ void PutClientInServer( edict_t *ent )
 	FetchClientEntData( ent );
 
 	// clear entity values
-	ent->groundentity = NULL;
-	ent->client       = &game.clients[ index ];
-	ent->takedamage   = DAMAGE_AIM;
-	ent->movetype     = MOVETYPE_WALK;
-	ent->viewheight   = 22;
-	ent->inuse        = true;
-	ent->classname    = "player";
-	ent->mass         = 200;
-	ent->solid        = SOLID_BBOX;
-	ent->deadflag     = DEAD_NO;
-	ent->air_finished = level.time + 12;
-	ent->clipmask     = MASK_PLAYERSOLID;
-	ent->model        = "players/male/tris.md2";
-	ent->pain         = player_pain;
-	ent->die          = player_die;
-	ent->waterlevel   = 0;
-	ent->watertype    = 0;
-	ent->flags &= ~FL_NO_KNOCKBACK;
-	ent->svflags &= ~SVF_DEADMONSTER;
+	ent->client = &game.clients[ index ];
 
 	VectorCopy( mins, ent->mins );
 	VectorCopy( maxs, ent->maxs );
@@ -1221,9 +1173,6 @@ void PutClientInServer( edict_t *ent )
 	ent->s.skinnum = ent - g_edicts - 1;
 
 	ent->s.frame = 0;
-	VectorCopy( spawn_origin, ent->s.origin );
-	ent->s.origin[ 2 ] += 1;// make sure off ground
-	VectorCopy( ent->s.origin, ent->s.old_origin );
 
 	// set the delta angle
 	for ( i = 0; i < 3; i++ )
@@ -1263,6 +1212,12 @@ void PutClientInServer( edict_t *ent )
 	// force the current weapon up
 	client->newweapon = client->pers.weapon;
 	ChangeWeapon( ent );
+
+	// Paril's fix for this getting reset after map changes
+	if ( !ent->client->pers.connected )
+	{
+		ent->client->pers.connected = true;
+	}
 }
 
 /*
