@@ -954,7 +954,7 @@ void SP_worldspawn( edict_t *ent )
 	if ( st.sky && st.sky[ 0 ] )
 		gi.configstring( CS_SKY, st.sky );
 	else
-		gi.configstring( CS_SKY, "unit1_" );
+		gi.configstring( CS_SKY, "blue" );//TODO: need to verify what sky the game falls back to
 
 	gi.configstring( CS_SKYROTATE, va( "%f", st.skyrotate ) );
 	gi.configstring( CS_SKYAXIS, va( "%f %f %f", st.skyaxis[ 0 ], st.skyaxis[ 1 ], st.skyaxis[ 2 ] ) );
