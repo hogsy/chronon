@@ -1,5 +1,5 @@
 #[[
-Copyright (C) 2020-2021 Mark E Sowden <hogsy@oldtimes-software.com>
+Copyright (C) 2020-2025 Mark E Sowden <hogsy@oldtimes-software.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

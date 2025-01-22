@@ -1,23 +1,22 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
+/******************************************************************************
+	Copyright © 1997-2001 Id Software, Inc.
+	Copyright © 2020-2025 Mark E Sowden <hogsy@oldtimes-software.com>
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-See the GNU General Public License for more details.
+	See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// models.c -- model loading and caching
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+******************************************************************************/
 
 #include <cfloat>
 
@@ -26,20 +25,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 model_t *loadmodel;
 int      modfilelen;
 
-void     Mod_LoadSpriteModel( model_t *mod, void *buffer );
-void     Mod_LoadBrushModel( model_t *mod, void *buffer );
-void     Mod_LoadMDAModel( model_t *mod, void *buffer );
-void     Mod_LoadAliasModel( model_t *mod, void *buffer );
-model_t *Mod_LoadModel( model_t *mod, bool crash );
+void Mod_LoadSpriteModel( model_t *mod, void *buffer );
+void Mod_LoadBrushModel( model_t *mod, void *buffer );
+void Mod_LoadMDAModel( model_t *mod, void *buffer );
+void Mod_LoadAliasModel( model_t *mod, void *buffer );
 
-byte mod_novis[ MAX_MAP_LEAFS / 8 ];
+static byte mod_novis[ MAX_MAP_LEAFS / 8 ];
 
 #define MAX_MOD_KNOWN 512
-model_t mod_known[ MAX_MOD_KNOWN ];
-int     mod_numknown;
+static model_t mod_known[ MAX_MOD_KNOWN ];
+static int     mod_numknown;
 
 // the inline * models from the current map are kept seperate
-model_t mod_inline[ MAX_MOD_KNOWN ];
+static model_t mod_inline[ MAX_MOD_KNOWN ];
 
 int registration_sequence;
 
@@ -50,19 +48,17 @@ Mod_PointInLeaf
 */
 mleaf_t *Mod_PointInLeaf( vec3_t p, model_t *model )
 {
-	mnode_t  *node;
-	float     d;
-	cplane_t *plane;
-
 	if ( !model || !model->nodes )
+	{
 		Com_Error( ERR_DROP, "Mod_PointInLeaf: bad model" );
+	}
 
-	node = model->nodes;
+	mnode_t *node = model->nodes;
 	while ( 1 )
 	{
 		if ( node->contents != -1 ) return ( mleaf_t * ) node;
-		plane = node->plane;
-		d     = DotProduct( p, plane->normal ) - plane->dist;
+		cplane_t *plane = node->plane;
+		float     d     = DotProduct( p, plane->normal ) - plane->dist;
 		if ( d > 0 )
 			node = node->children[ 0 ];
 		else
@@ -81,11 +77,9 @@ byte *Mod_DecompressVis( byte *in, model_t *model )
 {
 	static byte decompressed[ MAX_MAP_LEAFS / 8 ];
 	int         c;
-	byte       *out;
-	int         row;
 
-	row = ( model->vis->numclusters + 7 ) >> 3;
-	out = decompressed;
+	int   row = ( model->vis->numclusters + 7 ) >> 3;
+	byte *out = decompressed;
 
 	if ( !in )
 	{// no vis info, so make all visible
@@ -328,7 +322,7 @@ void Mod_LoadVertexes( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< mvertex_t   *>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< mvertex_t * >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->vertexes    = out;
 	loadmodel->numvertexes = count;
@@ -375,7 +369,7 @@ void Mod_LoadSubmodels( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< mmodel_t   *>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< mmodel_t * >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->submodels    = out;
 	loadmodel->numsubmodels = count;
@@ -411,7 +405,7 @@ void Mod_LoadEdges( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< medge_t   *>( Hunk_Alloc( ( count + 1 ) * sizeof( *out ) ) );
+	out   = static_cast< medge_t * >( Hunk_Alloc( ( count + 1 ) * sizeof( *out ) ) );
 
 	loadmodel->edges    = out;
 	loadmodel->numedges = count;
@@ -441,7 +435,7 @@ void Mod_LoadTexinfo( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< mtexinfo_t   *>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< mtexinfo_t * >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->texinfo    = out;
 	loadmodel->numtexinfo = count;
@@ -552,7 +546,7 @@ void Mod_LoadFaces( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< msurface_t   *>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< msurface_t * >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->surfaces    = out;
 	loadmodel->numsurfaces = count;
@@ -643,7 +637,7 @@ void Mod_LoadNodes( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< mnode_t   *>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< mnode_t * >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->nodes    = out;
 	loadmodel->numnodes = count;
@@ -693,7 +687,7 @@ void Mod_LoadLeafs( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< mleaf_t   *>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< mleaf_t * >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->leafs    = out;
 	loadmodel->numleafs = count;
@@ -745,7 +739,7 @@ void Mod_LoadMarksurfaces( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< msurface_t   **>( Hunk_Alloc( count * sizeof( *out ) ) );
+	out   = static_cast< msurface_t ** >( Hunk_Alloc( count * sizeof( *out ) ) );
 
 	loadmodel->marksurfaces    = out;
 	loadmodel->nummarksurfaces = count;
@@ -804,7 +798,7 @@ void Mod_LoadPlanes( lump_t *l )
 		Com_Error( ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",
 		           loadmodel->name );
 	count = l->filelen / sizeof( *in );
-	out   = static_cast< cplane_t   *>( Hunk_Alloc( count * 2 * sizeof( *out ) ) );
+	out   = static_cast< cplane_t * >( Hunk_Alloc( count * 2 * sizeof( *out ) ) );
 
 	loadmodel->planes    = out;
 	loadmodel->numplanes = count;
@@ -1008,7 +1002,7 @@ void Mod_LoadSpriteModel( model_t *mod, void *buffer )
 	dsprite_t *sprin, *sprout;
 	int        i;
 
-	sprin  = ( dsprite_t  *) buffer;
+	sprin  = ( dsprite_t * ) buffer;
 	sprout = static_cast< dsprite_t * >( Hunk_Alloc( modfilelen ) );
 
 	sprout->ident     = LittleLong( sprin->ident );
@@ -1220,7 +1214,7 @@ void chr::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 	for ( int i = 0; i < numSkins; ++i )
 	{
 		char name[ MAX_QPATH + 1 ];
-		memcpy( name, ( char * ) ( ( byte * ) mdl + ofs + i * MAX_QPATH ), MAX_QPATH );
+		memcpy( name, ( byte * ) mdl + ofs + i * MAX_QPATH, MAX_QPATH );
 		name[ strlen( name ) + 1 ] = '\0';
 		skinNames_.emplace_back( name );
 	}
@@ -1259,9 +1253,11 @@ void chr::AliasModel::LoadTaggedTriangles( const dmdl_t *mdl )
 
 	int                     numTaggedTriangles = LittleLong( mdl->numTaggedTriangles );
 	uint                    ofs                = LittleLong( mdl->taggedTrianglesOffset );
-	const MD2TaggedSurface *taggedSurface      = ( MD2TaggedSurface      *) ( ( byte      *) mdl + ofs );
+	const MD2TaggedSurface *taggedSurface      = ( MD2TaggedSurface * ) ( ( byte * ) mdl + ofs );
 	for ( int i = 0; i < numTaggedTriangles; ++i )
+	{
 		taggedTriangles_.emplace( taggedSurface->name, LittleLong( taggedSurface->triangleIndex ) );
+	}
 }
 
 void chr::AliasModel::LoadCommands( const dmdl_t *mdl )
@@ -1372,12 +1368,16 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 #define NUMVERTEXNORMALS 162
 static float r_avertexnormals[ NUMVERTEXNORMALS ][ 3 ] = {
 #include "anorms.h"
+
+
 };
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT 16
 float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "anormtab.h"
+
+
 };
 
 void chr::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const
@@ -1388,10 +1388,10 @@ void chr::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov,
 	{
 		for ( int i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
 		{
-			float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
-			lerp->x       = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
-			lerp->y       = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
-			lerp->z       = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
+			const float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
+			lerp->x             = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
+			lerp->y             = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
+			lerp->z             = move[ 2 ] + ov->vertex[ 2 ] * backv[ 2 ] + v->vertex[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
 		}
 	}
 	else
@@ -1410,7 +1410,9 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 	if ( e->flags & RF_FULLBRIGHT )
 	{
 		for ( float &i : shadeLight_ )
+		{
 			i = 1.0f;
+		}
 	}
 	else
 	{
@@ -1420,9 +1422,13 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 		{
 			float s = shadeLight_[ 0 ];
 			if ( s < shadeLight_[ 1 ] )
+			{
 				s = shadeLight_[ 1 ];
+			}
 			if ( s < shadeLight_[ 2 ] )
+			{
 				s = shadeLight_[ 2 ];
+			}
 
 			shadeLight_[ 0 ] = s;
 			shadeLight_[ 1 ] = s;
@@ -1436,7 +1442,9 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 		for ( i = 0; i < 3; ++i )
 		{
 			if ( shadeLight_[ i ] > 0.1f )
+			{
 				break;
+			}
 		}
 
 		if ( i == 3 )
@@ -1510,14 +1518,20 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 	LerpVertices( v, oldFrame->vertices.data(), frame->vertices.data(), lerpedVertices_.data(), move, frontv, backv );
 
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+	{
 		glDisable( GL_TEXTURE_2D );
+	}
 	else
 	{
 		image_t *texture;
 		if ( e->model->skins[ 0 ] != nullptr )
+		{
 			texture = e->model->skins[ 0 ];
+		}
 		else
+		{
 			texture = r_notexture;
+		}
 
 		GL_Bind( texture->texnum );
 	}
@@ -1540,7 +1554,9 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 			glBegin( GL_TRIANGLE_FAN );
 		}
 		else
+		{
 			glBegin( GL_TRIANGLE_STRIP );
+		}
 
 		if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE ) )
 		{
@@ -1576,7 +1592,9 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 	// Cleanup
 
 	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+	{
 		glEnable( GL_TEXTURE_2D );
+	}
 
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
