@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ]]
 
-add_library(chronon-game STATIC
+add_library(chronon-game OBJECT
         entity/entity.cpp
         entity/entity_manager.cpp
         entity/entity_player.cpp
@@ -43,14 +43,12 @@ add_library(chronon-game STATIC
         g_utils.cpp
         g_weapon.cpp
         m_actor.cpp
-        m_flash.cpp
         m_move.cpp
         p_client.cpp
         p_hud.cpp
         p_trail.cpp
         p_view.cpp
         p_weapon.cpp
-        q_shared.cpp
 )
 
 target_compile_definitions(chronon-game PRIVATE GAME_HARD_LINKED)

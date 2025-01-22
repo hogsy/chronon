@@ -240,4 +240,4 @@ void Player::SelectSpawnPoint() const
 	}
 }
 
-//REGISTER_ENTITY_CLASS( player, Player )
+REGISTER_ENTITY_CLASS( player, Player )
