@@ -49,31 +49,32 @@ These are additional enhancements introduced here that the original game didn't 
 
 - Can target x86, x64 and ARM64 architectures
 - Support for both Microsoft Windows and Linux
-- Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it!)
 - Higher-resolution texture replacements can be loaded in
     - Replacement textures need to be placed under a `hd` directory located under `anoxdata`
     - Can be enabled/disabled via `hd_override` cvar
 - Replaced QGL with GLEW
 - Code is compiled as C++, as opposed to C
-
-## Wow, neat! How can I help?
-
-If you have experience with either C/C++, have a passion for programming and familiarity with the Anachronox game, then feel free to get in touch via our [Discord](https://discord.gg/EdmwgVk) server in the `#anachronox` channel.
-
-Alternatively, feel free to ping me an email at [hogsy@oldtimes-software.com](mailto:hogsy@oldtimes-software.com).
+- New console variables
+  - Overbrights via `r_overbrights` (just be wary Anachronox's art was not designed for it!)
+- New console commands
+  - `extract` can be used to extract all mounted packages
 
 ## Building
 
-**(these instructions aren't necessarily up-to-date)**
+**(these instructions aren't necessarily up to date)**
+
+### Linux (Ubuntu 24.10)
+
+This is the primary platform I'm developing this on, so probably will have the best results out the gate for now.
+
+1. Navigate to your cloned copy of the repo via the terminal; `cd <repo here>`
+2. Create a directory, then navigate into it; `mkdir build;cd build`
+3. Use `cmake ..` from your new directory
+4. Finally, use `make` and everything should just work 🤞
 
 ### Windows
 
-#### Visual Studio
-
-1. Use `vcpkg_setup_msvc.bat`; this will fetch vcpkg and install the dependencies
-2. Now use `cmake_generate_vs2022-x64.bat` which will generate the Visual Studio solution for you under a new `build` directory
-
-#### MinGW-w64 
+#### MinGW-w64
 
 You can download MinGW-w64 from [here](https://www.mingw-w64.org/) and of course will require
 CMake as well which can be found [here](https://cmake.org/).
@@ -88,6 +89,18 @@ macOS support is generally going to be at the bottom of my priority list for sup
 
 1. If you don't have vcpkg installed already, use `vcpkg_setup_apple.sh`; this will fetch vcpkg and install the dependencies
 2. Use CMake as usual, but pass `-DCMAKE_TOOLCHAIN_FILE=vcpkg\scripts\buildsystems\vcpkg.cmake` as an argument so it can find packages provided by vcpkg
+
+## Contributing
+
+If you have experience with either C/C++, have a passion for programming and familiarity with the Anachronox game, then feel free to get in touch via our [Discord](https://discord.gg/EdmwgVk) server in the `#anachronox` channel.
+
+Alternatively, feel free to ping me an email at [hogsy@oldtimes-software.com](mailto:hogsy@oldtimes-software.com).
+
+## Credits
+
+Incorporates some additional bug fixes sourced from...
+- KMQuake2
+- Paril
 
 ## Resources
 
