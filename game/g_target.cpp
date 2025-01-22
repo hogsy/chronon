@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "g_local.h"
+#include "entity/entity_manager.h"
 
 /*QUAKED target_temp_entity (1 0 0) (-8 -8 -8) (8 8 8)
 Fire an origin based temp entity event to the clients.
@@ -375,7 +376,7 @@ For gibs:
 	speed how fast it should be moving otherwise it
 	will just be dropped
 */
-void ED_CallSpawn( edict_t *ent );
+void ED_CallSpawn( edict_t *ent, const EntityManager::SpawnVariables &variables );
 
 void use_target_spawner( edict_t *self, edict_t *other, edict_t *activator )
 {
@@ -385,7 +386,7 @@ void use_target_spawner( edict_t *self, edict_t *other, edict_t *activator )
 	ent->classname = self->target;
 	VectorCopy( self->s.origin, ent->s.origin );
 	VectorCopy( self->s.angles, ent->s.angles );
-	ED_CallSpawn( ent );
+	ED_CallSpawn( ent, ( EntityManager::SpawnVariables ) {} );
 	gi.unlinkentity( ent );
 	KillBox( ent );
 	gi.linkentity( ent );

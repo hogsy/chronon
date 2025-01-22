@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ]]
 
 add_library(chronon-game STATIC
+        entity/entity.cpp
+        entity/entity_manager.cpp
+        entity/entity_player.cpp
+        entity/entity_player_start.cpp
+
         CinematicScript.cpp
 
         g_ai.cpp

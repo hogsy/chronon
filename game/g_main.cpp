@@ -70,7 +70,7 @@ cvar_t *flood_waitdelay;
 
 cvar_t *sv_maplist;
 
-void SpawnEntities( char *mapname, const char *entities, char *spawnpoint );
+void SpawnEntities( const char *mapname, const char *entities, const char *spawnpoint );
 void ClientThink( edict_t *ent, usercmd_t *cmd );
 bool ClientConnect( edict_t *ent, char *userinfo );
 void ClientUserinfoChanged( edict_t *ent, char *userinfo );
@@ -146,16 +146,16 @@ ClientEndServerFrames
 */
 void ClientEndServerFrames( void )
 {
-	int      i;
-	edict_t *ent;
-
 	// calc the player views now that all pushing
 	// and damage has been added
-	for ( i = 0; i < maxclients->value; i++ )
+	for ( int i = 0; i < maxclients->value; i++ )
 	{
-		ent = g_edicts + 1 + i;
+		edict_t *ent = g_edicts + 1 + i;
 		if ( !ent->inuse || !ent->client )
+		{
 			continue;
+		}
+
 		ClientEndServerFrame( ent );
 	}
 }

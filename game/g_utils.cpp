@@ -1,26 +1,26 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
+/******************************************************************************
+	Copyright © 1997-2001 Id Software, Inc.
+	Copyright © 2020-2025 Mark E Sowden <hogsy@oldtimes-software.com>
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-See the GNU General Public License for more details.
+	See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+******************************************************************************/
 // g_utils.c -- misc utility functions for game module
 
 #include "g_local.h"
-
+#include "entity/entity.h"
 
 void G_ProjectSource( vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result )
 {
@@ -451,6 +451,7 @@ Marks the edict as free
 void G_FreeEdict( edict_t *ed )
 {
 	gi.unlinkentity( ed );// unlink from world
+	delete ed->classInstance;
 
 	if ( ( ed - g_edicts ) <= ( maxclients->value + BODY_QUEUE_SIZE ) )
 	{

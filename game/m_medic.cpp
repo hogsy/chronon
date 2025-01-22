@@ -731,7 +731,7 @@ void medic_hook_launch( edict_t *self )
 	gi.sound( self, CHAN_WEAPON, sound_hook_launch, 1, ATTN_NORM, 0 );
 }
 
-void ED_CallSpawn( edict_t *ent );
+//void ED_CallSpawn( edict_t *ent );
 
 static vec3_t medic_cable_offsets[] =
         {
@@ -791,7 +791,7 @@ void medic_cable_attack( edict_t *self )
 		self->enemy->combattarget        = NULL;
 		self->enemy->deathtarget         = NULL;
 		self->enemy->owner               = self;
-		ED_CallSpawn( self->enemy );
+		//ED_CallSpawn( self->enemy );
 		self->enemy->owner = NULL;
 		if ( self->enemy->think )
 		{

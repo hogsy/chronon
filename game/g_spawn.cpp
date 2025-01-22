@@ -1,28 +1,30 @@
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-Copyright (C) 2020 Mark E Sowden <hogsy@oldtimes-software.com>
+/******************************************************************************
+	Copyright © 1997-2001 Id Software, Inc.
+	Copyright © 2020-2025 Mark E Sowden <hogsy@oldtimes-software.com>
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-See the GNU General Public License for more details.
+	See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+******************************************************************************/
 
 #include <string>
 #include <map>
 
 #include "g_local.h"
+
+#include "entity/entity.h"
+#include "entity/entity_manager.h"
 
 // As provided by entity.dat
 struct EntityCustomClassDeclaration
@@ -70,23 +72,23 @@ static void ProtoSpawner( edict_t *self, const EntityCustomClassDeclaration &spa
 
 typedef void ( *EntityCustomClassSpawnFunction )( edict_t *self, const EntityCustomClassDeclaration &spawnData );
 static const std::map< std::string, EntityCustomClassSpawnFunction > entityTypes = {
-        { "char", ProtoSpawner },
-        { "charfly", ProtoSpawner },
-        { "charhover", ProtoSpawner },
-        { "charroll", ProtoSpawner },
-        { "effect", ProtoSpawner },
-        { "pickup", ProtoSpawner },
-        { "container", ProtoSpawner },
-        { "keyitem", ProtoSpawner },
-        { "scavenger", ProtoSpawner },
-        { "trashpawn", ProtoSpawner },
-        { "bugspawn", ProtoSpawner },
-        { "general", ProtoSpawner },
-        { "bipidri", ProtoSpawner },
-        { "sprite", ProtoSpawner },
-        { "playerchar", ProtoSpawner },
-        { "noclip", ProtoSpawner },
-        { "floater", ProtoSpawner },
+        {"char",       ProtoSpawner},
+        {"charfly",    ProtoSpawner},
+        {"charhover",  ProtoSpawner},
+        {"charroll",   ProtoSpawner},
+        {"effect",     ProtoSpawner},
+        {"pickup",     ProtoSpawner},
+        {"container",  ProtoSpawner},
+        {"keyitem",    ProtoSpawner},
+        {"scavenger",  ProtoSpawner},
+        {"trashpawn",  ProtoSpawner},
+        {"bugspawn",   ProtoSpawner},
+        {"general",    ProtoSpawner},
+        {"bipidri",    ProtoSpawner},
+        {"sprite",     ProtoSpawner},
+        {"playerchar", ProtoSpawner},
+        {"noclip",     ProtoSpawner},
+        {"floater",    ProtoSpawner},
 };
 
 static void Spawn_ParseCustomClass( const char *lineDef, size_t lineLength )
@@ -231,7 +233,7 @@ static void Spawn_PopulateCustomClassList( void )
 
 		// Read in the line
 		size_t lLength = Script_GetLineLength( p ) + 1;
-		char  *lBuf    = ( char  *) gi.TagMalloc( lLength, TAG_GAME );
+		char  *lBuf    = ( char * ) gi.TagMalloc( lLength, TAG_GAME );
 
 		p = Script_GetLine( p, lBuf, lLength );
 		if ( *lBuf == ';' || *lBuf == '\0' )
@@ -287,55 +289,55 @@ void SP_path_corner( edict_t *self );
 
 typedef void ( *EntitySpawnFunction )( edict_t *self );
 std::map< std::string, EntitySpawnFunction > entitySpawnClasses = {
-        { "info_player_start", SP_info_player_start },
+        {"info_player_start",  SP_info_player_start },
 
-        { "func_plat", SP_func_plat },
-        { "func_button", SP_func_button },
-        { "func_door", SP_func_door },
-        { "func_door_rotating", SP_func_door_rotating },
-        { "func_rotating", SP_func_rotating },
-        { "func_train", SP_func_train },
-        { "func_water", SP_func_water },
-        { "func_conveyor", SP_func_conveyor },
-        { "func_areaportal", SP_func_areaportal },
-        { "func_clock", SP_func_clock },// Not actually in Anox, but could be useful for custom maps?
-        { "func_wall", SP_func_wall },
+        {"func_plat",          SP_func_plat         },
+        {"func_button",        SP_func_button       },
+        {"func_door",          SP_func_door         },
+        {"func_door_rotating", SP_func_door_rotating},
+        {"func_rotating",      SP_func_rotating     },
+        {"func_train",         SP_func_train        },
+        {"func_water",         SP_func_water        },
+        {"func_conveyor",      SP_func_conveyor     },
+        {"func_areaportal",    SP_func_areaportal   },
+        {"func_clock",         SP_func_clock        }, // Not actually in Anox, but could be useful for custom maps?
+        {"func_wall",          SP_func_wall         },
         // todo: func_fog
         // todo: func_particle
-        { "func_object", SP_func_object },      // Not actually in Anox, but could be useful for custom maps?
-        { "func_timer", SP_func_timer },        // Not actually in Anox, but could be useful for custom maps?
-        { "func_explosive", SP_func_explosive },// Not actually in Anox, but could be useful for custom maps?
-        { "func_killbox", SP_func_killbox },    // Not actually in Anox, but could be useful for custom maps?
+        {"func_object",        SP_func_object       }, // Not actually in Anox, but could be useful for custom maps?
+        {"func_timer",         SP_func_timer        }, // Not actually in Anox, but could be useful for custom maps?
+        {"func_explosive",     SP_func_explosive    }, // Not actually in Anox, but could be useful for custom maps?
+        {"func_killbox",       SP_func_killbox      }, // Not actually in Anox, but could be useful for custom maps?
 
-        { "trigger_always", SP_trigger_always },
-        { "trigger_once", SP_trigger_once },
-        { "trigger_multiple", SP_trigger_multiple },
-        { "trigger_relay", SP_trigger_relay },
-        { "trigger_push", SP_trigger_push },
-        { "trigger_hurt", SP_trigger_hurt },// Not actually in Anox, but could be useful for custom maps?
-        { "trigger_key", SP_trigger_key },  // Not actually in Anox, but could be useful for custom maps?
-        { "trigger_counter", SP_trigger_counter },
-        { "trigger_elevator", SP_trigger_elevator },
-        { "trigger_gravity", SP_trigger_gravity },
+        {"trigger_always",     SP_trigger_always    },
+        {"trigger_once",       SP_trigger_once      },
+        {"trigger_multiple",   SP_trigger_multiple  },
+        {"trigger_relay",      SP_trigger_relay     },
+        {"trigger_push",       SP_trigger_push      },
+        {"trigger_hurt",       SP_trigger_hurt      }, // Not actually in Anox, but could be useful for custom maps?
+        {"trigger_key",        SP_trigger_key       }, // Not actually in Anox, but could be useful for custom maps?
+        {"trigger_counter",    SP_trigger_counter   },
+        {"trigger_elevator",   SP_trigger_elevator  },
+        {"trigger_gravity",    SP_trigger_gravity   },
         // todo: trigger_watercurrent
 
-        { "target_temp_entity", SP_target_temp_entity },// Not actually in Anox, but could be useful for custom maps?
-        { "target_speaker", SP_target_speaker },
-        { "target_lightramp", SP_target_lightramp },
+        {"target_temp_entity", SP_target_temp_entity}, // Not actually in Anox, but could be useful for custom maps?
+        {"target_speaker",     SP_target_speaker    },
+        {"target_lightramp",   SP_target_lightramp  },
 
-        { "worldspawn", SP_worldspawn },
-        { "viewthing", SP_viewthing },
+        {"worldspawn",         SP_worldspawn        },
+        {"viewthing",          SP_viewthing         },
 
-        { "light", SP_light },
+        {"light",              SP_light             },
         // todo: sun
         // todo: spew (wut?)
         // todo: modellight
         // todo: dirlightsource
 
-        { "info_null", SP_info_null },
-        { "func_group", SP_info_null },
-        { "info_notnull", SP_info_notnull },
-        { "path_corner", SP_path_corner },
+        {"info_null",          SP_info_null         },
+        {"func_group",         SP_info_null         },
+        {"info_notnull",       SP_info_notnull      },
+        {"path_corner",        SP_path_corner       },
         // todo: beam_target
         // todo: path_grid_center
 
@@ -370,7 +372,7 @@ ED_CallSpawn
 Finds the spawn function for the entity and calls it
 ===============
 */
-void ED_CallSpawn( edict_t *ent )
+void ED_CallSpawn( edict_t *ent, const EntityManager::SpawnVariables &variables )
 {
 	if ( !ent->classname )
 	{
@@ -391,6 +393,13 @@ void ED_CallSpawn( edict_t *ent )
 			SpawnItem( ent, item );
 			return;
 		}
+	}
+
+	if ( ent->classInstance != nullptr )
+	{
+		assert( !variables.empty() );
+		ent->classInstance->Spawn( variables );
+		return;
 	}
 
 	// Check custom spawn function
@@ -530,47 +539,47 @@ Parses an edict out of the given string, returning the new position
 ed should be a properly initialized empty edict.
 ====================
 */
-static const char *ED_ParseEdict( const char *data, edict_t *ent )
+static const char *ED_ParseEdict( const char *data, edict_t *ent, EntityManager::SpawnVariables &variables )
 {
-	bool        init;
-	char        keyname[ 256 ];
-	const char *com_token;
-
-	init = false;
 	memset( &st, 0, sizeof( st ) );
 
-	// go through all the dictionary pairs
-	while ( 1 )
+	if ( !EntityManager::ParseSpawnVariables( &data, variables ) )
 	{
-		// parse key
-		com_token = COM_Parse( &data );
-		if ( com_token[ 0 ] == '}' )
-			break;
-		if ( !data )
-			gi.error( "ED_ParseEntity: EOF without closing brace" );
+		gi.error( "Failed to parse spawn variables!" );
+	}
 
-		strncpy( keyname, com_token, sizeof( keyname ) - 1 );
+	if ( auto i = variables.find( "_clientonly" ); i != variables.end() )
+	{
+		int value = std::stoi( i->second.value );
+		if ( value > 1 )
+		{
+			G_FreeEdict( ent );
+		}
+		else if ( value == 1 )
+		{
+			ent->svflags |= SVF_NOCLIENT;
+		}
 
-		// parse value
-		com_token = COM_Parse( &data );
-		if ( !data )
-			gi.error( "ED_ParseEntity: EOF without closing brace" );
+		// remove it, because we've handled it here
+		variables.erase( i );
+	}
 
-		if ( com_token[ 0 ] == '}' )
-			gi.error( "ED_ParseEntity: closing brace without data" );
-
+	//TODO: eventually get rid of this...
+	bool init = false;
+	for ( auto &i : variables )
+	{
+		//TODO: what the fuck is the point of this?
 		init = true;
 
-		// keynames with a leading underscore are used for utility comments,
-		// and are immediately discarded by quake
-		if ( keyname[ 0 ] == '_' )
-			continue;
-
-		ED_ParseField( keyname, com_token, ent );
+		const char *key   = i.second.key.c_str();
+		const char *value = i.second.value.c_str();
+		ED_ParseField( key, value, ent );
 	}
 
 	if ( !init )
+	{
 		memset( ent, 0, sizeof( *ent ) );
+	}
 
 	return data;
 }
@@ -636,7 +645,7 @@ Creates a server's entity / program execution context by
 parsing textual entity definitions out of an ent file.
 ==============
 */
-void SpawnEntities( char *mapname, const char *entities, char *spawnpoint )
+void SpawnEntities( const char *mapname, const char *entities, const char *spawnpoint )
 {
 	edict_t    *ent;
 	int         inhibit;
@@ -646,11 +655,17 @@ void SpawnEntities( char *mapname, const char *entities, char *spawnpoint )
 
 	skill_level = floorf( skill->value );
 	if ( skill_level < 0 )
+	{
 		skill_level = 0;
+	}
 	if ( skill_level > 3 )
+	{
 		skill_level = 3;
+	}
 	if ( skill->value != skill_level )
+	{
 		gi.cvar_forceset( "skill", va( "%f", skill_level ) );
+	}
 
 	SaveClientData();
 
@@ -659,8 +674,8 @@ void SpawnEntities( char *mapname, const char *entities, char *spawnpoint )
 	memset( &level, 0, sizeof( level ) );
 	memset( g_edicts, 0, game.maxentities * sizeof( g_edicts[ 0 ] ) );
 
-	strncpy( level.mapname, mapname, sizeof( level.mapname ) - 1 );
-	strncpy( game.spawnpoint, spawnpoint, sizeof( game.spawnpoint ) - 1 );
+	snprintf( level.mapname, sizeof( level.mapname ), "%s", mapname );
+	snprintf( game.spawnpoint, sizeof( game.spawnpoint ), "%s", spawnpoint );
 
 	// set client fields on player ents
 	for ( i = 0; i < game.maxclients; i++ )
@@ -672,20 +687,39 @@ void SpawnEntities( char *mapname, const char *entities, char *spawnpoint )
 	Spawn_PopulateCustomClassList();
 
 	// parse ents
-	while ( 1 )
+	while ( true )
 	{
 		// parse the opening brace
 		com_token = COM_Parse( &entities );
 		if ( !entities )
+		{
 			break;
+		}
+
 		if ( com_token[ 0 ] != '{' )
+		{
 			gi.error( "ED_LoadFromFile: found %s when expecting {", com_token );
+		}
 
 		if ( !ent )
+		{
 			ent = g_edicts;
+		}
 		else
+		{
 			ent = G_Spawn();
-		entities = ED_ParseEdict( entities, ent );
+		}
+
+		EntityManager::SpawnVariables variables;
+		entities = ED_ParseEdict( entities, ent, variables );
+
+		// attempt to create the new entity class instance here
+		const std::string &classname = variables.at( "classname" ).value;
+		ent->classInstance           = EntityManager::CreateEntity( ent, classname );
+		if ( ent->classInstance == nullptr )
+		{
+			gi.dprintf( "Failed to create entity class instance (%s)\n", classname.c_str() );
+		}
 
 		// yet another map hack
 		if ( !Q_stricmp( level.mapname, "command" ) && !Q_stricmp( ent->classname, "trigger_once" ) && !Q_stricmp( ent->model, "*27" ) )
@@ -719,7 +753,7 @@ void SpawnEntities( char *mapname, const char *entities, char *spawnpoint )
 			ent->spawnflags &= ~( SPAWNFLAG_NOT_EASY | SPAWNFLAG_NOT_MEDIUM | SPAWNFLAG_NOT_HARD | SPAWNFLAG_NOT_COOP | SPAWNFLAG_NOT_DEATHMATCH );
 		}
 
-		ED_CallSpawn( ent );
+		ED_CallSpawn( ent, variables );
 	}
 
 	gi.dprintf( "%i entities inhibited\n", inhibit );

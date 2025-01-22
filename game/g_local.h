@@ -965,7 +965,7 @@ struct gclient_s
 	bool     update_chase;// need to update chase info?
 };
 
-
+class Entity;
 struct edict_s
 {
 	entity_state_t    s;
@@ -996,6 +996,8 @@ struct edict_s
 
 	// DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER
 	// EXPECTS THE FIELDS IN THAT ORDER!
+
+	Entity *classInstance;
 
 	vec3_t offset;
 
