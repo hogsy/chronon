@@ -1521,7 +1521,7 @@ void M_Menu_Credits_f( void )
 	}
 	else
 	{
-		credits = idcredits;	
+		credits = idcredits;
 	}
 
 	credits_start_time = cls.realtime;
@@ -2271,7 +2271,7 @@ void StartServer_MenuInit( void )
 	/*
 	** maxclients determines the maximum number of players that can join
 	** the game.  If maxclients is only "1" then we should default the menu
-	** option to 8 players, otherwise use whatever its current value is. 
+	** option to 8 players, otherwise use whatever its current value is.
 	** Clamping will be done when the server is actually started.
 	*/
 	s_maxclients_field.generic.type      = MTYPE_FIELD;
@@ -3510,6 +3510,7 @@ M_Draw
 */
 void M_Draw( void )
 {
+#if 0
 	if ( cls.key_dest != key_menu )
 		return;
 
@@ -3532,6 +3533,9 @@ void M_Draw( void )
 		S_StartLocalSound( menu_in_sound );
 		m_entersound = false;
 	}
+#else
+#	pragma message "TODO"
+#endif
 }
 
 

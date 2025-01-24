@@ -410,6 +410,7 @@ void Menu_Draw( menuframework_s *menu )
 
 void Menu_DrawStatusBar( const char *string )
 {
+#if 0
 	if ( string )
 	{
 		int l = strlen( string );
@@ -424,6 +425,9 @@ void Menu_DrawStatusBar( const char *string )
 	{
 		Draw_Fill( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
 	}
+#else
+#	pragma message "TODO"
+#endif
 }
 
 void Menu_DrawString( int x, int y, const char *string )
@@ -531,7 +535,7 @@ int Menu_TallySlots( menuframework_s *menu )
 		if ( ( ( menucommon_s * ) menu->items[ i ] )->type == MTYPE_LIST )
 		{
 			int          nitems = 0;
-			const char **n      = ( ( menulist_s      *) menu->items[ i ] )->itemnames;
+			const char **n      = ( ( menulist_s * ) menu->items[ i ] )->itemnames;
 
 			while ( *n )
 				nitems++, n++;
@@ -549,6 +553,7 @@ int Menu_TallySlots( menuframework_s *menu )
 
 void MenuList_Draw( menulist_s *l )
 {
+#if 0
 	const char **n;
 	int          y = 0;
 
@@ -564,6 +569,9 @@ void MenuList_Draw( menulist_s *l )
 		n++;
 		y += 10;
 	}
+#else
+#	pragma message "TODO"
+#endif
 }
 
 void Separator_Draw( menuseparator_s *s )

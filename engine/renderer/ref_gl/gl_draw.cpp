@@ -248,37 +248,36 @@ Draw_Fill
 Fills a box of pixels with a single color
 =============
 */
-void Draw_Fill( int x, int y, int w, int h, int c )
+void Draw_Fill( int x, int y, int w, int h, const chr::ColourF32 &c )
 {
-	union
+	if ( c.a <= 0.0f )
 	{
-		unsigned c{ 0 };
-		byte     v[ 4 ];
-	} color;
-
-	if ( ( unsigned ) c > 255 )
-	{
-		Com_Error( ERR_FATAL, "Draw_Fill: bad color" );
 		return;
+	}
+
+	if ( c.a != 1.0f )
+	{
+		glEnable( GL_BLEND );
 	}
 
 	glDisable( GL_TEXTURE_2D );
 
-	color.c = d_8to24table[ c ];
-	glColor3f( color.v[ 0 ] / 255.0,
-	           color.v[ 1 ] / 255.0,
-	           color.v[ 2 ] / 255.0 );
+	glColor4fv( ( float * ) &c );
 
 	glBegin( GL_QUADS );
-
 	glVertex2f( x, y );
 	glVertex2f( x + w, y );
 	glVertex2f( x + w, y + h );
 	glVertex2f( x, y + h );
-
 	glEnd();
-	glColor3f( 1, 1, 1 );
+
+	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 	glEnable( GL_TEXTURE_2D );
+
+	if ( c.a != 1.0f )
+	{
+		glDisable( GL_BLEND );
+	}
 }
 
 //=============================================================================

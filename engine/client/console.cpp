@@ -25,7 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 console_t con;
 
-cvar_t *con_notifytime;
+static cvar_t *con_notifytime;
+static cvar_t *con_image;
+static cvar_t *con_size;
 
 #define MAXCMDLINE 256
 extern char key_lines[ 32 ][ MAXCMDLINE ];
@@ -102,7 +104,7 @@ void Con_ToggleConsole_f( void )
 Con_ToggleChat_f
 ================
 */
-void Con_ToggleChat_f( void )
+static void Con_ToggleChat_f()
 {
 	Key_ClearTyping();
 
@@ -125,7 +127,7 @@ void Con_ToggleChat_f( void )
 Con_Clear_f
 ================
 */
-void Con_Clear_f( void ) { memset( con.text, ' ', CON_TEXTSIZE ); }
+void Con_Clear_f() { memset( con.text, ' ', CON_TEXTSIZE ); }
 
 /*
 ================
@@ -134,7 +136,7 @@ Con_Dump_f
 Save the console contents out to a file
 ================
 */
-void Con_Dump_f( void )
+void Con_Dump_f()
 {
 	int   l, x;
 	char *line;
@@ -194,7 +196,7 @@ void Con_Dump_f( void )
 Con_ClearNotify
 ================
 */
-void Con_ClearNotify( void )
+void Con_ClearNotify()
 {
 	int i;
 
@@ -206,7 +208,7 @@ void Con_ClearNotify( void )
 Con_MessageMode_f
 ================
 */
-void Con_MessageMode_f( void )
+void Con_MessageMode_f()
 {
 	chat_team    = false;
 	cls.key_dest = key_message;
@@ -217,7 +219,7 @@ void Con_MessageMode_f( void )
 Con_MessageMode2_f
 ================
 */
-void Con_MessageMode2_f( void )
+void Con_MessageMode2_f()
 {
 	chat_team    = true;
 	cls.key_dest = key_message;
@@ -230,7 +232,7 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize( void )
+void Con_CheckResize()
 {
 	int  i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char tbuf[ CON_TEXTSIZE ];
@@ -297,7 +299,9 @@ void Con_Init( void )
 	//
 	// register our commands
 	//
-	con_notifytime = Cvar_Get( "con_notifytime", "3", 0 );
+	con_notifytime = Cvar_Get( "con_notifytime", "3", CVAR_ARCHIVE );
+	con_image      = Cvar_Get( "con_image", "", CVAR_ARCHIVE );
+	con_size       = Cvar_Get( "con_size", "0.8", CVAR_ARCHIVE );
 
 	Cmd_AddCommand( "toggleconsole", Con_ToggleConsole_f );
 	Cmd_AddCommand( "togglechat", Con_ToggleChat_f );
@@ -527,23 +531,30 @@ Con_DrawConsole
 Draws the console with the solid background
 ================
 */
-void Con_DrawConsole( float frac )
+void Con_DrawConsole()
 {
 	int   i, j, x, y, n;
 	int   rows;
 	char *text;
 	int   row;
-	int   lines;
-	char  dlbar[ 1024 ];
 
-	lines = viddef.height * frac;
+	float frac = ( cls.state == ca_disconnected || cls.state == ca_connecting ) ? 1.0f : con_size->value;
+
+	int lines = viddef.height * frac;
 	if ( lines <= 0 ) return;
 
 	if ( lines > viddef.height ) lines = viddef.height;
 
 	// draw the background
-	Draw_StretchPic( 0, -viddef.height + lines, viddef.width, viddef.height,
-	                 "conback" );
+	if ( *con_image->string != '\0' )
+	{
+		Draw_StretchPic( 0, -viddef.height + lines, viddef.width, viddef.height, con_image->string );
+	}
+	else
+	{
+		Draw_Fill( 0, -viddef.height + lines, viddef.width, viddef.height, chr::ColourF32( 0.0f, 0.0f, 0.0f, 0.5f ) );
+	}
+
 	SCR_AddDirtyPoint( 0, 0 );
 	SCR_AddDirtyPoint( viddef.width - 1, lines - 1 );
 
@@ -595,7 +606,8 @@ void Con_DrawConsole( float frac )
 	// figure out width
 	if ( cls.download )
 	{
-		if ( ( text = strrchr( cls.downloadname, '/' ) ) != NULL )
+		char dlbar[ 1024 ];
+		if ( ( text = strrchr( cls.downloadname, '/' ) ) != nullptr )
 			text++;
 		else
 			text = cls.downloadname;

@@ -149,6 +149,9 @@ namespace chr
 		float r, g, b, a;
 	};
 
+	static constexpr ColourF32 COLOURF32_WHITE = { 1.0f, 1.0f, 1.0f, 1.0f };
+	static constexpr ColourF32 COLOURF32_BLACK = { 0.0f, 0.0f, 0.0f, 1.0f };
+
 	static inline ColourF32 ConvertColourU8ToColourF32( const ColourU8 &src )
 	{
 		return ( ColourF32 ) {

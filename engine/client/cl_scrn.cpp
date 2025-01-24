@@ -156,8 +156,7 @@ void SCR_DrawDebugGraph( void )
 
 	x = scr_vrect.x;
 	y = scr_vrect.y + scr_vrect.height;
-	Draw_Fill( x, y - scr_graphheight->value,
-	           w, scr_graphheight->value, 8 );
+	Draw_Fill( x, y - scr_graphheight->value, w, scr_graphheight->value, chr::ColourF32( 0.0f, 0.0f, 0.0f, 1.0f ) );
 
 	for ( a = 0; a < w; a++ )
 	{
@@ -169,7 +168,7 @@ void SCR_DrawDebugGraph( void )
 		if ( v < 0 )
 			v += scr_graphheight->value * ( 1 + ( int ) ( -v / scr_graphheight->value ) );
 		h = ( int ) v % ( int ) scr_graphheight->value;
-		Draw_Fill( x + w - 1 - a, y - h, 1, h, color );
+		Draw_Fill( x + w - 1 - a, y - h, 1, h, chr::ColourF32( Q_BYTE_TO_FLOAT( color ), 1.0f, 1.0f, 1.0f ) );
 	}
 }
 
@@ -527,20 +526,20 @@ void SCR_DrawConsole( void )
 
 	if ( cls.state == ca_disconnected || cls.state == ca_connecting )
 	{// forced full screen console
-		Con_DrawConsole( 1.0 );
+		Con_DrawConsole();
 		return;
 	}
 
 	if ( cls.state != ca_active || !cl.refresh_prepped )
 	{// connected, but can't render
-		Con_DrawConsole( 0.5 );
-		Draw_Fill( 0, viddef.height / 2, viddef.width, viddef.height / 2, 0 );
+		Con_DrawConsole();
+		Draw_Fill( 0, viddef.height / 2, viddef.width, viddef.height / 2, chr::COLOURF32_BLACK );
 		return;
 	}
 
 	if ( scr_con_current )
 	{
-		Con_DrawConsole( scr_con_current );
+		Con_DrawConsole();
 	}
 	else
 	{
@@ -777,10 +776,11 @@ void SCR_TileClear( void )
 #define STAT_MINUS 10// num frame for '-' stats digit
 static const char *sb_nums[ 2 ][ 11 ] =
         {
-                { "num0", "num1", "num2", "num3", "num4", "num5",
-                  "num6", "num7", "num8", "num9", "white" },
-                { "num0", "num1", "num2", "num3", "num4", "num5",
-                  "num6", "num7", "num8", "num9", "white" } };
+                {"num0", "num1", "num2", "num3", "num4", "num5",
+                 "num6", "num7", "num8", "num9", "white"},
+                {"num0", "num1", "num2", "num3", "num4", "num5",
+                 "num6", "num7", "num8", "num9", "white"}
+};
 
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
