@@ -21,6 +21,9 @@
 #include "gl_local.h"
 
 #include "model/model_alias.h"
+#include "model/model_mda.h"
+
+#include "server/server.h"
 
 model_t *loadmodel;
 int      modfilelen;
@@ -189,13 +192,10 @@ model_t *Mod_ForName( const char *name, bool crash )
 	{
 		if ( pos == filename.length() - 1 )
 		{
-			Com_Printf( "Encountered a model with an invalid tag (%s)!\n", filename.c_str() );
-		}
-		else
-		{
-			tag = filename.substr( pos + 1 );
+			Com_Error( ERR_DROP, "Encountered a model with an invalid tag (%s)!\n", filename.c_str() );
 		}
 
+		tag = filename.substr( pos + 1 );
 		filename.erase( pos );
 	}
 
@@ -934,78 +934,54 @@ ALIAS MODELS
  */
 void Mod_LoadMDAModel( model_t *mod, void *buffer, const std::string &tag )
 {
-	// + 4 as we're skipping the magic id
-	const char *pos = ( const char * ) ( ( byte * ) buffer + 4 );
-	while ( *pos != '\0' )
+	chr::MDAModel *mda = new chr::MDAModel();
+	if ( mda->Parse( ( char * ) buffer ) )
 	{
-		const char *token = COM_Parse( &pos );
-		if ( *token == '#' )
-		{
-			pos = Script_SkipLine( pos );
-			continue;
-		}
+		mod->type = mod_mda;
 
-		if ( strcmp( token, "basemodel" ) == 0 )
-		{
-			token = COM_Parse( &pos );
-
-			uint8_t *buf;
-			FS_LoadFile( token, ( void ** ) &buf );
-			if ( !buf )
-			{
-				Com_Printf( "WARNING: %s not found for MDA %s!\n", token, mod->name );
-				return;
-			}
-
-			// Ensure magic is valid
-			if ( LittleLong( *( int32_t * ) ( buf ) ) != IDALIASHEADER )
-			{
-				Com_Printf( "WARNING: %s is not a valid basemodel for MDA %s!\n", token, mod->name );
-				return;
-			}
-
-			Mod_LoadAliasModel( mod, buf );
-
-			FS_FreeFile( buf );
-
-			// Only go so far as fetching the basemodel for now...
-			break;
-		}
+		mod->extradata     = mda;
+		mod->extradatasize = sizeof( chr::MDAModel );
+	}
+	else
+	{
+		Com_Printf( "Failed to load MDA (%s)!\n", mod->name );
+		delete mda;
 	}
 }
 
 void Mod_LoadAliasModel( model_t *mod, void *buffer )
 {
 	auto *aliasModel = new chr::AliasModel();
-	if ( !aliasModel->LoadFromBuffer( buffer ) )
+	if ( aliasModel->LoadFromBuffer( buffer ) )
+	{
+		mod->type = mod_alias;
+
+		mod->mins[ 0 ] = -32.0f;
+		mod->mins[ 1 ] = -32.0f;
+		mod->mins[ 2 ] = -32.0f;
+		mod->maxs[ 0 ] = 32.0f;
+		mod->maxs[ 1 ] = 32.0f;
+		mod->maxs[ 2 ] = 32.0f;
+
+		mod->extradata     = aliasModel;
+		mod->extradatasize = sizeof( chr::AliasModel );
+
+		mod->numframes = aliasModel->GetNumFrames();
+
+		// Load in all the skins we need
+		const auto &skins = aliasModel->GetSkins();
+		for ( size_t i = 0; i < skins.size(); ++i )
+		{
+			char skinPath[ MAX_QPATH ];
+			snprintf( skinPath, sizeof( skinPath ), "%s", mod->name );
+			strcpy( strrchr( skinPath, '/' ) + 1, skins[ i ].c_str() );
+			mod->skins[ i ] = GL_FindImage( skinPath, it_skin );
+		}
+	}
+	else
 	{
 		Com_Printf( "Failed to load model, \"%s\", from buffer!\n", mod->name );
 		delete aliasModel;
-		return;
-	}
-
-	mod->type = mod_alias;
-
-	mod->mins[ 0 ] = -32.0f;
-	mod->mins[ 1 ] = -32.0f;
-	mod->mins[ 2 ] = -32.0f;
-	mod->maxs[ 0 ] = 32.0f;
-	mod->maxs[ 1 ] = 32.0f;
-	mod->maxs[ 2 ] = 32.0f;
-
-	mod->extradata     = aliasModel;
-	mod->extradatasize = sizeof( chr::AliasModel );
-
-	mod->numframes = aliasModel->GetNumFrames();
-
-	// Load in all the skins we need
-	const auto &skins = aliasModel->GetSkins();
-	for ( size_t i = 0; i < skins.size(); ++i )
-	{
-		char skinPath[ MAX_QPATH ];
-		snprintf( skinPath, sizeof( skinPath ), "%s", mod->name );
-		strcpy( strrchr( skinPath, '/' ) + 1, skins[ i ].c_str() );
-		mod->skins[ i ] = GL_FindImage( skinPath, it_skin );
 	}
 }
 
@@ -1085,7 +1061,7 @@ void Mod_BeginRegistration( const char *model )
 	r_viewcluster = -1;
 }
 
-struct model_s *Mod_RegisterModel( const char *name )
+model_s *Mod_RegisterModel( const char *name )
 {
 	model_t *mod = Mod_ForName( name, false );
 	if ( mod )
@@ -1136,14 +1112,23 @@ void Mod_EndRegistration( void )
 
 void Mod_Free( model_t *mod )
 {
-	if ( mod->type == mod_alias )
+	switch ( mod->type )
 	{
-		auto *aliasModel = static_cast< chr::AliasModel * >( mod->extradata );
-		delete aliasModel;
-	}
-	else
-	{
-		Hunk_Free( mod->extradata );
+		default:
+			Hunk_Free( mod->extradata );
+			break;
+		case mod_alias:
+		{
+			chr::AliasModel *alias = ( chr::AliasModel * ) mod->extradata;
+			delete alias;
+			break;
+		}
+		case mod_mda:
+		{
+			chr::MDAModel *mda = ( chr::MDAModel * ) mod->extradata;
+			delete mda;
+			break;
+		}
 	}
 
 	memset( mod, 0, sizeof( *mod ) );

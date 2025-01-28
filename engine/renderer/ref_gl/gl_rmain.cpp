@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gl_local.h"
 
 #include "model/model_alias.h"
+#include "model/model_mda.h"
 
 void R_Clear( void );
 
@@ -334,6 +335,9 @@ void R_DrawEntitiesOnList()
 				case mod_alias:
 					( ( chr::AliasModel * ) currentmodel->extradata )->Draw( currententity );
 					break;
+				case mod_mda:
+					( ( chr::MDAModel * ) currentmodel->extradata )->Draw( currententity );
+					break;
 				case mod_brush:
 					R_DrawBrushModel( currententity );
 					break;
@@ -372,6 +376,9 @@ void R_DrawEntitiesOnList()
 			{
 				case mod_alias:
 					( ( chr::AliasModel * ) currentmodel->extradata )->Draw( currententity );
+					break;
+				case mod_mda:
+					( ( chr::MDAModel * ) currentmodel->extradata )->Draw( currententity );
 					break;
 				case mod_brush:
 					R_DrawBrushModel( currententity );

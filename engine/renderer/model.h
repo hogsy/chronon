@@ -176,7 +176,8 @@ typedef enum
 	mod_bad,
 	mod_brush,
 	mod_sprite,
-	mod_alias
+	mod_alias,
+	mod_mda,
 } modtype_t;
 
 typedef struct model_s

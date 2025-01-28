@@ -58,6 +58,9 @@ typedef struct entity_s
 
 	struct image_s *skin;// NULL for inline skin
 	unsigned int    flags;
+
+	// draw profile; only matters for MDA
+	std::string profile{ "DFLT" };
 } entity_t;
 
 #define ENTITY_FLAGS 68

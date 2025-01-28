@@ -84,6 +84,7 @@ add_executable(chronon-engine WIN32
         ../qcommon/pmove.cpp
 
         model/model_alias.cpp
+        model/model_mda.cpp
 
         # Renderer
         # -- gl

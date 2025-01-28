@@ -185,42 +185,51 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 
 		// Nox supports three different resolution types, we'll deal with those below and
 		// translate them into our common structure
-		if ( resolution == 1 )
+		switch ( resolution )
 		{
-			static const int shift[ 3 ] = { 0, 11, 21 };
-			static const int mask[ 3 ]  = { 0x000007ff, 0x000003ff, 0x000007ff };
-
-			const MD2VertexGroup4 *groups = ( MD2VertexGroup4 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
-			for ( int j = 0; j < numVertices_; ++j )
+			case 0:
 			{
-				uint32_t vertices = ( uint32_t ) LittleLong( ( int32_t ) groups[ j ].vertices );
-				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertex[ k ] = ( ( vertices >> shift[ k ] ) & mask[ k ] );
+				const MD2VertexGroup *groups = ( MD2VertexGroup * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
+				for ( int j = 0; j < numVertices_; ++j )
+				{
+					for ( uint k = 0; k < 3; ++k )
+						frames_[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertices[ k ];
 
-				frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+					frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+				}
+				break;
 			}
-		}
-		else if ( resolution == 2 )
-		{
-			const MD2VertexGroup6 *groups = ( MD2VertexGroup6 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
-			for ( int j = 0; j < numVertices_; ++j )
+			case 1:
 			{
-				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertex[ k ] = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].vertices[ k ] );
+				static const int shift[ 3 ] = { 0, 11, 21 };
+				static const int mask[ 3 ]  = { 0x000007ff, 0x000003ff, 0x000007ff };
 
-				frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+				const MD2VertexGroup4 *groups = ( MD2VertexGroup4 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
+				for ( int j = 0; j < numVertices_; ++j )
+				{
+					uint32_t vertices = ( uint32_t ) LittleLong( ( int32_t ) groups[ j ].vertices );
+					for ( uint k = 0; k < 3; ++k )
+						frames_[ i ].vertices[ j ].vertex[ k ] = ( ( vertices >> shift[ k ] ) & mask[ k ] );
+
+					frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+				}
+				break;
 			}
-		}
-		else
-		{
-			const MD2VertexGroup *groups = ( MD2VertexGroup * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
-			for ( int j = 0; j < numVertices_; ++j )
+			case 2:
 			{
-				for ( uint k = 0; k < 3; ++k )
-					frames_[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertices[ k ];
+				const MD2VertexGroup6 *groups = ( MD2VertexGroup6 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
+				for ( int j = 0; j < numVertices_; ++j )
+				{
+					for ( uint k = 0; k < 3; ++k )
+						frames_[ i ].vertices[ j ].vertex[ k ] = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].vertices[ k ] );
 
-				frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+					frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+				}
+				break;
 			}
+			default:
+				Com_Error( ERR_FATAL, "Unhandled MD2 resolution %d\n", resolution );
+				break;
 		}
 
 		// Now go ahead and precompute the bounds for the given frame
@@ -255,12 +264,14 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 static float r_avertexnormals[ NUMVERTEXNORMALS ][ 3 ] = {
 #include "../renderer/ref_gl/anorms.h"
 
+
 };
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT 16
 float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "../renderer/ref_gl/anormtab.h"
+
 
 };
 

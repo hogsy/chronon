@@ -287,8 +287,7 @@ void CL_PrepRefresh( void )
 	{
 		strcpy( name, cl.configstrings[ CS_MODELS + i ] );
 		name[ 37 ] = 0;// never go beyond one line
-		if ( name[ 0 ] != '*' )
-			Com_Printf( "%s\r", name );
+
 		SCR_UpdateScreen();
 		chr::globalApp->SendKeyEvents();// pump message loop
 		if ( name[ 0 ] == '#' )

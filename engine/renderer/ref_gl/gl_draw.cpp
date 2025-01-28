@@ -255,7 +255,7 @@ void Draw_Fill( int x, int y, int w, int h, const chr::ColourF32 &c )
 		return;
 	}
 
-	if ( c.a != 1.0f )
+	if ( c.a < 1.0f )
 	{
 		glEnable( GL_BLEND );
 	}
@@ -274,7 +274,7 @@ void Draw_Fill( int x, int y, int w, int h, const chr::ColourF32 &c )
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 	glEnable( GL_TEXTURE_2D );
 
-	if ( c.a != 1.0f )
+	if ( c.a < 1.0f )
 	{
 		glDisable( GL_BLEND );
 	}
