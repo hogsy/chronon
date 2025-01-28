@@ -27,7 +27,7 @@ int      modfilelen;
 
 void Mod_LoadSpriteModel( model_t *mod, void *buffer );
 void Mod_LoadBrushModel( model_t *mod, void *buffer );
-void Mod_LoadMDAModel( model_t *mod, void *buffer );
+void Mod_LoadMDAModel( model_t *mod, void *buffer, const std::string &tag );
 void Mod_LoadAliasModel( model_t *mod, void *buffer );
 
 static byte mod_novis[ MAX_MAP_LEAFS / 8 ];
@@ -179,13 +179,38 @@ model_t *Mod_ForName( const char *name, bool crash )
 		return &mod_inline[ i ];
 	}
 
-	//
+	// now filename is just string without the tag
+	std::string tag      = {};
+	std::string filename = name;
+
+	// some models have a special tag at the end, for MDAs, these denote the skin
+	const size_t pos = filename.find_last_of( '!' );
+	if ( pos != std::string::npos )
+	{
+		if ( pos == filename.length() - 1 )
+		{
+			Com_Printf( "Encountered a model with an invalid tag (%s)!\n", filename.c_str() );
+		}
+		else
+		{
+			tag = filename.substr( pos + 1 );
+		}
+
+		filename.erase( pos );
+	}
+
 	// search the currently loaded models
-	//
 	for ( i = 0, mod = mod_known; i < mod_numknown; i++, mod++ )
 	{
-		if ( !mod->name[ 0 ] ) continue;
-		if ( !strcmp( mod->name, name ) ) return mod;
+		if ( !mod->name[ 0 ] )
+		{
+			continue;
+		}
+
+		if ( filename == mod->name )
+		{
+			return mod;
+		}
 	}
 
 	//
@@ -201,7 +226,7 @@ model_t *Mod_ForName( const char *name, bool crash )
 			Com_Error( ERR_DROP, "mod_numknown == MAX_MOD_KNOWN" );
 		mod_numknown++;
 	}
-	strcpy( mod->name, name );
+	strcpy( mod->name, filename.c_str() );
 
 	//
 	// load the file
@@ -212,7 +237,7 @@ model_t *Mod_ForName( const char *name, bool crash )
 		if ( crash )
 			Com_Error( ERR_DROP, "Mod_NumForName: %s not found", mod->name );
 		memset( mod->name, 0, sizeof( mod->name ) );
-		return NULL;
+		return nullptr;
 	}
 
 	loadmodel = mod;
@@ -226,7 +251,7 @@ model_t *Mod_ForName( const char *name, bool crash )
 	switch ( LittleLong( *( unsigned * ) buf ) )
 	{
 		case IDMDAHEADER:
-			Mod_LoadMDAModel( mod, buf );
+			Mod_LoadMDAModel( mod, buf, tag );
 			break;
 
 		case IDALIASHEADER:
@@ -907,7 +932,7 @@ ALIAS MODELS
  * should be rendered in the scene along with some
  * additional data we need.
  */
-void Mod_LoadMDAModel( model_t *mod, void *buffer )
+void Mod_LoadMDAModel( model_t *mod, void *buffer, const std::string &tag )
 {
 	// + 4 as we're skipping the magic id
 	const char *pos = ( const char * ) ( ( byte * ) buffer + 4 );
