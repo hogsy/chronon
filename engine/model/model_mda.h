@@ -51,6 +51,7 @@ namespace chr
 				LESS,
 			};
 			DepthFunc depth{ DepthFunc::NONE };
+			bool      depthWrite{};
 
 			enum class UVGen
 			{
@@ -64,7 +65,8 @@ namespace chr
 				NONE,
 				SCROLL,
 			};
-			UVMod uvmod{ UVMod::NONE };
+			UVMod   uvMod{ UVMod::NONE };
+			Vector2 uvModScroll{};
 
 			enum class RGBGen
 			{

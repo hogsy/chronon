@@ -211,6 +211,18 @@ bool chr::MDAModel::ParseProfile( Profile &profile, std::stringstream &ss )
 		{
 			ss.ignore( std::numeric_limits< std::streamsize >::max(), '\n' );
 		}
+		else if ( token == "evaluate" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected expression after 'evaluate!\n" );
+				return false;
+			}
+
+			profile.evaluation = token;
+			profile.evaluation.erase( std::remove( profile.evaluation.begin(), profile.evaluation.end(), '\"' ),
+			                          profile.evaluation.end() );
+		}
 		else if ( token == "skin" )
 		{
 			if ( !( ss >> token ) || token != "{" )
@@ -314,6 +326,139 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 			}
 
 			pass.map = GL_FindImage( token.c_str(), it_skin );
+		}
+		else if ( token == "alphafunc" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'alphafunc'!\n" );
+				return false;
+			}
+
+			if ( token == "gt0" ) { pass.alpha = Pass::AlphaFunc::GT0; }
+			else if ( token == "ge128" ) { pass.alpha = Pass::AlphaFunc::GE128; }
+			else if ( token == "lt128" ) { pass.alpha = Pass::AlphaFunc::LT128; }
+			else
+			{
+				Com_Printf( "Unknown alphafunc type (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "rgbgen" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'rgbgen'!\n" );
+				return false;
+			}
+
+			if ( token == "none" ) { pass.rgb = Pass::RGBGen::NONE; }
+			else if ( token == "identity" ) { pass.rgb = Pass::RGBGen::IDENTITY; }
+			else if ( token == "diffusezero" ) { pass.rgb = Pass::RGBGen::DIFFUSE_ZERO; }
+			else if ( token == "ambient" ) { pass.rgb = Pass::RGBGen::AMBIENT; }
+			else
+			{
+				Com_Printf( "Unknown rgbgen type (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "blendmode" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'blendmode'!\n" );
+				return false;
+			}
+
+			if ( token == "none" ) { pass.blend = Pass::BlendMode::NONE; }
+			else if ( token == "normal" ) { pass.blend = Pass::BlendMode::NORMAL; }
+			else if ( token == "multiply" ) { pass.blend = Pass::BlendMode::MULTIPLY; }
+			else if ( token == "add" ) { pass.blend = Pass::BlendMode::ADD; }
+			else
+			{
+				Com_Printf( "Unknown blend mode (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "cull" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'cull'!\n" );
+				return false;
+			}
+
+			if ( token == "none" ) { pass.cull = Pass::CullMode::NONE; }
+			else if ( token == "front" ) { pass.cull = Pass::CullMode::FRONT; }
+			else if ( token == "back" ) { pass.cull = Pass::CullMode::BACK; }
+			else
+			{
+				Com_Printf( "Unknown cull mode (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "uvgen" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'uvgen'!\n" );
+				return false;
+			}
+
+			if ( token == "sphere" ) { pass.uvgen = Pass::UVGen::SPHERE; }
+			else
+			{
+				Com_Printf( "Unknown uvgen mode (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "uvmod" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'uvmod'!\n" );
+				return false;
+			}
+
+			if ( token == "scroll" )
+			{
+				pass.uvMod = Pass::UVMod::SCROLL;
+				if ( !( ss >> pass.uvModScroll.x >> pass.uvModScroll.y ) )
+				{
+					Com_Printf( "Expected 'x y' after 'scroll'!\n" );
+					return false;
+				}
+			}
+			else
+			{
+				Com_Printf( "Unknown uvmod mode (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "depthfunc" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected type after 'depthfunc'!\n" );
+				return false;
+			}
+
+			if ( token == "none" ) { pass.depth = Pass::DepthFunc::NONE; }
+			else if ( token == "equal" ) { pass.depth = Pass::DepthFunc::EQUAL; }
+			else if ( token == "less" ) { pass.depth = Pass::DepthFunc::LESS; }
+			else
+			{
+				Com_Printf( "Unknown depthfunc mode (%s)!\n", token.c_str() );
+			}
+		}
+		else if ( token == "depthwrite" )
+		{
+			if ( !( ss >> token ) )
+			{
+				Com_Printf( "Expected value after 'depthwrite'!\n" );
+				return false;
+			}
+
+			if ( token == "1" ) { pass.depthWrite = true; }
+			else if ( token == "0" ) { pass.depthWrite = false; }
+			else
+			{
+				Com_Printf( "Unknown depthwrite mode (%s)!\n", token.c_str() );
+			}
 		}
 		else
 		{
