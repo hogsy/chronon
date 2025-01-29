@@ -960,7 +960,7 @@ image_t *GL_FindImage( const std::string &name, imagetype_t type )
 	static cvar_t *hdOverride = nullptr;
 	if ( hdOverride == nullptr )
 	{
-		hdOverride = Cvar_Get( "hd_override", "1", CVAR_ARCHIVE );
+		hdOverride = Cvar_Get( "hd_override", "0", CVAR_ARCHIVE );
 	}
 
 	if ( hdOverride->value >= 1.0f )
