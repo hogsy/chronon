@@ -175,7 +175,7 @@ typedef struct
 	void ( *DebugGraph )( float value, int color );
 
 	// File System
-	int ( *LoadFile )( const char *path, void **buffer );
+	ssize_t ( *LoadFile )( const char *path, void **buffer );
 	void ( *FreeFile )( void *buffer );
 } game_import_t;
 

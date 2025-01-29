@@ -1,13 +1,30 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-// Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+/******************************************************************************
+	Copyright © 1997-2001 Id Software, Inc.
+	Copyright © 2020-2025 Mark E Sowden <hogsy@oldtimes-software.com>
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+******************************************************************************/
 
 #pragma once
 
 #include "../client/client.h"
 
-namespace chr::ape
+namespace chr
 {
-	enum class OpCode
+	enum class ApeOpCode
 	{
 		OP_STARTSWITCH   = 49,
 		OP_THINKSWITCH   = 50,
@@ -23,5 +40,15 @@ namespace chr::ape
 		OP_STYLE         = 87,
 	};
 
-	static constexpr unsigned int MAGIC = 0x3D010000;
-}// namespace chr::ape
+	class ApeInstance
+	{
+	public:
+		ApeInstance();
+		~ApeInstance();
+
+		bool Load( const std::string &filename );
+
+	private:
+		bool Parse( const void *ptr, size_t size );
+	};
+}// namespace chr

@@ -680,9 +680,9 @@ void FS_InitFilesystem( void );
 void FS_SetGamedir( const char *dir );
 const char *FS_Gamedir( void );
 char *FS_NextPath( char *prevpath );
-void FS_ExecAutoexec( void );
+void        FS_ExecAutoexec( void );
 
-int FS_LoadFile( const char *path, void **buffer );
+ssize_t FS_LoadFile( const char *path, void **buffer );
 // a null buffer will just return the file length without loading
 // a -1 length is not present
 

@@ -80,7 +80,7 @@ struct Package
 	/**
  	 * Load a file from the given package, and decompress the data.
  	 */
-	void *LoadFile( const char *fileName, uint32_t *fileLength ) const
+	void *LoadFile( const char *fileName, size_t *fileLength ) const
 	{
 		// first, ensure that it's actually in the package file table
 		const Index *fileIndex = GetFileIndex( fileName );
@@ -343,7 +343,7 @@ Used for streaming data out of either a pak file or
 a seperate file.
 ===========
 */
-void *FS_FOpenFile( const char *filename, uint32_t *length )
+void *FS_FOpenFile( const char *filename, size_t *length )
 {
 	// search through the path, one element at a time
 	for ( searchpath_t *search = fs_searchpaths; search; search = search->next )
@@ -464,7 +464,7 @@ Filename are reletive to the quake search path
 a null buffer will just return the file length without loading
 ============
 */
-int FS_LoadFile( const char *path, void **buffer )
+ssize_t FS_LoadFile( const char *path, void **buffer )
 {
 	char upath[ MAX_QPATH ];
 	snprintf( upath, sizeof( upath ), "%s", path );
@@ -472,12 +472,14 @@ int FS_LoadFile( const char *path, void **buffer )
 	FS_CanonicalisePath( upath );
 
 	// look for it in the filesystem or pack files
-	uint32_t length;
-	void    *buf = FS_FOpenFile( upath, &length );
+	size_t length;
+	void  *buf = FS_FOpenFile( upath, &length );
 	if ( buf == nullptr )
 	{
 		if ( buffer != nullptr )
+		{
 			*buffer = nullptr;
+		}
 
 		return -1;
 	}
@@ -830,8 +832,8 @@ static void ExtractCommand()
 			Com_Printf( "Extracting from %s\n", i.second.mappedDir.c_str() );
 			for ( const auto &j : i.second.indices )
 			{
-				unsigned int fileSize;
-				void        *p = i.second.LoadFile( j.name, &fileSize );
+				size_t fileSize;
+				void  *p = i.second.LoadFile( j.name, &fileSize );
 				if ( p == nullptr )
 				{
 					Com_Printf( "Failed to load %s\n", j.name );
