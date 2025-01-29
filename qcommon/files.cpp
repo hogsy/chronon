@@ -42,22 +42,22 @@ Anachronox Data Packages
 =============================================================================
 */
 
-static constexpr unsigned int ADAT_MAGIC = GENERATE_MAGICID( 'A', 'D', 'A', 'T' );
+static constexpr unsigned int ADAT_MAGIC   = GENERATE_MAGICID( 'A', 'D', 'A', 'T' );
 static constexpr unsigned int ADAT_VERSION = 9;
 
 struct Package
 {
 	struct Index
 	{
-		char name[ 128 ];          /* the name of the file, excludes 'model/' etc. */
+		char     name[ 128 ];      /* the name of the file, excludes 'model/' etc. */
 		uint32_t offset;           /* offset into the dat that the file resides */
 		uint32_t length;           /* decompressed length of the file */
 		uint32_t compressedLength; /* length of the file in the dat */
 		uint32_t u0;
 	};
 
-	std::string mappedDir; /* e.g., 'models' */
-	std::string path;
+	std::string          mappedDir; /* e.g., 'models' */
+	std::string          path;
 	std::vector< Index > indices; /* index data */
 
 	/**
@@ -106,9 +106,9 @@ struct Package
 			file.read( ( char * ) src.data(), fileIndex->compressedLength );
 
 			// decompress it
-			auto dst = ( uint8_t * ) Z_Malloc( fileIndex->length );
+			auto   dst       = ( uint8_t * ) Z_Malloc( fileIndex->length );
 			size_t dstLength = fileIndex->length;
-			bool status = FS_DecompressFile( src.data(), fileIndex->compressedLength, dst, &dstLength, fileIndex->length );
+			bool   status    = FS_DecompressFile( src.data(), fileIndex->compressedLength, dst, &dstLength, fileIndex->length );
 
 			file.close();
 
@@ -158,6 +158,13 @@ void FS_CanonicalisePath( char *path )
 
 		path++;
 	}
+}
+
+std::string chr::io::SanitizePath( std::string path )
+{
+	path.erase( std::remove( path.begin(), path.end(), '\"' ), path.end() );
+	std::ranges::replace( path, '\\', '/' );
+	return path;
 }
 
 /**
@@ -250,7 +257,7 @@ static bool FS_MountPackage( FILE *filePtr, const char *identity, Package *out )
 // in memory
 //
 
-static char fs_gamedir[ MAX_OSPATH ];
+static char    fs_gamedir[ MAX_OSPATH ];
 static cvar_t *fs_basedir;
 static cvar_t *fs_cddir;
 
@@ -258,9 +265,9 @@ cvar_t *fs_gamedirvar;
 
 struct searchpath_t
 {
-	char filename[ MAX_OSPATH ]{ '\0' };
+	char                             filename[ MAX_OSPATH ]{ '\0' };
 	std::map< std::string, Package > packDirectories;
-	struct searchpath_t *next{ nullptr };
+	struct searchpath_t             *next{ nullptr };
 };
 
 static searchpath_t *fs_searchpaths;
@@ -283,9 +290,7 @@ The "game directory" is the first tree on the search path and directory that all
  */
 long FS_GetLocalFileLength( const char *path )
 {
-	struct stat buf
-	{
-	};
+	struct stat buf{};
 	if ( stat( path, &buf ) != 0 )
 		return -1;
 
@@ -306,9 +311,9 @@ bool FS_CreatePath( char *path )
 	{
 		if ( *ofs == '/' )
 		{// create the directory
-			*ofs = 0;
+			*ofs   = 0;
 			status = Sys_Mkdir( path );
-			*ofs = '/';
+			*ofs   = '/';
 			if ( status != 0 )
 				break;
 		}
@@ -413,16 +418,16 @@ void CDAudio_Stop();
 #define MAX_READ 0x10000// read in blocks of 64k
 void FS_Read( void *buffer, int len, FILE *f )
 {
-	int block, remaining;
-	int read;
+	int   block, remaining;
+	int   read;
 	byte *buf;
-	int tries;
+	int   tries;
 
 	buf = ( byte * ) buffer;
 
 	// read in chunks for progress bar
 	remaining = len;
-	tries = 0;
+	tries     = 0;
 	while ( remaining )
 	{
 		block = remaining;
@@ -468,7 +473,7 @@ int FS_LoadFile( const char *path, void **buffer )
 
 	// look for it in the filesystem or pack files
 	uint32_t length;
-	void *buf = FS_FOpenFile( upath, &length );
+	void    *buf = FS_FOpenFile( upath, &length );
 	if ( buf == nullptr )
 	{
 		if ( buffer != nullptr )
@@ -511,7 +516,7 @@ static void FS_AddGameDirectory( const char *dir )
 	//
 	auto search = new searchpath_t;
 	strcpy( search->filename, dir );
-	search->next = fs_searchpaths;
+	search->next   = fs_searchpaths;
 	fs_searchpaths = search;
 
 	/* now go ahead and mount all the default packages under that dir */
@@ -579,7 +584,7 @@ FS_ExecAutoexec
 void FS_ExecAutoexec()
 {
 	char *dir;
-	char name[ MAX_QPATH ];
+	char  name[ MAX_QPATH ];
 
 	dir = Cvar_VariableString( "gamedir" );
 	if ( *dir )
@@ -646,9 +651,9 @@ void FS_SetGamedir( const char *dir )
 */
 char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned canthave )
 {
-	char *s;
-	int nfiles = 0;
-	char **list = nullptr;
+	char  *s;
+	int    nfiles = 0;
+	char **list   = nullptr;
 
 	s = Sys_FindFirst( findname, musthave, canthave );
 	while ( s )
@@ -668,7 +673,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	list = ( char ** ) malloc( sizeof( char * ) * nfiles );
 	memset( list, 0, sizeof( char * ) * nfiles );
 
-	s = Sys_FindFirst( findname, musthave, canthave );
+	s      = Sys_FindFirst( findname, musthave, canthave );
 	nfiles = 0;
 	while ( s )
 	{
@@ -690,11 +695,11 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 */
 void FS_Dir_f()
 {
-	char *path = nullptr;
-	char findname[ 1024 ];
-	char wildcard[ 1024 ] = "*.*";
+	char  *path = nullptr;
+	char   findname[ 1024 ];
+	char   wildcard[ 1024 ] = "*.*";
 	char **dirnames;
-	int ndirs;
+	int    ndirs;
 
 	if ( Cmd_Argc() != 1 )
 		strcpy( wildcard, Cmd_Argv( 1 ) );
@@ -826,7 +831,7 @@ static void ExtractCommand()
 			for ( const auto &j : i.second.indices )
 			{
 				unsigned int fileSize;
-				void *p = i.second.LoadFile( j.name, &fileSize );
+				void        *p = i.second.LoadFile( j.name, &fileSize );
 				if ( p == nullptr )
 				{
 					Com_Printf( "Failed to load %s\n", j.name );

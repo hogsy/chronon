@@ -107,13 +107,6 @@ void chr::MDAModel::Draw( entity_t *entity )
 	( ( AliasModel * ) baseModel->extradata )->Draw( entity );
 }
 
-static std::string SanitizePath( std::string path )
-{
-	path.erase( std::remove( path.begin(), path.end(), '\"' ), path.end() );
-	std::ranges::replace( path, '\\', '/' );
-	return path;
-}
-
 bool chr::MDAModel::Parse( const std::string &buf )
 {
 	std::stringstream ss( &buf[ 4 ] );
@@ -134,7 +127,7 @@ bool chr::MDAModel::Parse( const std::string &buf )
 				return false;
 			}
 
-			token = SanitizePath( token );
+			token = io::SanitizePath( token );
 
 			baseModel = Mod_RegisterModel( token.c_str() );
 			if ( baseModel == nullptr )
@@ -312,7 +305,7 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			token = SanitizePath( token );
+			token = io::SanitizePath( token );
 
 			size_t p = token.find_last_of( '.' );
 			if ( p == std::string::npos )

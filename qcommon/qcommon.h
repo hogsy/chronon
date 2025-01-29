@@ -698,6 +698,11 @@ void FS_CanonicalisePath( char *path );
 
 bool FS_WriteFile( const char *filename, void *data, uint32_t length );
 
+namespace chr::io
+{
+	std::string SanitizePath( std::string path );
+}
+
 /*
 ==============================================================
 
