@@ -95,11 +95,15 @@ namespace chr
 			AlphaFunc alpha{ AlphaFunc::NONE };
 
 			image_t *map{};
+
+			bool Parse( std::stringstream &ss );
 		};
 
 		struct Skin
 		{
-			std::vector< Pass > passes;
+			std::vector< Pass > passes{};
+
+			bool Parse( std::stringstream &ss );
 		};
 
 		struct Profile
@@ -108,11 +112,9 @@ namespace chr
 			std::string evaluation;
 
 			std::vector< Skin > skins;
-		};
 
-		static bool ParseProfile( Profile &profile, std::stringstream &ss );
-		static bool ParseSkin( Skin &skin, std::stringstream &ss );
-		static bool ParsePass( Pass &pass, std::stringstream &ss );
+			bool Parse( std::stringstream &ss );
+		};
 
 		std::map< std::string, Profile > profiles;
 

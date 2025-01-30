@@ -20,6 +20,11 @@
 
 #pragma once
 
+typedef float vec_t;
+typedef vec_t vec2_t[ 2 ];
+typedef vec_t vec3_t[ 3 ];
+typedef vec_t vec4_t[ 4 ];
+
 namespace chr
 {
 	struct Vector2
@@ -32,6 +37,11 @@ namespace chr
 			assert( i < 2 );
 			return *( ( &x ) + i );
 		}
+		virtual float operator[]( const uint i ) const
+		{
+			assert( i < 3 );
+			return *( ( &x ) + i );
+		}
 
 		virtual inline void Zero()
 		{
@@ -41,12 +51,30 @@ namespace chr
 
 	struct Vector3 : Vector2
 	{
+		Vector3() = default;
+		Vector3( float x, float y, float z )
+		{
+			this->x = x;
+			this->y = y;
+			this->z = z;
+		}
+
 		float z{ 0.0f };
 
 		inline float &operator[]( const uint i ) override
 		{
 			assert( i < 3 );
 			return *( ( &x ) + i );
+		}
+		float operator[]( const uint i ) const override
+		{
+			assert( i < 3 );
+			return *( ( &x ) + i );
+		}
+
+		Vector3 operator+( const Vector3 &v ) const
+		{
+			return Vector3( this->x + v.x, this->y + v.y, this->z + v.z );
 		}
 
 		inline float Length() const
@@ -83,29 +111,15 @@ namespace chr
 			assert( i < 4 );
 			return *( ( &x ) + i );
 		}
+		float operator[]( const uint i ) const override
+		{
+			assert( i < 4 );
+			return *( ( &x ) + i );
+		}
 	};
-}// namespace nox
+}// namespace chr
 
 // Everything below will eventually be nixed
-
-#define OLD_VECTOR_TYPES
-
-typedef float vec_t;
-#ifdef OLD_VECTOR_TYPES
-typedef vec_t vec2_t[ 2 ];
-#else
-typedef nox::Vector2 vec2_t;
-#endif
-#ifdef OLD_VECTOR_TYPES
-typedef vec_t vec3_t[ 3 ];
-#else
-typedef nox::Vector3 vec3_t;
-#endif
-#ifdef OLD_VECTOR_TYPES
-typedef vec_t vec4_t[ 4 ];
-#else
-typedef nox::Vector4 vec4_t;
-#endif
 
 extern vec3_t vec3_origin;
 extern vec4_t vec4_origin;
@@ -153,7 +167,7 @@ static inline void ClearBounds( vec3_t mins, vec3_t maxs )
 }
 
 void AddPointToBounds( vec3_t v, vec3_t mins, vec3_t maxs );
-int VectorCompare( vec3_t v1, vec3_t v2 );
+int  VectorCompare( vec3_t v1, vec3_t v2 );
 
 static inline vec_t VectorLength( const vec3_t v )
 {

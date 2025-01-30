@@ -29,12 +29,12 @@
 // As provided by entity.dat
 struct EntityCustomClassDeclaration
 {
-	char className[ 64 ]{ '\0' };
-	char modelPath[ MAX_QPATH ]{ '\0' };
+	char className[ 64 ]{};
+	char modelPath[ MAX_QPATH ]{};
 
 	vec3_t scale{ 0.0f, 0.0f, 0.0f };
 
-	char entityType[ 64 ]{ '\0' };
+	char entityType[ 64 ]{};
 
 	vec3_t bbMins{ 0.0f, 0.0f, 0.0f };
 	vec3_t bbMaxs{ 0.0f, 0.0f, 0.0f };
@@ -48,11 +48,11 @@ struct EntityCustomClassDeclaration
 	float speed{ 0.0f };
 
 	unsigned int lighting{ 0 }, blending{ 0 };
-	char         targetSequence[ 64 ]{ '\0' };
+	char         targetSequence[ 64 ]{};
 	int          miscValue{ 0 };
 	bool         noMip{ false };
-	char         spawnSequence[ 64 ]{ '\0' };
-	char         description[ 64 ]{ '\0' };
+	char         spawnSequence[ 64 ]{};
+	char         description[ 64 ]{};
 };
 static std::map< std::string, EntityCustomClassDeclaration > entityCustomClasses;
 

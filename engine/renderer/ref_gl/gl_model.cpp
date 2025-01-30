@@ -186,7 +186,7 @@ model_t *Mod_ForName( const char *name, bool crash )
 	std::string tag      = {};
 	std::string filename = name;
 
-	// some models have a special tag at the end, for MDAs, these denote the skin
+	// some models have a special tag at the end, for MDAs, these denote the profile
 	const size_t pos = filename.find_last_of( '!' );
 	if ( pos != std::string::npos )
 	{
@@ -974,7 +974,7 @@ void Mod_LoadAliasModel( model_t *mod, void *buffer )
 		{
 			char skinPath[ MAX_QPATH ];
 			snprintf( skinPath, sizeof( skinPath ), "%s", mod->name );
-			strcpy( strrchr( skinPath, '/' ) + 1, skins[ i ].c_str() );
+			strcpy( strrchr( skinPath, '/' ) + 1, skins[ i ].name.c_str() );
 			mod->skins[ i ] = GL_FindImage( skinPath, it_skin );
 		}
 	}

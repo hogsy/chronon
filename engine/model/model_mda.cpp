@@ -159,13 +159,13 @@ bool chr::MDAModel::Parse( const std::string &buf )
 			}
 
 			Profile profile;
-			if ( !ParseProfile( profile, ss ) )
+			if ( !profile.Parse( ss ) )
 			{
 				Com_Printf( "Failed to parse MDA profile (%s)!\n", tag.c_str() );
 				return false;
 			}
 
-			profiles.insert( std::make_pair( tag, Profile() ) );
+			profiles.insert( std::make_pair( tag, profile ) );
 		}
 		else if ( token == "headtri" )
 		{
@@ -197,7 +197,7 @@ bool chr::MDAModel::Parse( const std::string &buf )
 	return true;
 }
 
-bool chr::MDAModel::ParseProfile( Profile &profile, std::stringstream &ss )
+bool chr::MDAModel::Profile::Parse( std::stringstream &ss )
 {
 	std::string token;
 	while ( ss >> token )
@@ -219,9 +219,9 @@ bool chr::MDAModel::ParseProfile( Profile &profile, std::stringstream &ss )
 				return false;
 			}
 
-			profile.evaluation = token;
-			profile.evaluation.erase( std::remove( profile.evaluation.begin(), profile.evaluation.end(), '\"' ),
-			                          profile.evaluation.end() );
+			evaluation = token;
+			evaluation.erase( std::remove( evaluation.begin(), evaluation.end(), '\"' ),
+			                  evaluation.end() );
 		}
 		else if ( token == "skin" )
 		{
@@ -232,13 +232,13 @@ bool chr::MDAModel::ParseProfile( Profile &profile, std::stringstream &ss )
 			}
 
 			Skin skin;
-			if ( !ParseSkin( skin, ss ) )
+			if ( !skin.Parse( ss ) )
 			{
 				Com_Printf( "Failed to parse MDA skin!\n" );
 				return false;
 			}
 
-			profile.skins.push_back( skin );
+			skins.push_back( skin );
 		}
 		else
 		{
@@ -246,7 +246,7 @@ bool chr::MDAModel::ParseProfile( Profile &profile, std::stringstream &ss )
 		}
 	}
 
-	if ( profile.skins.empty() )
+	if ( skins.empty() )
 	{
 		Com_Printf( "Encountered an empty profile!\n" );
 		return false;
@@ -255,7 +255,7 @@ bool chr::MDAModel::ParseProfile( Profile &profile, std::stringstream &ss )
 	return true;
 }
 
-bool chr::MDAModel::ParseSkin( Skin &skin, std::stringstream &ss )
+bool chr::MDAModel::Skin::Parse( std::stringstream &ss )
 {
 	std::string token;
 	while ( ss >> token )
@@ -278,13 +278,13 @@ bool chr::MDAModel::ParseSkin( Skin &skin, std::stringstream &ss )
 			}
 
 			Pass pass;
-			if ( !ParsePass( pass, ss ) )
+			if ( !pass.Parse( ss ) )
 			{
 				Com_Printf( "Failed to parse MDA pass!\n" );
 				return false;
 			}
 
-			skin.passes.push_back( pass );
+			passes.push_back( pass );
 		}
 		else
 		{
@@ -295,7 +295,7 @@ bool chr::MDAModel::ParseSkin( Skin &skin, std::stringstream &ss )
 	return false;
 }
 
-bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
+bool chr::MDAModel::Pass::Parse( std::stringstream &ss )
 {
 	std::string token;
 	while ( ss >> token )
@@ -325,7 +325,7 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				token += ".tga";
 			}
 
-			pass.map = GL_FindImage( token.c_str(), it_skin );
+			map = GL_FindImage( token, it_skin );
 		}
 		else if ( token == "alphafunc" )
 		{
@@ -335,9 +335,9 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "gt0" ) { pass.alpha = Pass::AlphaFunc::GT0; }
-			else if ( token == "ge128" ) { pass.alpha = Pass::AlphaFunc::GE128; }
-			else if ( token == "lt128" ) { pass.alpha = Pass::AlphaFunc::LT128; }
+			if ( token == "gt0" ) { alpha = AlphaFunc::GT0; }
+			else if ( token == "ge128" ) { alpha = AlphaFunc::GE128; }
+			else if ( token == "lt128" ) { alpha = AlphaFunc::LT128; }
 			else
 			{
 				Com_Printf( "Unknown alphafunc type (%s)!\n", token.c_str() );
@@ -351,10 +351,10 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "none" ) { pass.rgb = Pass::RGBGen::NONE; }
-			else if ( token == "identity" ) { pass.rgb = Pass::RGBGen::IDENTITY; }
-			else if ( token == "diffusezero" ) { pass.rgb = Pass::RGBGen::DIFFUSE_ZERO; }
-			else if ( token == "ambient" ) { pass.rgb = Pass::RGBGen::AMBIENT; }
+			if ( token == "none" ) { rgb = RGBGen::NONE; }
+			else if ( token == "identity" ) { rgb = RGBGen::IDENTITY; }
+			else if ( token == "diffusezero" ) { rgb = RGBGen::DIFFUSE_ZERO; }
+			else if ( token == "ambient" ) { rgb = RGBGen::AMBIENT; }
 			else
 			{
 				Com_Printf( "Unknown rgbgen type (%s)!\n", token.c_str() );
@@ -368,10 +368,10 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "none" ) { pass.blend = Pass::BlendMode::NONE; }
-			else if ( token == "normal" ) { pass.blend = Pass::BlendMode::NORMAL; }
-			else if ( token == "multiply" ) { pass.blend = Pass::BlendMode::MULTIPLY; }
-			else if ( token == "add" ) { pass.blend = Pass::BlendMode::ADD; }
+			if ( token == "none" ) { blend = BlendMode::NONE; }
+			else if ( token == "normal" ) { blend = BlendMode::NORMAL; }
+			else if ( token == "multiply" ) { blend = BlendMode::MULTIPLY; }
+			else if ( token == "add" ) { blend = BlendMode::ADD; }
 			else
 			{
 				Com_Printf( "Unknown blend mode (%s)!\n", token.c_str() );
@@ -385,9 +385,9 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "none" ) { pass.cull = Pass::CullMode::NONE; }
-			else if ( token == "front" ) { pass.cull = Pass::CullMode::FRONT; }
-			else if ( token == "back" ) { pass.cull = Pass::CullMode::BACK; }
+			if ( token == "none" ) { cull = CullMode::NONE; }
+			else if ( token == "front" ) { cull = CullMode::FRONT; }
+			else if ( token == "back" ) { cull = CullMode::BACK; }
 			else
 			{
 				Com_Printf( "Unknown cull mode (%s)!\n", token.c_str() );
@@ -401,7 +401,7 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "sphere" ) { pass.uvgen = Pass::UVGen::SPHERE; }
+			if ( token == "sphere" ) { uvgen = UVGen::SPHERE; }
 			else
 			{
 				Com_Printf( "Unknown uvgen mode (%s)!\n", token.c_str() );
@@ -417,8 +417,8 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 
 			if ( token == "scroll" )
 			{
-				pass.uvMod = Pass::UVMod::SCROLL;
-				if ( !( ss >> pass.uvModScroll.x >> pass.uvModScroll.y ) )
+				uvMod = UVMod::SCROLL;
+				if ( !( ss >> uvModScroll.x >> uvModScroll.y ) )
 				{
 					Com_Printf( "Expected 'x y' after 'scroll'!\n" );
 					return false;
@@ -437,9 +437,9 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "none" ) { pass.depth = Pass::DepthFunc::NONE; }
-			else if ( token == "equal" ) { pass.depth = Pass::DepthFunc::EQUAL; }
-			else if ( token == "less" ) { pass.depth = Pass::DepthFunc::LESS; }
+			if ( token == "none" ) { depth = DepthFunc::NONE; }
+			else if ( token == "equal" ) { depth = DepthFunc::EQUAL; }
+			else if ( token == "less" ) { depth = DepthFunc::LESS; }
 			else
 			{
 				Com_Printf( "Unknown depthfunc mode (%s)!\n", token.c_str() );
@@ -453,8 +453,8 @@ bool chr::MDAModel::ParsePass( Pass &pass, std::stringstream &ss )
 				return false;
 			}
 
-			if ( token == "1" ) { pass.depthWrite = true; }
-			else if ( token == "0" ) { pass.depthWrite = false; }
+			if ( token == "1" ) { depthWrite = true; }
+			else if ( token == "0" ) { depthWrite = false; }
 			else
 			{
 				Com_Printf( "Unknown depthwrite mode (%s)!\n", token.c_str() );
