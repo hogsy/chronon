@@ -20,9 +20,9 @@ It's important to note that this project is operating to reimplement the game th
 
 - [ ] Modernise renderer w/ modern OpenGL (i.e. 3.3)
 - [ ] Finalise MD2 loader
-  - [ ] Multiple skin support
+  - [x] Multiple skin support
   - [ ] Vertex key morphing (for facial animation)
-  - [ ] MDA specification - ensure all features are supported
+  - [ ] MDA specification—ensure all features are supported
 - [ ] Virtual machine for APE scripts
 
 ## Features
@@ -105,3 +105,5 @@ Incorporates some additional bug fixes sourced from...
 ## Resources
 
 - [Anachrodox](https://anachrodox.talonbrave.info/)
+- [Anachronox SDK](https://code.idtech.space/ion-storm/anachronox-sdk)
+- [anoxdocs](https://github.com/elasota/anoxdocs)

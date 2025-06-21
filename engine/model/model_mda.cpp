@@ -37,74 +37,7 @@ void chr::MDAModel::Draw( entity_t *entity )
 		return;
 	}
 
-#if 0//TODO this is just an outline for now...
-	Profile *profile;
-
-	//TODO: revisit this...if we dont have a profile set, just use the first (groan)
-	const auto &i = profiles.find( entity->profile );
-	if ( i == profiles.end() )
-	{
-		profile = &profiles.begin()->second;
-	}
-	else
-	{
-		profile = &i->second;
-	}
-
-	for ( const auto &skin : profile->skins )
-	{
-		for ( const auto &pass : skin.passes )
-		{
-			switch ( pass.alpha )
-			{
-				case Pass::AlphaFunc::NONE:
-					break;
-				case Pass::AlphaFunc::LT128:
-					glEnable( GL_ALPHA_TEST );
-					glAlphaFunc( GL_LESS, 0.5f );
-					break;
-				case Pass::AlphaFunc::GE128:
-					glEnable( GL_ALPHA_TEST );
-					glAlphaFunc( GL_GEQUAL, 0.5f );
-					break;
-				case Pass::AlphaFunc::GT0:
-					glEnable( GL_ALPHA_TEST );
-					glAlphaFunc( GL_GEQUAL, 0.5f );
-					break;
-			}
-
-			switch ( pass.blend )
-			{
-				case Pass::BlendMode::NONE:
-					break;
-				case Pass::BlendMode::NORMAL:
-					//TODO: what the hell does "normal" mean?
-					break;
-				case Pass::BlendMode::MULTIPLY:
-					glEnable( GL_BLEND );
-					glBlendFunc( GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA );
-					break;
-				case Pass::BlendMode::ADD:
-					glEnable( GL_BLEND );
-					glBlendFunc( GL_ONE, GL_ONE );
-					break;
-			}
-
-			// draw
-
-			if ( pass.blend != Pass::BlendMode::NONE )
-			{
-				glDisable( GL_BLEND );
-			}
-			if ( pass.alpha != Pass::AlphaFunc::NONE )
-			{
-				glDisable( GL_ALPHA_TEST );
-			}
-		}
-	}
-#endif
-
-	( ( AliasModel * ) baseModel->extradata )->Draw( entity );
+	( ( AliasModel * ) baseModel->extradata )->Draw( entity, &profiles.begin()->second );
 }
 
 bool chr::MDAModel::Parse( const std::string &buf )
@@ -158,7 +91,7 @@ bool chr::MDAModel::Parse( const std::string &buf )
 				return false;
 			}
 
-			Profile profile;
+			MDAProfile profile;
 			if ( !profile.Parse( ss ) )
 			{
 				Com_Printf( "Failed to parse MDA profile (%s)!\n", tag.c_str() );
@@ -197,7 +130,7 @@ bool chr::MDAModel::Parse( const std::string &buf )
 	return true;
 }
 
-bool chr::MDAModel::Profile::Parse( std::stringstream &ss )
+bool chr::MDAProfile::Parse( std::stringstream &ss )
 {
 	std::string token;
 	while ( ss >> token )
@@ -231,7 +164,7 @@ bool chr::MDAModel::Profile::Parse( std::stringstream &ss )
 				return false;
 			}
 
-			Skin skin;
+			MDASkin skin;
 			if ( !skin.Parse( ss ) )
 			{
 				Com_Printf( "Failed to parse MDA skin!\n" );
@@ -255,7 +188,7 @@ bool chr::MDAModel::Profile::Parse( std::stringstream &ss )
 	return true;
 }
 
-bool chr::MDAModel::Skin::Parse( std::stringstream &ss )
+bool chr::MDASkin::Parse( std::stringstream &ss )
 {
 	std::string token;
 	while ( ss >> token )
@@ -277,7 +210,7 @@ bool chr::MDAModel::Skin::Parse( std::stringstream &ss )
 				return false;
 			}
 
-			Pass pass;
+			MDAPass pass;
 			if ( !pass.Parse( ss ) )
 			{
 				Com_Printf( "Failed to parse MDA pass!\n" );
@@ -295,7 +228,7 @@ bool chr::MDAModel::Skin::Parse( std::stringstream &ss )
 	return false;
 }
 
-bool chr::MDAModel::Pass::Parse( std::stringstream &ss )
+bool chr::MDAPass::Parse( std::stringstream &ss )
 {
 	std::string token;
 	while ( ss >> token )

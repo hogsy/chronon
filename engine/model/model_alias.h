@@ -22,22 +22,29 @@
 
 namespace chr
 {
+	struct MDAProfile;
 	class AliasModel
 	{
 	public:
 		AliasModel();
 		~AliasModel();
 
+		struct Skin
+		{
+			std::string name;
+			uint16_t    numPrimitives;
+		};
+
 		bool LoadFromBuffer( const void *buffer );
 
-		inline const std::vector< std::string > &GetSkins() const
+		inline const std::vector< Skin > &GetSkins() const
 		{
-			return skinNames_;
+			return skins;
 		}
 
 		inline int GetNumFrames() const
 		{
-			return numFrames_;
+			return numFrames;
 		}
 
 	private:
@@ -46,58 +53,59 @@ namespace chr
 		void LoadTaggedTriangles( const dmdl_t *mdl );
 		void LoadCommands( const dmdl_t *mdl );
 		void LoadFrames( const dmdl_t *mdl, int resolution );
+		void LoadPrimitives( const dmdl_t *mdl );
 
 		struct VertexGroup
 		{
-			uint vertex[ 3 ];
-			uint normalIndex;
+			unsigned int vertex[ 3 ];
+			unsigned int normalIndex;
 		};
 
-		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const;
+		void LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, const Vector3 &move, const Vector3 &frontv, const Vector3 &backv ) const;
 		void ApplyLighting( const entity_t *e );
-		void DrawFrameLerp( entity_t *e );
+		void DrawFrameLerp( entity_t *e, const MDAProfile *profile );
+		int *DrawPrimitive( const Skin *skin, float alpha, const VertexGroup *v, int *order );
 
 	public:
-		void Draw( entity_t *e );
+		void Draw( entity_t *e, const MDAProfile *profile );
 
 	private:
 		bool Cull( vec3_t bbox[ 8 ], entity_t *e );
 
 		struct Triangle
 		{
-			uint vertexIndices[ 3 ]{ 0, 0, 0 };
-			uint stIndices[ 3 ]{ 0, 0, 0 };
+			unsigned int vertexIndices[ 3 ]{};
+			unsigned int stIndices[ 3 ]{};
 		};
 
 		struct Frame
 		{
-			std::string name;
-			vec3_t scale{ 0.0f, 0.0f, 0.0f };
-			vec3_t translate{ 0.0f, 0.0f, 0.0f };
+			std::string                name;
+			Vector3                    scale{};
+			Vector3                    translate{};
 			std::vector< VertexGroup > vertices;
-			vec3_t bounds[ 2 ];
+			Vector3                    bounds[ 2 ];
 		};
 
-		int numGLCmds_{ 0 };
+		int numGLCmds{};
 
-		int numVertices_{ 0 };
-		int numTriangles_{ 0 };
-		int numFrames_{ 0 };
-		int numSurfaces_{ 0 };
+		int numVertices{};
+		int numTriangles{};
+		int numFrames{};
 
-		std::vector< std::string > skinNames_;
+		std::vector< Skin > skins;
 
-		vec3_t shadeVector_{ 0.0f, 0.0f, 0.0f };
-		float shadeLight_[ 3 ]{ 0.0f, 0.0f, 0.0f };
-		float *shadeDots_{ nullptr };
+		Vector3 shadeVector{};
+		float   shadeLight[ 3 ]{};
+		float  *shadeDots{};
 
-		std::vector< Triangle > triangles_;
-		std::map< std::string, uint > taggedTriangles_;
+		std::vector< Triangle >       triangles;
+		std::map< std::string, uint > taggedTriangles;
 
-		std::vector< Vector2 > stCoords_;
-		std::vector< int > glCmds_;
-		std::vector< Vector3 > lerpedVertices_;
+		std::vector< Vector2 > stCoords;
+		std::vector< int >     glCmds;
+		std::vector< Vector3 > lerpedVertices;
 
-		std::vector< Frame > frames_;
+		std::vector< Frame > frames;
 	};
-}// namespace nox
+}// namespace chr

@@ -47,7 +47,7 @@ void chr::App::Initialize()
 	unsigned int oldTime = GetNumMilliseconds();
 	while ( true )
 	{
-		chr::globalApp->PollEvents();
+		globalApp->PollEvents();
 
 		do
 		{
@@ -104,10 +104,16 @@ void chr::App::PollEvents()
 
 		switch ( event.type )
 		{
+			default:
+				break;
+
 			case SDL_WINDOWEVENT:
 			{
 				switch ( event.window.event )
 				{
+					default:
+						break;
+
 					case SDL_WINDOWEVENT_ENTER:
 					case SDL_WINDOWEVENT_FOCUS_GAINED:
 						IN_Activate( true );

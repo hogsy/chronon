@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct entity_s
 {
+	entity_s()  = default;
+	~entity_s() = default;
+
 	struct model_s *model;// opaque type outside refresh
 	float           angles[ 3 ];
 	vec3_t          scale;
@@ -58,9 +61,6 @@ typedef struct entity_s
 
 	struct image_s *skin;// NULL for inline skin
 	unsigned int    flags;
-
-	// draw profile; only matters for MDA
-	std::string profile{ "DFLT" };
 } entity_t;
 
 #define ENTITY_FLAGS 68

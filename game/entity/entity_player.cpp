@@ -38,7 +38,7 @@ void Player::Spawn( const EntityManager::SpawnVariables &variables )
 	edict->deadflag     = DEAD_NO;
 	edict->air_finished = level.time + 12;
 	edict->clipmask     = MASK_PLAYERSOLID;
-	edict->model        = "players/male/tris.md2";
+	edict->model        = "newface/boots/boots.mda!DFLT";
 	edict->pain         = player_pain;
 	edict->die          = player_die;
 	edict->waterlevel   = 0;

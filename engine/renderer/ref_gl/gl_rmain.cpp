@@ -333,7 +333,7 @@ void R_DrawEntitiesOnList()
 			switch ( currentmodel->type )
 			{
 				case mod_alias:
-					( ( chr::AliasModel * ) currentmodel->extradata )->Draw( currententity );
+					( ( chr::AliasModel * ) currentmodel->extradata )->Draw( currententity, nullptr );
 					break;
 				case mod_mda:
 					( ( chr::MDAModel * ) currentmodel->extradata )->Draw( currententity );
@@ -375,7 +375,7 @@ void R_DrawEntitiesOnList()
 			switch ( currentmodel->type )
 			{
 				case mod_alias:
-					( ( chr::AliasModel * ) currentmodel->extradata )->Draw( currententity );
+					( ( chr::AliasModel * ) currentmodel->extradata )->Draw( currententity, nullptr );
 					break;
 				case mod_mda:
 					( ( chr::MDAModel * ) currentmodel->extradata )->Draw( currententity );

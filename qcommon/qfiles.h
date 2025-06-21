@@ -147,8 +147,8 @@ typedef struct {
 	int32_t ofs_end;  // end of file
 
 	// Multiple surfaces
-	int32_t numSurfaces;
-	int32_t surfacesOffset;
+	int32_t numPrimitives;
+	int32_t primitivesOffset;
 
 	// Level of detail
 	vec3_t lodScale;

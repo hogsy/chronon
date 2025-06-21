@@ -22,6 +22,89 @@
 
 namespace chr
 {
+	struct MDAPass
+	{
+		enum class BlendMode
+		{
+			NONE,
+			NORMAL,
+			MULTIPLY,
+			ADD,
+		};
+		BlendMode blend{ BlendMode::NONE };
+
+		enum class DepthFunc
+		{
+			NONE,
+			EQUAL,
+			LESS,
+		};
+		DepthFunc depth{ DepthFunc::NONE };
+		bool      depthWrite{};
+
+		enum class UVGen
+		{
+			NONE,
+			SPHERE,
+		};
+		UVGen uvgen{ UVGen::NONE };
+
+		enum class UVMod
+		{
+			NONE,
+			SCROLL,
+		};
+		UVMod   uvMod{ UVMod::NONE };
+		Vector2 uvModScroll{};
+
+		enum class RGBGen
+		{
+			NONE,
+			IDENTITY,
+			DIFFUSE_ZERO,
+			AMBIENT,
+		};
+		RGBGen rgb{ RGBGen::NONE };
+
+		enum class CullMode
+		{
+			NONE,
+			FRONT,
+			BACK,
+		};
+		CullMode cull{ CullMode::FRONT };
+
+		enum class AlphaFunc
+		{
+			NONE,
+			LT128,// glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_LESS, 0.5f)
+			GE128,// glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_GEQUAL, 0.5f)
+			GT0,  // glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_GREATER, 0.0f)
+		};
+		AlphaFunc alpha{ AlphaFunc::NONE };
+
+		image_t *map{};
+
+		bool Parse( std::stringstream &ss );
+	};
+
+	struct MDASkin
+	{
+		std::vector< MDAPass > passes{};
+
+		bool Parse( std::stringstream &ss );
+	};
+
+	struct MDAProfile
+	{
+		std::string tag;
+		std::string evaluation;
+
+		std::vector< MDASkin > skins{};
+
+		bool Parse( std::stringstream &ss );
+	};
+
 	class MDAModel
 	{
 	public:
@@ -33,90 +116,7 @@ namespace chr
 		bool Parse( const std::string &buf );
 
 	private:
-		struct Pass
-		{
-			enum class BlendMode
-			{
-				NONE,
-				NORMAL,
-				MULTIPLY,
-				ADD,
-			};
-			BlendMode blend{ BlendMode::NONE };
-
-			enum class DepthFunc
-			{
-				NONE,
-				EQUAL,
-				LESS,
-			};
-			DepthFunc depth{ DepthFunc::NONE };
-			bool      depthWrite{};
-
-			enum class UVGen
-			{
-				NONE,
-				SPHERE,
-			};
-			UVGen uvgen{ UVGen::NONE };
-
-			enum class UVMod
-			{
-				NONE,
-				SCROLL,
-			};
-			UVMod   uvMod{ UVMod::NONE };
-			Vector2 uvModScroll{};
-
-			enum class RGBGen
-			{
-				NONE,
-				IDENTITY,
-				DIFFUSE_ZERO,
-				AMBIENT,
-			};
-			RGBGen rgb{ RGBGen::NONE };
-
-			enum class CullMode
-			{
-				NONE,
-				FRONT,
-				BACK,
-			};
-			CullMode cull{ CullMode::FRONT };
-
-			enum class AlphaFunc
-			{
-				NONE,
-				LT128,// glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_LESS, 0.5f)
-				GE128,// glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_GEQUAL, 0.5f)
-				GT0,  // glEnable(GL_ALPHA_TEST); glAlphaFunc(GL_GREATER, 0.0f)
-			};
-			AlphaFunc alpha{ AlphaFunc::NONE };
-
-			image_t *map{};
-
-			bool Parse( std::stringstream &ss );
-		};
-
-		struct Skin
-		{
-			std::vector< Pass > passes{};
-
-			bool Parse( std::stringstream &ss );
-		};
-
-		struct Profile
-		{
-			std::string tag;
-			std::string evaluation;
-
-			std::vector< Skin > skins;
-
-			bool Parse( std::stringstream &ss );
-		};
-
-		std::map< std::string, Profile > profiles;
+		std::map< std::string, MDAProfile > profiles{};
 
 		vec3_t headTriangle{};
 

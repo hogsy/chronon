@@ -27,6 +27,7 @@
 #include "renderer/ref_gl/gl_local.h"//TODO: eventually be rid of this, abstract it away!
 
 #include "model_alias.h"
+#include "model_mda.h"
 
 chr::AliasModel::AliasModel()  = default;
 chr::AliasModel::~AliasModel() = default;
@@ -48,31 +49,38 @@ bool chr::AliasModel::LoadFromBuffer( const void *buffer )
 		return false;
 	}
 
-	numVertices_ = LittleLong( pinmodel->num_xyz );
-	if ( numVertices_ <= 0 )
+	numVertices = LittleLong( pinmodel->num_xyz );
+	if ( numVertices <= 0 )
 	{
 		Com_Printf( "Model has no vertices\n" );
 		return false;
 	}
 
-	numTriangles_ = LittleLong( pinmodel->num_tris );
-	if ( numTriangles_ <= 0 )
+	numTriangles = LittleLong( pinmodel->num_tris );
+	if ( numTriangles <= 0 )
 	{
 		Com_Printf( "Model has no triangles\n" );
 		return false;
 	}
 
-	numFrames_ = LittleLong( pinmodel->num_frames );
-	if ( numFrames_ <= 0 )
+	numFrames = LittleLong( pinmodel->num_frames );
+	if ( numFrames <= 0 )
 	{
 		Com_Printf( "Model has no frames\n" );
 		return false;
 	}
 
-	numGLCmds_ = LittleLong( pinmodel->num_glcmds );
-	if ( numGLCmds_ <= 0 )
+	numGLCmds = LittleLong( pinmodel->num_glcmds );
+	if ( numGLCmds <= 0 )
 	{
 		Com_Printf( "Model has empty command list\n" );
+		return false;
+	}
+
+	int numSurfaces = LittleLong( pinmodel->numPrimitives );
+	if ( numSurfaces <= 0 )
+	{
+		Com_Printf( "Model has no surfaces\n" );
 		return false;
 	}
 
@@ -83,26 +91,36 @@ bool chr::AliasModel::LoadFromBuffer( const void *buffer )
 		return false;
 	}
 
+	// I would expect these to always be the same
+	// (though makes you wonder why we've got it twice?)
+	if ( numSkins != numSurfaces )
+	{
+		Com_Printf( "Model has a different number of skins vs. surfaces (%d vs %d)!\n", numSkins, numSurfaces );
+		return false;
+	}
+
 	LoadSkins( pinmodel, numSkins );
 	LoadTriangles( pinmodel );
 	LoadTaggedTriangles( pinmodel );
 	LoadCommands( pinmodel );
 	LoadFrames( pinmodel, resolution );
+	LoadPrimitives( pinmodel );
 
-	lerpedVertices_.resize( numVertices_ );
+	lerpedVertices.resize( numVertices );
 
 	return true;
 }
 
 void chr::AliasModel::LoadSkins( const dmdl_t *mdl, int numSkins )
 {
-	uint ofs = LittleLong( mdl->ofs_skins );
+	unsigned int offset = LittleLong( mdl->ofs_skins );
 	for ( int i = 0; i < numSkins; ++i )
 	{
 		char name[ MAX_QPATH + 1 ];
-		memcpy( name, ( byte * ) mdl + ofs + i * MAX_QPATH, MAX_QPATH );
+		memcpy( name, ( byte * ) mdl + offset + i * MAX_QPATH, MAX_QPATH );
 		name[ strlen( name ) + 1 ] = '\0';
-		skinNames_.emplace_back( name );
+
+		skins.push_back( { name } );
 	}
 }
 
@@ -114,9 +132,9 @@ void chr::AliasModel::LoadTriangles( const dmdl_t *mdl )
 		int16_t index_st[ 3 ];
 	};
 
-	uint               ofs  = LittleLong( mdl->ofs_tris );
-	const dtriangle_t *dtri = ( dtriangle_t * ) ( ( byte * ) mdl + ofs );
-	for ( int i = 0; i < numTriangles_; ++i )
+	unsigned int       offset = LittleLong( mdl->ofs_tris );
+	const dtriangle_t *dtri   = ( dtriangle_t * ) ( ( byte * ) mdl + offset );
+	for ( int i = 0; i < numTriangles; ++i )
 	{
 		Triangle tri;
 		for ( uint j = 0; j < 3; ++j )
@@ -125,7 +143,7 @@ void chr::AliasModel::LoadTriangles( const dmdl_t *mdl )
 			tri.stIndices[ j ]     = LittleShort( dtri[ i ].index_st[ j ] );
 		}
 
-		triangles_.push_back( tri );
+		triangles.push_back( tri );
 	}
 }
 
@@ -137,26 +155,29 @@ void chr::AliasModel::LoadTaggedTriangles( const dmdl_t *mdl )
 		uint32_t triangleIndex;
 	};
 
-	int                     numTaggedTriangles = LittleLong( mdl->numTaggedTriangles );
-	uint                    ofs                = LittleLong( mdl->taggedTrianglesOffset );
-	const MD2TaggedSurface *taggedSurface      = ( MD2TaggedSurface * ) ( ( byte * ) mdl + ofs );
-	for ( int i = 0; i < numTaggedTriangles; ++i )
+	unsigned int numTaggedTriangles = LittleLong( mdl->numTaggedTriangles );
+	unsigned int offset             = LittleLong( mdl->taggedTrianglesOffset );
+
+	const MD2TaggedSurface *taggedSurface = ( MD2TaggedSurface * ) ( ( byte * ) mdl + offset );
+	for ( unsigned int i = 0; i < numTaggedTriangles; ++i )
 	{
-		taggedTriangles_.emplace( taggedSurface->name, LittleLong( taggedSurface->triangleIndex ) );
+		taggedTriangles.emplace( taggedSurface->name, LittleLong( taggedSurface->triangleIndex ) );
 	}
 }
 
 void chr::AliasModel::LoadCommands( const dmdl_t *mdl )
 {
-	uint       ofs  = LittleLong( mdl->ofs_glcmds );
-	const int *dcmd = ( int * ) ( ( byte * ) mdl + ofs );
-	for ( int i = 0; i < numGLCmds_; ++i )
-		glCmds_.push_back( LittleLong( dcmd[ i ] ) );
+	unsigned int offset = LittleLong( mdl->ofs_glcmds );
+	const int   *dcmd   = ( int * ) ( ( byte * ) mdl + offset );
+	for ( int i = 0; i < numGLCmds; ++i )
+	{
+		glCmds.push_back( LittleLong( dcmd[ i ] ) );
+	}
 }
 
 void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 {
-	frames_.resize( numFrames_ );
+	frames.resize( numFrames );
 
 	struct MD2FrameHeader
 	{
@@ -165,22 +186,22 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 		char  name[ 16 ];    // frame name from grabbing
 	};
 
-	uint ofs       = LittleLong( mdl->ofs_frames );
-	int  frameSize = LittleLong( mdl->framesize );
-	for ( int i = 0; i < numFrames_; ++i )
+	unsigned int offset    = LittleLong( mdl->ofs_frames );
+	unsigned int frameSize = LittleLong( mdl->framesize );
+	for ( int i = 0; i < numFrames; ++i )
 	{
-		frames_[ i ].vertices.resize( numVertices_ );
+		frames[ i ].vertices.resize( numVertices );
 
 		// Get the position in the buffer where our cur frame is located
-		const void *framePtr = ( ( byte * ) mdl + ofs + i * frameSize );
+		const void *framePtr = ( ( byte * ) mdl + offset + i * frameSize );
 
 		// The initial body of the frame is always the same, regardless of resolution
 		const MD2FrameHeader *frameHeader = ( MD2FrameHeader * ) framePtr;
-		frames_[ i ].name                 = frameHeader->name;
+		frames[ i ].name                  = frameHeader->name;
 		for ( uint j = 0; j < 3; ++j )
 		{
-			frames_[ i ].scale[ j ]     = LittleFloat( frameHeader->scale[ j ] );
-			frames_[ i ].translate[ j ] = LittleFloat( frameHeader->translate[ j ] );
+			frames[ i ].scale[ j ]     = LittleFloat( frameHeader->scale[ j ] );
+			frames[ i ].translate[ j ] = LittleFloat( frameHeader->translate[ j ] );
 		}
 
 		// Nox supports three different resolution types, we'll deal with those below and
@@ -190,12 +211,14 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 			case 0:
 			{
 				const MD2VertexGroup *groups = ( MD2VertexGroup * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
-				for ( int j = 0; j < numVertices_; ++j )
+				for ( int j = 0; j < numVertices; ++j )
 				{
 					for ( uint k = 0; k < 3; ++k )
-						frames_[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertices[ k ];
+					{
+						frames[ i ].vertices[ j ].vertex[ k ] = groups[ j ].vertices[ k ];
+					}
 
-					frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+					frames[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
 				}
 				break;
 			}
@@ -205,25 +228,29 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 				static const int mask[ 3 ]  = { 0x000007ff, 0x000003ff, 0x000007ff };
 
 				const MD2VertexGroup4 *groups = ( MD2VertexGroup4 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
-				for ( int j = 0; j < numVertices_; ++j )
+				for ( int j = 0; j < numVertices; ++j )
 				{
 					uint32_t vertices = ( uint32_t ) LittleLong( ( int32_t ) groups[ j ].vertices );
 					for ( uint k = 0; k < 3; ++k )
-						frames_[ i ].vertices[ j ].vertex[ k ] = ( ( vertices >> shift[ k ] ) & mask[ k ] );
+					{
+						frames[ i ].vertices[ j ].vertex[ k ] = ( ( vertices >> shift[ k ] ) & mask[ k ] );
+					}
 
-					frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+					frames[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
 				}
 				break;
 			}
 			case 2:
 			{
 				const MD2VertexGroup6 *groups = ( MD2VertexGroup6 * ) ( ( byte * ) framePtr + sizeof( MD2FrameHeader ) );
-				for ( int j = 0; j < numVertices_; ++j )
+				for ( int j = 0; j < numVertices; ++j )
 				{
 					for ( uint k = 0; k < 3; ++k )
-						frames_[ i ].vertices[ j ].vertex[ k ] = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].vertices[ k ] );
+					{
+						frames[ i ].vertices[ j ].vertex[ k ] = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].vertices[ k ] );
+					}
 
-					frames_[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
+					frames[ i ].vertices[ j ].normalIndex = ( uint16_t ) LittleShort( ( int16_t ) groups[ j ].normalIndex );
 				}
 				break;
 			}
@@ -234,29 +261,48 @@ void chr::AliasModel::LoadFrames( const dmdl_t *mdl, int resolution )
 
 		// Now go ahead and precompute the bounds for the given frame
 
-		vec3_t mins = { frames_[ i ].translate[ 0 ], frames_[ i ].translate[ 1 ], frames_[ i ].translate[ 2 ] };
-		vec3_t maxs = { -FLT_MIN, -FLT_MIN, -FLT_MIN };
+		Vector3 mins = { frames[ i ].translate[ 0 ], frames[ i ].translate[ 1 ], frames[ i ].translate[ 2 ] };
+		Vector3 maxs = { -FLT_MIN, -FLT_MIN, -FLT_MIN };
 
-		vec3_t xmins, xmaxs;
-		VectorCopy( mins, xmins );
-		VectorCopy( maxs, xmaxs );
+		Vector3 xmins = mins;
+		Vector3 xmaxs = maxs;
 
-		for ( int j = 0; j < numVertices_; ++j )
+		for ( int j = 0; j < numVertices; ++j )
 		{
 			for ( uint k = 0; k < 3; ++k )
 			{
-				xmins[ k ] = frames_[ i ].vertices[ j ].vertex[ k ] * frames_[ i ].scale[ k ];
+				xmins[ k ] = frames[ i ].vertices[ j ].vertex[ k ] * frames[ i ].scale[ k ];
 				if ( xmins[ k ] < mins[ k ] )
+				{
 					mins[ k ] = xmins[ k ];
+				}
 
-				xmaxs[ k ] = frames_[ i ].vertices[ j ].vertex[ k ] * frames_[ i ].scale[ k ];
+				xmaxs[ k ] = frames[ i ].vertices[ j ].vertex[ k ] * frames[ i ].scale[ k ];
 				if ( xmaxs[ k ] > maxs[ k ] )
+				{
 					maxs[ k ] = xmaxs[ k ];
+				}
 			}
 		}
 
-		VectorCopy( mins, frames_[ i ].bounds[ 0 ] );
-		VectorCopy( maxs, frames_[ i ].bounds[ 1 ] );
+		frames[ i ].bounds[ 0 ] = mins;
+		frames[ i ].bounds[ 1 ] = maxs;
+	}
+}
+
+void chr::AliasModel::LoadPrimitives( const dmdl_t *mdl )
+{
+	unsigned int offset        = LittleLong( mdl->primitivesOffset );
+	unsigned int numPrimitives = LittleLong( mdl->numPrimitives );
+
+	struct Primitive
+	{
+		uint16_t numPrimitives;
+	};
+	const Primitive *surface = ( Primitive * ) ( ( byte * ) mdl + offset );
+	for ( unsigned int i = 0; i < numPrimitives; ++i, ++surface )
+	{
+		skins[ i ].numPrimitives = surface->numPrimitives;
 	}
 }
 
@@ -269,19 +315,25 @@ static float r_avertexnormals[ NUMVERTEXNORMALS ][ 3 ] = {
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT 16
-float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
+static float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ] = {
 #include "../renderer/ref_gl/anormtab.h"
 
 
 };
 
-void chr::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) const
+static float vertexNormals[ 2048 ][ 3 ] = {
+#include "model_alias_normals.h"
+
+
+};
+
+void chr::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov, const VertexGroup *verts, Vector3 *lerp, const Vector3 &move, const Vector3 &frontv, const Vector3 &backv ) const
 {
 	// PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE |
 	                              RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
 	{
-		for ( int i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
+		for ( int i = 0; i < numVertices; i++, v++, ov++, lerp++ )
 		{
 			const float *normal = r_avertexnormals[ verts[ i ].normalIndex ];
 			lerp->x             = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
@@ -291,7 +343,7 @@ void chr::AliasModel::LerpVertices( const VertexGroup *v, const VertexGroup *ov,
 	}
 	else
 	{
-		for ( int i = 0; i < numVertices_; i++, v++, ov++, lerp++ )
+		for ( int i = 0; i < numVertices; i++, v++, ov++, lerp++ )
 		{
 			lerp->x = move[ 0 ] + ov->vertex[ 0 ] * backv[ 0 ] + v->vertex[ 0 ] * frontv[ 0 ];
 			lerp->y = move[ 1 ] + ov->vertex[ 1 ] * backv[ 1 ] + v->vertex[ 1 ] * frontv[ 1 ];
@@ -304,30 +356,30 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 {
 	if ( e->flags & RF_FULLBRIGHT )
 	{
-		for ( float &i : shadeLight_ )
+		for ( float &i : shadeLight )
 		{
 			i = 1.0f;
 		}
 	}
 	else
 	{
-		R_LightPoint( e->origin, shadeLight_ );
+		R_LightPoint( e->origin, shadeLight );
 
 		if ( *gl_monolightmap->string != '0' )
 		{
-			float s = shadeLight_[ 0 ];
-			if ( s < shadeLight_[ 1 ] )
+			float s = shadeLight[ 0 ];
+			if ( s < shadeLight[ 1 ] )
 			{
-				s = shadeLight_[ 1 ];
+				s = shadeLight[ 1 ];
 			}
-			if ( s < shadeLight_[ 2 ] )
+			if ( s < shadeLight[ 2 ] )
 			{
-				s = shadeLight_[ 2 ];
+				s = shadeLight[ 2 ];
 			}
 
-			shadeLight_[ 0 ] = s;
-			shadeLight_[ 1 ] = s;
-			shadeLight_[ 2 ] = s;
+			shadeLight[ 0 ] = s;
+			shadeLight[ 1 ] = s;
+			shadeLight[ 2 ] = s;
 		}
 	}
 
@@ -336,7 +388,7 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 		uint i;
 		for ( i = 0; i < 3; ++i )
 		{
-			if ( shadeLight_[ i ] > 0.1f )
+			if ( shadeLight[ i ] > 0.1f )
 			{
 				break;
 			}
@@ -344,9 +396,9 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 
 		if ( i == 3 )
 		{
-			shadeLight_[ 0 ] = 0.1f;
-			shadeLight_[ 1 ] = 0.1f;
-			shadeLight_[ 2 ] = 0.1f;
+			shadeLight[ 0 ] = 0.1f;
+			shadeLight[ 1 ] = 0.1f;
+			shadeLight[ 2 ] = 0.1f;
 		}
 	}
 
@@ -354,33 +406,35 @@ void chr::AliasModel::ApplyLighting( const entity_t *e )
 	if ( e->flags & RF_GLOW )
 	{
 		float scale = 0.1f * std::sin( r_newrefdef.time * 7.0f );
-		for ( float &i : shadeLight_ )
+		for ( float &i : shadeLight )
 		{
 			float min = i * 0.8f;
 			i += scale;
 			if ( i < min )
+			{
 				i = min;
+			}
 		}
 	}
 
 	if ( r_newrefdef.rdflags & RDF_IRGOGGLES && e->flags & RF_IR_VISIBLE )
 	{
-		shadeLight_[ 0 ] = 1.0f;
-		shadeLight_[ 1 ] = 0.0f;
-		shadeLight_[ 2 ] = 0.0f;
+		shadeLight[ 0 ] = 1.0f;
+		shadeLight[ 1 ] = 0.0f;
+		shadeLight[ 2 ] = 0.0f;
 	}
 
-	shadeDots_ = r_avertexnormal_dots[ ( ( int ) ( e->angles[ 1 ] * ( SHADEDOT_QUANT / 360.0f ) ) ) &
-	                                   ( SHADEDOT_QUANT - 1 ) ];
+	shadeDots = r_avertexnormal_dots[ ( ( int ) ( e->angles[ 1 ] * ( SHADEDOT_QUANT / 360.0f ) ) ) &
+	                                  ( SHADEDOT_QUANT - 1 ) ];
 
-	float angle       = e->angles[ 1 ] / 180.0f * Q_PI;
-	shadeVector_[ 0 ] = std::cos( -angle );
-	shadeVector_[ 1 ] = std::sin( -angle );
-	shadeVector_[ 2 ] = 1.0f;
-	VectorNormalize( shadeVector_ );
+	float angle      = e->angles[ 1 ] / 180.0f * Q_PI;
+	shadeVector[ 0 ] = std::cos( -angle );
+	shadeVector[ 1 ] = std::sin( -angle );
+	shadeVector[ 2 ] = 1.0f;
+	shadeVector.Normalize();
 }
 
-void chr::AliasModel::DrawFrameLerp( entity_t *e )
+void chr::AliasModel::DrawFrameLerp( entity_t *e, const MDAProfile *profile )
 {
 	// move should be the delta back to the previous frame * backlerp
 	vec3_t delta;
@@ -388,21 +442,23 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 	vec3_t vectors[ 3 ];
 	AngleVectors( e->angles, vectors[ 0 ], vectors[ 1 ], vectors[ 2 ] );
 
-	vec3_t move;
+	Vector3 move;
 	move[ 0 ] = DotProduct( delta, vectors[ 0 ] ); // forward
 	move[ 1 ] = -DotProduct( delta, vectors[ 1 ] );// left
 	move[ 2 ] = DotProduct( delta, vectors[ 2 ] ); // up
 
-	const Frame *frame    = &frames_[ e->frame ];
-	const Frame *oldFrame = &frames_[ e->oldframe ];
+	const Frame *frame    = &frames[ e->frame ];
+	const Frame *oldFrame = &frames[ e->oldframe ];
 
-	VectorAdd( move, oldFrame->translate, move );
+	move = oldFrame->translate + move;
 
 	float frontlerp = 1.0f - e->backlerp;
 	for ( uint i = 0; i < 3; i++ )
+	{
 		move[ i ] = e->backlerp * move[ i ] + frontlerp * frame->translate[ i ];
+	}
 
-	vec3_t frontv, backv;
+	Vector3 frontv, backv;
 	for ( uint i = 0; i < 3; i++ )
 	{
 		frontv[ i ] = frontlerp * frame->scale[ i ];
@@ -410,33 +466,172 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 	}
 
 	const VertexGroup *v = &frame->vertices[ 0 ];
-	LerpVertices( v, oldFrame->vertices.data(), frame->vertices.data(), lerpedVertices_.data(), move, frontv, backv );
-
-	if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
-	{
-		glDisable( GL_TEXTURE_2D );
-	}
-	else
-	{
-		image_t *texture;
-		if ( e->model->skins[ 0 ] != nullptr )
-		{
-			texture = e->model->skins[ 0 ];
-		}
-		else
-		{
-			texture = r_notexture;
-		}
-
-		GL_Bind( texture->texnum );
-	}
-
-	GL_TexEnv( GL_MODULATE );
+	LerpVertices( v, oldFrame->vertices.data(), frame->vertices.data(), lerpedVertices.data(), move, frontv, backv );
 
 	float alpha = ( e->flags & RF_TRANSLUCENT ) ? e->alpha : 1.0f;
 
-	int *order = &glCmds_[ 0 ];
-	while ( true )
+	int *order = &glCmds[ 0 ];
+	for ( unsigned int i = 0; i < skins.size(); ++i )
+	{
+		if ( currententity->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+		{
+			glDisable( GL_TEXTURE_2D );
+		}
+
+		GL_TexEnv( GL_MODULATE );
+
+		if ( profile != nullptr )
+		{
+			int *nextOrder = order;
+
+			const MDASkin &skin = profile->skins[ i ];
+			for ( const auto &pass : skin.passes )
+			{
+				switch ( pass.cull )
+				{
+					case MDAPass::CullMode::NONE:
+						glCullFace( GL_NONE );
+						break;
+					case MDAPass::CullMode::FRONT:
+						glCullFace( GL_FRONT );
+						break;
+					case MDAPass::CullMode::BACK:
+						glCullFace( GL_BACK );
+						break;
+				}
+
+				switch ( pass.depth )
+				{
+					case MDAPass::DepthFunc::NONE:
+						break;
+					case MDAPass::DepthFunc::EQUAL:
+						glDepthFunc( GL_EQUAL );
+						break;
+					case MDAPass::DepthFunc::LESS:
+						glDepthFunc( GL_LESS );
+						break;
+				}
+
+				switch ( pass.alpha )
+				{
+					case MDAPass::AlphaFunc::NONE:
+						break;
+					case MDAPass::AlphaFunc::LT128:
+						glEnable( GL_ALPHA_TEST );
+						glAlphaFunc( GL_LESS, 0.5f );
+						break;
+					case MDAPass::AlphaFunc::GE128:
+						glEnable( GL_ALPHA_TEST );
+						glAlphaFunc( GL_GEQUAL, 0.5f );
+						break;
+					case MDAPass::AlphaFunc::GT0:
+						glEnable( GL_ALPHA_TEST );
+						glAlphaFunc( GL_GREATER, 0.0f );
+						break;
+				}
+
+				switch ( pass.blend )
+				{
+					case MDAPass::BlendMode::NONE:
+						break;
+					case MDAPass::BlendMode::NORMAL:
+						glEnable( GL_BLEND );
+						glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+						break;
+					case MDAPass::BlendMode::MULTIPLY:
+						glEnable( GL_BLEND );
+						glBlendFunc( GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA );
+						break;
+					case MDAPass::BlendMode::ADD:
+						glEnable( GL_BLEND );
+						glBlendFunc( GL_ONE, GL_ONE );
+						break;
+				}
+
+				switch ( pass.uvgen )
+				{
+					case MDAPass::UVGen::NONE:
+						break;
+					case MDAPass::UVGen::SPHERE:
+						glEnable( GL_TEXTURE_GEN_S );
+						glEnable( GL_TEXTURE_GEN_T );
+						glTexGeni( GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
+						glTexGeni( GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP );
+						break;
+				}
+
+				GL_Bind( pass.map->texnum );
+
+				nextOrder = DrawPrimitive( &skins[ i ], alpha, v, order );
+
+				// reset the states back to their defaults
+
+				if ( pass.blend != MDAPass::BlendMode::NONE )
+				{
+					glDisable( GL_BLEND );
+					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+				}
+
+				if ( pass.alpha != MDAPass::AlphaFunc::NONE )
+				{
+					glDisable( GL_ALPHA_TEST );
+					glAlphaFunc( GL_GREATER, 0.45f );
+				}
+
+				if ( pass.cull != MDAPass::CullMode::FRONT )
+				{
+					glCullFace( GL_FRONT );
+				}
+
+				if ( pass.uvgen != MDAPass::UVGen::NONE )
+				{
+					glDisable( GL_TEXTURE_GEN_S );
+					glDisable( GL_TEXTURE_GEN_T );
+				}
+
+				if ( pass.depth != MDAPass::DepthFunc::NONE )
+				{
+					glDepthFunc( GL_LEQUAL );
+				}
+			}
+
+			order = nextOrder;
+		}
+		else
+		{
+			image_t *texture;
+			if ( e->model->skins[ 0 ] != nullptr )
+			{
+				texture = e->model->skins[ 0 ];
+			}
+			else
+			{
+				texture = r_notexture;
+			}
+
+			GL_Bind( texture->texnum );
+
+			order = DrawPrimitive( &skins[ i ], alpha, v, order );
+		}
+	}
+
+	// Cleanup
+
+	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
+	{
+		glEnable( GL_TEXTURE_2D );
+	}
+
+	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+	GL_TexEnv( GL_REPLACE );
+
+	c_alias_polys += numTriangles;
+}
+
+int *chr::AliasModel::DrawPrimitive( const Skin *skin, float alpha, const VertexGroup *v, int *order )
+{
+	for ( unsigned int j = 0; j < skin->numPrimitives; ++j )
 	{
 		int vertIndex;
 
@@ -459,8 +654,8 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 				vertIndex = order[ 2 ];
 				order += 3;
 
-				glColor4f( shadeLight_[ 0 ], shadeLight_[ 1 ], shadeLight_[ 2 ], alpha );
-				glVertex3f( lerpedVertices_[ vertIndex ].x, lerpedVertices_[ vertIndex ].y, lerpedVertices_[ vertIndex ].z );
+				glColor4f( shadeLight[ 0 ], shadeLight[ 1 ], shadeLight[ 2 ], alpha );
+				glVertex3f( lerpedVertices[ vertIndex ].x, lerpedVertices[ vertIndex ].y, lerpedVertices[ vertIndex ].z );
 			} while ( --count );
 		}
 		else
@@ -471,41 +666,30 @@ void chr::AliasModel::DrawFrameLerp( entity_t *e )
 				vertIndex = order[ 2 ];
 				order += 3;
 
-				// normals and vertexes come from the frame list
-				// I've botched this for now, as it doesn't appear to be correct anymore, plus we'll
-				// be rewriting this anyway... ~hogsy
-				float l = shadeDots_[ /*v[ vertIndex ].normalIndex*/ 0 ];
+				float x = vertexNormals[ v[ vertIndex ].normalIndex ][ 0 ];
+				float y = vertexNormals[ v[ vertIndex ].normalIndex ][ 1 ];
+				float z = vertexNormals[ v[ vertIndex ].normalIndex ][ 2 ];
+				//glNormal3f( x, y, z );
 
-				glColor4f( l * shadeLight_[ 0 ], l * shadeLight_[ 1 ], l * shadeLight_[ 2 ], alpha );
-				glVertex3f( lerpedVertices_[ vertIndex ].x, lerpedVertices_[ vertIndex ].y, lerpedVertices_[ vertIndex ].z );
+				glColor4f( 1.0f, 1.0f, 1.0f, alpha );
+				glVertex3f( lerpedVertices[ vertIndex ].x, lerpedVertices[ vertIndex ].y, lerpedVertices[ vertIndex ].z );
 			} while ( --count );
 		}
 
 		glEnd();
 	}
 
-	// Cleanup
-
-	if ( e->flags & ( RF_SHELL_RED | RF_SHELL_GREEN | RF_SHELL_BLUE | RF_SHELL_DOUBLE | RF_SHELL_HALF_DAM ) )
-	{
-		glEnable( GL_TEXTURE_2D );
-	}
-
-	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
-	GL_TexEnv( GL_REPLACE );
-
-	c_alias_polys += numTriangles_;
+	return order;
 }
 
-void chr::AliasModel::Draw( entity_t *e )
+void chr::AliasModel::Draw( entity_t *e, const MDAProfile *profile )
 {
-	if ( e->frame >= numFrames_ || e->frame < 0 )
+	if ( e->frame >= numFrames || e->frame < 0 )
 	{
 		Com_Printf( "%s: no such frame %d\n", e->model->name, e->frame );
 		e->frame = 0;
 	}
-	if ( ( e->oldframe >= numFrames_ ) || ( e->oldframe < 0 ) )
+	if ( ( e->oldframe >= numFrames ) || ( e->oldframe < 0 ) )
 	{
 		Com_Printf( "%s: no such oldframe %d\n", e->model->name, e->oldframe );
 		e->oldframe = 0;
@@ -515,7 +699,9 @@ void chr::AliasModel::Draw( entity_t *e )
 	{
 		vec3_t bbox[ 8 ];
 		if ( Cull( bbox, e ) )
+		{
 			return;
+		}
 
 #if 0
 		glDisable( GL_CULL_FACE );
@@ -535,6 +721,23 @@ void chr::AliasModel::Draw( entity_t *e )
 
 	ApplyLighting( e );
 
+#if 0
+	//TODO: TEMP START
+	glEnable( GL_LIGHTING );
+	glEnable( GL_LIGHT0 );
+
+	vec3_t lightAngle;
+	lightAngle[ 0 ] = e->origin[ 0 ] + 16.0f;
+	lightAngle[ 1 ] = e->origin[ 1 ] + 16.0f;
+	lightAngle[ 2 ] = e->origin[ 2 ] + 16.0f;
+
+	glLightfv( GL_LIGHT0, GL_POSITION, ( float * ) &lightAngle );
+	glLightfv( GL_LIGHT0, GL_AMBIENT, shadeLight );
+	glLightfv( GL_LIGHT0, GL_DIFFUSE, ( float[] ) { 1.0f, 1.0f, 1.0f, 1.0f } );
+	glShadeModel( GL_SMOOTH );
+	//TODO: TEMP END
+#endif
+
 	glPushMatrix();
 
 	e->angles[ PITCH ] = -e->angles[ PITCH ];
@@ -551,9 +754,16 @@ void chr::AliasModel::Draw( entity_t *e )
 		e->backlerp = 0;
 	}
 
-	DrawFrameLerp( e );
+	DrawFrameLerp( e, profile );
 
 	glPopMatrix();
+
+#if 0
+	//TODO: TEMP START
+	glDisable( GL_LIGHT0 );
+	glDisable( GL_LIGHTING );
+	//TODO: TEMP END
+#endif
 
 	if ( e->flags & RF_TRANSLUCENT ) glDisable( GL_BLEND );
 	if ( e->flags & RF_DEPTHHACK ) glDepthRange( gldepthmin, gldepthmax );
@@ -561,8 +771,8 @@ void chr::AliasModel::Draw( entity_t *e )
 
 bool chr::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
 {
-	Frame *frame    = &frames_[ e->frame ];
-	Frame *oldFrame = &frames_[ e->oldframe ];
+	const Frame *frame    = &frames[ e->frame ];
+	const Frame *oldFrame = &frames[ e->oldframe ];
 
 	vec3_t mins, maxs;
 	VectorCopy( frame->bounds[ 0 ], mins );
@@ -573,9 +783,13 @@ bool chr::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
 		for ( uint i = 0; i < 3; ++i )
 		{
 			if ( oldFrame->bounds[ 0 ][ i ] < mins[ i ] )
+			{
 				mins[ i ] = oldFrame->bounds[ 0 ][ i ];
+			}
 			if ( oldFrame->bounds[ 1 ][ i ] > maxs[ i ] )
+			{
 				maxs[ i ] = oldFrame->bounds[ 1 ][ i ];
+			}
 		}
 	}
 
@@ -584,19 +798,31 @@ bool chr::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
 	{
 		vec3_t tmp;
 		if ( i & 1 )
+		{
 			tmp[ 0 ] = mins[ 0 ];
+		}
 		else
+		{
 			tmp[ 0 ] = maxs[ 0 ];
+		}
 
 		if ( i & 2 )
+		{
 			tmp[ 1 ] = mins[ 1 ];
+		}
 		else
+		{
 			tmp[ 1 ] = maxs[ 1 ];
+		}
 
 		if ( i & 4 )
+		{
 			tmp[ 2 ] = mins[ 2 ];
+		}
 		else
+		{
 			tmp[ 2 ] = maxs[ 2 ];
+		}
 
 		VectorCopy( tmp, bbox[ i ] );
 	}
@@ -630,7 +856,9 @@ bool chr::AliasModel::Cull( vec3_t bbox[ 8 ], entity_t *e )
 		{
 			float dp = DotProduct( frustum[ f ].normal, bbox[ p ] );
 			if ( ( dp - frustum[ f ].dist ) < 0 )
+			{
 				mask |= ( 1 << f );
+			}
 		}
 
 		aggregatemask &= mask;
