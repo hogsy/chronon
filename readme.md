@@ -27,10 +27,10 @@ It's important to note that this project is operating to reimplement the game th
 
 ## Features
 
-[![Screenshot](preview/thumb_01.png)](preview/01.webp)
+[![Screenshot](preview/thumb_01.png)](preview/01.png)
 [![Screenshot](preview/thumb_02.png)](preview/02.webp)
 [![Screenshot](preview/thumb_03.png)](preview/03.webp)
-[![Screenshot](preview/thumb_04.png)](preview/04.webp)
+[![Screenshot](preview/thumb_04.png)](preview/04.png)
 [![Screenshot](preview/thumb_06.png)](preview/06.webp)
 
 It's still in a very early stage of development, so nothing is playable yet.
